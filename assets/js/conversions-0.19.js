@@ -66,8 +66,11 @@
   }
 
   async function ensurePdfJsWorker() {
-    if(!window.pdfjsLib?.getDocument) throw new Error('PDF.js não está disponível.');
-    if(pdfjsLib.GlobalWorkerOptions) pdfjsLib.GlobalWorkerOptions.workerSrc=window.CentralPDFEnginePaths?.pdfWorker||'vendor/pdf.worker.min.js';
+    if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
+    if (window.CentralPDFPdfWorkerReady) await window.CentralPDFPdfWorkerReady.catch(() => null);
+    if (!window.pdfjsLib?.getDocument) throw new Error('PDF.js não está disponível.');
+    const options = window.pdfjsLib.GlobalWorkerOptions;
+    if (options && !options.workerPort && !options.workerSrc) options.workerSrc = window.CentralPDFResolvePdfWorker?.() || '';
   }
 
   function dataUrlFromBlob(blob) { return new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=()=>reject(r.error); r.readAsDataURL(blob); }); }

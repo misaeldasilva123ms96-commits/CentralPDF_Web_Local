@@ -1,0 +1,186 @@
+/* Central PDF 1.0.9 — larger, easier-to-navigate modals with tighter side gutters */
+
+.cp15-dialog,
+.cp10-dialog,
+.foundation-dialog {
+  position: fixed;
+  inset: 8px;
+  margin: auto;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+}
+
+.cp15-dialog {
+  width: min(1120px, calc(100vw - 16px));
+}
+
+.cp15-dialog > section,
+.cp15-dialog > section.wide,
+.cp10-dialog,
+.cp10-dialog-shell,
+.foundation-dialog,
+.foundation-dialog-shell {
+  max-height: calc(100dvh - 16px);
+}
+
+.cp15-dialog > section,
+.cp15-dialog > section.wide {
+  width: min(1120px, calc(100vw - 16px));
+  display: flex;
+  flex-direction: column;
+}
+
+.cp10-dialog {
+  width: min(1040px, calc(100vw - 16px));
+}
+
+.cp10-dialog-shell,
+.foundation-dialog-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp15-dialog header,
+.cp10-dialog-head,
+.foundation-dialog-head {
+  padding: 18px 18px 14px;
+}
+
+.cp15-dialog main,
+.cp10-dialog-body,
+.foundation-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 18px;
+}
+
+.cp15-dialog footer,
+.cp10-dialog-actions,
+.foundation-dialog-actions {
+  flex: 0 0 auto;
+  padding: 12px 18px;
+}
+
+.cp15-dialog main {
+  max-height: none;
+}
+
+.cp15-dialog header h2,
+.cp10-dialog-head h2,
+.foundation-dialog-head h2 {
+  font-size: 20px;
+}
+
+.cp15-dialog header p,
+.cp10-dialog-head p,
+.foundation-dialog-head p {
+  font-size: 11.5px;
+}
+
+.cp15-dialog footer {
+  font-size: 10.5px;
+}
+
+.cp15-flow-grid {
+  gap: 10px;
+}
+
+.cp15-flow-grid article {
+  padding: 14px;
+}
+
+.cp15-builder {
+  margin-top: 12px;
+  padding: 14px;
+}
+
+.cp15-builder > div:last-child {
+  margin-top: 8px;
+}
+
+.cp15-empty {
+  min-height: 180px;
+}
+
+.cp15-result,
+.cp15-preset {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 920px) {
+  .cp15-dialog,
+  .cp15-dialog > section,
+  .cp15-dialog > section.wide,
+  .cp10-dialog {
+    width: calc(100vw - 12px);
+    max-width: calc(100vw - 12px);
+  }
+
+  .cp15-dialog,
+  .cp10-dialog,
+  .foundation-dialog {
+    inset: 6px;
+    max-height: calc(100dvh - 12px);
+  }
+
+  .cp15-dialog header,
+  .cp15-dialog main,
+  .cp15-dialog footer,
+  .cp10-dialog-head,
+  .cp10-dialog-body,
+  .cp10-dialog-actions,
+  .foundation-dialog-head,
+  .foundation-dialog-body,
+  .foundation-dialog-actions {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .cp15-dialog,
+  .cp15-dialog > section,
+  .cp15-dialog > section.wide,
+  .cp10-dialog,
+  .foundation-dialog {
+    width: calc(100vw - 8px);
+    max-width: calc(100vw - 8px);
+    border-radius: 14px;
+  }
+
+  .cp15-dialog,
+  .cp10-dialog,
+  .foundation-dialog {
+    inset: 4px;
+    max-height: calc(100dvh - 8px);
+  }
+
+  .cp15-dialog > section,
+  .cp10-dialog-shell,
+  .foundation-dialog-shell {
+    border-radius: 14px;
+  }
+
+  .cp15-dialog header,
+  .cp10-dialog-head,
+  .foundation-dialog-head {
+    gap: 12px;
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+
+  .cp15-dialog main,
+  .cp10-dialog-body,
+  .foundation-dialog-body {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .cp15-dialog footer,
+  .cp10-dialog-actions,
+  .foundation-dialog-actions {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}

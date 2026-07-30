@@ -19,6 +19,15 @@
   <link rel="stylesheet" href="assets/css/header-settings-1.0.1.css" />
   <link rel="stylesheet" href="assets/css/tool-cards-uniform-1.0.2.css" />
   <link rel="stylesheet" href="assets/css/theme-and-visual-1.0.3.css" />
+  <link rel="stylesheet" href="assets/css/dark-theme-polish-1.0.4.css" />
+  <link rel="stylesheet" href="assets/css/home-dark-refine-1.0.5.css" />
+  <link rel="stylesheet" href="assets/css/dark-theme-audit-1.0.6.css" />
+  <link rel="stylesheet" href="assets/css/settings-fit-1.0.7.css" />
+  <link rel="stylesheet" href="assets/css/dialog-audit-1.0.8.css" />
+  <link rel="stylesheet" href="assets/css/modal-fit-1.0.9.css" />
+  <link rel="stylesheet" href="assets/css/micro-polish-1.1.0.css" />
+  <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
+  <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
 </head>
@@ -67,7 +76,7 @@
     <header class="topbar">
       <button id="homeBrand" class="brand-button" type="button" aria-label="Voltar para início">
         <span class="brand-mark">P</span>
-        <span class="brand-copy"><strong>Central PDF & Imagem</strong><small>Web local 1.0.3</small></span>
+        <span class="brand-copy"><strong>Central PDF & Imagem</strong><small>Web local 1.2.0</small></span>
       </button>
       <div class="top-actions">
         <div id="workspaceLayoutActions" class="workspace-layout-actions" aria-label="Controles de layout">
@@ -258,7 +267,7 @@
           <button class="tool" data-tool="flattenForms" type="button"><svg><use href="#i-grid"/></svg><span><b>Fixar formulários</b><small>Campos estáticos</small></span></button>
         </nav>
         <div id="sidebarNoResults" class="sidebar-no-results hidden">Nenhuma ferramenta encontrada.</div>
-        <div class="sidebar-footer-status"><span></span><b>Central PDF</b><small>v1.0.3</small></div>
+        <div class="sidebar-footer-status"><span></span><b>Central PDF</b><small>v1.2.0</small></div>
       </aside>
       <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Fechar barra lateral"></button>
 
@@ -414,7 +423,7 @@
       </aside>
     </main>
 
-    <footer><span>Central PDF & Imagem — Web Local 1.0.3</span><span>Use apenas documentos autorizados pela empresa.</span></footer>
+    <footer><span>Central PDF & Imagem — Web Local 1.2.0</span><span>Use apenas documentos autorizados pela empresa.</span></footer>
   </div>
 
   <dialog id="layoutSettingsDialog" class="layout-settings-dialog">
@@ -480,6 +489,7 @@
     <div id="organizerPreviewDetails" class="preview-file-details"></div>
   </dialog>
 
+  <script src="vendor/offline-status.js"></script>
   <script src="assets/js/engine-loader.js"></script>
   <script src="vendor/jszip.min.js"></script>
   <script src="vendor/pptxgen.min.js"></script>
@@ -495,6 +505,7 @@
   <script src="assets/js/conversions-0.19.js"></script>
   <script src="assets/js/intelligence-0.20.js"></script>
   <script src="assets/js/app.js"></script>
+  <script src="assets/js/tool-quality-1.2.0.js"></script>
   <script src="assets/js/layout-controls.js"></script>
   <script src="assets/js/foundation.js"></script>
   <script src="assets/js/experience-0.15.js"></script>

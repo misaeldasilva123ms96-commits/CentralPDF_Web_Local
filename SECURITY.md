@@ -10,7 +10,9 @@ Resultados da sessão podem permanecer temporariamente na memória para serem us
 Campos de senha e arquivos nunca são incluídos nas predefinições. Predefinições guardam somente ajustes não sensíveis.
 
 ## Motores externos
-O carregamento automático de código remoto fica desativado por padrão. Execute `PREPARAR_OFFLINE.bat` para baixar os motores públicos para `vendor`. Como alternativa, **Configurações > Sistema > Preparar uso offline** solicita consentimento explícito antes de buscar e armazenar motores externos no cache. Para documentos altamente sigilosos, use somente os arquivos locais preparados previamente.
+Execute `PREPARAR_OFFLINE.bat` para baixar os motores públicos para `vendor`. Os downloads usam versões fixas, arquivo parcial e SHA-256 conhecido antes da instalação. Sem preparação, o aplicativo não executa motores remotos até o usuário autorizar explicitamente o download no painel **Sistema**. Para documentos altamente sigilosos, prepare o modo offline antes de abrir o documento.
+
+O servidor local escuta em uma porta aleatória de `127.0.0.1`, aceita apenas `GET` em `/__health` e não expõe rota HTTP para encerrar o processo. Content Security Policy limita scripts e conexões às origens necessárias; Permissions Policy desabilita câmera, microfone, geolocalização, pagamentos e USB. O binário commitado é recompilado e comparado byte a byte na CI; seu SHA-256 está em `checksums.sha256`. Ele ainda não possui assinatura Authenticode.
 
 ## Limites
 Cobertura visual não é censura segura. Alterações podem invalidar assinaturas digitais. Remoção de senha só deve ser usada com autorização e senha conhecida.

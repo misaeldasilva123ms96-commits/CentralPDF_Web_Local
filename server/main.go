@@ -46,12 +46,14 @@ func main() {
 		IdleTimeout:       2 * time.Minute,
 	}
 
-	go func() {
-		time.Sleep(350 * time.Millisecond)
-		if err := openBrowser(baseURL); err != nil {
-			log.Printf("Abra manualmente: %s (%v)", baseURL, err)
-		}
-	}()
+	if os.Getenv("CENTRALPDF_NO_BROWSER") != "1" {
+		go func() {
+			time.Sleep(350 * time.Millisecond)
+			if err := openBrowser(baseURL); err != nil {
+				log.Printf("Abra manualmente: %s (%v)", baseURL, err)
+			}
+		}()
+	}
 
 	go func() {
 		// Evita processos esquecidos indefinidamente em computadores compartilhados.
@@ -76,13 +78,15 @@ func newHandler(root string) http.Handler {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"status":"ok","app":"Central PDF","version":"1.0.3"}`))
+		_, _ = w.Write([]byte(`{"status":"ok","app":"Central PDF","version":"1.2.0"}`))
 	})
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "SAMEORIGIN")
 		w.Header().Set("Referrer-Policy", "no-referrer")
-		if strings.HasSuffix(r.URL.Path, "sw.js") || strings.HasSuffix(r.URL.Path, "index.html") || r.URL.Path == "/" {
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()")
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh; worker-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://tessdata.projectnaptha.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'")
+		if strings.HasSuffix(r.URL.Path, "sw.js") || strings.HasSuffix(r.URL.Path, "index.html") || strings.HasSuffix(r.URL.Path, "vendor/offline-status.js") || r.URL.Path == "/" {
 			w.Header().Set("Cache-Control", "no-cache")
 		}
 		files.ServeHTTP(w, r)

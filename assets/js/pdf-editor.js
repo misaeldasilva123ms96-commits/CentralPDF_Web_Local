@@ -165,17 +165,13 @@
   }
 
   async function ensureWorker() {
-    if (!window.pdfjsLib || state.workerReady) return;
-    try {
-      const response = await fetch(LOCAL_WORKER_URL);
-      if (!response.ok) throw new Error('worker local indisponível');
-      const source = await response.text();
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
-    } catch (_) {
-      if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('O worker local do PDF.js não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URL;
-    }
-    state.workerReady = true;
+    if (state.workerReady) return;
+    if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
+    if (window.CentralPDFPdfWorkerReady) await window.CentralPDFPdfWorkerReady.catch(() => null);
+    if (!window.pdfjsLib) return;
+    const options = window.pdfjsLib.GlobalWorkerOptions;
+    if (options && !options.workerPort && !options.workerSrc) options.workerSrc = window.CentralPDFResolvePdfWorker?.() || '';
+    state.workerReady = Boolean(options?.workerPort || options?.workerSrc);
   }
 
   async function loadFile(file) {

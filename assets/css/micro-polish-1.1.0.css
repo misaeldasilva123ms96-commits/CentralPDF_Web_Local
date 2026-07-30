@@ -1,0 +1,101 @@
+/* Central PDF 1.1.0 — micro-element polish for dark theme cards */
+
+body[data-theme='dark'] .tool-card {
+  overflow: hidden;
+}
+
+body[data-theme='dark'] .tool-card > .cp15-star {
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid #2a3850;
+  background: linear-gradient(180deg, rgba(20, 31, 49, .98) 0%, rgba(16, 25, 40, .98) 100%);
+  color: #96a8c2;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 10px 24px rgba(0,0,0,.12);
+}
+
+body[data-theme='dark'] .tool-card > .cp15-star:hover,
+body[data-theme='dark'] .tool-card > .cp15-star:focus-visible {
+  border-color: #465877;
+  background: linear-gradient(180deg, rgba(24, 36, 58, .98) 0%, rgba(18, 29, 46, .98) 100%);
+  color: #ffd36f;
+  outline: none;
+}
+
+body[data-theme='dark'] .tool-card > .cp15-star[aria-pressed='true'],
+body[data-theme='dark'] .tool-card > .cp15-star.is-active,
+body[data-theme='dark'] .tool-card > .cp15-star[data-active='true'] {
+  color: #ffd36f;
+  border-color: #6559d8;
+  background: linear-gradient(180deg, rgba(36, 33, 76, .98) 0%, rgba(24, 27, 58, .98) 100%);
+}
+
+body[data-theme='dark'] .tool-card > .recommended {
+  top: 12px;
+  right: 50px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(43, 39, 90, .95) 0%, rgba(31, 30, 69, .98) 100%) !important;
+  color: #ddd9ff !important;
+  border: 1px solid rgba(116, 104, 236, .26);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+body[data-theme='dark'] .tool-card > .recommended::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  margin-right: 6px;
+  background: #9f97ff;
+  box-shadow: 0 0 0 4px rgba(159, 151, 255, .12);
+}
+
+body[data-theme='dark'] .tool-card:not(:has(.recommended)) > .cp15-star {
+  right: 14px;
+}
+
+body[data-theme='dark'] .cp15-top button,
+body[data-theme='dark'] .cp15-flowbar button,
+body[data-theme='dark'] .cp15-toast button {
+  border-color: #2a3850;
+  background: linear-gradient(180deg, rgba(18, 28, 44, .98) 0%, rgba(13, 21, 34, .98) 100%);
+  color: #d6e0f0;
+}
+
+body[data-theme='dark'] .cp15-toast {
+  border-color: #2a3850;
+  background: linear-gradient(180deg, rgba(16, 26, 42, .98) 0%, rgba(12, 19, 31, .98) 100%);
+}
+
+body[data-theme='dark'] .cp15-toast small,
+body[data-theme='dark'] .cp15-flowbar span {
+  color: #93a3bc;
+}
+
+body[data-theme='dark'] .cp15-flowbar {
+  border-color: #3a3f74;
+  background: linear-gradient(180deg, rgba(16, 25, 41, .98) 0%, rgba(12, 18, 30, .98) 100%);
+}
+
+body[data-theme='dark'] .cp15-flowbar > i {
+  background: #1e2940;
+}
+
+@media (max-width: 840px) {
+  body[data-theme='dark'] .tool-card > .recommended {
+    right: 46px;
+    padding: 0 8px;
+    min-height: 26px;
+  }
+
+  body[data-theme='dark'] .tool-card > .cp15-star {
+    width: 28px;
+    height: 28px;
+  }
+}

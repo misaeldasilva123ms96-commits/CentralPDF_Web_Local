@@ -1,0 +1,20 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 1.0.4
+
+Tema escuro:
+- título principal legível: OK
+- cartões de resumo em superfície escura: OK
+- área de upload com contraste adequado: OK
+- painel de propriedades e dock inferior em superfície escura: OK
+- avisos com versão escura sem perder semântica: OK
+
+Barra lateral compacta:
+- largura preservada em aproximadamente 70 px: OK
+- rolagem horizontal removida: OK
+- rolagem vertical fina e funcional: OK
+
+Regressão:
+- static_integrity.py: OK
+- layout-controls.test.py: OK
+- stable-release-1.0.test.py: OK
+- app-load-smoke.test.js: OK
+- executável Windows recompilado para 1.0.4: OK

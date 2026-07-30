@@ -1,6 +1,6 @@
 {
-  "name": "Central PDF & Imagem 1.0",
-  "short_name": "Central PDF 1.0",
+  "name": "Central PDF & Imagem 1.2.0",
+  "short_name": "Central PDF 1.2.0",
   "description": "Ferramentas locais para organizar, editar, converter, proteger, aplicar OCR, criar formulários e inserir assinaturas visuais em PDFs e imagens.",
   "start_url": "./index.html",
   "scope": "./",

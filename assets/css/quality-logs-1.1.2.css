@@ -1,0 +1,178 @@
+/* Central PDF 1.1.2 — quality center and expanded local logs */
+
+.cp10-error-log {
+  margin-top: 18px;
+}
+
+.cp10-error-log-head {
+  gap: 14px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.cp10-error-log-head > div:first-child {
+  min-width: 220px;
+  flex: 1 1 260px;
+}
+
+.cp10-log-head-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.cp10-log-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, 220px) auto;
+  gap: 10px;
+  align-items: end;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #e3e6ed;
+  border-radius: 12px;
+  background: #f8f9fc;
+}
+
+.cp10-log-controls label {
+  display: grid;
+  gap: 5px;
+}
+
+.cp10-log-controls label > span {
+  color: #687386;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.cp10-log-controls input,
+.cp10-log-controls select {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid #dce0e9;
+  border-radius: 9px;
+  background: #fff;
+  color: #293145;
+}
+
+.cp10-log-summary {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  color: #687386;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.cp10-log-summary strong {
+  color: #293145;
+}
+
+.cp10-error-log-list {
+  max-height: 390px;
+  overflow: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.cp10-error-item {
+  display: grid;
+  gap: 6px;
+  background: #fff8f7;
+}
+
+.cp10-error-item-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cp10-error-item-head strong {
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.cp10-error-item-head b {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #f6d7d2;
+  color: #8c2f25;
+  font-size: 9px;
+}
+
+.cp10-error-item-head time {
+  margin-left: auto;
+  color: #8b5b56;
+  font: 9px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.cp10-error-item > div:not(.cp10-error-item-head) {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cp10-error-item > small {
+  display: block;
+  color: #8b5b56;
+  overflow-wrap: anywhere;
+}
+
+body[data-theme='dark'] .cp10-log-controls {
+  border-color: #2b3850;
+  background: linear-gradient(180deg, rgba(18,28,44,.98) 0%, rgba(13,21,34,.98) 100%);
+}
+
+body[data-theme='dark'] .cp10-log-controls label > span,
+body[data-theme='dark'] .cp10-log-summary,
+body[data-theme='dark'] .cp10-error-item > small,
+body[data-theme='dark'] .cp10-error-item-head time {
+  color: #94a4bb;
+}
+
+body[data-theme='dark'] .cp10-log-controls input,
+body[data-theme='dark'] .cp10-log-controls select {
+  border-color: #2b3850;
+  background: #0d1524;
+  color: #edf2ff;
+}
+
+body[data-theme='dark'] .cp10-log-summary strong {
+  color: #eef4ff;
+}
+
+body[data-theme='dark'] .cp10-error-item {
+  border-color: #4d313a;
+  background: linear-gradient(180deg, rgba(37,20,27,.94) 0%, rgba(28,17,23,.98) 100%);
+  color: #ffdce1;
+}
+
+body[data-theme='dark'] .cp10-error-item-head b {
+  background: #4b2832;
+  color: #ffbdc7;
+}
+
+@media (max-width: 760px) {
+  .cp10-log-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .cp10-log-summary {
+    justify-content: flex-start;
+    white-space: normal;
+  }
+
+  .cp10-log-head-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .cp10-log-head-actions .cp10-button {
+    flex: 1 1 auto;
+  }
+}

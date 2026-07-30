@@ -1,4 +1,118 @@
+## 1.2.0 — auditoria profunda das 34 ferramentas
+
+- Reaplicado consentimento explícito antes de executar motores remotos de PDF, OCR, LibPDF, HEIC ou TIFF.
+- Removida a rota HTTP local de desligamento e restringido `/__health` ao método GET.
+- Adicionadas Content Security Policy e Permissions Policy ao servidor local para limitar origens executáveis e recursos sensíveis do navegador.
+- Servidor Windows recompilado de forma reproduzível com Go 1.26.5, checksum publicado e verificação byte a byte adicionada à CI.
+- Preparação offline passou a usar downloads atômicos, versões fixas e SHA-256 conhecido; o LibPDF agora é um bundle local completo com licenças preservadas.
+- Testes Playwright tornados portáveis entre Windows e Linux, sem caminho fixo para o Chromium.
+- Criada auditoria individual das 34 ferramentas com catálogo, interface, processador, motor, entrada, saída e histórico de execução.
+- Adicionada pré-verificação padronizada em cada ferramenta, com escopo, profundidade, lote, motor, alertas e orientação de revisão.
+- Arquivos vazios passam a ser rejeitados e lotes muito grandes recebem alertas de memória.
+- Saídas PDF, ZIP, PNG e JPEG passam por verificação de assinatura e tamanho.
+- Execuções, duração, sucessos, falhas, avisos e saídas são armazenados localmente por ferramenta.
+- O painel Qualidade ganhou busca, filtros, matriz de auditoria e exportação de relatório completo.
+- Mensagens de Worker, buffer e memória foram aprofundadas com ações recomendadas.
+
+## 1.1.6 — compressão adaptativa e Worker dedicado
+
+- Corrigido o Worker PDF em abertura direta por file:// usando um Worker dedicado por documento.
+- Eliminada a cadeia blob:null/importScripts no fluxo de compressão.
+- Perfis de compressão recalibrados para gerar arquivos menores com qualidade equilibrada.
+- Compressão adaptativa repete o processamento com parâmetros menores quando a primeira tentativa não atinge redução real.
+- A opção de manter o original impede que a saída fique maior, inclusive com remoção de metadados.
+- Relatório de compressão agora registra perfil, DPI e qualidade utilizados.
+
+## 1.1.5 — correção de buffers e ciclo de vida do Worker PDF
+
+- Corrigido o erro `Cannot perform Construct on a detached ArrayBuffer` durante compressão rasterizada.
+- PDF.js e pdf-lib agora recebem cópias independentes dos bytes do arquivo.
+- Removido o compartilhamento de um único `workerPort`; cada documento usa Worker próprio via `workerSrc`.
+- Corrigido o aviso `PDFWorker.fromPort - the worker is being destroyed` nas miniaturas.
+- Logs históricos dessas falhas são migrados como corrigidos e duplicatas de interface/console são reduzidas.
+
+## 1.1.4 — correção do botão Verificar agora
+
+- Adicionado feedback visual durante e após a execução do autodiagnóstico.
+- O botão agora funciona por delegação de eventos, mesmo após reorganizações da interface.
+- A janela mostra horário da última verificação e leva o conteúdo ao resumo após nova execução.
+- Falhas internas passam a ser registradas nos logs de qualidade e exibidas na própria janela.
+
+## 1.1.3 — correção do carregamento PDF.js e Worker
+
+- Removida a tentativa automática de carregar arquivos PDF locais inexistentes antes do fallback online.
+- Corrigido o Worker PDF em abertura direta com porta Worker criada a partir do conteúdo real, evitando `blob:null/importScripts` repetido.
+- Logs antigos desse problema passam por migração e deixam de poluir a lista ativa.
+- O modo offline agora usa um marcador explícito criado pelo `PREPARAR_OFFLINE.bat`.
+- Diagnóstico ampliado com modo, origem e estado real do Worker PDF.
+
+## 1.1.2 — central de qualidade e logs ampliada
+
+- Corrigida a versão interna do diagnóstico para refletir a versão real do aplicativo.
+- Capacidade de logs ampliada de 25 para 250 registros únicos, com agrupamento de ocorrências repetidas.
+- Adicionados busca, filtro por tipo, cópia e exportação separada dos logs.
+- Captura ampliada para erros JavaScript, promessas, recursos, console, avisos e falhas de interface.
+- Diagnóstico agora informa Worker PDF, motores locais, protocolo de abertura e estatísticas dos logs.
+- Removida a criação duplicada de Blob para o Worker PDF, evitando erros `blob:null` em abertura direta.
+
+## 1.1.1 — sincronização dos indicadores de versão
+
+- Corrigidos os contadores e labels de versão que ainda exibiam 1.0 em áreas da interface.
+- Painel lateral, aba de qualidade, autodiagnóstico e atalhos passaram a refletir a versão atual.
+- Ajustadas mensagens e elementos auxiliares ligados à identificação da versão.
+
+## 1.1.0 — polimento dos microelementos do tema escuro
+
+- Estrelas de favoritos adaptadas ao tema escuro com melhor contraste e acabamento.
+- Badges “Novo” e “Recomendado” reposicionados para não colidirem com o favorito.
+- Pequenos elementos auxiliares do modo escuro receberam acabamento visual mais consistente.
+- Ajustado o alinhamento para deixar os cards mais uniformes e legíveis.
+
+## 1.0.9 — janelas maiores e navegação facilitada
+
+- Aumentado o tamanho útil das janelas modais para facilitar a navegação.
+- Reduzidas as laterais e margens internas para aproveitar melhor a tela.
+- Mantido scroll interno com cabeçalho, conteúdo e ações mais acessíveis.
+- Ajuste responsivo para modais de resultados, fluxos e qualidade da versão.
+
+## 1.0.8 — auditoria de janelas e correções do tema
+
+- Corrigidas janelas ainda claras no tema escuro, com cobertura completa para os diálogos da versão 1.0.
+- Eliminadas rolagens horizontais e estouros visuais em resultados, fluxos e painéis modais.
+- Ajustadas larguras, espaçamentos e empilhamento responsivo para telas menores.
+- Adicionadas salvaguardas gerais para janelas flutuantes e dialogs auxiliares.
+
+## 1.0.7 — ajuste de encaixe e rolagem dos painéis
+
+- Corrigido o corte visual do painel de Configurações rápidas em telas mais baixas.
+- Adicionada rolagem interna elegante quando o conteúdo excede a altura disponível.
+- Reduzidos espaçamentos e reorganizado o layout em alturas menores para caber melhor na tela.
+- Ajustes preventivos em painéis flutuantes para manter boa apresentação em diferentes resoluções.
+
+## 1.0.6 — auditoria completa do tema escuro
+
+- Corrigidos os blocos claros restantes em janelas, diagnósticos e fluxo offline.
+- Dialogs de sistema, banners, botões, cards, pills, toasts e áreas de ação agora seguem o dark theme.
+- Ajustado contraste de títulos, textos de apoio, estados, avisos e superfícies auxiliares.
+- Refinamento para manter consistência visual em telas secundárias e painéis de apoio.
+
+## 1.0.5 — refinamento da página inicial
+
+- Aplicado o mesmo padrão do tema escuro aprimorado à página inicial.
+- Hero inicial redesenhado com melhor profundidade, contraste e organização visual.
+- Bloco de recentes/favoritas ajustado para o modo escuro, eliminando cartões claros destoantes.
+- Cartões de ferramentas e chips refinados para manter consistência com o restante da interface.
+- Melhorias de legibilidade, hierarquia e acabamento visual na home.
+
 # Changelog
+
+## 1.0.4
+
+- Tema escuro redesenhado com melhor contraste e hierarquia de superfícies.
+- Corrigidos títulos, cartões de resumo, upload e painel de propriedades no modo escuro.
+- Removida a rolagem horizontal da barra lateral compacta, mantendo a largura fina.
+- Scrollbars verticais refinadas para ocupar menos espaço visual.
+- Service worker e servidor local atualizados para 1.0.4.
 
 ## 1.0.3
 

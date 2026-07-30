@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '1.0.0';
+  const APP_VERSION = '1.2.0';
   const DB_NAME = 'centralpdf-foundation';
   const DB_VERSION = 1;
   const STORE = 'recovery';
@@ -11,7 +11,6 @@
     'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
-    'https://esm.sh/@libpdf/core@0.4.1?bundle',
     'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js',
     'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js',
     'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core.wasm.js',
@@ -411,8 +410,15 @@
 
   async function prepareOffline() {
     const button = $('#foundationPrepareOffline');
-    const accepted = window.confirm('A preparação offline baixará código de fornecedores públicos fixados por versão. Continue apenas em uma rede confiável. Nenhum documento será enviado.');
-    if (!accepted) return;
+    const remoteEngines = window.CentralPDFRemoteEngines;
+    if (remoteEngines && !remoteEngines.isAllowed()) {
+      const allowed = window.confirm('Para preparar o modo offline, o Central PDF precisa baixar motores públicos de terceiros (PDF.js, pdf-lib, LibPDF e Tesseract). Nenhum documento pessoal será enviado. Deseja continuar?');
+      if (!allowed) return;
+      if (!remoteEngines.setAllowed(true)) {
+        alert('Não foi possível salvar a autorização neste navegador.');
+        return;
+      }
+    }
     if (button) { button.disabled = true; button.textContent = 'Preparando...'; }
     try {
       if (!['http:', 'https:'].includes(location.protocol)) throw new Error('Abra pelo ABRIR_CENTRAL_PDF.bat para habilitar o cache offline.');
@@ -434,7 +440,6 @@
       });
       const failed = result.filter(item => !item.ok);
       if (failed.length) throw new Error(`${failed.length} motor(es) não puderam ser armazenados. Verifique a internet e tente novamente.`);
-      window.CentralPDFRemoteEngines?.setAllowed?.(true);
       storageSet('centralpdf-offline-prepared', new Date().toISOString());
       await refreshDiagnostics();
       alert('Modo offline preparado. Atualize a página uma vez para confirmar que os motores estão disponíveis pelo cache.');

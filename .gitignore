@@ -12,6 +12,8 @@ __pycache__/
 .venv/
 playwright-report/
 test-results/
+CentralPDF_Local_Server.ci.exe
+CentralPDF_Local_Server.build*.exe
 
 # Local logs and temporary files
 *.log

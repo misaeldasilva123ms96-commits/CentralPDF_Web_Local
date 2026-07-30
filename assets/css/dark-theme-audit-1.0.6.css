@@ -1,0 +1,233 @@
+/* Central PDF 1.0.6 — dark theme audit refinements for dialogs, offline panels and auxiliary surfaces */
+
+body[data-theme='dark'] .foundation-top-button {
+  background: #121c2c;
+  color: #cdd6e5;
+  border-color: #2b3850;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+}
+body[data-theme='dark'] .foundation-top-button:hover {
+  background: #1a2640;
+  color: #fff;
+  border-color: #465674;
+}
+
+body[data-theme='dark'] .foundation-dialog {
+  color: #edf2ff;
+  box-shadow: 0 28px 90px rgba(0,0,0,.42);
+}
+body[data-theme='dark'] .foundation-dialog::backdrop {
+  background: rgba(5, 11, 19, .68);
+}
+body[data-theme='dark'] .foundation-dialog-shell {
+  background: linear-gradient(180deg, #0f1726 0%, #0c1320 100%);
+}
+body[data-theme='dark'] .foundation-dialog-head {
+  border-color: #253047;
+  background: linear-gradient(180deg, rgba(13,21,36,.96) 0%, rgba(11,18,30,.98) 100%);
+}
+body[data-theme='dark'] .foundation-dialog-head h2,
+body[data-theme='dark'] .foundation-card h3,
+body[data-theme='dark'] .foundation-list-row strong,
+body[data-theme='dark'] .foundation-recovery-card strong,
+body[data-theme='dark'] .foundation-offline-banner strong,
+body[data-theme='dark'] .foundation-empty,
+body[data-theme='dark'] .foundation-toggle-row strong,
+body[data-theme='dark'] .foundation-metric strong,
+body[data-theme='dark'] .foundation-project-drop strong,
+body[data-theme='dark'] .foundation-recovery-toast strong {
+  color: #f3f6ff !important;
+}
+body[data-theme='dark'] .foundation-dialog-head p,
+body[data-theme='dark'] .foundation-card p,
+body[data-theme='dark'] .foundation-list-row small,
+body[data-theme='dark'] .foundation-recovery-card p,
+body[data-theme='dark'] .foundation-toggle-row small,
+body[data-theme='dark'] .foundation-offline-banner small,
+body[data-theme='dark'] .foundation-metric small,
+body[data-theme='dark'] .foundation-project-drop p,
+body[data-theme='dark'] .foundation-recovery-toast small,
+body[data-theme='dark'] #foundationProjectStatus,
+body[data-theme='dark'] .status-box {
+  color: #94a4bb !important;
+}
+body[data-theme='dark'] .foundation-dialog-close {
+  background: #121c2c;
+  color: #cbd5e5;
+  border: 1px solid #2b3850;
+}
+body[data-theme='dark'] .foundation-dialog-close:hover {
+  background: #1a2640;
+  color: #fff;
+  border-color: #465674;
+}
+body[data-theme='dark'] .foundation-dialog-body {
+  background: transparent;
+}
+body[data-theme='dark'] .foundation-dialog-actions {
+  background: linear-gradient(180deg, rgba(14,22,37,.94) 0%, rgba(11,18,30,.98) 100%);
+  border-top-color: #253047;
+}
+body[data-theme='dark'] .foundation-button {
+  border-color: #2b3850;
+  background: #121c2c;
+  color: #cad4e5;
+}
+body[data-theme='dark'] .foundation-button:hover {
+  background: #1a2640;
+  color: #fff;
+  border-color: #465674;
+}
+body[data-theme='dark'] .foundation-button.primary {
+  background: linear-gradient(180deg, #9184ff 0%, #7768ee 100%);
+  border-color: #796af0;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(101, 84, 235, .25);
+}
+body[data-theme='dark'] .foundation-button.danger {
+  background: #22131a;
+  border-color: #5b2f3a;
+  color: #ffb6c0;
+}
+body[data-theme='dark'] .foundation-button.danger:hover {
+  background: #2b1720;
+  border-color: #73404d;
+  color: #ffd8de;
+}
+body[data-theme='dark'] .foundation-button:disabled {
+  background: #303b50;
+  border-color: #303b50;
+  color: #8491a7;
+}
+
+body[data-theme='dark'] .foundation-card,
+body[data-theme='dark'] .foundation-list-row,
+body[data-theme='dark'] .foundation-project-drop,
+body[data-theme='dark'] .foundation-empty,
+body[data-theme='dark'] .foundation-recovery-toast,
+body[data-theme='dark'] .foundation-recovery-card,
+body[data-theme='dark'] #foundationProjectStatus,
+body[data-theme='dark'] .foundation-toggle-row,
+body[data-theme='dark'] .foundation-metric {
+  background: linear-gradient(180deg, rgba(18,28,44,.98) 0%, rgba(13,21,34,.98) 100%) !important;
+  border-color: #2b3850 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+}
+body[data-theme='dark'] .foundation-card,
+body[data-theme='dark'] .foundation-project-drop,
+body[data-theme='dark'] .foundation-list-row,
+body[data-theme='dark'] .foundation-empty,
+body[data-theme='dark'] .foundation-recovery-card,
+body[data-theme='dark'] .foundation-recovery-toast,
+body[data-theme='dark'] .foundation-metric,
+body[data-theme='dark'] #foundationProjectStatus {
+  color: #dce5f5;
+}
+body[data-theme='dark'] .foundation-card-head {
+  align-items: flex-start;
+}
+body[data-theme='dark'] .foundation-status-pill {
+  background: #172132;
+  color: #95a6be;
+  border: 1px solid #29384e;
+}
+body[data-theme='dark'] .foundation-status-pill.ok {
+  background: #10261e;
+  color: #95dfbd;
+  border-color: #205541;
+}
+body[data-theme='dark'] .foundation-status-pill.warn {
+  background: #251d0f;
+  color: #e7be6d;
+  border-color: #5b4928;
+}
+body[data-theme='dark'] .foundation-status-pill.error {
+  background: #26131a;
+  color: #f2a8b1;
+  border-color: #6d3240;
+}
+body[data-theme='dark'] .foundation-status-pill::before {
+  box-shadow: 0 0 0 3px rgba(255,255,255,.02);
+}
+body[data-theme='dark'] .foundation-list-row .icon {
+  background: #1a2136;
+  color: #a59dff;
+}
+body[data-theme='dark'] .foundation-list-row button {
+  border-color: #2b3850;
+  background: #121c2c;
+  color: #cad4e5;
+}
+body[data-theme='dark'] .foundation-list-row button:hover {
+  background: #1a2640;
+  color: #fff;
+}
+body[data-theme='dark'] .foundation-progress {
+  background: #20283b;
+}
+body[data-theme='dark'] .foundation-progress > div {
+  background: linear-gradient(90deg, #9184ff 0%, #7768ee 100%);
+}
+body[data-theme='dark'] .foundation-task.running {
+  border-color: #413d73 !important;
+  background: linear-gradient(180deg, rgba(27, 27, 61, .95) 0%, rgba(16, 22, 38, .98) 100%) !important;
+}
+body[data-theme='dark'] .foundation-task.completed .icon {
+  background: #10261e;
+  color: #95dfbd;
+}
+body[data-theme='dark'] .foundation-task.failed .icon {
+  background: #26131a;
+  color: #f3a9b3;
+}
+body[data-theme='dark'] .foundation-task.cancelled .icon {
+  background: #1a2335;
+  color: #9aacbf;
+}
+body[data-theme='dark'] .foundation-toggle-row {
+  border-bottom-color: #263247;
+}
+body[data-theme='dark'] .foundation-toggle-row input {
+  filter: saturate(1.05);
+}
+body[data-theme='dark'] .foundation-offline-banner {
+  background: linear-gradient(180deg, rgba(18,28,44,.98) 0%, rgba(13,21,34,.98) 100%) !important;
+  border-color: #2b3850 !important;
+}
+body[data-theme='dark'] .foundation-offline-banner.ready {
+  border-color: #205541 !important;
+  background: linear-gradient(180deg, rgba(16,38,30,.95) 0%, rgba(12,26,21,.98) 100%) !important;
+}
+body[data-theme='dark'] .foundation-offline-banner .dot {
+  background: #d29b34;
+  box-shadow: 0 0 0 6px rgba(210,155,52,.10);
+}
+body[data-theme='dark'] .foundation-offline-banner.ready .dot {
+  background: #34c37d;
+  box-shadow: 0 0 0 6px rgba(52,195,125,.10);
+}
+
+body[data-theme='dark'] .foundation-metric-row {
+  gap: 10px;
+}
+body[data-theme='dark'] .foundation-metric small {
+  color: #8696af !important;
+}
+body[data-theme='dark'] .foundation-empty {
+  border-style: dashed;
+}
+
+body[data-theme='dark'] .foundation-recovery-toast {
+  border-color: #413d73 !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.34);
+}
+
+/* Wider audit: common plain blocks that may still show as light surfaces inside dark mode */
+body[data-theme='dark'] dialog,
+body[data-theme='dark'] .panel-shell,
+body[data-theme='dark'] .dialog-header,
+body[data-theme='dark'] .dialog-actions,
+body[data-theme='dark'] .status-box.info,
+body[data-theme='dark'] .notice-card.info {
+  color: #edf2ff;
+}

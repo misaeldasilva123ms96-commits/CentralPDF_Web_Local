@@ -60,7 +60,7 @@
       } catch (localError) {
         if (!window.CentralPDFRemoteEngines?.isAllowed?.()) {
           runtime.enginePromise = null;
-          throw new Error('O motor OCR local não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
+          throw new Error('O motor OCR local não foi encontrado. Execute PREPARAR_OFFLINE.bat ou autorize o download em Sistema > Preparar uso offline.');
         }
         try {
           await loadScript(REMOTE.script);
@@ -78,20 +78,11 @@
   function localUrl(path) { return new URL(path, document.baseURI).href.replace(/\/$/, ''); }
 
   async function ensurePdfWorker() {
-    if (!window.pdfjsLib?.GlobalWorkerOptions) return;
-    if (window.pdfjsLib.GlobalWorkerOptions.workerSrc) return;
-    const paths = window.CentralPDFEnginePaths || {};
-    const local = paths.pdfWorker || 'vendor/pdf.worker.min.js';
-    const remote = paths.pdfWorkerRemote || 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    try {
-      const response = await fetch(local, { cache: 'force-cache' });
-      if (!response.ok) throw new Error('worker local indisponível');
-      const source = await response.text();
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
-    } catch (_) {
-      if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('O worker local do PDF.js não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = remote;
-    }
+    if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
+    if (window.CentralPDFPdfWorkerReady) await window.CentralPDFPdfWorkerReady.catch(() => null);
+    const options = window.pdfjsLib?.GlobalWorkerOptions;
+    if (!options) return;
+    if (!options.workerPort && !options.workerSrc) options.workerSrc = window.CentralPDFResolvePdfWorker?.() || '';
   }
 
   async function createWorker(language, logger) {
@@ -100,7 +91,7 @@
     const configs = source === 'local'
       ? [
           { source: 'local', workerPath: localUrl(LOCAL.worker), corePath: localUrl(LOCAL.core), langPath: localUrl(LOCAL.lang) },
-          ...(window.CentralPDFRemoteEngines?.isAllowed?.() ? [{ source: 'internet', workerPath: REMOTE.worker, corePath: REMOTE.core, langPath: REMOTE.lang }] : [])
+          { source: 'internet', workerPath: REMOTE.worker, corePath: REMOTE.core, langPath: REMOTE.lang }
         ]
       : [{ source: 'internet', workerPath: REMOTE.worker, corePath: REMOTE.core, langPath: REMOTE.lang }];
     let lastError;
