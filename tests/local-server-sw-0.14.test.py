@@ -13,7 +13,7 @@ url = f'http://127.0.0.1:{server.server_address[1]}/index.html'
 
 try:
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+        browser = p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
         context = browser.new_context()
         page = context.new_page()
         errors=[]
@@ -27,11 +27,13 @@ try:
                 browser.close()
                 raise SystemExit(0)
             raise
-        page.wait_for_selector('#foundationDiagnosticsButton')
+        page.wait_for_selector('#cp101SettingsButton')
         page.evaluate("navigator.serviceWorker.ready")
         page.reload(wait_until='domcontentloaded')
-        page.wait_for_selector('#foundationDiagnosticsButton')
+        page.wait_for_selector('#cp101SettingsButton')
         page.wait_for_function("navigator.serviceWorker.controller !== null")
+        page.locator('#cp101SettingsButton').click()
+        page.wait_for_selector('#foundationDiagnosticsButton', state='visible')
         page.locator('#foundationDiagnosticsButton').click()
         page.wait_for_function("document.querySelector('#foundationDiagnosticsDialog').open === true")
         text=page.locator('#foundationDiagnosticsContent').inner_text()

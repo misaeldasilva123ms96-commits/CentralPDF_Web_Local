@@ -13,7 +13,7 @@ scripts='\n'.join((root/p).read_text(encoding='utf-8') for p in script_paths)
 html=html.replace('</head>',f'<style>{css}</style></head>').replace('</body>',f'<script>{scripts}</script></body>')
 out=root/'docs/previews';out.mkdir(parents=True,exist_ok=True)
 with sync_playwright() as p:
- b=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+ b=p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
  page=b.new_page(viewport={'width':1440,'height':900},device_scale_factor=1)
  page.set_content(html,wait_until='domcontentloaded');page.wait_for_timeout(900)
  page.screenshot(path=str(out/'PREVIA_HOME_1.0.png'),full_page=False)

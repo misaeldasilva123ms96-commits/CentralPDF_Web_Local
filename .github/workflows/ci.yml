@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "agent/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.mod
+
+      - name: Install Python test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-test.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          find assets/js -maxdepth 1 -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
+          node --check sw.js
+
+      - name: Run JavaScript tests
+        shell: bash
+        run: find tests -maxdepth 1 -name '*.js' -print0 | sort -z | xargs -0 -n1 node
+
+      - name: Run Python tests
+        shell: bash
+        run: |
+          find tests -maxdepth 1 -name '*.test.py' -print0 | sort -z | xargs -0 -n1 python
+          python tests/static_integrity.py
+
+      - name: Run Go tests
+        working-directory: server
+        run: go test ./...
+
+      - name: Vet Go server
+        working-directory: server
+        run: go vet ./...

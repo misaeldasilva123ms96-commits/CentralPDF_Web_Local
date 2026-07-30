@@ -20,7 +20,7 @@ window.pdfjsLib={{getDocument:({{data}})=>({{promise:(async()=>{{
 </script><script>{module}</script></body></html>'''
 
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+    browser=p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
     page=browser.new_page()
     errors=[]; page.on('pageerror', lambda e: errors.append(str(e)))
     page.set_content(html, wait_until='domcontentloaded')

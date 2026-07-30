@@ -1839,12 +1839,18 @@
     try {
       let response;
       try { response = await fetch(PDF_WORKER_LOCAL_URL); } catch (_) { response = null; }
-      if (!response?.ok) response = await fetch(PDF_WORKER_URL);
+      if (!response?.ok) {
+        if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('worker local indisponível');
+        response = await fetch(PDF_WORKER_URL);
+      }
       if (!response.ok) throw new Error('worker indisponível');
       const source = await response.text();
       const blobUrl = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = blobUrl;
-    } catch { window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL; }
+    } catch (error) {
+      if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('O worker local do PDF.js não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
+    }
     state.workerReady = true;
   }
 
@@ -2785,7 +2791,10 @@
       try {
         let module;
         try { module = await import(new URL('vendor/libpdf-core.mjs', document.baseURI).href); }
-        catch (_) { module = await import('https://esm.sh/@libpdf/core@0.4.1?bundle'); }
+        catch (_) {
+          if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('LibPDF local não encontrado. Execute PREPARAR_OFFLINE.bat.');
+          module = await import('https://esm.sh/@libpdf/core@0.4.1?bundle');
+        }
         if (!module?.PDF) throw new Error('A biblioteca foi carregada, mas a API PDF não foi encontrada.');
         state.libPdfEngine = module;
         return module;

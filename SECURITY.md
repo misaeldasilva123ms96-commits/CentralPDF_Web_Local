@@ -10,7 +10,7 @@ Resultados da sessão podem permanecer temporariamente na memória para serem us
 Campos de senha e arquivos nunca são incluídos nas predefinições. Predefinições guardam somente ajustes não sensíveis.
 
 ## Motores externos
-Execute `PREPARAR_OFFLINE.bat` para baixar os motores públicos para `vendor`. Sem preparação, alguns motores podem ser carregados da internet. Para documentos altamente sigilosos, prepare o modo offline primeiro.
+O carregamento automático de código remoto fica desativado por padrão. Execute `PREPARAR_OFFLINE.bat` para baixar os motores públicos para `vendor`. Como alternativa, **Configurações > Sistema > Preparar uso offline** solicita consentimento explícito antes de buscar e armazenar motores externos no cache. Para documentos altamente sigilosos, use somente os arquivos locais preparados previamente.
 
 ## Limites
 Cobertura visual não é censura segura. Alterações podem invalidar assinaturas digitais. Remoção de senha só deve ser usada com autorização e senha conhecida.

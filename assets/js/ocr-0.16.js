@@ -58,6 +58,10 @@
         runtime.engineSource = 'local';
         return 'local';
       } catch (localError) {
+        if (!window.CentralPDFRemoteEngines?.isAllowed?.()) {
+          runtime.enginePromise = null;
+          throw new Error('O motor OCR local não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
+        }
         try {
           await loadScript(REMOTE.script);
           runtime.engineSource = 'internet';
@@ -85,6 +89,7 @@
       const source = await response.text();
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
     } catch (_) {
+      if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('O worker local do PDF.js não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = remote;
     }
   }
@@ -95,7 +100,7 @@
     const configs = source === 'local'
       ? [
           { source: 'local', workerPath: localUrl(LOCAL.worker), corePath: localUrl(LOCAL.core), langPath: localUrl(LOCAL.lang) },
-          { source: 'internet', workerPath: REMOTE.worker, corePath: REMOTE.core, langPath: REMOTE.lang }
+          ...(window.CentralPDFRemoteEngines?.isAllowed?.() ? [{ source: 'internet', workerPath: REMOTE.worker, corePath: REMOTE.core, langPath: REMOTE.lang }] : [])
         ]
       : [{ source: 'internet', workerPath: REMOTE.worker, corePath: REMOTE.core, langPath: REMOTE.lang }];
     let lastError;

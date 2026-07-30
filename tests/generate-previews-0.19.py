@@ -12,7 +12,7 @@ scripts=['assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js
 code='\n'.join((root/f).read_text(encoding='utf-8') for f in scripts)
 html=html.replace('</body>',f'<script>{code}</script></body>')
 with sync_playwright() as p:
-    b=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+    b=p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
     page=b.new_page(viewport={'width':1600,'height':1000}, device_scale_factor=1)
     errors=[]; page.on('pageerror',lambda e:errors.append(str(e)))
     page.set_content(html,wait_until='domcontentloaded')

@@ -172,6 +172,7 @@
       const source = await response.text();
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
     } catch (_) {
+      if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('O worker local do PDF.js não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URL;
     }
     state.workerReady = true;
