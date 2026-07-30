@@ -4,6 +4,7 @@
   const PDF_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const PDF_WORKER_LOCAL_URL = window.CentralPDFEnginePaths?.pdfWorker || 'vendor/pdf.worker.min.js';
   const HOME_STORAGE_KEY = 'central-pdf-last-tool';
+  window.CentralPDFRuntimeFixes = Object.assign({}, window.CentralPDFRuntimeFixes, { pdfBufferIsolation: true });
 
   const toolConfig = {
     organize: {
@@ -226,8 +227,8 @@
       title: 'Comprimir PDF avançado', description: 'Escolha o perfil, as páginas rasterizadas, qualidade, escala de cinza e relatório de redução.',
       accept: 'application/pdf,.pdf', multiple: true, typeLabel: 'PDF', button: 'Comprimir PDF(s)', outputExt: 'auto', outputBase: 'PDFs_comprimidos',
       settings: `
-        <div class="field"><label for="compressionMode">Perfil</label><select id="compressionMode"><option value="preserve">Estrutural — preservar texto e links</option><option value="recommended" selected>Recomendada — 120 DPI</option><option value="extreme">Extrema — 88 DPI</option><option value="custom">Personalizada</option></select></div>
-        <div id="compressionCustomPanel" class="hidden"><div class="field-row"><div class="field"><label for="compressionDpi">DPI</label><input id="compressionDpi" type="number" min="60" max="300" value="120" /></div><div class="field"><label for="compressionQuality">Qualidade JPG (%)</label><input id="compressionQuality" type="number" min="30" max="100" value="72" /></div></div><label class="toggle-row"><input id="compressionGrayscale" type="checkbox" /><span>Converter as páginas rasterizadas para tons de cinza</span></label></div>
+        <div class="field"><label for="compressionMode">Perfil</label><select id="compressionMode"><option value="preserve">Estrutural — preservar texto e links</option><option value="recommended" selected>Inteligente — equilíbrio e redução automática</option><option value="extreme">Forte — priorizar arquivo menor</option><option value="custom">Personalizada</option></select></div>
+        <div id="compressionCustomPanel" class="hidden"><div class="field-row"><div class="field"><label for="compressionDpi">DPI</label><input id="compressionDpi" type="number" min="60" max="300" value="108" /></div><div class="field"><label for="compressionQuality">Qualidade JPG (%)</label><input id="compressionQuality" type="number" min="30" max="100" value="62" /></div></div><label class="toggle-row"><input id="compressionGrayscale" type="checkbox" /><span>Converter as páginas rasterizadas para tons de cinza</span></label></div>
         <div class="field"><label for="compressionScope">Páginas a rasterizar</label><select id="compressionScope"><option value="all">Todas</option><option value="selected">Informar páginas</option><option value="odd">Ímpares</option><option value="even">Pares</option></select></div>
         <div id="compressionPagesPanel" class="hidden"><div class="field"><label for="compressionPages">Páginas</label><input id="compressionPages" placeholder="Exemplo: 1-5,9" /></div></div>
         <label class="toggle-row"><input id="compressionStripMetadata" type="checkbox" checked /><span>Remover metadados básicos</span></label>
@@ -694,6 +695,15 @@
     if (state.internalDragKind) endInternalDrag();
   });
 
+  function notifyFilesChanged(source = 'update') {
+    window.dispatchEvent(new CustomEvent('centralpdf-files-changed', { detail: {
+      tool: state.tool,
+      source,
+      fileCount: state.files.length,
+      totalSize: state.files.reduce((sum, file) => sum + Number(file?.size || 0), 0)
+    } }));
+  }
+
   function selectTool(tool) {
     if (!toolConfig[tool]) return;
     state.tool = tool;
@@ -749,6 +759,7 @@
     setStatus('Adicione um arquivo para continuar.');
     try { localStorage.setItem(HOME_STORAGE_KEY, tool); } catch (_) {}
     window.dispatchEvent(new CustomEvent('centralpdf-tool-selected', { detail: { tool, title: config.title } }));
+    notifyFilesChanged('tool-selected');
   }
 
   function showHome() {
@@ -819,6 +830,7 @@
       if (info) info.innerHTML = '<strong>Documento</strong><p>Adicione um PDF para calcular a divisão.</p>';
       updateSplitPlanPreview();
     }
+    notifyFilesChanged('clear');
   }
 
   function resetOrganizer() {
@@ -849,8 +861,15 @@
   async function addFiles(files, options = {}) {
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
     const config = toolConfig[state.tool];
-    const valid = files.filter(file => isAccepted(file, config.accept));
-    if (!valid.length) { setStatus('Nenhum arquivo compatível foi selecionado.', 'error'); return; }
+    const nonEmpty = files.filter(file => Number(file?.size || 0) > 0);
+    const emptyCount = files.length - nonEmpty.length;
+    if (emptyCount) window.CentralPDFStable?.addLog?.('aviso', `${emptyCount} arquivo(s) vazio(s) foram ignorados.`, `entrada: ${state.tool}`);
+    const valid = nonEmpty.filter(file => isAccepted(file, config.accept));
+    if (!valid.length) { setStatus(emptyCount ? 'Os arquivos selecionados estão vazios ou não são compatíveis.' : 'Nenhum arquivo compatível foi selecionado.', 'error'); notifyFilesChanged('rejected'); return; }
+    const prospectiveFiles = config.multiple ? [...state.files, ...valid] : valid;
+    const qualityIssues = window.CentralPDFToolQuality?.validateFiles?.(state.tool, prospectiveFiles) || [];
+    const blockingIssue = qualityIssues.find(item => item.level === 'error' && !/Adicione/i.test(item.message));
+    if (blockingIssue) { setStatus(blockingIssue.message, 'error'); notifyFilesChanged('rejected'); return; }
 
     // Organizador: o primeiro PDF abre o documento; os demais entram como novas páginas.
     if (state.tool === 'organize') {
@@ -866,6 +885,7 @@
       }
       processButton.disabled = !state.organizerPages.length;
       setStatus(`${valid.length} PDF(s) adicionado(s). As páginas novas foram inseridas no final.`, 'success');
+      notifyFilesChanged(options.source || 'add');
       return;
     }
 
@@ -884,6 +904,7 @@
         }
         processButton.disabled = !window.PDFVisualEditor?.hasDocument();
         setStatus(`${valid.length} PDF(s) adicionado(s) ao editor.`, 'success');
+        notifyFilesChanged(options.source || 'add');
       } catch (error) {
         processButton.disabled = true; setStatus(readablePdfError(error), 'error');
       }
@@ -917,6 +938,7 @@
 
     processButton.disabled = state.tool === 'merge' ? mergePdfSources().length < 2 || !state.organizerPages.length : state.tool === 'compare' ? state.files.length !== 2 : ['redact','formBuilder','signPdf'].includes(state.tool) ? state.files.length !== 1 : state.files.length === 0;
     setStatus(`${added.length || valid.length} arquivo(s) adicionado(s). Você pode continuar arrastando outros arquivos para esta tela.`, 'success');
+    notifyFilesChanged(options.source || 'add');
   }
 
   function isAccepted(file, accept) {
@@ -1032,6 +1054,7 @@
     renderFiles();
     refreshAdvancedPreviews();
     setStatus('Ordem atualizada. O resultado seguirá a sequência das capas.');
+    notifyFilesChanged('reorder');
   }
 
   function removeFile(index) {
@@ -1055,6 +1078,7 @@
       updateSplitPlanPreview();
     }
     refreshAdvancedPreviews();
+    notifyFilesChanged('remove');
   }
 
   function toggleFileSelection(file, selected) {
@@ -1835,23 +1859,13 @@
   }
 
   async function ensurePdfWorker() {
-    if (!window.pdfjsLib || state.workerReady) return;
-    try {
-      let response;
-      try { response = await fetch(PDF_WORKER_LOCAL_URL); } catch (_) { response = null; }
-      if (!response?.ok) {
-        if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('worker local indisponível');
-        response = await fetch(PDF_WORKER_URL);
-      }
-      if (!response.ok) throw new Error('worker indisponível');
-      const source = await response.text();
-      const blobUrl = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = blobUrl;
-    } catch (error) {
-      if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('O worker local do PDF.js não foi encontrado. Execute PREPARAR_OFFLINE.bat.');
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
-    }
-    state.workerReady = true;
+    if (state.workerReady) return;
+    if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
+    if (window.CentralPDFPdfWorkerReady) await window.CentralPDFPdfWorkerReady.catch(() => null);
+    if (!window.pdfjsLib) return;
+    const options = window.pdfjsLib.GlobalWorkerOptions;
+    if (options && !options.workerPort && !options.workerSrc) options.workerSrc = window.CentralPDFResolvePdfWorker?.() || '';
+    state.workerReady = Boolean(options?.workerPort || options?.workerSrc);
   }
 
   async function renderOrganizerPreviews() {
@@ -2127,23 +2141,37 @@
 
   function restoreOrganizer() { if(!state.originalOrganizerPages.length)return; pushOrganizerHistory(); state.organizerPages=state.originalOrganizerPages.map(page=>({...page})); state.selectedPageIds.clear(); renderPageGridFromCache(); setStatus('Documento restaurado ao estado original.'); }
 
+  function getToolHandlers() {
+    return { organize, editPdf, merge, split, extract, rotate, watermark, pageNumbers, imagesToPdf, imageConvert, compress, pdfToImage, crop, metadata, normalize, pdfToText, ocr, compare, redact, formBuilder, signPdf, pdfToOffice, documentsToPdf, extractImages, archivePdf, documentAssistant, structuredExtraction, documentAudit, classifyRename, protect, unlock, diagnose, repairAdvanced, flattenForms };
+  }
+
   async function processCurrentTool() {
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
     const professionalTools = new Set(['protect', 'unlock', 'diagnose', 'repairAdvanced', 'flattenForms']);
     if (!professionalTools.has(state.tool) && !window.PDFLib) { const error = new Error('O motor de PDF não carregou. Abra o diagnóstico do sistema e prepare o modo offline.'); setStatus(error.message, 'error'); return { ok: false, error }; }
     if (!state.files.length) { const error = new Error('Selecione pelo menos um arquivo.'); setStatus(error.message, 'error'); return { ok: false, error }; }
+    const qualityRun = window.CentralPDFToolQuality?.beginRun?.({ tool: state.tool, files: Array.from(state.files), settings: collectSettingsValues() });
+    if (qualityRun && qualityRun.ok === false) {
+      const error = new Error(qualityRun.preflight?.issues?.find(item => item.level === 'error')?.message || 'A pré-verificação impediu o processamento.');
+      setStatus(error.message, 'error');
+      return { ok: false, error };
+    }
     processButton.disabled = true;
     setStatus('Processando. Não feche esta janela...', 'processing');
     setProgress(8);
     try {
-      const handlers = { organize, editPdf, merge, split, extract, rotate, watermark, pageNumbers, imagesToPdf, imageConvert, compress, pdfToImage, crop, metadata, normalize, pdfToText, ocr, compare, redact, formBuilder, signPdf, pdfToOffice, documentsToPdf, extractImages, archivePdf, documentAssistant, structuredExtraction, documentAudit, classifyRename, protect, unlock, diagnose, repairAdvanced, flattenForms };
-      const result = await handlers[state.tool]();
+      const handlers = getToolHandlers();
+      const handler = handlers[state.tool];
+      if (typeof handler !== 'function') throw new Error('O processador desta ferramenta não está disponível.');
+      const result = await handler();
       setProgress(100);
       updateSteps(3);
       setStatus(result?.message || 'Concluído. O download foi iniciado. Você pode processar novamente ou escolher outra ferramenta.', 'success');
+      window.CentralPDFToolQuality?.finishRun?.(result || {});
       return { ok: true, result };
     } catch (error) {
       console.error(error);
+      window.CentralPDFToolQuality?.failRun?.(error);
       setStatus(readablePdfError(error), 'error');
       return { ok: false, error };
     } finally {
@@ -2513,35 +2541,80 @@
     return safe || baseName(fallback || 'resultado');
   }
 
+  async function structuralCompressPdfBytes(file, stripMetadata) {
+    const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { updateMetadata: false });
+    if (stripMetadata) cleanPdfMetadata(doc);
+    return await doc.save({ useObjectStreams: true, addDefaultPage: false, objectsPerTick: 40 });
+  }
+
+  async function rasterCompressPdfAdaptive(file, profile, scope, pageText, stripMetadata, fileIndex, fileTotal) {
+    const attempts = profile.attempts?.length ? profile.attempts : [{ dpi: profile.dpi || 108, quality: profile.quality || .62 }];
+    const candidates = [];
+    for (let attemptIndex = 0; attemptIndex < attempts.length; attemptIndex++) {
+      const attempt = { ...attempts[attemptIndex], grayscale: Boolean(profile.grayscale) };
+      const bytes = await rasterCompressPdfAdvanced(file, attempt, scope, pageText, stripMetadata, fileIndex, fileTotal);
+      candidates.push({ ...attempt, bytes });
+      const reduction = file.size ? 1 - bytes.byteLength / file.size : 0;
+      if (!profile.adaptive || reduction >= (profile.targetReduction || 0)) break;
+    }
+    return AdvancedPlanner.chooseCompressionCandidate(candidates, file.size, profile.targetReduction || 0);
+  }
+
   async function compress() {
     if (!window.pdfjsLib) throw new Error('O motor de renderização PDF.js não carregou.');
     const mode = $('#compressionMode')?.value || 'recommended';
     const profile = AdvancedPlanner.compressionProfile(mode, { dpi: $('#compressionDpi')?.value, quality: $('#compressionQuality')?.value, grayscale: $('#compressionGrayscale')?.checked });
-    const scope = $('#compressionScope')?.value || 'all'; const pageText = $('#compressionPages')?.value || '';
-    const stripMetadata = Boolean($('#compressionStripMetadata')?.checked); const keepSmaller = Boolean($('#compressionKeepSmaller')?.checked); const includeReport = Boolean($('#compressionReport')?.checked);
-    const outputs = []; const reportLines = ['CENTRAL PDF & IMAGEM - RELATÓRIO DE COMPRESSÃO',''];
+    const scope = $('#compressionScope')?.value || 'all';
+    const pageText = $('#compressionPages')?.value || '';
+    const stripMetadata = Boolean($('#compressionStripMetadata')?.checked);
+    const keepSmaller = Boolean($('#compressionKeepSmaller')?.checked);
+    const includeReport = Boolean($('#compressionReport')?.checked);
+    const outputs = [];
+    const reportLines = ['CENTRAL PDF & IMAGEM - RELATÓRIO DE COMPRESSÃO ADAPTATIVA',''];
     let totalOriginal = 0, totalFinal = 0;
+
     for (let fileIndex = 0; fileIndex < state.files.length; fileIndex++) {
-      const file = state.files[fileIndex]; totalOriginal += file.size;
-      let bytes;
+      const file = state.files[fileIndex];
+      totalOriginal += file.size;
+      const originalBytes = new Uint8Array(await file.arrayBuffer());
+      let selected;
+
       if (!profile.rasterize) {
-        const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer()); if (stripMetadata) cleanPdfMetadata(doc);
-        bytes = await doc.save({ useObjectStreams: true, addDefaultPage: false });
+        const bytes = await structuralCompressPdfBytes(file, stripMetadata);
+        selected = { bytes, dpi: null, quality: null, reduction: file.size ? 1 - bytes.byteLength / file.size : 0, method: 'estrutural' };
       } else {
-        bytes = await rasterCompressPdfAdvanced(file, profile, scope, pageText, stripMetadata, fileIndex, state.files.length);
+        selected = await rasterCompressPdfAdaptive(file, profile, scope, pageText, stripMetadata, fileIndex, state.files.length);
+        selected.method = 'raster adaptativa';
       }
+
       let usedOriginal = false;
-      if (keepSmaller && !stripMetadata && bytes.byteLength >= file.size) { bytes = new Uint8Array(await file.arrayBuffer()); usedOriginal = true; }
-      totalFinal += bytes.byteLength;
-      outputs.push({ name: `${baseName(file.name)}_comprimido.pdf`, bytes });
-      const reduction = file.size ? Math.round((1 - bytes.byteLength / file.size) * 100) : 0;
-      reportLines.push(`Arquivo: ${file.name}`,`Antes: ${formatBytes(file.size)}`,`Depois: ${formatBytes(bytes.byteLength)}`,`Redução: ${reduction}%${usedOriginal ? ' (original mantido por ser menor)' : ''}`,'');
+      if (keepSmaller && originalBytes.byteLength <= selected.bytes.byteLength) {
+        selected = { bytes: originalBytes, dpi: null, quality: null, reduction: 0, method: 'original preservado' };
+        usedOriginal = true;
+      }
+
+      totalFinal += selected.bytes.byteLength;
+      outputs.push({ name: `${baseName(file.name)}_comprimido.pdf`, bytes: selected.bytes });
+      const reduction = file.size ? Math.round((1 - selected.bytes.byteLength / file.size) * 100) : 0;
+      const details = selected.dpi ? `${selected.dpi} DPI, JPG ${Math.round(selected.quality * 100)}%` : selected.method;
+      reportLines.push(
+        `Arquivo: ${file.name}`,
+        `Perfil: ${mode}`,
+        `Método escolhido: ${details}`,
+        `Antes: ${formatBytes(file.size)}`,
+        `Depois: ${formatBytes(selected.bytes.byteLength)}`,
+        `Redução: ${reduction}%${usedOriginal ? ' (original mantido porque já era menor)' : ''}`,
+        ''
+      );
     }
+
     if (outputs.length === 1 && !includeReport) downloadBytes(outputs[0].bytes, outputs[0].name, 'application/pdf');
     else {
       if (!window.JSZip) throw new Error('O componente ZIP não carregou.');
-      const zip = new JSZip(); outputs.forEach(item => zip.file(item.name,item.bytes)); if (includeReport) zip.file('RELATORIO_DE_COMPRESSAO.txt',reportLines.join('\n'));
-      downloadBlob(await zip.generateAsync({type:'blob'}),`${outputBaseName('PDFs_comprimidos')}.zip`);
+      const zip = new JSZip();
+      outputs.forEach(item => zip.file(item.name, item.bytes));
+      if (includeReport) zip.file('RELATORIO_DE_COMPRESSAO.txt', reportLines.join('\n'));
+      downloadBlob(await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } }), `${outputBaseName('PDFs_comprimidos')}.zip`);
     }
     const reduction = totalOriginal ? Math.round((1 - totalFinal / totalOriginal) * 100) : 0;
     return { message: `Compressão concluída: ${formatBytes(totalOriginal)} → ${formatBytes(totalFinal)} (${reduction}% de redução total).` };
@@ -2549,27 +2622,48 @@
 
   async function rasterCompressPdfAdvanced(file, profile, scope, pageText, stripMetadata, fileIndex, fileTotal) {
     await ensurePdfWorker();
-    const bytes = await file.arrayBuffer();
-    const rendered = await pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
-    const source = await PDFLib.PDFDocument.load(bytes); const output = await PDFLib.PDFDocument.create();
-    if (!stripMetadata) copyDocumentMetadata(source,output);
-    const selected = new Set(AdvancedPlanner.resolveScope(scope, rendered.numPages, pageText));
+    const originalBytes = new Uint8Array(await file.arrayBuffer());
+    const pdfJsBytes = originalBytes.slice();
+    const pdfLibBytes = originalBytes.slice();
+    const loadingTask = pdfjsLib.getDocument({ data: pdfJsBytes });
+    let rendered = null;
     try {
+      rendered = await loadingTask.promise;
+      const source = await PDFLib.PDFDocument.load(pdfLibBytes);
+      const output = await PDFLib.PDFDocument.create();
+      if (!stripMetadata) copyDocumentMetadata(source, output);
+      const selectedPages = new Set(AdvancedPlanner.resolveScope(scope, rendered.numPages, pageText));
       for (let pageIndex = 0; pageIndex < rendered.numPages; pageIndex++) {
-        if (!selected.has(pageIndex)) {
-          const [copied] = await output.copyPages(source,[pageIndex]); output.addPage(copied);
+        if (!selectedPages.has(pageIndex)) {
+          const [copied] = await output.copyPages(source, [pageIndex]);
+          output.addPage(copied);
         } else {
-          const page = await rendered.getPage(pageIndex + 1); const baseViewport = page.getViewport({ scale: 1 }); const viewport = page.getViewport({ scale: profile.dpi / 72 });
-          const canvas = document.createElement('canvas'); canvas.width=Math.ceil(viewport.width); canvas.height=Math.ceil(viewport.height);
-          const context=canvas.getContext('2d',{alpha:false}); context.fillStyle='#fff'; context.fillRect(0,0,canvas.width,canvas.height);
-          await page.render({canvasContext:context,viewport}).promise; if(profile.grayscale) grayscaleCanvas(canvas);
-          const blob=await canvasToBlob(canvas,'image/jpeg',profile.quality); const image=await output.embedJpg(await blob.arrayBuffer());
-          const newPage=output.addPage([baseViewport.width,baseViewport.height]); newPage.drawImage(image,{x:0,y:0,width:baseViewport.width,height:baseViewport.height});
+          const page = await rendered.getPage(pageIndex + 1);
+          const baseViewport = page.getViewport({ scale: 1 });
+          const viewport = page.getViewport({ scale: profile.dpi / 72 });
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.ceil(viewport.width);
+          canvas.height = Math.ceil(viewport.height);
+          const context = canvas.getContext('2d', { alpha: false });
+          context.fillStyle = '#fff';
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          await page.render({ canvasContext: context, viewport, intent: 'print' }).promise;
+          if (profile.grayscale) grayscaleCanvas(canvas);
+          const blob = await canvasToBlob(canvas, 'image/jpeg', profile.quality);
+          const image = await output.embedJpg(await blob.arrayBuffer());
+          const newPage = output.addPage([baseViewport.width, baseViewport.height]);
+          newPage.drawImage(image, { x: 0, y: 0, width: baseViewport.width, height: baseViewport.height });
+          canvas.width = 1;
+          canvas.height = 1;
+          try { page.cleanup(); } catch (_) {}
         }
-        setProgress(10+Math.round(((fileIndex+(pageIndex+1)/rendered.numPages)/fileTotal)*80));
+        setProgress(10 + Math.round(((fileIndex + (pageIndex + 1) / rendered.numPages) / fileTotal) * 80));
       }
-      return await output.save({useObjectStreams:true});
-    } finally { await rendered.destroy(); }
+      return await output.save({ useObjectStreams: true, objectsPerTick: 40 });
+    } finally {
+      try { await rendered?.cleanup?.(); } catch (_) {}
+      try { await loadingTask.destroy(); } catch (_) {}
+    }
   }
 
   async function pdfToImage() {
@@ -2792,7 +2886,9 @@
         let module;
         try { module = await import(new URL('vendor/libpdf-core.mjs', document.baseURI).href); }
         catch (_) {
-          if (!window.CentralPDFRemoteEngines?.isAllowed?.()) throw new Error('LibPDF local não encontrado. Execute PREPARAR_OFFLINE.bat.');
+          if (!window.CentralPDFRemoteEngines?.isAllowed?.()) {
+            throw new Error('O motor LibPDF local não foi encontrado. Execute PREPARAR_OFFLINE.bat ou autorize o download em Sistema > Preparar uso offline.');
+          }
           module = await import('https://esm.sh/@libpdf/core@0.4.1?bundle');
         }
         if (!module?.PDF) throw new Error('A biblioteca foi carregada, mas a API PDF não foi encontrada.');
@@ -3088,6 +3184,9 @@
     const message = error?.message || String(error || 'Não foi possível concluir a operação.');
     if (/encrypted|password/i.test(message)) return 'Este PDF possui senha ou criptografia não suportada nesta versão.';
     if (/invalid pdf|failed to parse|no pdf header/i.test(message)) return 'O arquivo não parece ser um PDF válido ou está danificado.';
+    if (/detached ArrayBuffer/i.test(message)) return 'O arquivo perdeu o buffer de leitura durante o processamento. Tente novamente pela abertura com servidor local.';
+    if (/worker is being destroyed|importScripts|blob:null/i.test(message)) return 'O Worker de PDF falhou. Abra pelo ABRIR_CENTRAL_PDF.bat e execute PREPARAR_OFFLINE.bat se necessário.';
+    if (/out of memory|allocation failed|memory/i.test(message)) return 'O navegador ficou sem memória. Processe menos arquivos ou use uma qualidade ou resolução menor.';
     return message;
   }
 
@@ -3112,10 +3211,13 @@
       const link = document.createElement('a'); link.href = url; link.download = filename;
       document.body.appendChild(link); link.click(); link.remove();
     }
-    window.dispatchEvent(new CustomEvent('centralpdf-result', { detail: {
+    const resultDetail = {
       filename, size: blob.size, type: blob.type, blob, held,
-      tool: state.tool, toolTitle: toolConfig[state.tool]?.title || state.tool
-    } }));
+      tool: state.tool, toolTitle: toolConfig[state.tool]?.title || state.tool,
+      inputCount: state.files.length,
+      inputSize: state.files.reduce((sum, file) => sum + Number(file?.size || 0), 0)
+    };
+    window.dispatchEvent(new CustomEvent('centralpdf-result', { detail: resultDetail }));
     if (url) setTimeout(() => URL.revokeObjectURL(url), 2500);
   }
   function baseName(name) { return name.replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}._-]+/gu, '_'); }
@@ -3294,7 +3396,20 @@
     applySettings: values => applySettingsValues(values || {}),
     getOutputName: () => $('#outputFileName')?.value || '',
     setOutputName: value => { const input=$('#outputFileName'); if(!input) return false; input.value=String(value||''); state.outputNameTouched=true; input.dispatchEvent(new Event('input',{bubbles:true})); return true; },
-    getToolCatalog: () => Object.fromEntries(Object.entries(toolConfig).map(([key,value]) => [key,{key,title:value.title,description:value.description,accept:value.accept,multiple:Boolean(value.multiple),typeLabel:value.typeLabel}]))
+    getToolCatalog: () => Object.fromEntries(Object.entries(toolConfig).map(([key,value]) => [key,{key,title:value.title,description:value.description,accept:value.accept,multiple:Boolean(value.multiple),typeLabel:value.typeLabel}])),
+    getToolCapabilities: () => {
+      const handlers = getToolHandlers();
+      return Object.fromEntries(Object.entries(toolConfig).map(([key,value]) => [key,{
+        key,
+        handler: typeof handlers[key] === 'function',
+        outputExt: value.outputExt || '',
+        outputBase: value.outputBase || '',
+        professional: Boolean(value.professional),
+        settingsLength: String(value.settings || '').length,
+        settingIds: Array.from(String(value.settings || '').matchAll(/\bid=["']([^"']+)["']/g), match => match[1])
+      }]));
+    },
+    getProfessionalEngineStatus: () => ({ ready: Boolean(state.libPdfEngine), loading: Boolean(state.libPdfEnginePromise) })
   };
 
   initializeHome();

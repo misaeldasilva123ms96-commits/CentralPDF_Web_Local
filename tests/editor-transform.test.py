@@ -19,7 +19,6 @@ with sync_playwright() as p:
     page.set_content(html,wait_until='domcontentloaded')
     page.locator('[data-tool="editPdf"].tool-card').click()
     page.evaluate("""
-      window.CentralPDFRemoteEngines={isAllowed:()=>true};
       window.pdfjsLib={
         GlobalWorkerOptions:{},
         getDocument(){return {promise:Promise.resolve({

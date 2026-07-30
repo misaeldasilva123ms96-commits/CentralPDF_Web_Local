@@ -40,9 +40,13 @@ func TestStaticSecurityHeaders(t *testing.T) {
 		"X-Content-Type-Options": "nosniff",
 		"X-Frame-Options":        "SAMEORIGIN",
 		"Referrer-Policy":        "no-referrer",
+		"Permissions-Policy":     "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
 	} {
 		if got := response.Header().Get(header); got != want {
 			t.Errorf("%s = %q, want %q", header, got, want)
 		}
+	}
+	if got := response.Header().Get("Content-Security-Policy"); got == "" {
+		t.Error("Content-Security-Policy is missing")
 	}
 }

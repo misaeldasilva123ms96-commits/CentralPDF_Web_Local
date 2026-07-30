@@ -1,0 +1,372 @@
+/* Central PDF 1.0.8 — dialog audit: dark-theme coverage and overflow/layout fixes */
+
+/* Generic safety for floating windows */
+dialog,
+.cp10-dialog,
+.cp15-dialog,
+.foundation-dialog {
+  box-sizing: border-box;
+  max-width: calc(100vw - 24px);
+  overflow: hidden;
+}
+
+dialog *,
+.cp10-dialog *,
+.cp15-dialog *,
+.foundation-dialog * {
+  box-sizing: border-box;
+}
+
+.cp10-dialog-shell,
+.foundation-dialog-shell,
+.cp15-dialog > section {
+  overflow: hidden;
+}
+
+.cp10-dialog-head,
+.cp10-dialog-body,
+.cp10-dialog-actions,
+.foundation-dialog-head,
+.foundation-dialog-body,
+.foundation-dialog-actions,
+.cp15-dialog header,
+.cp15-dialog main,
+.cp15-dialog footer {
+  min-width: 0;
+}
+
+.cp10-dialog-body,
+.foundation-dialog-body,
+.cp15-dialog main {
+  overflow-x: hidden;
+}
+
+.cp10-dialog-body::-webkit-scrollbar,
+.foundation-dialog-body::-webkit-scrollbar,
+.cp15-dialog main::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.cp10-dialog-body::-webkit-scrollbar-thumb,
+.foundation-dialog-body::-webkit-scrollbar-thumb,
+.cp15-dialog main::-webkit-scrollbar-thumb {
+  background: rgba(127, 138, 158, .42);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+.cp15-dialog {
+  width: min(760px, calc(100vw - 24px));
+}
+
+.cp15-dialog > section.wide {
+  width: min(1040px, calc(100vw - 24px));
+}
+
+.cp15-dialog main {
+  padding-right: 18px;
+}
+
+.cp15-dialog footer {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cp15-dialog footer > * {
+  min-width: 0;
+}
+
+.cp15-empty {
+  min-height: 220px;
+  padding: 18px;
+}
+
+.cp15-flow-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cp15-flow-grid article,
+.cp15-result,
+.cp15-preset,
+.cp15-builder,
+.cp15-builder > div,
+.cp15-builder #cp15Steps > div {
+  min-width: 0;
+}
+
+.cp15-flow-grid article > div {
+  row-gap: 6px;
+}
+
+.cp15-flow-grid article > div i {
+  white-space: nowrap;
+}
+
+.cp15-result {
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.cp15-result > div,
+.cp15-result aside,
+.cp15-preset > div,
+.cp15-preset aside {
+  min-width: 0;
+}
+
+.cp15-result aside,
+.cp15-preset aside {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.cp15-result aside select {
+  max-width: min(170px, 100%);
+}
+
+.cp15-result aside button,
+.cp15-preset aside button,
+.cp15-dialog footer button {
+  white-space: nowrap;
+}
+
+/* cp10 dialogs — complete dark theme coverage */
+body[data-theme='dark'] .cp10-dialog {
+  background: transparent;
+  color: #eef4ff;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .42);
+}
+
+body[data-theme='dark'] .cp10-dialog::backdrop {
+  background: rgba(5, 11, 19, .68);
+}
+
+body[data-theme='dark'] .cp10-dialog-shell {
+  background: linear-gradient(180deg, #0f1726 0%, #0c1320 100%);
+}
+
+body[data-theme='dark'] .cp10-dialog-head {
+  border-bottom-color: #253047;
+  background: linear-gradient(180deg, rgba(13,21,36,.96) 0%, rgba(11,18,30,.98) 100%);
+}
+
+body[data-theme='dark'] .cp10-dialog-head small {
+  color: #8e84ff;
+}
+
+body[data-theme='dark'] .cp10-dialog-head h2,
+body[data-theme='dark'] .cp10-onboarding-card strong,
+body[data-theme='dark'] .cp10-pref strong,
+body[data-theme='dark'] .cp10-metric strong,
+body[data-theme='dark'] .cp10-check strong,
+body[data-theme='dark'] .cp10-release-line strong,
+body[data-theme='dark'] .cp10-error-log strong,
+body[data-theme='dark'] .cp10-empty,
+body[data-theme='dark'] .cp10-shortcut {
+  color: #f3f6ff !important;
+}
+
+body[data-theme='dark'] .cp10-dialog-head p,
+body[data-theme='dark'] .cp10-onboarding-card p,
+body[data-theme='dark'] .cp10-pref small,
+body[data-theme='dark'] .cp10-shortcut span,
+body[data-theme='dark'] .cp10-metric small,
+body[data-theme='dark'] .cp10-check small,
+body[data-theme='dark'] .cp10-check em,
+body[data-theme='dark'] .cp10-release-line small,
+body[data-theme='dark'] .cp10-empty,
+body[data-theme='dark'] .cp10-error-log-head small {
+  color: #94a4bb !important;
+}
+
+body[data-theme='dark'] .cp10-close {
+  background: #121c2c;
+  color: #cad4e5;
+  border-color: #2b3850;
+}
+
+body[data-theme='dark'] .cp10-close:hover {
+  background: #1a2640;
+  color: #fff;
+  border-color: #465674;
+}
+
+body[data-theme='dark'] .cp10-dialog-actions {
+  border-top-color: #253047;
+  background: linear-gradient(180deg, rgba(14,22,37,.94) 0%, rgba(11,18,30,.98) 100%);
+  flex-wrap: wrap;
+}
+
+body[data-theme='dark'] .cp10-button {
+  background: #121c2c;
+  color: #cad4e5;
+  border-color: #2b3850;
+}
+
+body[data-theme='dark'] .cp10-button:hover {
+  background: #1a2640;
+  color: #fff;
+  border-color: #465674;
+}
+
+body[data-theme='dark'] .cp10-button.primary {
+  background: linear-gradient(180deg, #9184ff 0%, #7768ee 100%);
+  border-color: #796af0;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(101, 84, 235, .25);
+}
+
+body[data-theme='dark'] .cp10-button.danger {
+  background: #22131a;
+  border-color: #5b2f3a;
+  color: #ffb6c0;
+}
+
+body[data-theme='dark'] .cp10-button.danger:hover {
+  background: #2b1720;
+  border-color: #73404d;
+  color: #ffd8de;
+}
+
+body[data-theme='dark'] .cp10-onboarding-card,
+body[data-theme='dark'] .cp10-release-line,
+body[data-theme='dark'] .cp10-pref,
+body[data-theme='dark'] .cp10-shortcut,
+body[data-theme='dark'] .cp10-metric,
+body[data-theme='dark'] .cp10-check,
+body[data-theme='dark'] .cp10-error-item,
+body[data-theme='dark'] .cp10-empty {
+  background: linear-gradient(180deg, rgba(18,28,44,.98) 0%, rgba(13,21,34,.98) 100%);
+  border-color: #2b3850;
+  color: #dce5f5;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+}
+
+body[data-theme='dark'] .cp10-onboarding-card span {
+  background: linear-gradient(180deg, #9184ff 0%, #7768ee 100%);
+  color: #fff;
+}
+
+body[data-theme='dark'] .cp10-release-line {
+  border-color: #364868;
+}
+
+body[data-theme='dark'] .cp10-release-line b {
+  color: #95dfbd;
+}
+
+body[data-theme='dark'] .cp10-switch {
+  background: #465269;
+}
+
+body[data-theme='dark'] .cp10-switch::after {
+  background: #fff;
+}
+
+body[data-theme='dark'] .cp10-switch:checked {
+  background: #7d71ff;
+}
+
+body[data-theme='dark'] .cp10-shortcut kbd {
+  background: #172033;
+  color: #c6d2e7;
+  border-color: #32435d;
+}
+
+body[data-theme='dark'] .cp10-check.ok > span {
+  background: #10261e;
+  color: #95dfbd;
+}
+
+body[data-theme='dark'] .cp10-check.warn > span {
+  background: #251d0f;
+  color: #e7be6d;
+}
+
+body[data-theme='dark'] .cp10-check.error > span {
+  background: #26131a;
+  color: #f2a8b1;
+}
+
+body[data-theme='dark'] .cp10-error-log {
+  border-top-color: #253047;
+}
+
+body[data-theme='dark'] .cp10-empty {
+  border-style: dashed;
+}
+
+/* Responsive tightening */
+@media (max-width: 980px) {
+  .cp15-flow-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .cp15-result {
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .cp15-result aside {
+    grid-column: 1 / -1;
+    padding-left: 48px;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .cp10-dialog,
+  .cp15-dialog,
+  .foundation-dialog {
+    width: min(calc(100vw - 18px), 100%);
+  }
+
+  .cp15-dialog > section,
+  .cp15-dialog > section.wide {
+    width: min(calc(100vw - 18px), 100%);
+  }
+
+  .cp15-dialog header,
+  .cp15-dialog main,
+  .cp15-dialog footer,
+  .cp10-dialog-head,
+  .cp10-dialog-body,
+  .cp10-dialog-actions,
+  .foundation-dialog-head,
+  .foundation-dialog-body,
+  .foundation-dialog-actions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .cp10-dialog-head h2,
+  .foundation-dialog-head h2,
+  .cp15-dialog header h2 {
+    font-size: 19px;
+  }
+
+  .cp10-dialog-actions .cp10-button,
+  .cp15-dialog footer button,
+  .foundation-dialog-actions .foundation-button {
+    flex: 1 1 100%;
+  }
+
+  .cp15-result aside {
+    padding-left: 0;
+  }
+
+  .cp15-result {
+    grid-template-columns: 1fr;
+  }
+
+  .cp15-result > span {
+    width: 36px;
+    height: 36px;
+  }
+}

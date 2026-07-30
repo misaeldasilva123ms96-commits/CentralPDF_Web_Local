@@ -1,0 +1,184 @@
+/* Central PDF 1.0.7 — adaptive fit for quick settings and floating panels */
+
+.cp101-settings-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: min(760px, calc(100dvh - 92px));
+  overflow: hidden;
+}
+
+.cp101-settings-head,
+.cp101-settings-footer {
+  flex: 0 0 auto;
+}
+
+.cp101-settings-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.cp101-settings-footer {
+  border-top: 1px solid #eef1f6;
+  background: linear-gradient(180deg, rgba(255,255,255,.96) 0%, rgba(249,250,255,.98) 100%);
+}
+
+.cp101-settings-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.cp101-settings-body::-webkit-scrollbar-thumb {
+  background: rgba(129, 140, 160, .42);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+.cp101-settings-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Make other floating dialogs more resilient on short viewports */
+.cp15-dialog > section {
+  max-height: min(760px, calc(100dvh - 24px));
+  display: flex;
+  flex-direction: column;
+}
+
+.cp15-dialog main {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.foundation-dialog-shell {
+  min-height: 0;
+}
+
+.foundation-dialog-body {
+  min-height: 0;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+@media (max-height: 820px) {
+  .cp101-settings-panel {
+    width: min(348px, calc(100vw - 20px));
+    max-height: calc(100dvh - 80px);
+  }
+
+  .cp101-settings-head {
+    padding: 14px 16px 10px;
+  }
+
+  .cp101-settings-body {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .cp101-settings-footer {
+    padding: 10px 14px 12px;
+  }
+
+  .cp101-theme-section {
+    padding: 10px;
+  }
+}
+
+@media (max-height: 740px) {
+  .cp101-settings-panel {
+    max-height: calc(100dvh - 68px);
+  }
+
+  .cp101-settings-head strong {
+    font-size: 14px;
+  }
+
+  .cp101-settings-head span {
+    font-size: 10px;
+  }
+
+  .cp101-settings-body {
+    gap: 9px;
+  }
+
+  .cp101-settings-section-title {
+    font-size: 9px;
+  }
+
+  .cp101-settings-list,
+  .cp101-settings-list .cp15-top,
+  .cp101-settings-list .foundation-top-actions,
+  .cp101-settings-list .cp10-release-actions {
+    gap: 7px;
+  }
+
+  .cp101-settings-list .foundation-top-button,
+  .cp101-settings-list .cp10-top-button,
+  .cp101-settings-list .cp15-top button {
+    min-height: 38px;
+  }
+
+  .cp101-theme-head {
+    margin-bottom: 8px;
+  }
+
+  .cp101-theme-options {
+    grid-template-columns: 1fr;
+  }
+
+  .cp101-theme-option {
+    min-height: 52px;
+    padding: 9px 10px;
+  }
+
+  .cp101-theme-note {
+    margin-top: 7px;
+  }
+}
+
+@media (max-height: 660px) {
+  .cp101-settings-panel {
+    max-height: calc(100dvh - 56px);
+    border-radius: 16px;
+  }
+
+  .cp101-settings-head {
+    padding: 12px 14px 9px;
+  }
+
+  .cp101-settings-body {
+    padding: 9px;
+    gap: 8px;
+  }
+
+  .cp101-settings-footer {
+    padding: 8px 12px 10px;
+    font-size: 9px;
+  }
+
+  .cp101-settings-head small,
+  .cp101-settings-section-title,
+  .cp101-theme-badge {
+    letter-spacing: .06em;
+  }
+
+  .cp101-settings-head span,
+  .cp101-theme-head span,
+  .cp101-theme-option small,
+  .cp101-theme-note {
+    font-size: 8.5px;
+    line-height: 1.35;
+  }
+}
+
+body[data-theme='dark'] .cp101-settings-footer {
+  border-top-color: var(--border);
+  background: linear-gradient(180deg, rgba(14, 22, 37, .94) 0%, rgba(11, 18, 30, .98) 100%);
+}
+
+body[data-theme='dark'] .cp101-settings-body::-webkit-scrollbar-thumb {
+  background: rgba(123, 137, 165, .46);
+  border-color: transparent;
+}

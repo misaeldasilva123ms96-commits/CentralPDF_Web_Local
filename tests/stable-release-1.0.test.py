@@ -7,7 +7,7 @@ html=(root/'index.html').read_text(encoding='utf-8')
 css_paths=[
  'assets/css/styles.css','assets/css/ux-redesign.css','assets/css/layout-controls.css','assets/css/foundation.css',
  'assets/css/experience-0.15.css','assets/css/ocr-0.16.css','assets/css/professional-0.17.css',
- 'assets/css/forms-signatures-0.18.css','assets/css/conversions-0.19.css','assets/css/intelligence-0.20.css','assets/css/stable-1.0.css'
+ 'assets/css/forms-signatures-0.18.css','assets/css/conversions-0.19.css','assets/css/intelligence-0.20.css','assets/css/stable-1.0.css','assets/css/quality-logs-1.1.2.css'
 ]
 script_paths=[
  'assets/js/engine-loader.js','vendor/jszip.min.js','assets/js/split-planner.js','assets/js/advanced-planner.js',
@@ -30,7 +30,7 @@ with sync_playwright() as p:
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.set_content(html, wait_until='domcontentloaded')
     page.wait_for_timeout(900)
-    assert 'Web local 1.0' in page.locator('.brand-copy small').inner_text()
+    assert 'Web local 1.2.0' in page.locator('.brand-copy small').inner_text()
     assert page.locator('.cp10-stable-badge').count()==1
     assert page.locator('.tool-card[data-tool]').count()==34
     assert '34' in page.locator('.hero-stats').inner_text()
@@ -46,7 +46,7 @@ with sync_playwright() as p:
     page.wait_for_timeout(100)
     assert page.locator('#cp10Quality').get_attribute('open') is not None
     assert '34' in page.locator('#cp10QualityContent').inner_text()
-    assert 'Acessibilidade 1.0' in page.locator('#cp10QualityContent').inner_text()
+    assert 'Acessibilidade 1.2.0' in page.locator('#cp10QualityContent').inner_text()
     page.locator('[data-close="cp10Quality"]').click()
 
     first=page.locator('.tool-card:not(.hidden)').first

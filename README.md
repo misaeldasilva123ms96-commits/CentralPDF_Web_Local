@@ -1,10 +1,21 @@
-# Central PDF & Imagem 1.0.3
+# Central PDF & Imagem 1.2.0
 
 Aplicação web local com 34 ferramentas para organizar, editar, converter, proteger, pesquisar, comparar e auditar PDFs e imagens.
 
-## Versão estável 1.0.3
+## Versão estável 1.2.0
 
-A versão 1.0 consolida o ciclo iniciado nas versões 0.x. Ela preserva as 34 ferramentas e adiciona uma camada de estabilidade e experiência profissional:
+A versão 1.2.0 preserva as 34 ferramentas e adiciona auditoria profunda, pré-verificação e validação de execução para todo o catálogo:
+
+
+### Auditoria profunda 1.2.0
+
+- auditoria individual das 34 ferramentas no painel **Qualidade**;
+- busca, filtros e download do relatório completo da auditoria;
+- pré-verificação com entrada, saída, motor, lote, profundidade e revisão recomendada;
+- rejeição de arquivos vazios e alertas para lotes com alto consumo de memória;
+- verificação básica de integridade para saídas PDF, ZIP/Office, PNG, JPEG, WebP e JSON;
+- histórico local por ferramenta com duração, sucessos, falhas, avisos e tamanho das saídas;
+- relatório técnico em `docs/testing/AUDITORIA_34_FERRAMENTAS_1.2.0.md`.
 
 ### Ajuste de interface 1.0.1
 
@@ -24,34 +35,35 @@ A versão 1.0 consolida o ciclo iniciado nas versões 0.x. Ela preserva as 34 fe
 ## Como abrir
 
 1. Extraia completamente o ZIP.
-2. Execute `PREPARAR_OFFLINE.bat` uma vez com internet para preparar os motores opcionais.
+2. Execute `PREPARAR_OFFLINE.bat` uma vez com internet para preparar os motores opcionais. O download ocorre somente após essa ação explícita e cada arquivo é validado por SHA-256 antes de substituir a versão local.
 3. Abra `ABRIR_CENTRAL_PDF.bat`.
-4. Confirme no topo a indicação **Web local 1.0.3**.
+4. Confirme no topo a indicação **Web local 1.2.0**.
 
-Também é possível abrir `index.html` diretamente. Nesse modo, cache, service worker e alguns recursos do navegador podem ficar limitados.
+Evite abrir `index.html` diretamente. Use `ABRIR_CENTRAL_PDF.bat`, pois o modo `file://` limita Service Worker e pode restringir Workers usados pelo PDF.js.
+
+
+### Correção PDF.js 1.1.4
+
+- o carregador não tenta mais abrir `vendor/pdf.min.js` quando a preparação offline ainda não foi executada;
+- o Worker PDF usa uma porta dedicada criada a partir do código carregado, evitando falhas repetidas com `blob:null/importScripts`;
+- `PREPARAR_OFFLINE.bat` registra explicitamente quando os motores locais estão disponíveis;
+- logs antigos dessa falha são removidos da lista ativa durante a migração.
 
 ## Privacidade
 
-O processamento ocorre no navegador. O servidor local escuta somente em `127.0.0.1` e não possui rota de upload. Recursos externos opcionais são usados apenas para carregar motores públicos quando a preparação offline ainda não foi concluída.
+O processamento ocorre no navegador. O servidor local escuta somente em `127.0.0.1` e não possui rota de upload. Recursos externos opcionais só são carregados após autorização explícita no painel **Sistema** ou pela execução voluntária de `PREPARAR_OFFLINE.bat`.
 
-O carregamento de código remoto fica desativado por padrão. Para habilitá-lo, use **Configurações > Sistema > Preparar uso offline** e confirme o aviso, ou execute `PREPARAR_OFFLINE.bat` para baixar os motores na pasta `vendor`.
+## Integridade do executável
 
-## Desenvolvimento e testes
+O servidor Windows é compilado de forma reproduzível com Go 1.26.5. O arquivo `checksums.sha256` contém o SHA-256 esperado de `CentralPDF_Local_Server.exe`, e a CI recompila o servidor e exige igualdade byte a byte com o binário publicado.
 
-Requisitos: Node.js, Python 3, Go 1.23 ou superior e Chromium do Playwright.
+No PowerShell, confira o pacote com:
 
 ```powershell
-python -m pip install -r requirements-test.txt
-python -m playwright install chromium
-
-Get-ChildItem tests -Filter '*.js' | ForEach-Object { node $_.FullName }
-Get-ChildItem tests -Filter '*.test.py' | ForEach-Object { python $_.FullName }
-python tests/static_integrity.py
-
-Push-Location server
-go test ./...
-Pop-Location
+(Get-FileHash -Algorithm SHA256 .\CentralPDF_Local_Server.exe).Hash.ToLowerInvariant()
 ```
+
+O executável ainda não possui assinatura Authenticode. O checksum comprova integridade em relação ao repositório, mas não substitui uma futura assinatura com certificado de código.
 
 ## Documentação
 
@@ -61,6 +73,7 @@ Pop-Location
 - Limitações conhecidas: `docs/reference/LIMITACOES_CONHECIDAS_1.0.md`
 - Relação de ferramentas: `docs/reference/MODULES.md`
 - Testes da versão: `docs/testing/TESTES_RELEASE_1.0.md`
+- Auditoria técnica e de segurança: `docs/reports/AUDITORIA_TECNICA_1.2.0.md`
 
 
 ### Ajuste visual 1.0.2
@@ -75,3 +88,10 @@ Pop-Location
 - preferência de tema salva localmente no navegador;
 - refinamentos visuais no cabeçalho, área inicial, cards e painéis;
 - melhor contraste e conforto visual em sessões prolongadas.
+
+### Refinamento do tema escuro 1.0.4
+
+- Contraste corrigido em títulos, cartões, área de upload e painel de propriedades.
+- Superfícies escuras organizadas em níveis para reduzir o efeito de “tudo preto”.
+- Barra lateral compacta preservada com 70 px e sem rolagem horizontal.
+- Rolagem vertical mais discreta nas barras laterais.

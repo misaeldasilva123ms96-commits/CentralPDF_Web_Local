@@ -136,15 +136,40 @@
   }
 
   function compressionProfile(mode, custom = {}) {
-    if (mode === 'preserve') return { rasterize: false, dpi: null, quality: null, grayscale: false };
-    if (mode === 'recommended') return { rasterize: true, dpi: 120, quality: 0.72, grayscale: false };
-    if (mode === 'extreme') return { rasterize: true, dpi: 88, quality: 0.52, grayscale: false };
+    if (mode === 'preserve') return { rasterize: false, adaptive: false, attempts: [], targetReduction: 0, grayscale: false };
+    if (mode === 'recommended') return {
+      rasterize: true, adaptive: true, targetReduction: .25, grayscale: false,
+      attempts: [
+        { dpi: 108, quality: .62 },
+        { dpi: 94, quality: .52 },
+        { dpi: 82, quality: .43 }
+      ]
+    };
+    if (mode === 'extreme') return {
+      rasterize: true, adaptive: true, targetReduction: .45, grayscale: false,
+      attempts: [
+        { dpi: 82, quality: .44 },
+        { dpi: 72, quality: .36 },
+        { dpi: 64, quality: .31 }
+      ]
+    };
     if (mode === 'custom') {
-      const dpi = Math.max(60, Math.min(300, Number(custom.dpi || 120)));
-      const quality = Math.max(0.3, Math.min(1, Number(custom.quality || 72) / 100));
+      const dpi = Math.max(60, Math.min(300, Number(custom.dpi || 108)));
+      const quality = Math.max(.3, Math.min(1, Number(custom.quality || 62) / 100));
       return { rasterize: true, dpi, quality, grayscale: Boolean(custom.grayscale) };
     }
     throw new Error(`Perfil de compressão desconhecido: ${mode}`);
+  }
+
+  function chooseCompressionCandidate(candidates, originalSize, targetReduction = 0) {
+    const list = (candidates || []).filter(item => item?.bytes?.byteLength >= 0).map(item => ({
+      ...item,
+      reduction: originalSize ? 1 - item.bytes.byteLength / originalSize : 0
+    }));
+    if (!list.length) return null;
+    const target = list.find(item => item.reduction >= targetReduction);
+    if (target) return target;
+    return list.reduce((best, item) => item.bytes.byteLength < best.bytes.byteLength ? item : best);
   }
 
   function normalizeHexColor(value, fallback = '#000000') {
@@ -162,6 +187,7 @@
     buildMergePlan,
     formatPages,
     compressionProfile,
+    chooseCompressionCandidate,
     normalizeHexColor,
   };
 });
