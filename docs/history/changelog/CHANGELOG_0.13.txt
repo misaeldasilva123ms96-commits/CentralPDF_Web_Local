@@ -1,0 +1,9 @@
+CENTRAL PDF WEB LOCAL 0.13
+
+- Juntar PDFs agora possui compositor visual por página.
+- Páginas podem ser arrastadas entre documentos, giradas, excluídas e duplicadas.
+- A ordem das miniaturas passa a ser a ordem exata do PDF final.
+- Novos arquivos podem ser soltos em qualquer parte da área de trabalho, inclusive sobre listas e miniaturas.
+- Arrastar novos arquivos depois da primeira seleção agora adiciona, em vez de ser ignorado.
+- Organizar PDF e Editar PDF aceitam vários PDFs arrastados: o primeiro abre como base e os demais entram como páginas.
+- Dividir e Extrair páginas agora aceitam vários PDFs em lote.

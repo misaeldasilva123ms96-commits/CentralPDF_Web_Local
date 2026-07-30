@@ -1,0 +1,9 @@
+CENTRAL PDF WEB LOCAL 0.13.1
+
+- Juntar PDFs agora possui um único fluxo visual por páginas.
+- Removida a seleção entre compositor visual e regras por arquivo.
+- Removida a galeria duplicada de capas dentro da ferramenta Juntar PDFs.
+- O organizador central é a única fonte de verdade da ordem final.
+- Painel direito mostra somente documentos de origem, metadados e nome de saída.
+- É possível remover um documento inteiro pelo resumo de origens.
+- Arrastar novos PDFs continua funcionando em toda a área de trabalho.

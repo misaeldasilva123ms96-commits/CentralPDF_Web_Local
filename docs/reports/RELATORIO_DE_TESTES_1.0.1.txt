@@ -1,0 +1,19 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 1.0.1
+
+Escopo:
+- reorganização do cabeçalho com botão Configurações;
+- agrupamento dos atalhos secundários em painel único;
+- atualização do service worker e do servidor local para 1.0.1.
+
+Verificações executadas:
+- carregamento do index com os novos assets CSS/JS: OK
+- presença do botão Configurações: OK
+- presença dos botões movidos dentro do painel: OK
+- fechamento ao clicar fora: OK
+- fechamento com Esc: OK
+- manutenção dos IDs originais para preservar listeners: OK
+- service worker referenciando assets 1.0.1: OK
+- servidor local respondendo versão 1.0.1: OK
+- build do executável Windows recompilado: OK
+
+Status final: APROVADO.

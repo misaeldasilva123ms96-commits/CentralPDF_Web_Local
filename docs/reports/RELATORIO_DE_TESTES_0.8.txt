@@ -1,0 +1,23 @@
+CENTRAL PDF & IMAGEM - RELATORIO DE TESTES 0.8
+
+APROVADO
+- Sintaxe do app.js.
+- Sintaxe do split-planner.js.
+- Sintaxe do advanced-planner.js.
+- 14 verificacoes de regras do AdvancedPlanner.
+- Carga do app.js em ambiente DOM simulado.
+- 20 cartoes de ferramentas na pagina inicial.
+- 20 ferramentas na barra lateral.
+- advanced-planner.js carregado antes do app.js.
+- Uma unica implementacao para cada um dos 9 modulos aprofundados.
+- IDs essenciais das configuracoes presentes.
+
+NAO EXECUTADO NESTE AMBIENTE
+- Teste visual automatizado no Chromium: navegacao local bloqueada pela politica administrativa do ambiente.
+- Processamento de ponta a ponta com os motores externos pdf-lib e PDF.js.
+
+TESTE NECESSARIO NO COMPUTADOR DO USUARIO
+- Abrir a ferramenta.
+- Usar copias de PDFs pequenos.
+- Seguir TESTES_0.8.md.
+- Comparar visualmente os resultados com os originais.

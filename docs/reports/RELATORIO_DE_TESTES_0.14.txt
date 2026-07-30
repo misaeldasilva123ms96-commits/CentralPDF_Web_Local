@@ -1,0 +1,49 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 0.14.0
+Data: 29/07/2026
+Pacote antes da compactação: 7.0M
+Arquivos no projeto: 92
+
+ESCOPO VALIDADO
+- Carregamento local-first dos motores.
+- Inicializador local Windows x86-64.
+- Endpoint de saúde vinculado a 127.0.0.1.
+- Manifesto PWA e service worker.
+- Central de processamento e eventos de progresso/resultado.
+- Projeto .cpdf: criação, download, limpeza e restauração.
+- Recuperação automática em IndexedDB.
+- Diagnóstico de ambiente, motores e armazenamento.
+- Regressão dos 21 módulos existentes.
+
+RESULTADOS AUTOMATIZADOS
+- Sintaxe: engine-loader.js, foundation-0.14.js, sw.js, app.js, pdf-editor.js, layout-controls.js e ux-enhancements.js — APROVADA.
+- manifest.webmanifest — JSON VÁLIDO.
+- CentralPDF_Local_Server.exe — PE32+ Windows GUI x86-64.
+- Endpoint /__health — APROVADO, versão 0.14.0.
+- advanced-planner — 14 verificações aprovadas.
+- organizer-planner — APROVADO.
+- pdf-editor — APROVADO.
+- transformações do editor — APROVADO.
+- conflito entre arraste interno e upload externo — APROVADO.
+- união de lote grande — 600 páginas APROVADAS.
+- controles de layout — APROVADO.
+- arrastar e adicionar arquivos — APROVADO.
+- ordem dos documentos de origem — APROVADO.
+- interação UX — APROVADA, zero page errors.
+- carregamento estrutural — APROVADO.
+- integridade estática — APROVADA.
+- fundação 0.14, projetos e tarefas — APROVADA.
+
+VALIDAÇÃO VISUAL
+- Página inicial: APROVADA.
+- Janela Projetos: APROVADA.
+- Janela Sistema/Diagnóstico: APROVADA.
+- Botões Projetos, Processos e Sistema integrados ao cabeçalho.
+
+LIMITAÇÕES DO AMBIENTE DE TESTE
+- A política administrativa do Chromium disponível bloqueou localhost com ERR_BLOCKED_BY_ADMINISTRATOR. Por isso, o teste visual do service worker foi registrado como SKIP.
+- O servidor foi compilado para Linux a partir do mesmo código e o endpoint de saúde respondeu corretamente.
+- O executável Windows foi cross-compilado e validado como PE32+ x86-64, mas não pôde ser aberto em um Windows dentro deste ambiente.
+- Os motores pdf-lib, PDF.js e LibPDF não estão pré-baixados no ZIP. PREPARAR_OFFLINE.bat realiza essa etapa no computador do usuário quando houver internet.
+
+VEREDITO
+APROVADO PARA TESTE CONTROLADO NO WINDOWS, utilizando cópias de documentos. A preparação offline e a abertura do executável devem ser verificadas na rede corporativa, pois proxy, antivírus ou política de execução podem bloquear downloads ou executáveis não assinados.

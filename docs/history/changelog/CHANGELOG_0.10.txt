@@ -1,0 +1,17 @@
+CENTRAL PDF WEB LOCAL 0.10 — REDESIGN DE EXPERIÊNCIA
+
+- Novo sistema visual minimalista em roxo, branco e cinza neutro.
+- Tela inicial reorganizada com busca, categorias, metadados e cartões compactos.
+- Cartões das ferramentas mostram entrada, recursos principais e tipo de resultado.
+- Navegação lateral agrupada por Essenciais, Editar, Converter e Segurança.
+- Busca de ferramentas também dentro da área de trabalho.
+- Resumo contextual por ferramenta: Entrada, Você poderá e Resultado.
+- Guia dinâmico de três etapas para todos os 21 módulos.
+- Ponto de atenção específico para cada ferramenta.
+- Configurações permanecem ocultas até o usuário adicionar arquivos.
+- Área de arquivos, editor e organizador aparecem somente quando necessários.
+- Painel de propriedades contextual e ação principal fixa.
+- Editor visual redesenhado com toolbar de ícones, canvas ampliado e inspetor lateral.
+- Melhorias de foco, hover, seleção, acessibilidade e redução de movimento.
+- Layout móvel convertido para uma lista compacta de ferramentas.
+- Todas as funções e módulos da versão 0.9.1 foram preservados.

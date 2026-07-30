@@ -1,0 +1,32 @@
+CENTRAL PDF WEB LOCAL 0.13.3 - RELATÓRIO DE TESTES
+
+CORREÇÃO PRINCIPAL
+Erro observado: "A origem da página 1 não está disponível" em uma união com aproximadamente 602 páginas.
+
+ALTERAÇÕES
+1. Cada página mantém referência direta ao arquivo PDF de origem.
+2. O vínculo é validado e reparado antes da exportação.
+3. A exportação usa um pool limitado de documentos para reduzir picos de memória.
+4. O navegador recebe pausas curtas a cada 8 páginas para não congelar.
+5. Com 180+ páginas, as miniaturas são carregadas sob demanda.
+6. Com 250+ páginas ou 150 MB+, a interface ativa aviso de lote grande.
+
+TESTE DE ESTRESSE
+- 12 PDFs simulados.
+- 50 páginas por PDF.
+- Total: 600 páginas.
+- Todas as 600 miniaturas/cartões foram registrados.
+- Exportação concluída.
+- Nenhum erro de origem indisponível.
+
+REGRESSÃO
+- organizer-planner: aprovado.
+- advanced-planner: 14 verificações aprovadas.
+- pdf-editor: aprovado.
+- app-load-smoke: aprovado.
+- static-integrity: aprovado.
+- internal-drag-overlay: aprovado.
+- merge-dragdrop: aprovado.
+- layout-controls: aprovado.
+- editor-transform: aprovado.
+- large-merge (600 páginas): aprovado.

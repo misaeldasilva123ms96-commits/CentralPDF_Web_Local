@@ -1,0 +1,29 @@
+CENTRAL PDF & IMAGEM 0.15 — RELATÓRIO DE TESTES
+
+ESCOPO
+- Estrutura profissional de pastas.
+- Sintaxe dos módulos JavaScript.
+- Resultados, fluxos, predefinições, favoritos e recentes.
+- Regressão dos planejadores, editor, organizador, união e layout.
+- Service worker, manifesto e inicializador local.
+
+RESULTADO ESPERADO
+- Todos os testes automatizados aprovados.
+- Nenhum CHANGELOG histórico, relatório ou roteiro de teste solto na raiz.
+- 21 ferramentas preservadas.
+
+RESULTADO EXECUTADO
+- Sintaxe de todos os módulos JavaScript: APROVADA.
+- Teste específico da experiência 0.15: APROVADO.
+- Planejadores avançado e do organizador: APROVADOS.
+- Editor visual: APROVADO.
+- Integridade estática: APROVADA.
+- Arraste interno e ordenação das origens: APROVADOS.
+- União de 600 páginas: APROVADA.
+- Fundação de projetos e recuperação: APROVADA.
+- Ferramentas registradas: 42.
+- Executável Windows PE32+ x86-64: GERADO.
+- Raiz do pacote sem relatórios, testes ou changelogs históricos soltos: APROVADA.
+
+LIMITAÇÃO DA VALIDAÇÃO
+- O teste visual automatizado via localhost não foi executado porque o Chromium deste ambiente bloqueia localhost por política administrativa.

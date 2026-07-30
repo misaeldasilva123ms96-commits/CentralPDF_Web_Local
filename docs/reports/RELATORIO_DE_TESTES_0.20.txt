@@ -1,0 +1,62 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 0.20
+Data: 29/07/2026
+
+ESCOPO
+- 34 ferramentas registradas na página inicial e na barra lateral.
+- Quatro novos módulos: Assistente documental, Extração estruturada, Auditoria documental e Classificar/renomear.
+- Integração com Resultados, Favoritos, Recentes, Predefinições, Projetos e Fluxos.
+- Servidor local, cache offline e inicializador Windows atualizados para 0.20.0.
+
+TESTES DE INTELIGÊNCIA DOCUMENTAL
+APROVADO — Classificação determinística de contrato.
+APROVADO — Classificação de certidão com apoio do conteúdo e do nome do arquivo.
+APROVADO — Resposta a pergunta com evidência textual e página de origem.
+APROVADO — Resumo extrativo sem criação de fatos externos.
+APROVADO — Extração de CNPJ, datas, valores, nota, contrato e códigos.
+APROVADO — Expressão regular personalizada.
+APROVADO — Exportação de CSV, JSON e HTML.
+APROVADO — Certidão positiva/situação irregular sinalizada como alta severidade.
+APROVADO — Validade anterior ao pagamento sinalizada.
+APROVADO — Regra de oito dias após lançamento aplicada.
+APROVADO — Sugestão de nome por modelo.
+APROVADO — Inclusão opcional de cópias renomeadas no ZIP.
+APROVADO — Detecção estrutural de páginas duplicadas por texto ou assinatura visual simplificada.
+APROVADO — Aviso de OCR quando há pouco texto selecionável.
+
+REGRESSÃO
+APROVADO — Sintaxe de todos os módulos JavaScript.
+APROVADO — Integridade estática de 34 ferramentas.
+APROVADO — App load smoke.
+APROVADO — Planejadores avançados e organizador.
+APROVADO — Editor visual e transformações.
+APROVADO — Fundação, projetos e recuperação.
+APROVADO — Resultados, fluxos e predefinições.
+APROVADO — OCR 0.16.
+APROVADO — Comparação e censura 0.17.
+APROVADO — Formulários e assinaturas 0.18.
+APROVADO — Conversões Office e arquivamento 0.19.
+APROVADO — Arraste interno e externo.
+APROVADO — Ordenação das fontes da união.
+APROVADO — União simulada de 12 PDFs e 600 páginas.
+APROVADO — Interface das novas ferramentas sem erros JavaScript nos testes executados.
+APROVADO — Manifesto web válido.
+APROVADO — Executável Windows PE32+ x86-64 reconstruído.
+APROVADO — Endpoint /__health respondeu com versão 0.20.0 em compilação local de validação.
+
+VALIDAÇÃO VISUAL
+- Chromium headless via Playwright.
+- Viewport: 1440 × 900.
+- Tela verificada: Assistente documental.
+- Conferidos: hierarquia, barra lateral, painel de arquivos, inspector de configurações, texto, campos, botões, espaçamento e ausência de overflow horizontal.
+- Prévia: docs/previews/PREVIA_INTELIGENCIA_0.20.png.
+
+LIMITAÇÕES DECLARADAS
+- Os módulos de inteligência não usam modelo generativo nem serviço externo.
+- Resumos e respostas são extrativos e podem omitir contexto.
+- Classificações, nomes e achados são sugestões que exigem revisão humana.
+- CPF/CNPJ são detectados pelo formato; não há consulta cadastral ou validação oficial.
+- PDFs escaneados precisam de OCR antes da análise textual.
+- O teste visual do service worker em localhost permanece bloqueado pela política administrativa do Chromium deste ambiente. O servidor, o cache declarado e o endpoint de saúde foram validados separadamente.
+
+RESULTADO FINAL
+APROVADO para entrega como Central PDF Web Local 0.20, observadas as limitações acima.

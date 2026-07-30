@@ -1,0 +1,10 @@
+CENTRAL PDF WEB LOCAL 0.9.1
+
+CORREÇÃO — REDIMENSIONAMENTO DE IMAGENS NO EDITOR
+- A imagem agora é renderizada dentro de um contêiner editável.
+- A alça azul no canto inferior direito aparece e pode ser arrastada.
+- Largura e altura podem ser informadas numericamente no painel lateral.
+- Opção para manter a proporção original da imagem.
+- Botão para restaurar a proporção original.
+- O redimensionamento respeita os limites da página.
+- Coberturas continuam podendo ser redimensionadas livremente.

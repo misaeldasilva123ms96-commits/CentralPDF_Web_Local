@@ -1,0 +1,29 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 0.18
+
+Escopo
+- Designer de formulários preenchíveis.
+- Assinatura visual e rubricas.
+- Persistência em projetos.
+- Integração com a aplicação e regressão das ferramentas anteriores.
+
+Resultados aprovados
+- 26 cartões na página inicial.
+- 26 ferramentas na barra lateral.
+- Sintaxe JavaScript dos módulos principais.
+- Campo visual criado por arraste.
+- Oito alças de redimensionamento.
+- Exportação determinística de formulário com campo AcroForm.
+- Assinatura digitada criada e posicionada.
+- Alça de rotação e oito alças de redimensionamento.
+- Exportação determinística de assinatura visual.
+- Fluxo Criar formulário -> Assinar -> Proteger registrado.
+- Persistência de campos e assinaturas em projeto .cpdf.
+- Testes de OCR, comparação, censura, editor e organizador aprovados.
+- União simulada de 600 páginas aprovada.
+- Arraste interno e externo aprovado.
+- Nenhum erro JavaScript no teste de interação da interface.
+
+Limitações registradas
+- Assinatura visual não equivale a assinatura digital com certificado.
+- Máscaras e validações avançadas podem variar conforme o leitor de PDF.
+- A validação final deve ser feita com PDFs reais no computador do usuário.

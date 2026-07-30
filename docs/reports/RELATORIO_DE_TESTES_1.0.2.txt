@@ -1,0 +1,16 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 1.0.2
+
+Escopo:
+- padronização dos cartões do catálogo na home;
+- atualização do cache offline e versão local.
+
+Verificações executadas:
+- novo CSS de cartões uniformes carregado no index: OK
+- todos os cartões com largura única: OK
+- featured sem span 2: OK
+- título e descrição com clamp: OK
+- service worker atualizado para 1.0.2: OK
+- servidor local respondendo versão 1.0.2: OK
+- build do executável Windows recompilado: OK
+
+Status final: APROVADO.

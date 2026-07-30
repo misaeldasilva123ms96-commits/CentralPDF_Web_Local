@@ -1,0 +1,40 @@
+RELATÓRIO DE TESTES — CENTRAL PDF WEB LOCAL 0.12
+
+RESULTADO GERAL: APROVADO
+
+TESTES AUTOMATIZADOS APROVADOS
+- advanced-planner: 14 verificações.
+- organizer-planner: aprovado.
+- pdf-editor: aprovado.
+- app-load-smoke: aprovado.
+- static-integrity: aprovado.
+- editor-transform: aprovado.
+- ux-interaction: aprovado, sem erros JavaScript.
+- layout-controls: aprovado em desktop e celular.
+
+LAYOUT VALIDADO
+- Menu lateral expandido.
+- Menu lateral compacto.
+- Atalho F9.
+- Tooltips dos ícones.
+- Painel direito recolhível.
+- Modo foco e atalho Ctrl + Shift + F.
+- Densidade compacta.
+- Guia contextual configurável.
+- Diálogo de preferências.
+- Drawer móvel e fechamento por backdrop.
+
+VIEWPORTS VERIFICADOS
+- Desktop: 1600 x 1000.
+- Teste de interação: 1440 x 900.
+- Celular: 390 x 844.
+
+REGRESSÕES VERIFICADAS
+- 21 cartões e 21 ferramentas laterais.
+- Editor e controles de transformação da versão 0.11.
+- Busca na biblioteca e no menu.
+- Alternância de ferramentas.
+- Estados progressivos e painel contextual.
+
+OBSERVAÇÃO
+Os testes de layout usam motores PDF simulados para verificar a interface sem depender de CDN. A exportação real deve continuar sendo validada com cópias pequenas no computador do usuário.

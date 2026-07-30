@@ -1,0 +1,27 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 0.17
+
+ESCOPO
+- Comparação textual, visual e híbrida de dois PDFs.
+- Censura definitiva por reconstrução das páginas afetadas.
+- Busca assistida de texto e expressões regulares.
+- Integração com resultados, fluxos e predefinições.
+- Regressão das 22 ferramentas anteriores.
+
+TESTES APROVADOS
+- Sintaxe de app.js, compare-0.17.js, redaction-0.17.js, UX e service worker.
+- 24 cartões e 24 opções na navegação lateral.
+- Comparação determinística: 1 diferença em 2 páginas.
+- Geração do pacote ZIP com relatório HTML e JSON.
+- Marcação visual de área no canvas de censura.
+- Reconstrução de página e relatório com reconstructed=true.
+- Hash SHA-256 previsto nos relatórios de censura.
+- UX desktop sem erros JavaScript.
+- União simulada de 600 páginas.
+- OCR 0.16, editor, organizador, projetos, resultados e layout.
+- Executável Windows PE32+ x86-64 reconstruído para 0.17.0.
+
+LIMITES CONHECIDOS
+- A comparação pode sinalizar pequenas diferenças de renderização, scanner ou fonte.
+- Localização automática de texto depende da camada textual existente. Digitalizações precisam passar por OCR antes.
+- Páginas censuradas perdem texto selecionável, links, formulários, comentários e assinaturas digitais.
+- A validação jurídica e documental continua exigindo conferência humana.

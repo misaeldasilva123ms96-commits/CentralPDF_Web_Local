@@ -1,0 +1,20 @@
+CENTRAL PDF & IMAGEM — VERSÃO 0.14.0
+
+FUNDAÇÃO PROFISSIONAL
+- Inicializador local para Windows, sem instalação e vinculado somente a 127.0.0.1.
+- Carregamento local-first dos motores pdf-lib, PDF.js, PDF.js Worker e LibPDF.
+- PREPARAR_OFFLINE.bat para baixar e verificar os motores públicos na pasta vendor.
+- PWA com manifest e service worker quando aberto pelo servidor local.
+- Diagnóstico de motores, protocolo, service worker, armazenamento e capacidade estimada.
+- Central de processamento com progresso, histórico, resultado e solicitação de cancelamento.
+- Projetos .cpdf contendo documentos, ordem, configurações e edições compatíveis.
+- Recuperação automática no IndexedDB para trabalhos de até 80 MB.
+- Restauração de projetos no organizador, união, editor e ferramentas gerais.
+- Preferências de recuperação e limpeza da cópia automática.
+- Mantidos todos os 21 módulos e melhorias da versão 0.13.4.
+
+LIMITES CONHECIDOS
+- Na primeira utilização, os motores externos precisam ser baixados uma vez. Use PREPARAR_OFFLINE.bat enquanto houver internet.
+- O arquivo CentralPDF_Local_Server.exe não possui assinatura digital e pode ser bloqueado por políticas corporativas.
+- O cancelamento ocorre ao terminar a etapa atual; operações indivisíveis do navegador podem levar alguns segundos para responder.
+- A recuperação automática não é usada quando os arquivos ultrapassam 80 MB; nesses casos salve manualmente um projeto .cpdf.

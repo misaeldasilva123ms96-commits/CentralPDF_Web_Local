@@ -1,0 +1,8 @@
+CENTRAL PDF WEB LOCAL 0.12.1
+
+- Removido o botão redundante “Biblioteca de ferramentas”.
+- A logo permanece como retorno para a página inicial.
+- Botão de recolher/expandir reposicionado ao lado da busca da barra lateral.
+- No desktop, o controle superior da barra lateral fica oculto para evitar duplicidade.
+- No celular, o controle superior permanece para abrir a gaveta lateral.
+- Preferências e atalho F9 preservados.

@@ -1,0 +1,16 @@
+CENTRAL PDF WEB LOCAL 0.12 — LAYOUT FLEXÍVEL
+
+- Barra lateral esquerda recolhível a qualquer momento.
+- Modo compacto com apenas os ícones e identificação por tooltip.
+- Atalho F9 para abrir ou recolher o menu.
+- Menu móvel em formato de gaveta com fundo escurecido.
+- Painel direito de propriedades recolhível.
+- Modo foco para ocultar os dois painéis e ampliar o documento.
+- Atalho Ctrl + Shift + F para alternar o modo foco.
+- Preferências de densidade confortável ou compacta.
+- Opção para ocultar o guia contextual das ferramentas.
+- Preferências de layout salvas no navegador quando autorizado.
+- Botão para restaurar todas as preferências da interface.
+- Barra do editor e cabeçalho da página permanecem visíveis durante a rolagem.
+- Ajustes de responsividade e melhor aproveitamento em telas pequenas.
+- Mantidos os 21 módulos e todas as funções da versão 0.11.

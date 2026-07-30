@@ -1,0 +1,85 @@
+
+>>> node --check /mnt/data/CentralPDF_Web_Local_v0.14/engine-loader.js
+
+>>> node --check /mnt/data/CentralPDF_Web_Local_v0.14/foundation-0.14.js
+
+>>> node --check /mnt/data/CentralPDF_Web_Local_v0.14/sw.js
+
+>>> node --check /mnt/data/CentralPDF_Web_Local_v0.14/app.js
+
+>>> node --check /mnt/data/CentralPDF_Web_Local_v0.14/pdf-editor.js
+
+>>> node --check /mnt/data/CentralPDF_Web_Local_v0.14/layout-controls.js
+
+>>> node --check /mnt/data/CentralPDF_Web_Local_v0.14/ux-enhancements.js
+
+>>> python -m json.tool /mnt/data/CentralPDF_Web_Local_v0.14/manifest.webmanifest
+{
+    "name": "Central PDF & Imagem",
+    "short_name": "Central PDF",
+    "description": "Ferramentas locais para organizar, editar, converter e proteger PDFs e imagens.",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#f6f7fb",
+    "theme_color": "#5b43ff",
+    "icons": [
+        {
+            "src": "icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+
+>>> file /mnt/data/CentralPDF_Web_Local_v0.14/CentralPDF_Local_Server.exe
+/mnt/data/CentralPDF_Web_Local_v0.14/CentralPDF_Local_Server.exe: PE32+ executable for MS Windows 6.01 (GUI), x86-64, 8 sections
+
+>>> node /mnt/data/CentralPDF_Web_Local_v0.14/tests/advanced-planner.test.js
+advanced-planner: 14 checks passed
+
+>>> node /mnt/data/CentralPDF_Web_Local_v0.14/tests/organizer-planner.test.js
+organizer-planner tests: ok
+
+>>> node /mnt/data/CentralPDF_Web_Local_v0.14/tests/pdf-editor.test.js
+pdf-editor tests: ok
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/editor-transform.test.py
+editor-transform: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/internal-drag-overlay.test.py
+internal-drag-overlay: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/large-merge.test.py
+large-merge: 600 pages passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/layout-controls.test.py
+layout-controls: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/merge-dragdrop.test.py
+merge-dragdrop: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/merge-source-order.test.py
+merge-source-order: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/ux_interaction.test.py
+ux-interaction: passed
+page-errors: []
+
+>>> node /mnt/data/CentralPDF_Web_Local_v0.14/tests/app-load-smoke.test.js
+app-load-smoke: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/static_integrity.py
+static-integrity: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/foundation-0.14.test.py
+foundation-0.14: passed
+
+>>> python /mnt/data/CentralPDF_Web_Local_v0.14/tests/local-server-sw-0.14.test.py
+local-server-sw-0.14: skipped (Chromium policy blocks localhost in this environment)
+local-server-health: passed {'status': 'ok', 'app': 'Central PDF', 'version': '0.14.0'}

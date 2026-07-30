@@ -1,0 +1,24 @@
+CENTRAL PDF WEB LOCAL 0.13.4 — RELATÓRIO DE TESTES
+
+IMPLEMENTADO
+- Arraste e solte dos documentos no painel Documentos da união.
+- Ordenação por ordem de adição, nome A-Z/Z-A, número do nome, páginas, tamanho e data.
+- Inversão da ordem atual.
+- Reordenação dos blocos de páginas na grade central.
+- Preservação da ordem interna atual de cada documento.
+- Proteção contra ativação do upload externo durante o arraste interno.
+
+TESTES APROVADOS
+- merge-source-order: ordem inicial, A-Z, número decrescente, inversão e arraste manual.
+- merge-dragdrop: adição contínua de PDFs e reordenação de páginas.
+- internal-drag-overlay: arraste interno não ativa a área de upload.
+- large-merge: 12 PDFs e 600 páginas.
+- static-integrity: 21 módulos e estrutura obrigatória.
+- advanced-planner: 14 verificações.
+- organizer-planner, pdf-editor, layout-controls e editor-transform.
+- Sintaxe de app.js, pdf-editor.js, ux-enhancements.js e layout-controls.js.
+
+VALIDAÇÃO VISUAL
+- Renderização em Chromium 1440x900.
+- Lista lateral, seletor de ordenação, botão inverter, numeração e estados de arraste revisados.
+- Nenhum erro JavaScript nos testes executados.

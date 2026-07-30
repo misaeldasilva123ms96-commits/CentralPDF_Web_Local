@@ -1,0 +1,18 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 1.0.3
+
+Escopo:
+- refinamento visual da interface;
+- adição de tema claro/escuro em Configurações;
+- persistência da preferência local;
+- atualização do cache offline e versão local.
+
+Verificações executadas:
+- novo CSS visual/temas carregado no index: OK
+- novo JS de Configurações com seção Aparência: OK
+- alternância claro/escuro: OK
+- persistência via localStorage: OK
+- service worker atualizado para 1.0.3: OK
+- servidor local respondendo versão 1.0.3: OK
+- build do executável Windows recompilado: OK
+
+Status final: APROVADO.

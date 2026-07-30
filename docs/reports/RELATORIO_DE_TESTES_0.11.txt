@@ -1,0 +1,31 @@
+CENTRAL PDF WEB LOCAL 0.11 — RELATÓRIO DE TESTES
+
+APROVADO
+- Sintaxe de app.js, pdf-editor.js e ux-enhancements.js.
+- 21 módulos registrados e preservados.
+- Oito alças renderizadas no objeto selecionado.
+- Redimensionamento pela lateral direita.
+- Redimensionamento pela lateral esquerda com atualização de X.
+- Rotação por alça superior.
+- Rotação por botões de 90 graus e restauração para zero.
+- Oito alças na seleção de recorte.
+- Cálculo de rotação e posicionamento para exportação PDF.
+- Limitação de objetos às bordas da página considerando rotação.
+- Busca, navegação e UX progressiva da versão 0.10.
+- Testes dos planejadores avançados e do organizador.
+- Nenhum erro JavaScript nos testes de interação.
+
+TESTES AUTOMATIZADOS
+- tests/pdf-editor.test.js
+- tests/advanced-planner.test.js
+- tests/organizer-planner.test.js
+- tests/app-load-smoke.test.js
+- tests/static_integrity.py
+- tests/ux_interaction.test.py
+- tests/editor-transform.test.py
+
+VALIDAÇÃO VISUAL
+- Desktop 1600 x 1000.
+- Comparação direta com a referência fornecida pelo usuário.
+- Conferidos: oito pontos de ajuste, alça circular, linha de rotação,
+  painel de posição/tamanho, alinhamento, camadas e hierarquia visual.

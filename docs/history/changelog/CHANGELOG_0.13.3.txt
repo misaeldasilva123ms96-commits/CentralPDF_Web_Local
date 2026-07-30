@@ -1,0 +1,10 @@
+CENTRAL PDF WEB LOCAL 0.13.3
+
+CORREÇÃO PARA UNIÕES GRANDES
+- Cada página PDF guarda referência direta ao arquivo de origem.
+- Vínculos ausentes são recuperados automaticamente antes da exportação.
+- Exportação em etapas com pausas para manter a interface responsiva.
+- Pool limitado de documentos PDF para reduzir o pico de memória.
+- Validação de páginas e origem antes de iniciar o download.
+- Aviso automático para lotes com 250+ páginas ou 150 MB+.
+- Mensagens de progresso durante a cópia das páginas.

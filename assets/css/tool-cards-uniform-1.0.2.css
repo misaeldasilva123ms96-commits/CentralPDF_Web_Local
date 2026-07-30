@@ -1,0 +1,69 @@
+/* 1.0.2 — catálogo com cartões padronizados */
+.tool-grid{
+  align-items:stretch;
+}
+.tool-card,
+.tool-card.featured,
+.tool-card.professional,
+.tool-card.editor-featured{
+  grid-column:span 1 !important;
+  min-height:185px;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:flex-start;
+  padding:18px;
+  border-radius:15px;
+  background:#fff;
+}
+.tool-card.featured{
+  border-color:#dfe3ed;
+  background:#fff;
+}
+.tool-card.featured .tool-card-icon,
+.tool-card.editor-featured .tool-card-icon{
+  background:#f1f2f7;
+  color:#5c6479;
+}
+.tool-card strong{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+  min-height:34px;
+  line-height:1.25;
+  margin-top:14px;
+}
+.tool-card p{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  overflow:hidden;
+  min-height:48px;
+  margin:7px 0 12px;
+}
+.tool-card-meta{
+  width:100%;
+  min-height:20px;
+  margin-top:auto;
+}
+.tool-card.featured .tool-card-meta span{
+  background:#f4f5f8;
+  color:#737a8e;
+}
+.open-tool{
+  margin-top:0;
+}
+@media (max-width:540px){
+  .tool-card,
+  .tool-card.featured,
+  .tool-card.professional,
+  .tool-card.editor-featured{
+    min-height:0;
+    display:grid;
+  }
+  .tool-card strong{min-height:0}
+  .tool-card p{min-height:0}
+  .tool-card-meta{width:auto}
+}

@@ -1,0 +1,17 @@
+CENTRAL PDF WEB LOCAL 0.9.1 — RELATÓRIO DE TESTES
+
+APROVADO
+- Sintaxe de app.js.
+- Sintaxe de pdf-editor.js.
+- Teste de carregamento estrutural.
+- Testes do editor PDF.
+- Testes dos planejadores avançados.
+- Testes do organizador.
+- Integridade estática dos 21 módulos.
+- Estrutura de imagem corrigida para contêiner redimensionável.
+- Controle numérico de largura e altura.
+- Trava de proporção e restauração da proporção original.
+- Redimensionamento limitado à área da página.
+
+OBSERVAÇÃO
+O processamento final com os motores externos de PDF deve ser validado no navegador do computador usando uma cópia de um documento pequeno.

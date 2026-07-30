@@ -1,0 +1,24 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 0.8.1
+
+RESULTADO: APROVADO COM RESSALVA DE AMBIENTE
+
+Testes aprovados:
+- Sintaxe de app.js e organizer-planner.js.
+- Planner de inserção, exclusão, duplicação e movimentação: 10 verificações.
+- Suíte avançada anterior: 14 verificações.
+- Smoke test de carregamento.
+- Integridade estática dos 20 módulos.
+- Teste visual em Chromium com motores simulados.
+- Carregamento de 5 páginas.
+- Duplicação individual.
+- Seleção e rotação em lote.
+- Duplicação em lote.
+- Inserção de 2 páginas em branco.
+- Importação de 2 páginas de outro PDF.
+- Prévia ampliada.
+- Desfazer e refazer.
+- Geração e download do PDF final com motores simulados.
+- Nenhum erro JavaScript durante o fluxo visual.
+
+Ressalva:
+A execução visual usou motores PDF simulados porque o ambiente bloqueia acesso local e CDNs. O processamento real deve ser conferido com cópias de documentos no computador do usuário.

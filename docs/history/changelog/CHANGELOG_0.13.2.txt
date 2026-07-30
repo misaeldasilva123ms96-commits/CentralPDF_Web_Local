@@ -1,0 +1,7 @@
+Central PDF Web Local 0.13.2
+
+- Corrige conflito entre arraste interno de páginas/arquivos e upload externo.
+- A área “Solte os arquivos para adicionar” não aparece durante a reordenação interna.
+- Miniaturas de páginas e capas não usam mais o arraste nativo de imagens do navegador.
+- Mantém o upload por arrastar arquivos reais do Windows em toda a área de trabalho.
+- Adiciona tipos de dados internos exclusivos para páginas e arquivos.

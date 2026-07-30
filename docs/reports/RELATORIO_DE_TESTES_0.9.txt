@@ -1,0 +1,19 @@
+CENTRAL PDF & IMAGEM - RELATORIO DE TESTES 0.9
+
+APROVADO NESTE AMBIENTE
+- Sintaxe de app.js.
+- Sintaxe de pdf-editor.js.
+- Integridade estatica de 21 modulos.
+- Registro do modulo Editar PDF na pagina inicial e barra lateral.
+- Carregamento estrutural do aplicativo com DOM simulado.
+- Regras puras do editor: retangulo normalizado, quebra de texto e conversao de cor.
+- Testes anteriores de planejadores e organizador.
+- Integridade do pacote ZIP.
+
+NAO EXECUTADO DE PONTA A PONTA NESTE AMBIENTE
+- Renderizacao real com PDF.js externo.
+- Incorporacao real com pdf-lib externo.
+- Comparacao visual do PDF editado em um leitor de PDF.
+
+MOTIVO
+Os motores pdf-lib e PDF.js continuam carregados por CDN e a rede/navegador deste ambiente nao permitiu o teste completo. Use o roteiro TESTES_EDITOR_0.9.md no computador de destino.

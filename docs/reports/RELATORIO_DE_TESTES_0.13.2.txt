@@ -1,0 +1,23 @@
+Central PDF Web Local 0.13.2 — Relatório de testes
+
+Correção validada:
+- Arraste interno de páginas não ativa o overlay de upload.
+- Arraste interno de arquivos não ativa o overlay de upload.
+- Miniaturas de páginas e capas usam draggable=false nas imagens.
+- Arraste de PDF externo continua exibindo o overlay e adicionando o arquivo.
+- Reordenação interna continua funcionando.
+
+Testes aprovados:
+- node --check: app.js, pdf-editor.js, ux-enhancements.js, layout-controls.js
+- advanced-planner: 14 checks
+- organizer-planner
+- pdf-editor
+- app-load-smoke
+- static-integrity
+- editor-transform
+- layout-controls
+- ux-interaction
+- merge-dragdrop
+- internal-drag-overlay
+
+Erros JavaScript detectados nos testes de navegador: nenhum.

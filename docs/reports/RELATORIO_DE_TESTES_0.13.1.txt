@@ -1,0 +1,30 @@
+RELATÓRIO DE TESTES — CENTRAL PDF WEB LOCAL 0.13.1
+
+OBJETIVO
+Unificar a ferramenta Juntar PDFs, eliminando a duplicação entre organização por arquivos e organização por páginas.
+
+ALTERAÇÕES VERIFICADAS
+- Remoção do seletor de modo de união.
+- Remoção do painel de regras por arquivo.
+- Ocultação da galeria duplicada de capas em Juntar PDFs.
+- Organizador central definido como única ordem do resultado.
+- Resumo compacto dos documentos de origem no painel direito.
+- Remoção de um documento inteiro pelo resumo de origens.
+- Adição posterior de PDFs por arrastar e soltar.
+- Reordenação, rotação, duplicação e exclusão de páginas preservadas.
+- Metadados e nome final preservados como configurações.
+
+TESTES APROVADOS
+- advanced-planner: 14 verificações.
+- organizer-planner.
+- pdf-editor.
+- app-load-smoke.
+- static-integrity.
+- merge-dragdrop.
+- editor-transform.
+- layout-controls.
+- ux-interaction.
+- Nenhum erro JavaScript capturado no teste de interface.
+
+RESULTADO
+APROVADO. A ferramenta Juntar PDFs apresenta agora apenas um fluxo de organização.

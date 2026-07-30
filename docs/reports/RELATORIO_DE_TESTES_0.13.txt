@@ -1,0 +1,22 @@
+CENTRAL PDF WEB LOCAL 0.13 — RELATÓRIO DE TESTES
+
+APROVADO
+- Sintaxe de app.js e pdf-editor.js.
+- 14 testes do planejador avançado.
+- Testes do planejador do organizador.
+- Testes do editor PDF.
+- Carregamento estrutural da aplicação.
+- Integridade estática dos 21 módulos.
+- Controles de layout e transformação.
+- Busca, navegação e estados contextuais.
+- Primeira soltura com dois PDFs em Juntar PDFs.
+- Nova soltura sobre cartão existente sem substituir arquivos anteriores.
+- Geração de miniaturas de páginas de vários PDFs.
+- Reordenação de página individual por arraste.
+- Rotação individual de página.
+- Vários PDFs em Dividir PDF.
+- Adição posterior de novo PDF sobre a lista.
+- Ausência de erros JavaScript durante o teste de interação.
+
+OBSERVAÇÃO
+Os testes de interação usaram motores PDF simulados para validar interface, estado, arraste e ordenação. A exportação final deve ser conferida no computador com cópias de documentos pequenos antes do uso em arquivos importantes.

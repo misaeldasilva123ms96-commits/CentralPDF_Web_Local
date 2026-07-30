@@ -1,0 +1,24 @@
+CENTRAL PDF WEB LOCAL 0.11 — TRANSFORMAÇÃO PROFISSIONAL DE OBJETOS
+
+NOVIDADES
+- Oito alças de redimensionamento em textos, imagens e coberturas.
+- Ajuste pelos quatro lados e pelos quatro cantos.
+- Alça circular superior para rotação livre.
+- Shift preserva a proporção e encaixa a rotação em intervalos de 15 graus.
+- Campos precisos de posição X, posição Y, largura, altura e rotação.
+- Botões para girar -90 graus, zerar e girar +90 graus.
+- Alinhamento do objeto nas seis posições da página.
+- Manter proporção disponível para todos os objetos retangulares.
+- Restaurar proporção original de imagens.
+- Trazer à frente e enviar para trás.
+- Duplicar o objeto selecionado.
+- Recorte ganhou oito alças para reajuste antes da aplicação.
+- Setas do teclado movem o objeto; Shift + seta move 10 pontos.
+- Alt + seta gira o objeto; Shift aumenta o passo para 10 graus.
+- Ctrl + D duplica o objeto selecionado.
+- Rotação preservada no PDF exportado para texto, imagem e cobertura.
+- Inspetor contextual oculta controles de texto quando uma imagem ou cobertura está selecionada.
+
+COMPATIBILIDADE
+- Mantidos os 21 módulos da versão 0.10.
+- Mantidos os arquivos e o fluxo local sem instalação.

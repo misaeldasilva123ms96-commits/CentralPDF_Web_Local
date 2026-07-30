@@ -1,0 +1,7 @@
+CENTRAL PDF WEB LOCAL 0.13.4
+
+- Documentos da união podem ser reorganizados por arrastar e soltar.
+- Ordenação automática por nome, número, páginas, tamanho, data e ordem de adição.
+- Botão para inverter a ordem atual.
+- Ao ordenar documentos, as páginas de cada origem permanecem juntas e mantêm sua ordem interna atual.
+- A grade central continua sendo a ordem exata do PDF final.

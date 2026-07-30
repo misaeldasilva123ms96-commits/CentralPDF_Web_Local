@@ -1,0 +1,14 @@
+CENTRAL PDF WEB LOCAL 0.12.1 — RELATÓRIO DE TESTES
+
+APROVADO
+
+- Botão Biblioteca de ferramentas removido.
+- Logo preservada como retorno à página inicial.
+- Busca e botão de recolhimento no mesmo nível.
+- Controle superior da barra oculto no desktop.
+- Controle superior preservado no celular.
+- Barra compacta e expansão testadas.
+- Atalho F9 testado.
+- 21 módulos preservados.
+- Testes de planejadores, organizador, editor e transformação aprovados.
+- Nenhum erro JavaScript observado.

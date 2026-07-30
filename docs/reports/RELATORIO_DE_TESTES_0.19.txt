@@ -1,0 +1,122 @@
+CENTRAL PDF WEB LOCAL 0.19.0
+RELATÓRIO CONSOLIDADO DE TESTES
+Data: 29/07/2026
+
+1. ESCOPO DA VERSÃO
+
+A versão 0.19 adiciona quatro módulos e eleva o total para 30 ferramentas:
+
+- PDF para Office (DOCX, XLSX e PPTX)
+- Documentos para PDF (DOCX, XLSX, PPTX, HTML, TXT, CSV, Markdown e imagens)
+- Extrair imagens do PDF
+- Preparar para arquivamento
+
+Também foram adicionados os fluxos:
+
+- Arquivar e compartilhar
+- Converter documentos e organizar
+
+2. CONVERSÕES TESTADAS
+
+PDF PARA DOCX
+- Geração em modo texto editável simplificado.
+- Geração em modo imagem por página.
+- Geração em modo híbrido.
+- Reabertura automatizada do pacote DOCX e verificação de sua estrutura OOXML.
+
+PDF PARA XLSX
+- Geração de uma planilha por página.
+- Geração de uma planilha por documento.
+- Reabertura automatizada e validação da estrutura XLSX.
+
+PDF PARA PPTX
+- Uma página do PDF por slide widescreen.
+- Imagem da página ocupando o slide.
+- Inclusão de texto extraído nas notas quando disponível.
+- Reabertura automatizada e validação da estrutura PPTX.
+
+DOCUMENTOS PARA PDF
+- Extração de texto de pacotes DOCX, XLSX e PPTX.
+- Conversão de HTML, TXT, CSV e Markdown para PDF paginado.
+- Conversão de imagens comuns para PDF.
+- Caminhos de integração para HEIC e TIFF verificados estruturalmente.
+
+EXTRAÇÃO DE IMAGENS
+- Imagens raster internas quando expostas pelo PDF.js.
+- Renderização de páginas completas.
+- PNG, JPG e WEBP.
+- Seleção de páginas, tamanho mínimo, qualidade e deduplicação.
+- Geração de ZIP e manifesto JSON.
+
+ARQUIVAMENTO
+- Normalização estrutural.
+- Cópia rasterizada.
+- Limpeza opcional de metadados.
+- Achatamento opcional de formulários.
+- Hash SHA-256 do original e do resultado.
+- Diagnóstico heurístico de criptografia, formulários, JavaScript, anexos, XMP e OutputIntent.
+- Aviso explícito de que o resultado não é uma certificação PDF/A.
+
+3. TESTES AUTOMATIZADOS APROVADOS
+
+- Verificação de sintaxe de todos os arquivos JavaScript.
+- advanced-planner: 14 verificações.
+- app-load-smoke.
+- organizer-planner.
+- pdf-editor.
+- compare-redaction-engine 0.17.
+- conversions 0.19.
+- editor-transform.
+- experience 0.15.
+- forms-signatures 0.18.
+- forms-signatures-ui 0.18.
+- foundation.
+- internal-drag-overlay.
+- large-merge: 600 páginas.
+- layout-controls.
+- merge-dragdrop.
+- merge-source-order.
+- OCR 0.16.
+- professional 0.17.
+- static-integrity: 30 ferramentas.
+- ux-interaction sem erros JavaScript.
+
+4. SERVIDOR LOCAL E EXECUTÁVEL
+
+- CentralPDF_Local_Server.exe reconstruído para Windows x86-64.
+- Formato confirmado: PE32+ GUI.
+- Servidor limitado a 127.0.0.1.
+- Endpoint /__health respondeu:
+  {"status":"ok","app":"Central PDF","version":"0.19.0"}
+
+O teste automatizado do service worker em localhost foi ignorado porque a política administrativa do Chromium deste ambiente bloqueia endereços locais. O servidor foi testado diretamente pelo endpoint de saúde.
+
+5. ESTRUTURA E INTEGRIDADE
+
+- 30 ferramentas registradas na página inicial e navegação.
+- Novos módulos integrados a Favoritos, Recentes, Predefinições, Resultados e Fluxos.
+- PptxGenJS 4.0.0 incorporado ao pacote.
+- Service worker atualizado para os novos arquivos.
+- Manifesto e versão atualizados para 0.19.0.
+- Estrutura profissional de pastas preservada.
+
+6. LIMITAÇÕES DECLARADAS
+
+- DOCX, XLSX e PPTX editáveis priorizam extração de conteúdo e não garantem reprodução perfeita do layout original.
+- A conversão de Office para PDF não executa macros e pode simplificar gráficos, fórmulas, caixas flutuantes e paginação.
+- O PPTX gerado preserva a aparência das páginas como imagens; não reconstrói cada objeto do PDF como elemento editável.
+- A extração de imagens internas depende de como o PDF armazena e expõe seus recursos.
+- HEIC e TIFF dependem dos decodificadores preparados por PREPARAR_OFFLINE.bat e precisam de validação com arquivos reais no computador do usuário.
+- “Preparar para arquivamento” não gera certificação PDF/A nem substitui um validador normativo.
+- Microsoft Word, Excel e PowerPoint não estão instalados neste ambiente. Os pacotes foram gerados, reabertos e inspecionados automaticamente, mas a conferência visual final nos aplicativos Office deve ocorrer no computador do usuário.
+
+7. RESULTADO
+
+APROVADO para teste controlado no computador do usuário.
+
+Recomendação inicial:
+- Testar um PDF digital pequeno em DOCX, XLSX e PPTX.
+- Abrir os resultados nos respectivos aplicativos Office.
+- Testar um DOCX simples de volta para PDF.
+- Testar um PDF com fotografias na extração de imagens.
+- Testar uma cópia sem valor documental no modo de arquivamento rasterizado.

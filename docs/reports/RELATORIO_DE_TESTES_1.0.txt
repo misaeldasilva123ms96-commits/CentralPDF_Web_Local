@@ -1,0 +1,57 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 1.0
+Data da consolidação: 30/07/2026
+
+ESCOPO
+- Consolidação da versão estável 1.0.
+- Preservação das 34 ferramentas.
+- Primeiro acesso, acessibilidade, teclado, autodiagnóstico e registro local de erros.
+- Atualização de manifesto, cache offline, projetos e servidor local para 1.0.0.
+
+RESULTADOS PRINCIPAIS
+APROVADO — Sintaxe de todos os arquivos JavaScript e do service worker.
+APROVADO — 34 cartões e 34 entradas na barra lateral.
+APROVADO — Camada 1.0 carregada sem erros JavaScript.
+APROVADO — Texto ampliado, contraste, redução de movimento e foco destacado.
+APROVADO — Atalhos Alt+H, Alt+R, Alt+P, Alt+Q, Alt+A e ajuda por “?”.
+APROVADO — Navegação por setas no catálogo de ferramentas.
+APROVADO — Autodiagnóstico identificando 34 ferramentas e módulos principais.
+APROVADO — Registro local de erros e exportação do diagnóstico em JSON.
+APROVADO — Proteção contra fechamento acidental com projeto ativo.
+APROVADO — União simulada de 600 páginas.
+APROVADO — Organizador, editor, arraste interno e ordenação de documentos.
+APROVADO — OCR, comparação, censura, formulários e assinaturas.
+APROVADO — Conversões DOCX, XLSX e PPTX e preparação para arquivamento.
+APROVADO — Inteligência documental, extração, auditoria e classificação.
+APROVADO — Projetos, recuperação, resultados, fluxos e predefinições.
+APROVADO — Endpoint /__health retornando versão 1.0.0.
+APROVADO — Executável Windows PE32+ x86-64 reconstruído.
+
+TESTES EXECUTADOS
+- advanced-planner.test.js: 14 verificações aprovadas.
+- app-load-smoke.test.js: aprovado.
+- organizer-planner.test.js: aprovado.
+- pdf-editor.test.js: aprovado.
+- compare-redaction-engine-0.17.test.py: aprovado.
+- conversions-0.19.test.py: aprovado.
+- editor-transform.test.py: aprovado.
+- experience-0.15.test.py: aprovado.
+- forms-signatures-0.18.test.py: aprovado.
+- forms-signatures-ui-0.18.test.py: aprovado.
+- foundation.test.py: aprovado.
+- intelligence-0.20.test.py: aprovado.
+- internal-drag-overlay.test.py: aprovado.
+- large-merge.test.py: 600 páginas aprovadas.
+- layout-controls.test.py: aprovado.
+- merge-dragdrop.test.py: aprovado.
+- merge-source-order.test.py: aprovado.
+- ocr-0.16.test.py: aprovado.
+- professional-0.17.test.py: aprovado.
+- stable-release-1.0.test.py: aprovado.
+- static_integrity.py: aprovado.
+- ux_interaction.test.py: aprovado, sem erros de página.
+
+LIMITAÇÃO DO AMBIENTE
+O Chromium deste ambiente bloqueia navegação local por política administrativa. O teste visual do service worker em localhost foi ignorado. O servidor foi validado diretamente pelo endpoint de saúde e os arquivos do cache foram verificados de forma estática.
+
+VEREDITO
+APROVADO para entrega como Central PDF & Imagem 1.0, observadas as limitações documentadas em docs/reference/LIMITACOES_CONHECIDAS_1.0.md.

@@ -1,0 +1,31 @@
+CENTRAL PDF WEB LOCAL 0.10 — RELATÓRIO DE TESTES
+
+TESTES APROVADOS
+- Sintaxe: app.js, pdf-editor.js e ux-enhancements.js.
+- advanced-planner: 14 verificações aprovadas.
+- organizer-planner: aprovado.
+- pdf-editor: aprovado.
+- app-load-smoke: aprovado.
+- static-integrity: aprovado.
+- 21 cartões e 21 módulos preservados.
+- Busca na página inicial e contador dinâmico.
+- Busca na barra lateral.
+- Troca entre Dividir PDF e Comprimir PDF.
+- Conteúdo contextual e pontos de atenção dinâmicos.
+- Configurações bloqueadas na etapa 1 e liberadas na etapa 2.
+- Nenhum erro JavaScript nos testes de interface.
+- Desktop verificado em viewport 1600 x 1000.
+- Mobile verificado em viewport 390 x 844.
+
+MÉTODO VISUAL
+O Browser/IAB não estava disponível. Foi utilizado Playwright Python com Chromium e HTML/CSS/JS local incorporado por page.set_content, pois a política administrativa do ambiente bloqueou navegação localhost e file://.
+
+COMPARAÇÃO VISUAL
+- Estrutura de três painéis preservada: ferramentas, área principal e propriedades.
+- Paleta roxa, superfícies brancas e canvas cinza compatíveis com o conceito.
+- Barra de ferramentas compacta e controles de página alinhados.
+- Painel lateral contextual com posição estável.
+- Mobile convertido para lista compacta sem overflow horizontal.
+
+LIMITAÇÃO
+Os motores reais de PDF hospedados externamente não foram executados no teste visual. As suítes funcionais locais foram preservadas e aprovadas; o processamento final continua devendo ser testado com cópias de documentos no computador do usuário.

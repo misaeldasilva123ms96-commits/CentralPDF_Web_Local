@@ -1,0 +1,59 @@
+CENTRAL PDF & IMAGEM — RELATÓRIO DE TESTES 0.16
+Data: 29/07/2026
+
+ESCOPO
+- Novo módulo OCR e PDF pesquisável.
+- Integração com 21 módulos anteriores, Resultados, Fluxos e Predefinições.
+- Preparação offline de Tesseract.js, núcleos WebAssembly e idiomas português/inglês.
+- Inicializador Windows e servidor local atualizados para 0.16.0.
+
+RESULTADOS APROVADOS
+- Sintaxe JavaScript: app, OCR, UX, experiência, fundação e service worker.
+- Integridade estática: 22 cartões e 22 itens de navegação.
+- Registro do módulo OCR no catálogo, processador e sistema de UX.
+- OCR de imagem para TXT com motor Tesseract simulado.
+- Progresso, confiança, detecção de CNPJ/valor e nome do resultado.
+- Interface do OCR sem erros JavaScript no teste Playwright.
+- Fluxo predefinido OCR → Comprimir → Proteger.
+- Resultados PDF e imagem podem ser enviados ao OCR.
+- Planejadores avançados: 14 verificações.
+- Organizador, editor e transformações.
+- Arraste interno e adição externa de documentos.
+- Ordenação de origens da união.
+- União simulada de 600 páginas.
+- Fundação 0.14/0.15: projetos, recuperação, tarefas e diagnóstico.
+- Service worker referencia somente arquivos existentes.
+- Servidor local: endpoint de saúde 0.16.0 e entrega do módulo OCR.
+- Executável: PE32+ Windows GUI x86-64.
+
+TESTES AUTOMATIZADOS APROVADOS
+- static_integrity.py
+- experience-0.15.test.py
+- ux_interaction.test.py
+- ocr-0.16.test.py
+- editor-transform.test.py
+- merge-source-order.test.py
+- large-merge.test.py — 600 páginas
+- internal-drag-overlay.test.py
+- layout-controls.test.py
+- foundation.test.py
+- merge-dragdrop.test.py
+- app-load-smoke.test.js
+- organizer-planner.test.js
+- advanced-planner.test.js
+- pdf-editor.test.js
+
+TESTE NÃO EXECUTADO NESTE AMBIENTE
+- OCR real com o WebAssembly e traineddata oficiais: os arquivos remotos não puderam ser baixados pela rede deste ambiente. A integração foi validada com um trabalhador Tesseract determinístico simulado.
+- Service worker visual em localhost: política administrativa do Chromium deste ambiente bloqueia a navegação local; o servidor e seus arquivos foram validados por HTTP/curl.
+
+VALIDAÇÃO NECESSÁRIA NO COMPUTADOR DO USUÁRIO
+1. Executar PREPARAR_OFFLINE.bat.
+2. Testar uma imagem para TXT.
+3. Testar um PDF escaneado para PDF pesquisável.
+4. Pesquisar uma palavra no resultado.
+5. Revisar confiança e texto reconhecido.
+6. Testar um PDF misto, com uma página digital e outra escaneada.
+
+VEREDITO
+APROVADO PARA TESTE CONTROLADO. O módulo OCR deve ser validado inicialmente com cópias de documentos pequenos e sem informações sensíveis. Não substituir documentos oficiais sem revisão do texto reconhecido.
