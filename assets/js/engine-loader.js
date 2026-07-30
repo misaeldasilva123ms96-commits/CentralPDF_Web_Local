@@ -1,6 +1,24 @@
 (() => {
   'use strict';
 
+  const REMOTE_ENGINES_KEY = 'centralpdf-remote-engines-allowed';
+
+  function remoteEnginesAllowed() {
+    try { return window.localStorage.getItem(REMOTE_ENGINES_KEY) === '1'; }
+    catch (_) { return false; }
+  }
+
+  window.CentralPDFRemoteEngines = Object.freeze({
+    isAllowed: remoteEnginesAllowed,
+    setAllowed(allowed) {
+      try {
+        if (allowed) window.localStorage.setItem(REMOTE_ENGINES_KEY, '1');
+        else window.localStorage.removeItem(REMOTE_ENGINES_KEY);
+        return true;
+      } catch (_) { return false; }
+    }
+  });
+
   const definitions = [
     {
       key: 'pdfLib',
@@ -61,6 +79,9 @@
       return await loadScript(definition.local, 'local', definition);
     } catch (localError) {
       status.errors.push(localError.message);
+      if (!remoteEnginesAllowed()) {
+        throw new Error(`${definition.label} local não encontrado. Execute PREPARAR_OFFLINE.bat ou autorize o download em Sistema > Preparar uso offline.`);
+      }
       try {
         let source = 'internet';
         if ('caches' in window) {

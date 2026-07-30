@@ -27,7 +27,7 @@ with tempfile.TemporaryDirectory() as temp_dir:
     project_path = temp / 'teste.cpdf'
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'])
+        browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'])
         page = browser.new_page(viewport={'width': 1440, 'height': 900}, accept_downloads=True)
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))

@@ -34,6 +34,25 @@ Também é possível abrir `index.html` diretamente. Nesse modo, cache, service 
 
 O processamento ocorre no navegador. O servidor local escuta somente em `127.0.0.1` e não possui rota de upload. Recursos externos opcionais são usados apenas para carregar motores públicos quando a preparação offline ainda não foi concluída.
 
+O carregamento de código remoto fica desativado por padrão. Para habilitá-lo, use **Configurações > Sistema > Preparar uso offline** e confirme o aviso, ou execute `PREPARAR_OFFLINE.bat` para baixar os motores na pasta `vendor`.
+
+## Desenvolvimento e testes
+
+Requisitos: Node.js, Python 3, Go 1.23 ou superior e Chromium do Playwright.
+
+```powershell
+python -m pip install -r requirements-test.txt
+python -m playwright install chromium
+
+Get-ChildItem tests -Filter '*.js' | ForEach-Object { node $_.FullName }
+Get-ChildItem tests -Filter '*.test.py' | ForEach-Object { python $_.FullName }
+python tests/static_integrity.py
+
+Push-Location server
+go test ./...
+Pop-Location
+```
+
 ## Documentação
 
 - Guia principal: `docs/guides/GUIA_DO_USUARIO_1.0.md`

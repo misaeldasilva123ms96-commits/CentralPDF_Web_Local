@@ -411,6 +411,8 @@
 
   async function prepareOffline() {
     const button = $('#foundationPrepareOffline');
+    const accepted = window.confirm('A preparação offline baixará código de fornecedores públicos fixados por versão. Continue apenas em uma rede confiável. Nenhum documento será enviado.');
+    if (!accepted) return;
     if (button) { button.disabled = true; button.textContent = 'Preparando...'; }
     try {
       if (!['http:', 'https:'].includes(location.protocol)) throw new Error('Abra pelo ABRIR_CENTRAL_PDF.bat para habilitar o cache offline.');
@@ -432,6 +434,7 @@
       });
       const failed = result.filter(item => !item.ok);
       if (failed.length) throw new Error(`${failed.length} motor(es) não puderam ser armazenados. Verifique a internet e tente novamente.`);
+      window.CentralPDFRemoteEngines?.setAllowed?.(true);
       storageSet('centralpdf-offline-prepared', new Date().toISOString());
       await refreshDiagnostics();
       alert('Modo offline preparado. Atualize a página uma vez para confirmar que os motores estão disponíveis pelo cache.');

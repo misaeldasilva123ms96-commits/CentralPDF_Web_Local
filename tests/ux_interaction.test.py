@@ -10,7 +10,7 @@ html=re.sub(r'\s*<script src="[^"]+"></script>','',html)
 scripts='\n'.join((root/n).read_text(encoding='utf-8') for n in ['assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ocr-0.16.js','assets/js/compare-0.17.js','assets/js/redaction-0.17.js','assets/js/forms-signatures-0.18.js','assets/js/conversions-0.19.js','assets/js/intelligence-0.20.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/layout-controls.js'])
 html=html.replace('</body>',f'<script>{scripts}</script></body>')
 with sync_playwright() as p:
- b=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+ b=p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
  page=b.new_page(viewport={'width':1440,'height':900})
  errors=[]; page.on('pageerror',lambda e:errors.append(str(e)))
  page.set_content(html, wait_until='domcontentloaded')

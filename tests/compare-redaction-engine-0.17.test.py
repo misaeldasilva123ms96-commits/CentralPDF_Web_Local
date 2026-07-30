@@ -19,7 +19,7 @@ window.CentralPDFApp={{getFiles:()=>[]}};
 {redact}
 </script></body></html>'''
 with sync_playwright() as p:
- b=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+ b=p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
  page=b.new_page(viewport={'width':1200,'height':900}); errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.set_content(html)
  result=page.evaluate('''async()=>{const a=new File([new Uint8Array([1])],'original.pdf',{type:'application/pdf'}),b=new File([new Uint8Array([2])],'revisado.pdf',{type:'application/pdf'});const r=await CentralPDFCompare.process({files:[a,b],progress:()=>{},cancelled:()=>false});return {message:r.message,size:r.outputs[0].blob.size};}''')
  assert '1 de 2' in result['message'],result
