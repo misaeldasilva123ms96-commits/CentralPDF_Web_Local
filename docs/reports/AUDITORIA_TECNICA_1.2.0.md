@@ -50,7 +50,7 @@ Os testes Playwright passaram a usar o Chromium gerenciado pelo próprio Playwri
 
 ## Risco residual
 
-O executável não possui assinatura Authenticode porque não há certificado de assinatura de código configurado. O checksum e a reprodução em CI verificam integridade em relação ao repositório, mas o Windows poderá continuar mostrando alerta de editor desconhecido. A próxima melhoria de distribuição deve ser assinar o `.exe` e o ZIP de release com certificado próprio e timestamp público.
+O executável não possui assinatura Authenticode porque não há certificado de assinatura de código configurado. Releases futuras passam a publicar automaticamente o pacote offline, hashes SHA-256 e atestações Sigstore vinculadas ao workflow e ao commit. Essa procedência verificável melhora a segurança da distribuição, mas o Windows poderá continuar mostrando alerta de editor desconhecido. Para eliminar esse risco residual, ainda será necessário assinar o `.exe` com certificado reconhecido e timestamp público.
 
 Motores opcionais continuam sendo software de terceiros. O instalador fixa versões e hashes, mas qualquer atualização futura deve revisar licença, vulnerabilidades, origem e novo SHA-256 antes de alterar o manifesto.
 
