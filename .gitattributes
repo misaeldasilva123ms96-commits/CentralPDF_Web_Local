@@ -1,0 +1,2 @@
+# Preserve the exact bytes of the audited upstream distribution on every OS.
+vendor/pptxgen.min.js text eol=lf

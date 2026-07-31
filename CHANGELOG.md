@@ -2,6 +2,7 @@
 
 - PptxGenJS atualizado de 4.0.0 para 4.0.1 usando a distribuição oficial do npm e sua licença MIT.
 - Exportação PPTX passa a ter teste dedicado com múltiplos slides, imagens, notas, relacionamentos e validação de todos os XMLs do pacote.
+- Releases futuras passam a montar o pacote offline, publicar hashes SHA-256 e gerar atestações criptográficas de procedência automaticamente.
 
 ## 1.2.0 — auditoria profunda das 34 ferramentas
 

@@ -12,7 +12,7 @@ Aplicação web local com 34 ferramentas para organizar, editar, converter, prot
 | Modo | Indicado para | Como abrir |
 | --- | --- | --- |
 | **Online** | Uso rápido e acesso automático à versão mais recente | Abra o [site no GitHub Pages](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/) |
-| **Local no Windows** | Documentos sensíveis, uso offline e pacote executável | Baixe o projeto, prepare os motores e execute `ABRIR_CENTRAL_PDF.bat` |
+| **Local no Windows** | Documentos sensíveis, uso offline e pacote executável | Baixe o pacote verificado em **Releases** e execute `ABRIR_CENTRAL_PDF.bat` |
 
 Nos dois modos, os arquivos permanecem no dispositivo. O site não possui backend nem rota de upload de documentos. Recursos externos opcionais só são usados após uma ação explícita do usuário.
 
@@ -32,7 +32,7 @@ No primeiro uso, alguns motores maiores podem levar mais tempo para carregar e f
 
 ### 1. Baixe e extraia
 
-Baixe o [ZIP da branch `main`](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/archive/refs/heads/main.zip) e extraia todo o conteúdo para uma pasta comum. Não execute o aplicativo de dentro do ZIP.
+Baixe o ZIP mais recente na página de [Releases](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/releases/latest) e extraia todo o conteúdo para uma pasta comum. O pacote de release já inclui os motores offline verificados. Não execute o aplicativo de dentro do ZIP.
 
 ### 2. Verifique o executável
 
@@ -44,6 +44,15 @@ Get-Content .\CHECKSUMS.sha256
 ```
 
 Os dois valores devem ser iguais. A CI também recompila o servidor e exige igualdade byte a byte com o executável versionado.
+
+Para conferir também a procedência criptográfica do ZIP ou do executável com o [GitHub CLI](https://cli.github.com/), execute na pasta dos downloads:
+
+```powershell
+gh attestation verify .\CentralPDF_Web_Local_vX.Y.Z.zip --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
+gh attestation verify .\CentralPDF_Local_Server.exe --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
+```
+
+Substitua `X.Y.Z` pela versão baixada. A atestação vincula o arquivo ao commit e ao workflow que o produziu; ela não substitui uma futura assinatura Authenticode reconhecida pelo Windows.
 
 ### 3. Prepare o funcionamento offline
 
@@ -158,7 +167,7 @@ Se o navegador ainda mostrar uma versão anterior após uma publicação, use `C
 
 1. Feche o aplicativo atual.
 2. Guarde os arquivos `.cpdf` e os documentos exportados fora da pasta antiga.
-3. Baixe novamente o [ZIP da `main`](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/archive/refs/heads/main.zip).
+3. Baixe novamente o ZIP na página de [Releases](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/releases/latest).
 4. Extraia em uma **nova pasta**, sem misturar versões.
 5. Repita a verificação do SHA-256.
 6. Execute `PREPARAR_OFFLINE.bat` e depois `ABRIR_CENTRAL_PDF.bat`.
