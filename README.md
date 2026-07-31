@@ -1,111 +1,274 @@
 # Central PDF & Imagem 1.2.0
 
-Aplicação web local com 34 ferramentas para organizar, editar, converter, proteger, pesquisar, comparar e auditar PDFs e imagens.
+[![CI](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/ci.yml/badge.svg)](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/ci.yml)
+[![Pages](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/pages.yml/badge.svg)](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/pages.yml)
 
-## Acesso online
+Aplicação web local com 34 ferramentas para organizar, editar, converter, proteger, pesquisar, comparar e auditar PDFs e imagens. O processamento acontece no navegador, sem envio dos documentos para um servidor da aplicação.
 
-A versão web está disponível em:
+**[Abrir o Central PDF & Imagem](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/)**
 
-**https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/**
+## Escolha como usar
 
-O GitHub Pages é publicado com os mesmos motores verificados usados no pacote
-offline. Os arquivos enviados permanecem no navegador; o site não possui rota
-de upload nem backend de processamento de documentos.
+| Modo | Indicado para | Como abrir |
+| --- | --- | --- |
+| **Online** | Uso rápido e acesso automático à versão mais recente | Abra o [site no GitHub Pages](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/) |
+| **Local no Windows** | Documentos sensíveis, uso offline e pacote executável | Baixe o projeto, prepare os motores e execute `ABRIR_CENTRAL_PDF.bat` |
 
-Depois que uma alteração é integrada na `main`, o workflow **Pages** remonta o
-pacote, confere os motores por SHA-256 e publica automaticamente. Pull requests
-montam o mesmo artefato para validação, mas não recebem permissão de deploy.
+Nos dois modos, os arquivos permanecem no dispositivo. O site não possui backend nem rota de upload de documentos. Recursos externos opcionais só são usados após uma ação explícita do usuário.
 
-## Versão estável 1.2.0
+## Uso rápido pelo site
 
-A versão 1.2.0 preserva as 34 ferramentas e adiciona auditoria profunda, pré-verificação e validação de execução para todo o catálogo:
+1. Abra o [Central PDF & Imagem online](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/).
+2. Escolha uma ferramenta na tela inicial ou pressione `Ctrl+K` para pesquisar.
+3. Clique na área de entrada ou arraste os arquivos para ela.
+4. Confira a ordem dos documentos e ajuste as opções da ferramenta.
+5. Leia a pré-verificação: entrada, saída, motor usado e avisos de revisão.
+6. Execute o processamento.
+7. Revise o resultado e faça o download. O arquivo original não é sobrescrito.
 
+No primeiro uso, alguns motores maiores podem levar mais tempo para carregar e ficar armazenados no cache do navegador.
 
-### Auditoria profunda 1.2.0
+## Uso local no Windows
 
-- auditoria individual das 34 ferramentas no painel **Qualidade**;
-- busca, filtros e download do relatório completo da auditoria;
-- pré-verificação com entrada, saída, motor, lote, profundidade e revisão recomendada;
-- rejeição de arquivos vazios e alertas para lotes com alto consumo de memória;
-- verificação básica de integridade para saídas PDF, ZIP/Office, PNG, JPEG, WebP e JSON;
-- histórico local por ferramenta com duração, sucessos, falhas, avisos e tamanho das saídas;
-- relatório técnico em `docs/testing/AUDITORIA_34_FERRAMENTAS_1.2.0.md`.
+### 1. Baixe e extraia
 
-### Ajuste de interface 1.0.1
+Baixe o [ZIP da branch `main`](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/archive/refs/heads/main.zip) e extraia todo o conteúdo para uma pasta comum. Não execute o aplicativo de dentro do ZIP.
 
-- novo botão **Configurações** no cabeçalho;
-- **Projetos**, **Processos**, **Sistema**, **Resultados**, **Fluxos**, **Predefinições** e **Qualidade 1.0** movidos para um painel único;
-- cabeçalho principal mais limpo e com melhor foco na área de trabalho.
+### 2. Verifique o executável
 
-- primeiro acesso guiado;
-- preferências de acessibilidade;
-- navegação por teclado;
-- autodiagnóstico da instalação;
-- registro local de erros;
-- proteção contra fechamento acidental com trabalho aberto;
-- cache offline e servidor local identificados como 1.0.0;
-- documentação consolidada de uso, segurança, acessibilidade e limitações.
-
-## Como abrir
-
-1. Extraia completamente o ZIP.
-2. Execute `PREPARAR_OFFLINE.bat` uma vez com internet para preparar os motores opcionais. O download ocorre somente após essa ação explícita e cada arquivo é validado por SHA-256 antes de substituir a versão local.
-3. Abra `ABRIR_CENTRAL_PDF.bat`.
-4. Confirme no topo a indicação **Web local 1.2.0**.
-
-Evite abrir `index.html` diretamente. Use `ABRIR_CENTRAL_PDF.bat`, pois o modo `file://` limita Service Worker e pode restringir Workers usados pelo PDF.js.
-
-
-### Correção PDF.js 1.1.4
-
-- o carregador não tenta mais abrir `vendor/pdf.min.js` quando a preparação offline ainda não foi executada;
-- o Worker PDF usa uma porta dedicada criada a partir do código carregado, evitando falhas repetidas com `blob:null/importScripts`;
-- `PREPARAR_OFFLINE.bat` registra explicitamente quando os motores locais estão disponíveis;
-- logs antigos dessa falha são removidos da lista ativa durante a migração.
-
-## Privacidade
-
-O processamento ocorre no navegador. O servidor local escuta somente em `127.0.0.1` e não possui rota de upload. Recursos externos opcionais só são carregados após autorização explícita no painel **Sistema** ou pela execução voluntária de `PREPARAR_OFFLINE.bat`.
-
-## Integridade do executável
-
-O servidor Windows é compilado de forma reproduzível com Go 1.26.5. O arquivo `checksums.sha256` contém o SHA-256 esperado de `CentralPDF_Local_Server.exe`, e a CI recompila o servidor e exige igualdade byte a byte com o binário publicado.
-
-No PowerShell, confira o pacote com:
+Abra o PowerShell na pasta extraída e execute:
 
 ```powershell
 (Get-FileHash -Algorithm SHA256 .\CentralPDF_Local_Server.exe).Hash.ToLowerInvariant()
+Get-Content .\CHECKSUMS.sha256
 ```
 
-O executável ainda não possui assinatura Authenticode. O checksum comprova integridade em relação ao repositório, mas não substitui uma futura assinatura com certificado de código.
+Os dois valores devem ser iguais. A CI também recompila o servidor e exige igualdade byte a byte com o executável versionado.
+
+### 3. Prepare o funcionamento offline
+
+Com internet disponível, execute uma vez:
+
+```text
+PREPARAR_OFFLINE.bat
+```
+
+O script baixa os motores opcionais e valida cada arquivo por SHA-256 antes de substituir a cópia local. Depois dessa preparação, as funções principais podem ser usadas sem internet.
+
+### 4. Abra o aplicativo
+
+Execute:
+
+```text
+ABRIR_CENTRAL_PDF.bat
+```
+
+O servidor abre o navegador em um endereço local `127.0.0.1`. Ele não fica exposto à rede. Se o executável não estiver disponível, o inicializador pode usar Python como alternativa, quando instalado.
+
+> Não abra `index.html` diretamente. O modo `file://` limita o Service Worker e pode impedir Workers usados pelo PDF.js.
+
+### 5. Encerre com segurança
+
+Conclua os downloads, salve o projeto se necessário e feche a janela do servidor. Os documentos de entrada continuam intactos.
+
+## As 34 ferramentas
+
+### Organização e edição
+
+1. Organizar PDF
+2. Editar PDF
+3. Juntar PDFs
+4. Dividir PDF
+5. Extrair páginas
+6. Girar páginas
+7. Marca-d’água
+8. Numerar páginas
+
+### Conversão, extração e otimização
+
+9. Imagens para PDF
+10. Converter imagens
+11. Comprimir PDF
+12. PDF para imagens
+13. Recortar PDF
+14. Limpar metadados
+15. Normalizar PDF
+16. Extrair texto
+17. OCR pesquisável
+18. PDF para Office
+19. Documentos para PDF
+20. Extrair imagens do PDF
+21. Preparar para arquivamento
+
+### Inteligência documental
+
+22. Assistente documental
+23. Extração estruturada
+24. Auditoria documental
+25. Classificar e renomear
+
+### Revisão, segurança e recuperação
+
+26. Comparar PDFs
+27. Censura definitiva
+28. Criar formulário
+29. Assinar e rubricar
+30. Proteger PDF
+31. Remover senha
+32. Diagnosticar PDF
+33. Recuperar PDF
+34. Fixar formulários
+
+Consulte a [relação detalhada dos módulos](docs/reference/MODULES.md) e o [guia completo do usuário](docs/guides/GUIA_DO_USUARIO_1.0.md).
+
+## Recursos da sessão
+
+- **Projetos:** salva a sessão em um arquivo `.cpdf` para continuar depois.
+- **Processos:** acompanha tarefas em andamento e o histórico local.
+- **Resultados:** reúne as saídas geradas para revisão e download.
+- **Fluxos:** encadeia operações usadas com frequência.
+- **Predefinições:** guarda configurações reutilizáveis.
+- **Qualidade:** executa diagnóstico, auditoria das 34 ferramentas e exporta o relatório técnico.
+
+Os dados da sessão ficam no armazenamento do navegador. Projetos importantes devem ser exportados, pois limpar os dados do site também remove esse armazenamento local.
+
+## Atalhos
+
+| Atalho | Ação |
+| --- | --- |
+| `Ctrl+K` | Pesquisar ferramentas |
+| `Alt+H` | Ir para o início |
+| `Alt+R` | Abrir Resultados |
+| `Alt+P` | Abrir Projetos |
+| `Alt+Q` | Abrir Qualidade e diagnóstico |
+| `Alt+A` | Abrir Acessibilidade |
+| `F9` | Recolher ou expandir a barra lateral |
+| `Ctrl+Shift+F` | Ativar o modo de foco |
+| `?` | Abrir a ajuda |
+
+## Como receber atualizações
+
+### Site online
+
+Toda alteração integrada à `main` passa pelos testes, monta o pacote estático, confere os motores por SHA-256 e é publicada automaticamente no GitHub Pages. Pull requests validam o mesmo pacote, mas não têm permissão para publicar.
+
+Se o navegador ainda mostrar uma versão anterior após uma publicação, use `Ctrl+F5` para atualizar os arquivos em cache.
+
+### Pacote local
+
+1. Feche o aplicativo atual.
+2. Guarde os arquivos `.cpdf` e os documentos exportados fora da pasta antiga.
+3. Baixe novamente o [ZIP da `main`](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/archive/refs/heads/main.zip).
+4. Extraia em uma **nova pasta**, sem misturar versões.
+5. Repita a verificação do SHA-256.
+6. Execute `PREPARAR_OFFLINE.bat` e depois `ABRIR_CENTRAL_PDF.bat`.
+7. Importe os projetos salvos quando precisar continuar um trabalho.
+
+## Atualizações técnicas avaliadas
+
+Pesquisa realizada em **30 de julho de 2026**, usando páginas oficiais dos projetos e registros npm.
+
+| Componente | Situação avaliada | Decisão |
+| --- | --- | --- |
+| Go | `1.26.5` é a versão estável atual | Manter; o executável continua reproduzível |
+| pdf-lib | `1.17.1` é a versão atual | Manter |
+| Tesseract.js e core | Projeto usa a linha `7.0.0` compatível entre biblioteca e motor | Manter o par testado |
+| UTIF, heic2any, JSZip e libPDF | Versões locais permanecem atuais | Manter |
+| PptxGenJS | Local `4.0.0`; existe atualização `4.0.1` | Adiar a troca mínima até um teste dedicado de exportação Office |
+| PDF.js | Local `3.11.174`; atual `6.2.108` | Adiar: salto de versão principal exige adaptar distribuição, Worker e testar as 34 ferramentas |
+| GitHub Actions | Actions antigas usavam runtime Node legado | Atualizar para os majors atuais baseados em Node 24 |
+
+A decisão de adiar não indica vulnerabilidade confirmada. Ela separa mudanças de compatibilidade ampla de uma atualização documental e de infraestrutura de baixo risco.
+
+Fontes da pesquisa: [Go releases](https://go.dev/doc/devel/release), [pdf-lib](https://www.npmjs.com/package/pdf-lib), [PDF.js](https://www.npmjs.com/package/pdfjs-dist), [Tesseract.js](https://www.npmjs.com/package/tesseract.js), [GitHub Actions](https://github.com/actions).
+
+## Privacidade e segurança
+
+- O processamento acontece no navegador; não existe upload para um servidor da aplicação.
+- O servidor local escuta apenas em `127.0.0.1`.
+- O arquivo original não é sobrescrito automaticamente.
+- Downloads de motores feitos por `PREPARAR_OFFLINE.bat` são validados por SHA-256.
+- O executável ainda não possui assinatura Authenticode. O Windows SmartScreen pode exibir um aviso; compare o hash antes de continuar.
+- Para documentos sigilosos, prefira o pacote local previamente preparado e mantenha a internet desconectada durante o trabalho.
+
+Veja a [política de segurança](SECURITY.md) antes de relatar uma vulnerabilidade.
+
+## Limitações importantes
+
+- OCR pode reconhecer caracteres incorretamente; sempre revise o texto extraído.
+- Conversões para Office não preservam perfeitamente macros, gráficos, fórmulas ou layouts complexos.
+- **Assinar e rubricar** cria uma marca visual; não equivale a uma assinatura digital ICP-Brasil.
+- **Preparar para arquivamento** melhora compatibilidade, mas não certifica conformidade PDF/A.
+- Comparações, auditorias e assistentes são recursos de apoio, não parecer jurídico ou técnico conclusivo.
+- A censura definitiva reconstrói páginas e pode remover links, formulários, comentários, camadas e assinaturas existentes.
+- Arquivos muito grandes dependem da memória e do limite de armazenamento do navegador.
+
+Leia a lista completa em [Limitações conhecidas](docs/reference/LIMITACOES_CONHECIDAS_1.0.md).
+
+## Solução de problemas
+
+### A janela não abriu
+
+Execute novamente `ABRIR_CENTRAL_PDF.bat` e confirme que o firewall ou antivírus não bloqueou o processo local. Também é possível copiar o endereço `http://127.0.0.1:...` exibido na janela e abri-lo manualmente.
+
+### Uma ferramenta informa que o motor está indisponível
+
+Feche o aplicativo, conecte-se à internet e execute `PREPARAR_OFFLINE.bat` novamente. Não interrompa a validação dos downloads.
+
+### O site parece desatualizado
+
+Use `Ctrl+F5`. Se persistir, abra **Configurações > Qualidade** e execute o diagnóstico antes de limpar os dados do site. Limpar os dados remove projetos que não foram exportados.
+
+### O processamento de um arquivo grande parou
+
+Divida o documento em lotes menores, feche outras abas pesadas e tente novamente. O botão de cancelar pode aguardar a conclusão da etapa interna que já começou.
+
+## Desenvolvimento e validação
+
+Requisitos: Node.js 22, Python 3.12, Go 1.26.5 e Chromium do Playwright.
+
+```powershell
+python -m pip install -r requirements-test.txt
+python -m playwright install chromium
+
+Get-ChildItem .\assets\js\*.js | ForEach-Object { node --check $_.FullName }
+node --check .\sw.js
+
+Get-ChildItem .\tests\*.js | ForEach-Object { node $_.FullName }
+Get-ChildItem .\tests\*.test.py | ForEach-Object { python $_.FullName }
+python .\tests\static_integrity.py
+
+Push-Location .\server
+go test ./...
+go vet ./...
+Pop-Location
+```
+
+A CI repete essas verificações e também compara o executável Windows recompilado com `CentralPDF_Local_Server.exe`.
+
+## Estrutura principal
+
+| Caminho | Conteúdo |
+| --- | --- |
+| `index.html` | Entrada da aplicação |
+| `assets/` | Interface, estilos, scripts e recursos visuais |
+| `vendor/` | Motores locais usados pelo navegador |
+| `server/` | Servidor HTTP local reproduzível em Go |
+| `scripts/` | Preparação e verificação dos motores offline |
+| `tests/` | Testes JavaScript, Python e de integridade |
+| `docs/` | Guias, referências, relatórios e histórico |
+| `.github/workflows/` | CI e publicação automática do GitHub Pages |
 
 ## Documentação
 
-- Guia principal: `docs/guides/GUIA_DO_USUARIO_1.0.md`
-- Acessibilidade: `docs/guides/ACESSIBILIDADE_1.0.md`
-- Segurança: `SECURITY.md`
-- Limitações conhecidas: `docs/reference/LIMITACOES_CONHECIDAS_1.0.md`
-- Relação de ferramentas: `docs/reference/MODULES.md`
-- Testes da versão: `docs/testing/TESTES_RELEASE_1.0.md`
-- Auditoria técnica e de segurança: `docs/reports/AUDITORIA_TECNICA_1.2.0.md`
+- [Guia completo do usuário](docs/guides/GUIA_DO_USUARIO_1.0.md)
+- [Uso offline e projetos](docs/guides/OFFLINE_E_PROJETOS.md)
+- [Acessibilidade](docs/guides/ACESSIBILIDADE_1.0.md)
+- [Fluxos, resultados e predefinições](docs/guides/FLUXOS_RESULTADOS_E_PREDEFINICOES.md)
+- [Limitações conhecidas](docs/reference/LIMITACOES_CONHECIDAS_1.0.md)
+- [Estrutura do projeto](docs/reference/ESTRUTURA_DO_PROJETO.md)
+- [Auditoria das 34 ferramentas](docs/testing/AUDITORIA_34_FERRAMENTAS_1.2.0.md)
+- [Auditoria técnica e de segurança](docs/reports/AUDITORIA_TECNICA_1.2.0.md)
+- [Histórico de alterações](CHANGELOG.md)
 
-
-### Ajuste visual 1.0.2
-
-- todos os cartões da home agora usam o mesmo tamanho visual;
-- ferramentas destacadas deixaram de ocupar largura dupla no catálogo;
-- a grade ficou mais uniforme, previsível e fácil de escanear.
-
-### Tema e refinamento visual 1.0.3
-
-- novo seletor de **tema claro / tema escuro** dentro de **Configurações**;
-- preferência de tema salva localmente no navegador;
-- refinamentos visuais no cabeçalho, área inicial, cards e painéis;
-- melhor contraste e conforto visual em sessões prolongadas.
-
-### Refinamento do tema escuro 1.0.4
-
-- Contraste corrigido em títulos, cartões, área de upload e painel de propriedades.
-- Superfícies escuras organizadas em níveis para reduzir o efeito de “tudo preto”.
-- Barra lateral compacta preservada com 70 px e sem rolagem horizontal.
-- Rolagem vertical mais discreta nas barras laterais.
+Contribuições devem ser feitas em uma branch, validadas pela CI e revisadas em pull request antes do merge na `main`.
