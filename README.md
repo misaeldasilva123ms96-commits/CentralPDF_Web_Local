@@ -174,13 +174,13 @@ Pesquisa revisada em **31 de julho de 2026**, usando páginas oficiais dos proje
 | pdf-lib | `1.17.1` é a versão atual | Manter |
 | Tesseract.js e core | Projeto usa a linha `7.0.0` compatível entre biblioteca e motor | Manter o par testado |
 | UTIF, heic2any, JSZip e libPDF | Versões locais permanecem atuais | Manter |
-| PptxGenJS | Local `4.0.0`; existe atualização `4.0.1` | Adiar a troca mínima até um teste dedicado de exportação Office |
+| PptxGenJS | Local `4.0.1`, distribuição oficial npm | Atualizado após teste dedicado de exportação PPTX e validação da estrutura Open XML |
 | PDF.js | `6.2.108` legacy ESM, com Worker e recursos locais | Atualizado após auditoria; `isEvalSupported` permanece desativado como defesa em profundidade |
 | GitHub Actions | Actions antigas usavam runtime Node legado | Atualizar para os majors atuais baseados em Node 24 |
 
 O PDF.js anterior (`3.11.174`) estava na faixa afetada pela vulnerabilidade alta [GHSA-wgrm-67xf-hhpq](https://github.com/advisories/GHSA-wgrm-67xf-hhpq). A migração adotou a distribuição ESM corrigida, manteve o processamento local e passou a incluir CMaps, perfis ICC, fontes padrão, módulos WASM e licenças no pacote offline.
 
-Fontes da pesquisa: [Go releases](https://go.dev/doc/devel/release), [pdf-lib](https://www.npmjs.com/package/pdf-lib), [PDF.js](https://www.npmjs.com/package/pdfjs-dist), [Tesseract.js](https://www.npmjs.com/package/tesseract.js), [GitHub Actions](https://github.com/actions).
+Fontes da pesquisa: [Go releases](https://go.dev/doc/devel/release), [pdf-lib](https://www.npmjs.com/package/pdf-lib), [PDF.js](https://www.npmjs.com/package/pdfjs-dist), [PptxGenJS 4.0.1](https://github.com/gitbrent/PptxGenJS/releases/tag/v4.0.1), [Tesseract.js](https://www.npmjs.com/package/tesseract.js), [GitHub Actions](https://github.com/actions).
 
 ## Privacidade e segurança
 
