@@ -1,0 +1,22 @@
+{
+  "name": "Central PDF & Imagem 1.2.0",
+  "short_name": "Central PDF 1.2.0",
+  "description": "Ferramentas locais para organizar, editar, converter, proteger, aplicar OCR, criar formulários e inserir assinaturas visuais em PDFs e imagens.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#5b43ff",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

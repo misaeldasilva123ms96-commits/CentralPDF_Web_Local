@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Central local com 34 ferramentas para organizar, editar, converter, proteger, pesquisar e auditar PDFs e imagens." />
+  <title>Central PDF & Imagem</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/ux-redesign.css" />
+  <link rel="stylesheet" href="assets/css/layout-controls.css" />
+  <link rel="stylesheet" href="assets/css/foundation.css" />
+  <link rel="stylesheet" href="assets/css/experience-0.15.css" />
+  <link rel="stylesheet" href="assets/css/ocr-0.16.css" />
+  <link rel="stylesheet" href="assets/css/professional-0.17.css" />
+  <link rel="stylesheet" href="assets/css/forms-signatures-0.18.css" />
+  <link rel="stylesheet" href="assets/css/conversions-0.19.css" />
+  <link rel="stylesheet" href="assets/css/intelligence-0.20.css" />
+  <link rel="stylesheet" href="assets/css/stable-1.0.css" />
+  <link rel="stylesheet" href="assets/css/header-settings-1.0.1.css" />
+  <link rel="stylesheet" href="assets/css/tool-cards-uniform-1.0.2.css" />
+  <link rel="stylesheet" href="assets/css/theme-and-visual-1.0.3.css" />
+  <link rel="stylesheet" href="assets/css/dark-theme-polish-1.0.4.css" />
+  <link rel="stylesheet" href="assets/css/home-dark-refine-1.0.5.css" />
+  <link rel="stylesheet" href="assets/css/dark-theme-audit-1.0.6.css" />
+  <link rel="stylesheet" href="assets/css/settings-fit-1.0.7.css" />
+  <link rel="stylesheet" href="assets/css/dialog-audit-1.0.8.css" />
+  <link rel="stylesheet" href="assets/css/modal-fit-1.0.9.css" />
+  <link rel="stylesheet" href="assets/css/micro-polish-1.1.0.css" />
+  <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
+  <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#5b43ff" />
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/><path d="M4 12V4h8"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="m14 4 6 6-9 9H5v-6l9-9Z"/><path d="M5 19c-1.5 0-2.5.8-2.5 2 1.3-.6 2.5-.3 3.5-1"/></symbol>
+    <symbol id="i-merge" viewBox="0 0 24 24"><path d="M7 3v5a4 4 0 0 0 4 4h6"/><path d="m14 9 3 3-3 3"/><path d="M7 21v-5a4 4 0 0 1 4-4"/></symbol>
+    <symbol id="i-split" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M8 7 4 3"/><path d="m8 17-4 4"/><path d="m16 7 4-4"/><path d="m16 17 4 4"/></symbol>
+    <symbol id="i-extract" viewBox="0 0 24 24"><path d="M14 3h7v7"/><path d="m21 3-9 9"/><path d="M11 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+    <symbol id="i-watermark" viewBox="0 0 24 24"><path d="M4 5h16"/><path d="m6 8 3 11 3-8 3 8 3-11"/></symbol>
+    <symbol id="i-number" viewBox="0 0 24 24"><path d="M10 3 8 21"/><path d="M16 3 14 21"/><path d="M4 9h16"/><path d="M3 15h16"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></symbol>
+    <symbol id="i-convert" viewBox="0 0 24 24"><path d="M7 7h11l-3-3"/><path d="m18 7-3 3"/><path d="M17 17H6l3 3"/><path d="m6 17 3-3"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-ocr" viewBox="0 0 24 24"><path d="M7 3H4a1 1 0 0 0-1 1v3"/><path d="M17 3h3a1 1 0 0 1 1 1v3"/><path d="M7 21H4a1 1 0 0 1-1-1v-3"/><path d="M17 21h3a1 1 0 0 0 1-1v-3"/><path d="M7 8h10"/><path d="M7 12h7"/><path d="M7 16h9"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 17v3h16v-3"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.7 2c-.9.6-1.5 1-1.5 2"/><path d="M12 17h.01"/></symbol>
+
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7h.01"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-select" viewBox="0 0 24 24"><path d="m5 3 12 9-6 1 3 6-3 1-3-6-4 4z"/></symbol>
+    <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 5h14"/><path d="M12 5v14"/><path d="M8 19h8"/></symbol>
+    <symbol id="i-highlighter" viewBox="0 0 24 24"><path d="m14 4 6 6-8 8H6v-6z"/><path d="M4 20h12"/></symbol>
+    <symbol id="i-cover" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8v8H8z"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M7 3v14a2 2 0 0 0 2 2h12"/><path d="M3 7h14a2 2 0 0 1 2 2v12"/></symbol>
+    <symbol id="i-panel-left" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="m15 9-3 3 3 3"/></symbol>
+    <symbol id="i-panel-right" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/><path d="m9 9 3 3-3 3"/></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M16 21h5v-5"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M9 10v10"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></symbol>
+    <symbol id="i-office" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h5"/><path d="M8 12h8"/><path d="M8 16h6"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M10 16h4"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <button id="homeBrand" class="brand-button" type="button" aria-label="Voltar para início">
+        <span class="brand-mark">P</span>
+        <span class="brand-copy"><strong>Central PDF & Imagem</strong><small>Web local 1.2.0</small></span>
+      </button>
+      <div class="top-actions">
+        <div id="workspaceLayoutActions" class="workspace-layout-actions" aria-label="Controles de layout">
+          <button id="sidebarToggleTop" class="layout-icon-button" type="button" aria-label="Alternar barra lateral" title="Alternar barra lateral (F9)"><svg><use href="#i-panel-left"/></svg></button>
+          <button id="focusModeButton" class="layout-icon-button" type="button" aria-label="Ativar modo foco" title="Modo foco (Ctrl + Shift + F)"><svg><use href="#i-focus"/></svg></button>
+          <button id="settingsPanelToggleTop" class="layout-icon-button" type="button" aria-label="Alternar painel de propriedades" title="Alternar painel de propriedades"><svg><use href="#i-panel-right"/></svg></button>
+          <button id="layoutSettingsButton" class="layout-icon-button" type="button" aria-label="Preferências da interface" title="Preferências da interface"><svg><use href="#i-layout"/></svg></button>
+        </div>
+        <div class="privacy-indicator"><span></span> Processamento no computador</div>
+        <button id="helpButton" class="top-button" type="button"><svg><use href="#i-help"/></svg> Ajuda</button>
+      </div>
+    </header>
+
+    <main id="homeView" class="home-view">
+      <section class="home-hero">
+        <div class="hero-copy">
+          <h1>Documentos prontos, sem complicação.</h1>
+          <p>Escolha a tarefa e siga um fluxo guiado. Cada ferramenta mostra apenas os controles necessários e preserva o arquivo original.</p>
+          <div class="hero-stats"><span><strong>34</strong> ferramentas</span><span><strong>Local</strong> no navegador</span><span><strong>Guiado</strong> passo a passo</span></div>
+        </div>
+        <div class="search-box">
+          <svg><use href="#i-search"/></svg>
+          <input id="toolSearch" type="search" placeholder="Buscar uma ferramenta ou ação..." autocomplete="off" />
+          <kbd>Ctrl K</kbd>
+        </div>
+      </section>
+
+      <section class="guidance-strip" aria-label="Como funciona">
+        <div><span>1</span><strong>Escolha a tarefa</strong><small>Encontre pelo nome ou categoria</small></div>
+        <i></i>
+        <div><span>2</span><strong>Revise o plano</strong><small>Confira arquivos, páginas e opções</small></div>
+        <i></i>
+        <div><span>3</span><strong>Exporte</strong><small>Baixe uma nova cópia do documento</small></div>
+      </section>
+
+      <div class="home-toolbar">
+        <div class="category-tabs" role="tablist" aria-label="Categorias">
+          <button class="category-tab active" data-category="all" type="button">Todas</button>
+          <button class="category-tab" data-category="organize" type="button">Organizar</button>
+          <button class="category-tab" data-category="edit" type="button">Editar</button>
+          <button class="category-tab" data-category="convert" type="button">Converter</button>
+          <button class="category-tab" data-category="security" type="button">Segurança</button>
+        </div>
+        <div class="offline-note"><svg><use href="#i-lock"/></svg><span><strong>Privacidade local</strong><small>Seus documentos não são enviados por esta ferramenta.</small></span></div>
+      </div>
+
+      <div class="tool-section-heading">
+        <div><h2>Ferramentas</h2><p id="toolResultCount">34 opções disponíveis</p></div>
+        <span class="home-keyboard-tip">Use <kbd>Ctrl K</kbd> para buscar</span>
+      </div>
+      <section id="toolGrid" class="tool-grid" aria-label="Ferramentas disponíveis">
+        <button class="tool-card featured" data-tool="organize" data-category="organize" data-search="organizar reordenar excluir girar páginas pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-grid"/></svg></span><span class="recommended">Recomendado</span>
+          <strong>Organizar PDF</strong><p>Veja as páginas, arraste para reordenar, gire ou exclua.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card featured editor-featured" data-tool="editPdf" data-category="edit" data-search="editar pdf texto fonte cor imagem pincel marcador desenhar cobrir cortar página" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-edit"/></svg></span><span class="recommended">Novo 0.9</span>
+          <strong>Editar PDF</strong><p>Adicione e formate textos, imagens, pincel, marcador, coberturas e recortes.</p><span class="open-tool">Abrir editor →</span>
+        </button>
+        <button class="tool-card" data-tool="merge" data-category="organize" data-search="juntar unir combinar mesclar pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-merge"/></svg></span><strong>Juntar PDFs</strong><p>Una vários documentos na ordem desejada.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="split" data-category="organize" data-search="dividir separar páginas pdf zip" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-split"/></svg></span><strong>Dividir PDF</strong><p>Divida por intervalos, partes iguais, quantidade de páginas ou pontos de corte.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="extract" data-category="organize" data-search="extrair selecionar páginas pdf intervalo" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-extract"/></svg></span><strong>Extrair páginas</strong><p>Monte um novo PDF apenas com as páginas escolhidas.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="rotate" data-category="edit" data-search="girar rotacionar virar páginas pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-rotate"/></svg></span><strong>Girar páginas</strong><p>Corrija a orientação de todas ou apenas algumas páginas.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="watermark" data-category="edit" data-search="marca água texto confidencial pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-watermark"/></svg></span><strong>Marca-d’água</strong><p>Adicione um texto transparente sobre o documento.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="pageNumbers" data-category="edit" data-search="numerar número páginas rodapé cabeçalho pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-number"/></svg></span><strong>Numerar páginas</strong><p>Escolha formato, posição e número inicial.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="imagesToPdf" data-category="convert" data-search="imagem foto jpg png webp para pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-image"/></svg></span><strong>Imagens para PDF</strong><p>Transforme fotos e imagens em um único PDF.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="imageConvert" data-category="convert" data-search="converter redimensionar reduzir imagem jpg png webp" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-convert"/></svg></span><strong>Converter imagens</strong><p>Altere formato, dimensões e qualidade de várias imagens.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+
+        <button class="tool-card" data-tool="compress" data-category="convert" data-search="comprimir reduzir tamanho pdf leve recomendada extrema" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-convert"/></svg></span><strong>Comprimir PDF</strong><p>Reduza o tamanho com três níveis e compare antes e depois.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="pdfToImage" data-category="convert" data-search="pdf para jpg png imagem converter páginas" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-image"/></svg></span><strong>PDF para JPG/PNG</strong><p>Converta páginas em imagens com resolução configurável.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="crop" data-category="edit" data-search="recortar cortar margem borda pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-extract"/></svg></span><strong>Recortar PDF</strong><p>Ajuste as margens visíveis das páginas.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="metadata" data-category="security" data-search="limpar remover metadados autor título privacidade pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-lock"/></svg></span><strong>Limpar metadados</strong><p>Remova autor, título, assunto e informações do programa criador.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="normalize" data-category="organize" data-search="normalizar reparar compatibilidade reconstruir pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-rotate"/></svg></span><strong>Normalizar PDF</strong><p>Regrave a estrutura para melhorar a compatibilidade.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-tool="pdfToText" data-category="convert" data-search="extrair texto pdf txt pesquisar" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-number"/></svg></span><strong>Extrair texto</strong><p>Exporte o texto selecionável para TXT.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card featured" data-tool="ocr" data-category="convert" data-search="ocr reconhecer texto pdf escaneado imagem pesquisável português" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-ocr"/></svg></span><span class="recommended">Novo 0.16</span><strong>OCR e PDF pesquisável</strong><p>Reconheça textos em digitalizações e gere PDF pesquisável, TXT e relatório.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card featured" data-tool="pdfToOffice" data-category="convert" data-search="pdf word docx excel xlsx powerpoint pptx office converter" type="button"><span class="tool-card-icon"><svg><use href="#i-office"/></svg></span><span class="recommended">Novo 0.19</span><strong>PDF para Office</strong><p>Converta para Word, Excel ou PowerPoint em modos locais controlados.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="documentsToPdf" data-category="convert" data-search="docx xlsx pptx html txt csv markdown heic tiff para pdf" type="button"><span class="tool-card-icon"><svg><use href="#i-convert"/></svg></span><span class="recommended">Novo 0.19</span><strong>Documentos para PDF</strong><p>Converta Office, HTML, texto, HEIC, TIFF e imagens para PDF.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="extractImages" data-category="convert" data-search="extrair imagens internas pdf fotos figuras recursos" type="button"><span class="tool-card-icon"><svg><use href="#i-image"/></svg></span><span class="recommended">Novo 0.19</span><strong>Extrair imagens</strong><p>Recupere imagens internas ou exporte páginas completas com manifesto.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="archivePdf" data-category="organize" data-search="arquivamento pdfa normalizar rasterizar hash manifesto preservar" type="button"><span class="tool-card-icon"><svg><use href="#i-archive"/></svg></span><span class="recommended">Novo 0.19</span><strong>Preparar para arquivamento</strong><p>Crie cópia normalizada ou rasterizada com hashes e relatório técnico.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="documentAssistant" data-category="convert" data-search="assistente documental perguntar pdf resumir contrato cláusula localizar evidência" type="button"><span class="tool-card-icon"><svg><use href="#i-search"/></svg></span><span class="recommended">Inteligência local</span><strong>Assistente documental</strong><p>Resuma, pesquise e responda perguntas com evidências por página.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="structuredExtraction" data-category="convert" data-search="extrair dados cnpj cpf datas valores nota fiscal contrato csv json" type="button"><span class="tool-card-icon"><svg><use href="#i-text"/></svg></span><span class="recommended">Inteligência local</span><strong>Extração estruturada</strong><p>Transforme dados localizados nos PDFs em CSV, JSON e relatório.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="documentAudit" data-category="security" data-search="auditoria documentos divergências cnpj valores códigos certidões pagamento" type="button"><span class="tool-card-icon"><svg><use href="#i-eye"/></svg></span><span class="recommended">Inteligência local</span><strong>Auditoria documental</strong><p>Cruze documentos e destaque divergências e riscos para conferência.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="classifyRename" data-category="organize" data-search="classificar renomear lote páginas duplicadas em branco organizar arquivos" type="button"><span class="tool-card-icon"><svg><use href="#i-archive"/></svg></span><span class="recommended">Inteligência local</span><strong>Classificar e renomear</strong><p>Padronize nomes e localize páginas possivelmente vazias ou duplicadas.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="compare" data-category="security" data-search="comparar pdf diferenças texto visual versões contrato relatório" type="button"><span class="tool-card-icon"><svg><use href="#i-eye"/></svg></span><span class="recommended">Novo 0.18</span><strong>Comparar PDFs</strong><p>Compare duas versões e gere relatório textual e visual por página.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="redact" data-category="security" data-search="censura definitiva redação segura ocultar remover dados cpf cnpj" type="button"><span class="tool-card-icon"><svg><use href="#i-cover"/></svg></span><span class="recommended">Novo 0.18</span><strong>Censura definitiva</strong><p>Remova permanentemente áreas sensíveis e gere relatório de auditoria.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="formBuilder" data-category="edit" data-search="criar formulário preenchível campos texto data cpf cnpj moeda checkbox lista pdf" type="button"><span class="tool-card-icon"><svg><use href="#i-grid"/></svg></span><span class="recommended">Novo 0.18</span><strong>Criar formulário</strong><p>Desenhe campos preenchíveis, listas, datas, valores, CPF e CNPJ diretamente nas páginas.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="signPdf" data-category="edit" data-search="assinar assinatura rubrica desenhar imagem nome data pdf" type="button"><span class="tool-card-icon"><svg><use href="#i-edit"/></svg></span><span class="recommended">Novo 0.18</span><strong>Assinar e rubricar</strong><p>Insira assinatura visual desenhada, digitada ou por imagem e aplique rubricas em lote.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card professional" data-tool="protect" data-category="security" data-search="proteger senha criptografar aes 256 pdf segurança" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-lock"/></svg></span><span class="recommended">Novo 0.7</span><strong>Proteger PDF</strong><p>Adicione senha AES-256 e defina permissões de uso.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-tool="unlock" data-category="security" data-search="desbloquear remover senha conhecida descriptografar pdf" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-lock"/></svg></span><span class="recommended">Novo 0.7</span><strong>Remover senha</strong><p>Retire a proteção usando a senha conhecida.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-tool="diagnose" data-category="security" data-search="diagnóstico analisar pdf criptografia formulários assinatura estrutura" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-search"/></svg></span><span class="recommended">Novo 0.7</span><strong>Diagnosticar PDF</strong><p>Analise criptografia, páginas, formulários, assinaturas e recuperação.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-tool="repairAdvanced" data-category="organize" data-search="reparar recuperar pdf corrompido xref estrutura avançada" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-rotate"/></svg></span><span class="recommended">Novo 0.7</span><strong>Recuperar PDF</strong><p>Tente abrir estruturas danificadas e reconstruir o arquivo.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-tool="flattenForms" data-category="security" data-search="achatar formulário campos editáveis pdf fixar" type="button">
+          <span class="tool-card-icon"><svg><use href="#i-grid"/></svg></span><span class="recommended">Novo 0.7</span><strong>Fixar formulários</strong><p>Transforme campos preenchidos em conteúdo estático.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+      </section>
+      <div id="noTools" class="no-tools hidden">Nenhuma ferramenta corresponde à busca.</div>
+    </main>
+
+    <main id="toolWorkspace" class="workspace hidden">
+      <aside class="sidebar" aria-label="Ferramentas">
+        <div class="sidebar-sticky-head">
+          <div class="sidebar-search-row">
+            <label class="sidebar-search"><svg><use href="#i-search"/></svg><input id="workspaceToolSearch" type="search" placeholder="Buscar ferramenta" autocomplete="off" /></label>
+            <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-label="Recolher barra lateral" aria-expanded="true" title="Recolher menu (F9)"><svg><use href="#i-chevron-left"/></svg></button>
+          </div>
+        </div>
+        <nav id="workspaceToolNav" class="workspace-tool-nav">
+          <div class="sidebar-title">Essenciais</div>
+          <button class="tool active" data-tool="organize" type="button"><svg><use href="#i-grid"/></svg><span><b>Organizar PDF</b><small>Páginas e ordem</small></span></button>
+          <button class="tool" data-tool="editPdf" type="button"><svg><use href="#i-edit"/></svg><span><b>Editar PDF</b><small>Texto, imagem e desenho</small></span></button>
+          <button class="tool" data-tool="merge" type="button"><svg><use href="#i-merge"/></svg><span><b>Juntar PDFs</b><small>Combinar documentos</small></span></button>
+          <button class="tool" data-tool="split" type="button"><svg><use href="#i-split"/></svg><span><b>Dividir PDF</b><small>Separar por regras</small></span></button>
+          <button class="tool" data-tool="extract" type="button"><svg><use href="#i-extract"/></svg><span><b>Extrair páginas</b><small>Selecionar ou remover</small></span></button>
+
+          <div class="sidebar-title sidebar-section-title">Editar e ajustar</div>
+          <button class="tool" data-tool="rotate" type="button"><svg><use href="#i-rotate"/></svg><span><b>Girar páginas</b><small>Orientação em lote</small></span></button>
+          <button class="tool" data-tool="watermark" type="button"><svg><use href="#i-watermark"/></svg><span><b>Marca-d’água</b><small>Texto ou imagem</small></span></button>
+          <button class="tool" data-tool="pageNumbers" type="button"><svg><use href="#i-number"/></svg><span><b>Numerar páginas</b><small>Formato e posição</small></span></button>
+          <button class="tool" data-tool="crop" type="button"><svg><use href="#i-crop"/></svg><span><b>Recortar PDF</b><small>Margens e área útil</small></span></button>
+
+          <div class="sidebar-title sidebar-section-title">Converter e otimizar</div>
+          <button class="tool" data-tool="imagesToPdf" type="button"><svg><use href="#i-image"/></svg><span><b>Imagens para PDF</b><small>Criar documento</small></span></button>
+          <button class="tool" data-tool="imageConvert" type="button"><svg><use href="#i-convert"/></svg><span><b>Converter imagens</b><small>Formato e tamanho</small></span></button>
+          <button class="tool" data-tool="compress" type="button"><svg><use href="#i-download"/></svg><span><b>Comprimir PDF</b><small>Reduzir tamanho</small></span></button>
+          <button class="tool" data-tool="pdfToImage" type="button"><svg><use href="#i-image"/></svg><span><b>PDF para imagens</b><small>JPG, PNG ou WEBP</small></span></button>
+          <button class="tool" data-tool="metadata" type="button"><svg><use href="#i-info"/></svg><span><b>Limpar metadados</b><small>Privacidade</small></span></button>
+          <button class="tool" data-tool="normalize" type="button"><svg><use href="#i-rotate"/></svg><span><b>Normalizar PDF</b><small>Compatibilidade</small></span></button>
+          <button class="tool" data-tool="pdfToText" type="button"><svg><use href="#i-text"/></svg><span><b>Extrair texto</b><small>PDF para TXT</small></span></button>
+          <button class="tool" data-tool="ocr" type="button"><svg><use href="#i-ocr"/></svg><span><b>OCR pesquisável</b><small>Digitalizações</small></span></button>
+          <button class="tool" data-tool="pdfToOffice" type="button"><svg><use href="#i-office"/></svg><span><b>PDF para Office</b><small>DOCX, XLSX e PPTX</small></span></button>
+          <button class="tool" data-tool="documentsToPdf" type="button"><svg><use href="#i-convert"/></svg><span><b>Documentos para PDF</b><small>Office, HTML e imagens</small></span></button>
+          <button class="tool" data-tool="extractImages" type="button"><svg><use href="#i-image"/></svg><span><b>Extrair imagens</b><small>Imagens internas</small></span></button>
+          <button class="tool" data-tool="archivePdf" type="button"><svg><use href="#i-archive"/></svg><span><b>Arquivamento</b><small>Hashes e manifesto</small></span></button>
+
+          <div class="sidebar-title sidebar-section-title">Inteligência documental</div>
+          <button class="tool" data-tool="documentAssistant" type="button"><svg><use href="#i-search"/></svg><span><b>Assistente documental</b><small>Resumo e perguntas</small></span></button>
+          <button class="tool" data-tool="structuredExtraction" type="button"><svg><use href="#i-text"/></svg><span><b>Extração estruturada</b><small>Dados para CSV/JSON</small></span></button>
+          <button class="tool" data-tool="documentAudit" type="button"><svg><use href="#i-eye"/></svg><span><b>Auditoria documental</b><small>Divergências e regras</small></span></button>
+          <button class="tool" data-tool="classifyRename" type="button"><svg><use href="#i-archive"/></svg><span><b>Classificar e renomear</b><small>Organização em lote</small></span></button>
+
+          <div class="sidebar-title sidebar-section-title">Segurança</div>
+          <button class="tool" data-tool="compare" type="button"><svg><use href="#i-eye"/></svg><span><b>Comparar PDFs</b><small>Diferenças e relatório</small></span></button>
+          <button class="tool" data-tool="redact" type="button"><svg><use href="#i-cover"/></svg><span><b>Censura definitiva</b><small>Remoção segura</small></span></button>
+          <button class="tool" data-tool="formBuilder" type="button"><svg><use href="#i-grid"/></svg><span><b>Criar formulário</b><small>Campos preenchíveis</small></span></button>
+          <button class="tool" data-tool="signPdf" type="button"><svg><use href="#i-edit"/></svg><span><b>Assinar e rubricar</b><small>Assinatura visual</small></span></button>
+          <button class="tool" data-tool="protect" type="button"><svg><use href="#i-lock"/></svg><span><b>Proteger PDF</b><small>Senha e permissões</small></span></button>
+          <button class="tool" data-tool="unlock" type="button"><svg><use href="#i-lock"/></svg><span><b>Remover senha</b><small>Senha conhecida</small></span></button>
+          <button class="tool" data-tool="diagnose" type="button"><svg><use href="#i-search"/></svg><span><b>Diagnosticar PDF</b><small>Relatório técnico</small></span></button>
+          <button class="tool" data-tool="repairAdvanced" type="button"><svg><use href="#i-rotate"/></svg><span><b>Recuperar PDF</b><small>Estrutura danificada</small></span></button>
+          <button class="tool" data-tool="flattenForms" type="button"><svg><use href="#i-grid"/></svg><span><b>Fixar formulários</b><small>Campos estáticos</small></span></button>
+        </nav>
+        <div id="sidebarNoResults" class="sidebar-no-results hidden">Nenhuma ferramenta encontrada.</div>
+        <div class="sidebar-footer-status"><span></span><b>Central PDF</b><small>v1.2.0</small></div>
+      </aside>
+      <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Fechar barra lateral"></button>
+
+      <section class="main-panel">
+        <div class="stepper" aria-label="Etapas">
+          <div id="stepFiles" class="step active"><span>1</span><b>Arquivos</b></div><i></i>
+          <div id="stepSettings" class="step"><span>2</span><b>Ajustes</b></div><i></i>
+          <div id="stepDownload" class="step"><span>3</span><b>Baixar</b></div>
+        </div>
+
+        <div class="panel-heading">
+          <div class="panel-title-block">
+            <div class="panel-title-meta"><span id="toolCategoryLabel">Organizar</span><span id="toolComplexityLabel">Fluxo guiado</span></div>
+            <h1 id="operationTitle">Organizar PDF</h1>
+            <p id="operationDescription">Arraste as páginas para mudar a ordem, gire ou exclua antes de salvar.</p>
+          </div>
+          <button id="clearButton" class="ghost-button reset-button" type="button">Reiniciar tarefa</button>
+        </div>
+
+        <section class="tool-experience-strip" aria-label="Resumo da ferramenta">
+          <article><span class="experience-icon"><svg><use href="#i-upload"/></svg></span><div><small>Entrada</small><strong id="uxInput">1 PDF</strong></div></article>
+          <article><span class="experience-icon"><svg><use href="#i-check"/></svg></span><div><small>Você poderá</small><strong id="uxCapability">Reorganizar páginas</strong></div></article>
+          <article><span class="experience-icon"><svg><use href="#i-download"/></svg></span><div><small>Resultado</small><strong id="uxOutput">Novo PDF</strong></div></article>
+        </section>
+
+        <details id="toolGuide" class="tool-guide" open>
+          <summary><span><svg><use href="#i-info"/></svg> Como usar esta ferramenta</span><small>Orientação contextual</small></summary>
+          <div class="tool-guide-body">
+            <ol id="toolGuideSteps"></ol>
+            <div id="toolGuideTip" class="tool-guide-tip"></div>
+          </div>
+        </details>
+
+        <label class="dropzone" id="dropzone" for="fileInput">
+          <input id="fileInput" type="file" accept="application/pdf,.pdf" />
+          <span class="drop-icon"><svg><use href="#i-upload"/></svg></span>
+          <strong id="dropTitle">Escolha um arquivo PDF</strong>
+          <span id="dropSubtitle">Arraste para esta área ou clique para procurar</span>
+          <span class="dropzone-action">Selecionar no computador</span>
+          <em id="acceptedTypes">PDF</em>
+        </label>
+
+        <section class="file-section" id="fileSection">
+          <div class="file-section-title">
+            <div><h2>Arquivos selecionados</h2><p>A ordem abaixo será respeitada no resultado.</p></div>
+            <div class="file-header-actions">
+              <span id="fileCount">0 arquivos</span>
+              <button id="addMoreFiles" class="small-button hidden" type="button">+ Adicionar mais</button>
+            </div>
+          </div>
+          <div id="fileBulkToolbar" class="file-bulk-toolbar hidden" aria-label="Ações para vários arquivos">
+            <button id="selectAllFiles" class="small-button" type="button">Selecionar todos</button>
+            <button id="removeSelectedFiles" class="small-button danger" type="button" disabled>Excluir selecionados</button>
+            <label class="cover-zoom-control" for="coverZoom"><span>Tamanho das capas</span><input id="coverZoom" type="range" min="160" max="260" value="190" step="10" /></label>
+            <span id="selectedFilesCount" class="selected-files-count">0 selecionados</span>
+          </div>
+          <div id="fileList" class="file-list"><div class="empty-state">Nenhum arquivo selecionado.</div></div>
+        </section>
+
+        <section id="pdfEditorSection" class="pdf-editor-section hidden" aria-label="Editor visual de conteúdo PDF">
+          <div class="pdf-editor-toolbar">
+            <div class="editor-tool-group" aria-label="Ferramentas de edição">
+              <button class="editor-tool active" data-editor-tool="select" type="button" title="Selecionar e mover"><svg><use href="#i-select"/></svg><span>Selecionar</span></button>
+              <button id="editorAddText" class="editor-tool" data-editor-tool="text" type="button" title="Adicionar texto"><svg><use href="#i-text"/></svg><span>Texto</span></button>
+              <button class="editor-tool" data-editor-tool="brush" type="button" title="Pincel"><svg><use href="#i-brush"/></svg><span>Pincel</span></button>
+              <button class="editor-tool" data-editor-tool="highlight" type="button" title="Marcador"><svg><use href="#i-highlighter"/></svg><span>Marcador</span></button>
+              <button class="editor-tool" data-editor-tool="cover" type="button" title="Cobrir área visualmente"><svg><use href="#i-cover"/></svg><span>Cobrir</span></button>
+              <button class="editor-tool" data-editor-tool="crop" type="button" title="Recortar área da página"><svg><use href="#i-crop"/></svg><span>Recortar</span></button>
+            </div>
+            <div class="editor-tool-group secondary">
+              <button id="editorAddImage" class="editor-action" type="button">＋ Imagem</button>
+              <button id="editorAddPdf" class="editor-action" type="button">＋ Páginas de PDF</button>
+              <button id="editorAddBlank" class="editor-action" type="button">＋ Página em branco</button>
+            </div>
+          </div>
+          <div class="pdf-editor-subtoolbar">
+            <div class="editor-page-actions">
+              <button id="editorMovePageUp" class="small-button" type="button">← Página</button>
+              <button id="editorMovePageDown" class="small-button" type="button">Página →</button>
+              <button id="editorDuplicatePage" class="small-button" type="button">Duplicar página</button>
+              <button id="editorDeletePage" class="small-button danger" type="button">Remover página</button>
+            </div>
+            <div class="editor-history-actions">
+              <button id="editorUndo" class="small-button" type="button" disabled>Desfazer</button>
+              <button id="editorRedo" class="small-button" type="button" disabled>Refazer</button>
+              <label class="editor-zoom-control"><span>Zoom</span><input id="editorZoom" type="range" min="50" max="180" value="100" step="10"/><strong id="editorZoomValue">100%</strong></label>
+            </div>
+          </div>
+          <div class="pdf-editor-layout">
+            <aside class="editor-page-sidebar">
+              <div class="editor-page-sidebar-head"><strong>Páginas</strong><span id="editorPageIndicator">0 / 0</span></div>
+              <div id="editorThumbnailList" class="editor-thumbnail-list"><div class="editor-thumb-empty">Nenhuma página</div></div>
+            </aside>
+            <div class="editor-work-area">
+              <div class="editor-work-header"><span id="editorToolHint">Selecionar e mover objetos</span><span id="editorCurrentPageInfo">Nenhuma página</span></div>
+              <div class="editor-scroll-area">
+                <div id="editorStage" class="editor-stage empty">
+                  <canvas id="editorBaseCanvas"></canvas>
+                  <div id="editorObjectLayer" class="editor-object-layer"></div>
+                  <canvas id="editorInteractionCanvas" class="editor-interaction-canvas"></canvas>
+                  <div id="editorCropBadge" class="editor-crop-badge hidden"></div>
+                </div>
+              </div>
+              <div id="editorStatus" class="editor-status">Adicione um PDF para começar.</div>
+            </div>
+          </div>
+          <input id="editorImageInput" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple hidden />
+          <input id="editorPdfInput" type="file" accept="application/pdf,.pdf" multiple hidden />
+        </section>
+
+        <section id="organizerSection" class="organizer-section hidden" aria-label="Editor visual de páginas">
+          <div class="organizer-toolbar">
+            <div><h2 id="organizerEditorTitle">Editor de páginas</h2><span id="pageCountLabel">0 páginas</span></div>
+            <div class="toolbar-actions">
+              <button id="organizerAddPages" class="small-button primary-soft" type="button">＋ Adicionar páginas</button>
+              <button id="organizerAddBlank" class="small-button" type="button">Página em branco</button>
+              <button id="organizerUndo" class="small-button" type="button" disabled>Desfazer</button>
+              <button id="organizerRedo" class="small-button" type="button" disabled>Refazer</button>
+              <button id="restorePages" class="small-button" type="button">Restaurar original</button>
+            </div>
+          </div>
+          <div id="organizerBulkToolbar" class="organizer-bulk-toolbar">
+            <button id="selectAllPages" class="small-button" type="button">Selecionar todas</button>
+            <button id="rotateSelectedLeft" class="small-button" type="button" disabled>↶ Girar selecionadas</button>
+            <button id="rotateSelectedRight" class="small-button" type="button" disabled>↷ Girar selecionadas</button>
+            <button id="duplicateSelectedPages" class="small-button" type="button" disabled>Duplicar</button>
+            <button id="moveSelectedStart" class="small-button" type="button" disabled>Levar ao início</button>
+            <button id="moveSelectedEnd" class="small-button" type="button" disabled>Levar ao fim</button>
+            <button id="deleteSelectedPages" class="small-button danger" type="button" disabled>Excluir</button>
+            <span id="selectedPagesCount" class="selected-pages-count">0 selecionadas</span>
+          </div>
+          <div id="organizerHelpText" class="organizer-help"><strong>Como usar:</strong> clique na caixa de uma ou várias páginas para aplicar ações em lote. Arraste para reordenar. Em cada miniatura você pode visualizar, mover, girar, duplicar, inserir depois ou excluir individualmente.</div>
+          <div id="pageGrid" class="page-grid"></div>
+        </section>
+      </section>
+
+      <div id="workspaceDropOverlay" class="workspace-drop-overlay hidden" aria-hidden="true"><span><svg><use href="#i-upload"/></svg></span><strong>Solte os arquivos para adicionar</strong><small>Você pode adicionar novos PDFs a qualquer momento.</small></div>
+
+      <aside class="settings-panel">
+        <div class="settings-heading">
+          <div><span id="settingsEyeline">Configuração</span><h2 id="settingsTitle">Ajustes do resultado</h2><p id="settingsDescription">Revise somente o que precisa ser personalizado.</p></div>
+          <button id="settingsPanelCloseButton" class="settings-panel-close" type="button" aria-label="Recolher painel de propriedades" title="Recolher painel"><svg><use href="#i-chevron-right"/></svg></button>
+        </div>
+        <div id="toolAttention" class="tool-attention hidden"><span><svg><use href="#i-info"/></svg></span><div><strong>Ponto de atenção</strong><p id="toolAttentionText"></p></div></div>
+        <div id="settingsEmptyState" class="settings-empty-state"><span><svg><use href="#i-upload"/></svg></span><strong>Adicione os arquivos primeiro</strong><p>As configurações serão liberadas na próxima etapa.</p></div>
+        <div id="settingsContent"></div>
+        <div class="action-dock">
+          <div class="status-box" id="statusBox" role="status">Adicione um arquivo para continuar.</div>
+          <div class="progress-track hidden" id="progressTrack"><div id="progressBar"></div></div>
+          <button id="processButton" class="primary-button" type="button" disabled>Salvar PDF organizado</button>
+          <p class="version-note">O processamento ocorre no navegador. Os arquivos permanecem no navegador. Motores externos podem exigir internet ao abrir.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer><span>Central PDF & Imagem — Web Local 1.2.0</span><span>Use apenas documentos autorizados pela empresa.</span></footer>
+  </div>
+
+  <dialog id="layoutSettingsDialog" class="layout-settings-dialog">
+    <div class="dialog-header"><div><span>Interface</span><h2>Preferências de layout</h2></div><button id="closeLayoutSettings" type="button" aria-label="Fechar"><svg><use href="#i-close"/></svg></button></div>
+    <p class="layout-dialog-intro">Ajuste o espaço de trabalho. As preferências podem ficar salvas somente neste navegador.</p>
+    <div class="layout-settings-section">
+      <strong>Densidade da interface</strong>
+      <div class="layout-segmented" role="radiogroup" aria-label="Densidade da interface">
+        <label><input type="radio" name="layoutDensity" value="comfortable" checked /><span>Confortável<small>Mais espaço e leitura</small></span></label>
+        <label><input type="radio" name="layoutDensity" value="compact" /><span>Compacta<small>Mais conteúdo na tela</small></span></label>
+      </div>
+    </div>
+    <div class="layout-settings-section layout-toggle-list">
+      <label><span><strong>Mostrar guia contextual</strong><small>Exibe os passos dentro de cada ferramenta.</small></span><input id="showToolGuidePreference" type="checkbox" checked /></label>
+      <label><span><strong>Lembrar organização</strong><small>Salva o estado dos painéis e a densidade.</small></span><input id="rememberLayoutPreference" type="checkbox" checked /></label>
+    </div>
+    <div class="layout-shortcuts"><strong>Atalhos</strong><span><kbd>F9</kbd> barra lateral</span><span><kbd>Ctrl Shift F</kbd> modo foco</span><span><kbd>Esc</kbd> fechar painel móvel</span></div>
+    <div class="dialog-actions"><button id="resetLayoutPreferences" class="ghost-button" type="button">Restaurar padrão</button><button id="confirmLayoutSettings" class="primary-button inline-primary" type="button">Aplicar</button></div>
+  </dialog>
+
+  <dialog id="helpDialog">
+    <div class="dialog-header"><div><span>Ajuda rápida</span><h2>Como usar a Central PDF</h2></div><button id="closeHelp" type="button" aria-label="Fechar">×</button></div>
+    <div class="help-steps">
+      <div><span>1</span><p><strong>Escolha uma ferramenta</strong> na tela inicial.</p></div>
+      <div><span>2</span><p><strong>Adicione seus arquivos</strong> arrastando ou clicando na área indicada.</p></div>
+      <div><span>3</span><p><strong>Revise os ajustes</strong> e clique no botão principal para baixar.</p></div>
+    </div>
+    <p class="dialog-note">O arquivo original não é alterado. O resultado é baixado como um novo documento.</p>
+  </dialog>
+
+  <dialog id="filePreviewDialog" class="file-preview-dialog">
+    <div class="dialog-header"><div><span>Pré-visualização</span><h2 id="previewFileName">Documento</h2></div><button id="closeFilePreview" type="button" aria-label="Fechar">×</button></div>
+    <div class="preview-dialog-content">
+      <div class="preview-large-stage"><img id="previewLargeImage" alt="Prévia ampliada do arquivo" /></div>
+      <div class="preview-file-details"><span id="previewFileType">PDF</span><strong id="previewFilePages">—</strong><small id="previewFileSize">—</small></div>
+    </div>
+  </dialog>
+
+  <dialog id="organizerAddDialog" class="organizer-add-dialog">
+    <div class="dialog-header"><div><span>Editor de páginas</span><h2>Adicionar páginas</h2></div><button id="closeOrganizerAdd" type="button" aria-label="Fechar">×</button></div>
+    <div class="field"><label for="organizerAddType">Origem</label><select id="organizerAddType"><option value="pdf">Páginas de outro PDF</option><option value="images">Imagens como páginas</option><option value="blank">Página em branco</option></select></div>
+    <div data-organizer-add-panel="pdf">
+      <div class="field"><label for="organizerImportPdfInput">Arquivo PDF</label><input id="organizerImportPdfInput" type="file" accept="application/pdf,.pdf" /></div>
+      <div id="organizerImportPdfInfo" class="notice-card"><strong>Nenhum PDF escolhido</strong><p>Escolha um arquivo para selecionar as páginas.</p></div>
+      <div class="field"><label for="organizerImportPdfPages">Páginas para adicionar</label><input id="organizerImportPdfPages" value="all" placeholder="all ou 1-3,5" /></div>
+    </div>
+    <div data-organizer-add-panel="images" class="hidden">
+      <div class="field"><label for="organizerImportImageInput">Imagens</label><input id="organizerImportImageInput" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple /></div>
+      <p class="field-hint">Cada imagem será adicionada como uma página. A proporção será preservada.</p>
+    </div>
+    <div data-organizer-add-panel="blank" class="hidden">
+      <div class="field-row"><div class="field"><label for="organizerBlankSize">Tamanho</label><select id="organizerBlankSize"><option value="a4">A4</option><option value="letter">Carta</option><option value="same">Igual à página selecionada</option></select></div><div class="field"><label for="organizerBlankOrientation">Orientação</label><select id="organizerBlankOrientation"><option value="portrait">Retrato</option><option value="landscape">Paisagem</option></select></div></div>
+      <div class="field"><label for="organizerBlankCount">Quantidade</label><input id="organizerBlankCount" type="number" min="1" max="100" value="1" /></div>
+    </div>
+    <div class="field"><label for="organizerInsertMode">Inserir</label><select id="organizerInsertMode"><option value="after">Depois da página selecionada</option><option value="before">Antes da página selecionada</option><option value="end">No final</option><option value="start">No início</option></select></div>
+    <div id="organizerAddStatus" class="status-box">Escolha a origem e confirme.</div>
+    <div class="dialog-actions"><button id="cancelOrganizerAdd" class="ghost-button" type="button">Cancelar</button><button id="confirmOrganizerAdd" class="primary-button inline-primary" type="button">Adicionar ao documento</button></div>
+  </dialog>
+
+  <dialog id="organizerPagePreviewDialog" class="organizer-page-preview-dialog">
+    <div class="dialog-header"><div><span>Pré-visualização da página</span><h2 id="organizerPreviewTitle">Página</h2></div><button id="closeOrganizerPagePreview" type="button" aria-label="Fechar">×</button></div>
+    <div class="organizer-preview-stage"><img id="organizerPreviewImage" alt="Prévia ampliada da página" /></div>
+    <div id="organizerPreviewDetails" class="preview-file-details"></div>
+  </dialog>
+
+  <script src="vendor/offline-status.js"></script>
+  <script src="assets/js/engine-loader.js"></script>
+  <script src="vendor/jszip.min.js"></script>
+  <script src="vendor/pptxgen.min.js"></script>
+  <script src="assets/js/split-planner.js"></script>
+  <script src="assets/js/advanced-planner.js"></script>
+  <script src="assets/js/organizer-planner.js"></script>
+  <script src="assets/js/pdf-editor.js"></script>
+  <script src="assets/js/ux-enhancements.js"></script>
+  <script src="assets/js/ocr-0.16.js"></script>
+  <script src="assets/js/compare-0.17.js"></script>
+  <script src="assets/js/redaction-0.17.js"></script>
+  <script src="assets/js/forms-signatures-0.18.js"></script>
+  <script src="assets/js/conversions-0.19.js"></script>
+  <script src="assets/js/intelligence-0.20.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/tool-quality-1.2.0.js"></script>
+  <script src="assets/js/layout-controls.js"></script>
+  <script src="assets/js/foundation.js"></script>
+  <script src="assets/js/experience-0.15.js"></script>
+  <script src="assets/js/stable-1.0.js"></script>
+  <script src="assets/js/header-settings-1.0.3.js"></script>
+</body>
+</html>
