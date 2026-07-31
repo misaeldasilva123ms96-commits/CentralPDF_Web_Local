@@ -6,11 +6,18 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$pdfJsVersion = '6.2.108'
+$pdfJsPackage = @{
+    Url = "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-$pdfJsVersion.tgz"
+    Sha256 = 'b3e68d5cda70551a90b3f771419d379e20fc788ce056fa32de73608e01df47f4'
+    MinBytes = 8000000
+    ApiSha256 = '9fab0c910bf1484835c5c2aeb68f7eb3dfce7f9eb435a004526c5af86d70890c'
+    WorkerSha256 = 'bc0d1b88ea0b66196b1d36a58ac243c6d92adfe725624e2a9fdd381bdf8ef434'
+    ResourcesSha256 = '960886d4e606e53b75909ea28efae08ff7f41011b1b8b09ed370f9c9087761be'
+}
 
 $items = @(
     @{ Url = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'; Path = 'vendor/pdf-lib.min.js'; MinBytes = 300000; Sha256 = '0f9a5cad07941f0826586c94e089d89b918c46e5c17cf2d5a3c6f666e3bc694f' },
-    @{ Url = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; Path = 'vendor/pdf.min.js'; MinBytes = 200000; Sha256 = '5b5799e6f8c680663207ac5b42ee14eed2a406fa7af48f50c154f0c0b1566946' },
-    @{ Url = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; Path = 'vendor/pdf.worker.min.js'; MinBytes = 500000; Sha256 = 'feabdf309770ed24bba31a5467836cdc8cf639c705af27d52b585b041bb8527b' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js'; Path = 'vendor/tesseract/tesseract.min.js'; MinBytes = 50000; Sha256 = '000c27d9cd0def655f77b36c72a389c0ab13793aa31cb4d7aab56d09c0afbc7e' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js'; Path = 'vendor/tesseract/worker.min.js'; MinBytes = 90000; Sha256 = '576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core.wasm.js'; Path = 'vendor/tesseract-core/tesseract-core.wasm.js'; MinBytes = 3000000; Sha256 = '0bc6ce3e5fbbd0cd89706cf2fd70960e3372f4f01ee24265b26990808aaeb286' },
@@ -29,6 +36,7 @@ $items = @(
 
 if ($ListOnly) {
     $items | ForEach-Object { '{0}  {1}' -f $_.Sha256, $_.Path }
+    '{0}  pdfjs-dist-{1}.tgz (origem de vendor/pdfjs/)' -f $pdfJsPackage.Sha256, $pdfJsVersion
     exit 0
 }
 
@@ -67,8 +75,81 @@ foreach ($item in $items) {
     }
 }
 
+function Get-PdfJsResourceDigest([string]$PdfJsRoot) {
+    $hashLines = Get-ChildItem -LiteralPath $PdfJsRoot -File -Recurse | Where-Object {
+        $_.FullName -match '[\\/](cmaps|iccs|standard_fonts|wasm)[\\/]'
+    } | Sort-Object FullName | ForEach-Object {
+        $relative = $_.FullName.Substring($PdfJsRoot.Length).TrimStart('\', '/').Replace('\', '/')
+        $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
+        "$relative $hash"
+    }
+    $bytes = [Text.Encoding]::UTF8.GetBytes(($hashLines -join "`n"))
+    return ([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($bytes))).ToLowerInvariant()
+}
+
+function Test-PdfJsInstallation {
+    $pdfJsRoot = Join-Path $projectRoot 'vendor/pdfjs'
+    $apiPath = Join-Path $pdfJsRoot 'pdf.min.mjs'
+    $workerPath = Join-Path $pdfJsRoot 'pdf.worker.min.mjs'
+    $licensePath = Join-Path $pdfJsRoot 'LICENSE'
+    if (!(Test-Path -LiteralPath $apiPath) -or !(Test-Path -LiteralPath $workerPath) -or !(Test-Path -LiteralPath $licensePath)) {
+        return $false
+    }
+    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $apiPath).Hash.ToLowerInvariant() -ne $pdfJsPackage.ApiSha256) { return $false }
+    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $workerPath).Hash.ToLowerInvariant() -ne $pdfJsPackage.WorkerSha256) { return $false }
+    return (Get-PdfJsResourceDigest $pdfJsRoot) -eq $pdfJsPackage.ResourcesSha256
+}
+
+if (Test-PdfJsInstallation) {
+    Write-Host "Reutilizando PDF.js ${pdfJsVersion}: módulos e recursos válidos."
+}
+else {
+    $pdfJsRoot = Join-Path $projectRoot 'vendor/pdfjs'
+    $archive = Join-Path ([IO.Path]::GetTempPath()) "centralpdf-pdfjs-$pdfJsVersion-$PID.tgz"
+    $extractRoot = Join-Path ([IO.Path]::GetTempPath()) "centralpdf-pdfjs-$pdfJsVersion-$PID"
+    try {
+        Write-Host "Baixando e verificando PDF.js $pdfJsVersion..."
+        Invoke-WebRequest -UseBasicParsing -Uri $pdfJsPackage.Url -OutFile $archive
+        $archiveFile = Get-Item -LiteralPath $archive
+        if ($archiveFile.Length -lt [int64]$pdfJsPackage.MinBytes) { throw 'Pacote PDF.js incompleto.' }
+        $archiveHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant()
+        if ($archiveHash -ne $pdfJsPackage.Sha256) {
+            throw "SHA-256 inválido para PDF.js. Esperado $($pdfJsPackage.Sha256); recebido $archiveHash"
+        }
+
+        New-Item -ItemType Directory -Path $extractRoot -Force | Out-Null
+        & tar -xzf $archive -C $extractRoot
+        if ($LASTEXITCODE -ne 0) { throw 'Não foi possível extrair o pacote PDF.js.' }
+
+        if (Test-Path -LiteralPath $pdfJsRoot) { Remove-Item -LiteralPath $pdfJsRoot -Recurse -Force }
+        New-Item -ItemType Directory -Path $pdfJsRoot -Force | Out-Null
+        $packageRoot = Join-Path $extractRoot 'package'
+        Copy-Item -LiteralPath (Join-Path $packageRoot 'legacy/build/pdf.min.mjs') -Destination $pdfJsRoot
+        Copy-Item -LiteralPath (Join-Path $packageRoot 'legacy/build/pdf.worker.min.mjs') -Destination $pdfJsRoot
+        Copy-Item -LiteralPath (Join-Path $packageRoot 'LICENSE') -Destination $pdfJsRoot
+        foreach ($directory in @('cmaps', 'iccs', 'standard_fonts', 'wasm')) {
+            Copy-Item -LiteralPath (Join-Path $packageRoot $directory) -Destination $pdfJsRoot -Recurse
+        }
+        if (!(Test-PdfJsInstallation)) { throw 'A instalação extraída do PDF.js não passou na validação.' }
+    }
+    finally {
+        Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $extractRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+$pdfJsRoot = Join-Path $projectRoot 'vendor/pdfjs'
+$pdfJsAssets = Get-ChildItem -LiteralPath $pdfJsRoot -File -Recurse | Sort-Object FullName | ForEach-Object {
+    $relative = $_.FullName.Substring($projectRoot.Length).TrimStart('\', '/').Replace('\', '/')
+    "./$relative"
+}
+$manifestPath = Join-Path $projectRoot 'vendor/pdfjs-manifest.js'
+$manifestJson = ConvertTo-Json -Compress -InputObject @($pdfJsAssets)
+$manifest = "self.CentralPDFPdfJsAssets = Object.freeze($manifestJson);"
+[IO.File]::WriteAllText($manifestPath, $manifest, [Text.UTF8Encoding]::new($false))
+
 $statusPath = Join-Path $projectRoot 'vendor/offline-status.js'
 $preparedAt = [DateTime]::UtcNow.ToString('o')
-$status = "window.CentralPDFOfflineStatus = Object.freeze({ prepared: true, preparedAt: '$preparedAt', pdfLib: true, pdfJs: true, pdfWorker: true, libPdf: true, ocr: true, conversions: true });"
+$status = "window.CentralPDFOfflineStatus = Object.freeze({ prepared: true, preparedAt: '$preparedAt', pdfLib: true, pdfJs: true, pdfJsVersion: '$pdfJsVersion', pdfWorker: true, libPdf: true, ocr: true, conversions: true });"
 [IO.File]::WriteAllText($statusPath, $status, [Text.UTF8Encoding]::new($false))
 Write-Host 'Motores baixados e verificados com sucesso.'

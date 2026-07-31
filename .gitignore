@@ -18,8 +18,7 @@ CentralPDF_Local_Server.build*.exe
 
 # Optional browser engines downloaded by PREPARAR_OFFLINE.bat
 vendor/pdf-lib.min.js
-vendor/pdf.min.js
-vendor/pdf.worker.min.js
+vendor/pdfjs/
 vendor/UTIF.js
 vendor/heic2any.min.js
 vendor/tesseract/

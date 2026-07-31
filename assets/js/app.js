@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const PDF_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const PDF_WORKER_LOCAL_URL = window.CentralPDFEnginePaths?.pdfWorker || 'vendor/pdf.worker.min.js';
+  const PDF_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/pdf.worker.min.mjs';
+  const PDF_WORKER_LOCAL_URL = window.CentralPDFEnginePaths?.pdfWorker || 'vendor/pdfjs/pdf.worker.min.mjs';
   const HOME_STORAGE_KEY = 'central-pdf-last-tool';
   window.CentralPDFRuntimeFixes = Object.assign({}, window.CentralPDFRuntimeFixes, { pdfBufferIsolation: true });
 

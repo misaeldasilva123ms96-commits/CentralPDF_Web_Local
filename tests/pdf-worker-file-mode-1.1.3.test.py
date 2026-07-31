@@ -3,7 +3,7 @@ from playwright.sync_api import sync_playwright
 
 root = Path(__file__).resolve().parents[1]
 loader = (root / 'assets/js/engine-loader.js').read_text(encoding='utf-8')
-html = f'''<!doctype html><html><head><meta charset="utf-8"></head><body>
+html = f'''<!doctype html><html><head><meta charset="utf-8"><base href="http://test.local/"></head><body>
 <script>
 window.CentralPDFProtocolOverride = 'file:';
 window.CentralPDFOfflineStatus = Object.freeze({{prepared:true,pdfLib:false,pdfJs:false,pdfWorker:true}});
@@ -34,10 +34,10 @@ with sync_playwright() as p:
     })""")
     assert values['ready'] is True
     assert values['directFileMode'] is True
-    assert values['worker']['ready'] is True
-    assert values['worker']['mode'] == 'main-thread-file-safe'
+    assert values['worker']['ready'] is False
+    assert values['worker']['mode'] == 'direct-file-esm-unsupported'
     assert values['hasPort'] is False
-    assert values['workerSrc'].endswith('/pdf.worker.min.js')
+    assert values['workerSrc'] == ''
     assert values['constructed'] == 0
     assert values['errors'] == []
     assert errors == []

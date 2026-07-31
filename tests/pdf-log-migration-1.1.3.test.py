@@ -10,8 +10,8 @@ assert 'migrateResolvedLegacyLogs' in stable
 assert "bundled[definition.key] && definition.local" in loader
 assert 'vendor/offline-status.js' in index
 assert index.index('vendor/offline-status.js') < index.index('assets/js/engine-loader.js')
-assert 'main-thread-file-safe' in loader
-assert 'loadPdfWorkerOnMainThread' in loader
+assert 'direct-file-esm-unsupported' in loader
+assert 'pdfJsEvalDisabled: true' in loader
 assert 'options.workerSrc = sourceUrl' in loader
 assert 'options.workerPort = workerPort' not in loader
 assert 'pdfWorkerBlobWrapperDisabled: true' in loader
