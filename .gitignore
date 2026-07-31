@@ -12,6 +12,7 @@ __pycache__/
 .venv/
 playwright-report/
 test-results/
+_site/
 CentralPDF_Local_Server.ci.exe
 CentralPDF_Local_Server.build*.exe
 
