@@ -3,6 +3,9 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -48,5 +51,18 @@ func TestStaticSecurityHeaders(t *testing.T) {
 	}
 	if got := response.Header().Get("Content-Security-Policy"); got == "" {
 		t.Error("Content-Security-Policy is missing")
+	}
+}
+
+func TestModuleMimeType(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "module.mjs"), []byte("export const ok = true;"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	response := httptest.NewRecorder()
+	newHandler(root).ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/module.mjs", nil))
+	if got := response.Header().Get("Content-Type"); !strings.HasPrefix(got, "text/javascript") {
+		t.Fatalf("Content-Type = %q, want JavaScript", got)
 	}
 }

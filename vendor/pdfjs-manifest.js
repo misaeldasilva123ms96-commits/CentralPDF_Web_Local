@@ -1,0 +1,1 @@
+self.CentralPDFPdfJsAssets = Object.freeze([]);

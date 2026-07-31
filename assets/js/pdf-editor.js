@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const LOCAL_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorker || 'vendor/pdf.worker.min.js';
+  const WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/pdf.worker.min.mjs';
+  const LOCAL_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorker || 'vendor/pdfjs/pdf.worker.min.mjs';
   const FONT_MAP = {
     Helvetica: 'Helvetica',
     HelveticaBold: 'HelveticaBold',

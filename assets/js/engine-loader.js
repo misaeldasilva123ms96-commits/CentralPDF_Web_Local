@@ -3,7 +3,7 @@
 
   const APP_VERSION = '1.2.0';
   const runtimeProtocol = window.CentralPDFProtocolOverride || location.protocol;
-  const PDFJS_VERSION = '3.11.174';
+  const PDFJS_VERSION = '6.2.108';
   const PDFLIB_VERSION = '1.17.1';
   const REMOTE_ENGINES_KEY = 'centralpdf-remote-engines-allowed';
 
@@ -47,8 +47,9 @@
       key: 'pdfJs',
       label: 'PDF.js',
       global: () => Boolean(window.pdfjsLib?.getDocument),
-      local: 'vendor/pdf.min.js',
-      remote: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`
+      module: true,
+      local: 'vendor/pdfjs/pdf.min.mjs',
+      remote: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/legacy/build/pdf.min.mjs`
     }
   ];
 
@@ -68,23 +69,25 @@
 
   window.CentralPDFEngineStatus = status;
   window.CentralPDFRuntimeFixes = Object.assign({}, window.CentralPDFRuntimeFixes, {
-    pdfWorkerLifecycle: runtimeProtocol === 'file:' ? 'main-thread-file-safe' : 'worker-src-per-document',
+    pdfWorkerLifecycle: runtimeProtocol === 'file:' ? 'direct-file-esm-unsupported' : 'worker-src-per-document',
     pdfWorkerBlobWrapperDisabled: true,
+    pdfJsEvalDisabled: true,
     adaptiveCompression: 'multi-pass-target-selection'
   });
   window.CentralPDFEnginePaths = {
-    pdfWorker: 'vendor/pdf.worker.min.js',
-    pdfWorkerRemote: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`
+    pdfWorker: 'vendor/pdfjs/pdf.worker.min.mjs',
+    pdfWorkerRemote: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/legacy/build/pdf.worker.min.mjs`,
+    pdfResources: 'vendor/pdfjs/'
   };
 
   function currentWorkerUrl() {
     const paths = window.CentralPDFEnginePaths || {};
     if (bundled.pdfWorker) {
-      const local = paths.pdfWorker || 'vendor/pdf.worker.min.js';
+      const local = paths.pdfWorker || 'vendor/pdfjs/pdf.worker.min.mjs';
       try { return new URL(local, document.baseURI).href; } catch (_) { return local; }
     }
     if (remoteEnginesAllowed()) {
-      return paths.pdfWorkerRemote || `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+      return paths.pdfWorkerRemote || `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/legacy/build/pdf.worker.min.mjs`;
     }
     return '';
   }
@@ -92,7 +95,65 @@
   window.CentralPDFResolvePdfWorker = currentWorkerUrl;
   window.CentralPDFGetPdfWorkerStatus = () => ({ ...status.pdfWorker, workerPort: false });
 
-  function loadScript(url, source, definition) {
+  function installPdfJsApi(api, resourceRoot) {
+    if (api?.__centralPDFSecured) {
+      window.pdfjsLib = api;
+      return;
+    }
+
+    const root = new URL(resourceRoot, document.baseURI);
+    const securedApi = {
+      ...api,
+      __centralPDFSecured: true,
+      getDocument(input) {
+        let source;
+        if (typeof input === 'string' || input instanceof URL) source = { url: String(input) };
+        else if (input instanceof Uint8Array || input instanceof ArrayBuffer) source = { data: input };
+        else source = { ...(input || {}) };
+
+        const loadingTask = api.getDocument({
+          cMapUrl: new URL('cmaps/', root).href,
+          cMapPacked: true,
+          iccUrl: new URL('iccs/', root).href,
+          standardFontDataUrl: new URL('standard_fonts/', root).href,
+          wasmUrl: new URL('wasm/', root).href,
+          ...source,
+          // Defesa em profundidade contra GHSA-wgrm-67xf-hhpq. Mantemos
+          // desativado mesmo usando uma versão corrigida do PDF.js.
+          isEvalSupported: false
+        });
+
+        const documentPromise = loadingTask.promise.then(documentProxy => {
+          // PDF.js 6 moveu destroy() do proxy para a loading task. O alias
+          // preserva a API usada pelas ferramentas atuais durante a migração.
+          if (typeof documentProxy.destroy !== 'function' && Object.isExtensible(documentProxy)) {
+            Object.defineProperty(documentProxy, 'destroy', {
+              configurable: true,
+              value: () => loadingTask.destroy()
+            });
+          }
+          return documentProxy;
+        });
+        Object.defineProperty(loadingTask, 'promise', { configurable: true, value: documentPromise });
+        return loadingTask;
+      }
+    };
+    window.pdfjsLib = Object.freeze(securedApi);
+  }
+
+  async function loadScript(url, source, definition) {
+    if (definition.module) {
+      try {
+        const moduleUrl = new URL(url, document.baseURI).href;
+        const resourceRoot = source === 'local'
+          ? (window.CentralPDFEnginePaths?.pdfResources || 'vendor/pdfjs/')
+          : `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/`;
+        installPdfJsApi(await import(moduleUrl), resourceRoot);
+        return { source, url: moduleUrl };
+      } catch (error) {
+        throw new Error(`Não foi possível carregar ${definition.label} de ${source}: ${error.message || error}`);
+      }
+    }
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = url;
@@ -116,7 +177,12 @@
   }
 
   async function loadDefinition(definition) {
-    if (definition.global()) return { source: 'preloaded', url: '' };
+    if (definition.global()) {
+      if (definition.key === 'pdfJs') {
+        installPdfJsApi(window.pdfjsLib, window.CentralPDFEnginePaths?.pdfResources || 'vendor/pdfjs/');
+      }
+      return { source: 'preloaded', url: '' };
+    }
 
     if (bundled[definition.key] && definition.local) {
       try {
@@ -140,25 +206,6 @@
     return loadScript(definition.remote, source, definition);
   }
 
-  function loadPdfWorkerOnMainThread(sourceUrl, source) {
-    return new Promise((resolve, reject) => {
-      if (window.pdfjsWorker?.WorkerMessageHandler) {
-        resolve({ source, url: sourceUrl });
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = sourceUrl;
-      script.async = false;
-      script.crossOrigin = source === 'internet' ? 'anonymous' : '';
-      script.dataset.engine = 'pdfWorkerMainThread';
-      script.onload = () => window.pdfjsWorker?.WorkerMessageHandler
-        ? resolve({ source, url: sourceUrl })
-        : reject(new Error('O Worker PDF carregou, mas o manipulador principal não foi encontrado.'));
-      script.onerror = () => reject(new Error('Não foi possível carregar o Worker PDF no modo compatível.'));
-      document.head.appendChild(script);
-    });
-  }
-
   async function preparePdfWorker() {
     const pdfjs = window.pdfjsLib;
     const options = pdfjs?.GlobalWorkerOptions;
@@ -174,7 +221,7 @@
 
     const paths = window.CentralPDFEnginePaths || {};
     const useLocalWorker = bundled.pdfWorker;
-    const localWorkerPath = paths.pdfWorker || 'vendor/pdf.worker.min.js';
+    const localWorkerPath = paths.pdfWorker || 'vendor/pdfjs/pdf.worker.min.mjs';
     let localWorkerUrl = localWorkerPath;
     try { localWorkerUrl = new URL(localWorkerPath, document.baseURI).href; } catch (_) {}
     const sourceUrl = useLocalWorker ? localWorkerUrl : currentWorkerUrl();
@@ -187,17 +234,19 @@
 
     try {
       if (runtimeProtocol === 'file:') {
-        /* Em file:// não criamos Worker nem URL blob. O código oficial do
-           pdf.worker é carregado como script normal e o PDF.js usa o seu
-           modo fake-worker no thread principal. Isso elimina blob:null e
-           importScripts sem compartilhar um Worker destruível. */
-        await loadPdfWorkerOnMainThread(sourceUrl, source);
-        options.workerSrc = sourceUrl;
-        status.pdfWorker = { ready: true, mode: 'main-thread-file-safe', source, sourceUrl, error: '' };
-      } else {
-        options.workerSrc = sourceUrl;
-        status.pdfWorker = { ready: true, mode: 'worker-src-per-document', source, sourceUrl, error: '' };
+        status.pdfWorker = {
+          ready: false,
+          mode: 'direct-file-esm-unsupported',
+          source,
+          sourceUrl,
+          error: 'PDF.js 6 usa módulos ESM. Abra o aplicativo pelo servidor local ou pelo executável.'
+        };
+        status.warnings.push(status.pdfWorker.error);
+        return status.pdfWorker;
       }
+
+      options.workerSrc = sourceUrl;
+      status.pdfWorker = { ready: true, mode: 'worker-src-per-document', source, sourceUrl, error: '' };
     } catch (error) {
       options.workerSrc = sourceUrl;
       status.pdfWorker = {

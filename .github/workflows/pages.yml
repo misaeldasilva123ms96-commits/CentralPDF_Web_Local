@@ -25,8 +25,8 @@ jobs:
         with:
           path: |
             vendor/pdf-lib.min.js
-            vendor/pdf.min.js
-            vendor/pdf.worker.min.js
+            vendor/pdfjs
+            vendor/pdfjs-manifest.js
             vendor/UTIF.js
             vendor/heic2any.min.js
             vendor/tesseract
@@ -51,6 +51,10 @@ jobs:
         run: |
           test -f _site/index.html
           test -f _site/vendor/offline-status.js
+          test -f _site/vendor/pdfjs/pdf.min.mjs
+          test -f _site/vendor/pdfjs/pdf.worker.min.mjs
+          test -f _site/vendor/pdfjs/LICENSE
+          test -f _site/vendor/pdfjs-manifest.js
           test -f _site/vendor/tesseract-core/tesseract-core-relaxedsimd-lstm.wasm.js
           test ! -e _site/CentralPDF_Local_Server.exe
           test ! -e _site/server

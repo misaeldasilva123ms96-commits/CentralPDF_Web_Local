@@ -12,8 +12,9 @@ index = (root / 'index.html').read_text(encoding='utf-8')
 assert 'URL.createObjectURL' not in engine
 assert 'new Blob' not in engine
 assert 'importScripts(' not in engine
-assert 'main-thread-file-safe' in engine
+assert 'direct-file-esm-unsupported' in engine
 assert 'pdfWorkerBlobWrapperDisabled: true' in engine
+assert 'pdfJsEvalDisabled: true' in engine
 assert "adaptiveCompression: 'multi-pass-target-selection'" in engine
 
 assert 'Inteligente — equilíbrio e redução automática' in app
@@ -57,7 +58,7 @@ with sync_playwright() as p:
     assert result['strongTarget'] == .45
     browser.close()
 
-engine_html = f"""<!doctype html><html><body>
+engine_html = f"""<!doctype html><html><head><base href="http://test.local/"></head><body>
 <script>
 window.CentralPDFProtocolOverride='file:';
 window.PDFLib={{PDFDocument:{{}}}};
@@ -82,13 +83,13 @@ with sync_playwright() as p:
     page.wait_for_function("window.CentralPDFEngineStatus && window.CentralPDFEngineStatus.finishedAt")
     worker = page.evaluate("""() => ({
       status: window.CentralPDFGetPdfWorkerStatus(),
-      workerSrc: window.pdfjsLib.GlobalWorkerOptions.workerSrc,
+      workerSrc: String(window.pdfjsLib.GlobalWorkerOptions.workerSrc || ''),
       hasMainThreadHandler: Boolean(window.pdfjsWorker?.WorkerMessageHandler)
     })""")
-    assert worker['status']['ready'] is True
-    assert worker['status']['mode'] == 'main-thread-file-safe'
+    assert worker['status']['ready'] is False
+    assert worker['status']['mode'] == 'direct-file-esm-unsupported'
     assert not worker['workerSrc'].startswith('blob:')
-    assert worker['hasMainThreadHandler'] is True
+    assert worker['hasMainThreadHandler'] is False
     browser.close()
 
 print('compression-worker-1.2.0: passed')

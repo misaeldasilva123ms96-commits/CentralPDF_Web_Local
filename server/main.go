@@ -25,8 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_ = mime.AddExtensionType(".webmanifest", "application/manifest+json")
-	_ = mime.AddExtensionType(".wasm", "application/wasm")
+	registerMimeTypes()
 
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -70,6 +69,7 @@ func main() {
 }
 
 func newHandler(root string) http.Handler {
+	registerMimeTypes()
 	files := http.FileServer(http.Dir(root))
 	mux := http.NewServeMux()
 	mux.HandleFunc("/__health", func(w http.ResponseWriter, r *http.Request) {
@@ -92,6 +92,12 @@ func newHandler(root string) http.Handler {
 		files.ServeHTTP(w, r)
 	}))
 	return mux
+}
+
+func registerMimeTypes() {
+	_ = mime.AddExtensionType(".webmanifest", "application/manifest+json")
+	_ = mime.AddExtensionType(".wasm", "application/wasm")
+	_ = mime.AddExtensionType(".mjs", "text/javascript; charset=utf-8")
 }
 
 func openBrowser(url string) error {

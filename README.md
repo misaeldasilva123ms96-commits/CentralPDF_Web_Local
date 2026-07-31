@@ -166,7 +166,7 @@ Se o navegador ainda mostrar uma versão anterior após uma publicação, use `C
 
 ## Atualizações técnicas avaliadas
 
-Pesquisa realizada em **30 de julho de 2026**, usando páginas oficiais dos projetos e registros npm.
+Pesquisa revisada em **31 de julho de 2026**, usando páginas oficiais dos projetos e registros npm.
 
 | Componente | Situação avaliada | Decisão |
 | --- | --- | --- |
@@ -175,10 +175,10 @@ Pesquisa realizada em **30 de julho de 2026**, usando páginas oficiais dos proj
 | Tesseract.js e core | Projeto usa a linha `7.0.0` compatível entre biblioteca e motor | Manter o par testado |
 | UTIF, heic2any, JSZip e libPDF | Versões locais permanecem atuais | Manter |
 | PptxGenJS | Local `4.0.0`; existe atualização `4.0.1` | Adiar a troca mínima até um teste dedicado de exportação Office |
-| PDF.js | Local `3.11.174`; atual `6.2.108` | Adiar: salto de versão principal exige adaptar distribuição, Worker e testar as 34 ferramentas |
+| PDF.js | `6.2.108` legacy ESM, com Worker e recursos locais | Atualizado após auditoria; `isEvalSupported` permanece desativado como defesa em profundidade |
 | GitHub Actions | Actions antigas usavam runtime Node legado | Atualizar para os majors atuais baseados em Node 24 |
 
-A decisão de adiar não indica vulnerabilidade confirmada. Ela separa mudanças de compatibilidade ampla de uma atualização documental e de infraestrutura de baixo risco.
+O PDF.js anterior (`3.11.174`) estava na faixa afetada pela vulnerabilidade alta [GHSA-wgrm-67xf-hhpq](https://github.com/advisories/GHSA-wgrm-67xf-hhpq). A migração adotou a distribuição ESM corrigida, manteve o processamento local e passou a incluir CMaps, perfis ICC, fontes padrão, módulos WASM e licenças no pacote offline.
 
 Fontes da pesquisa: [Go releases](https://go.dev/doc/devel/release), [pdf-lib](https://www.npmjs.com/package/pdf-lib), [PDF.js](https://www.npmjs.com/package/pdfjs-dist), [Tesseract.js](https://www.npmjs.com/package/tesseract.js), [GitHub Actions](https://github.com/actions).
 
