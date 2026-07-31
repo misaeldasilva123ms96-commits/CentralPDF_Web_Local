@@ -1,0 +1,226 @@
+/* Central PDF 1.2.2 — correções de tema e camadas das ferramentas visuais */
+
+/* A página já possui um cabeçalho fixo. Barras internas estáticas evitam que
+   ferramentas, subtítulos e o canvas ocupem a mesma camada durante a rolagem. */
+.pdf-editor-toolbar,
+.editor-work-header {
+  position: static;
+  top: auto;
+}
+
+.pdf-editor-toolbar,
+.pdf-editor-subtoolbar {
+  flex-wrap: wrap;
+}
+
+.pdf-editor-toolbar > .editor-tool-group:first-child {
+  flex: 1 1 390px;
+  min-width: 0;
+}
+
+.pdf-editor-toolbar > .editor-tool-group.secondary {
+  flex: 1 1 245px;
+  min-width: 0;
+}
+
+/* Superfícies estruturais do editor. O papel/canvas continua branco para
+   representar fielmente a página que será exportada. */
+body[data-theme='dark'] .pdf-editor-section,
+body[data-theme='dark'] .redaction-section,
+body[data-theme='dark'] .cp18-designer {
+  background: #0d1625;
+  border-color: #2b3850;
+  color: #edf2ff;
+}
+
+body[data-theme='dark'] .pdf-editor-toolbar,
+body[data-theme='dark'] .pdf-editor-subtoolbar,
+body[data-theme='dark'] .editor-page-sidebar-head,
+body[data-theme='dark'] .editor-work-header,
+body[data-theme='dark'] .editor-status,
+body[data-theme='dark'] .redaction-toolbar,
+body[data-theme='dark'] .cp18-designer-toolbar {
+  background: #111a2a;
+  border-color: #2b3850;
+  color: #cbd5e5;
+}
+
+body[data-theme='dark'] .editor-page-sidebar,
+body[data-theme='dark'] .redaction-layout aside,
+body[data-theme='dark'] .cp18-designer-layout aside {
+  background: #101827 !important;
+  border-color: #2b3850 !important;
+  color: #dce5f5;
+}
+
+body[data-theme='dark'] .editor-tool,
+body[data-theme='dark'] .editor-action,
+body[data-theme='dark'] .redaction-toolbar button,
+body[data-theme='dark'] .redaction-layout aside button,
+body[data-theme='dark'] .redaction-pattern-buttons button,
+body[data-theme='dark'] .cp18-designer-toolbar button,
+body[data-theme='dark'] .cp18-designer-layout aside button,
+body[data-theme='dark'] .icon-button,
+body[data-theme='dark'] .page-action {
+  background: #151f31;
+  border-color: #34435c;
+  color: #d8e1f0;
+}
+
+body[data-theme='dark'] .editor-tool:hover,
+body[data-theme='dark'] .editor-action:hover,
+body[data-theme='dark'] .redaction-toolbar button:hover,
+body[data-theme='dark'] .redaction-layout aside button:hover,
+body[data-theme='dark'] .redaction-pattern-buttons button:hover,
+body[data-theme='dark'] .cp18-designer-toolbar button:hover,
+body[data-theme='dark'] .cp18-designer-layout aside button:hover,
+body[data-theme='dark'] .icon-button:hover,
+body[data-theme='dark'] .page-action:hover {
+  background: #1c2940;
+  border-color: #536582;
+  color: #fff;
+}
+
+body[data-theme='dark'] .editor-tool.active,
+body[data-theme='dark'] .redaction-layout aside button.active,
+body[data-theme='dark'] .cp18-designer-layout aside button.active {
+  background: #24204a;
+  border-color: #887cff;
+  color: #d7d1ff;
+  box-shadow: 0 0 0 2px rgba(136, 124, 255, .14);
+}
+
+body[data-theme='dark'] .editor-work-header span:first-child,
+body[data-theme='dark'] .editor-zoom-control strong,
+body[data-theme='dark'] .editor-empty-message strong,
+body[data-theme='dark'] .editor-selection-heading strong,
+body[data-theme='dark'] .redaction-layout aside > strong,
+body[data-theme='dark'] .cp18-designer-layout aside > strong {
+  color: #edf2ff;
+}
+
+body[data-theme='dark'] .editor-zoom-control,
+body[data-theme='dark'] .editor-thumb-empty,
+body[data-theme='dark'] .editor-empty-message,
+body[data-theme='dark'] .editor-selection-heading span,
+body[data-theme='dark'] .redaction-layout main p,
+body[data-theme='dark'] .redaction-summary p,
+body[data-theme='dark'] .compare-plan p,
+body[data-theme='dark'] .cp18-designer-toolbar small,
+body[data-theme='dark'] .cp18-designer-layout main > p,
+body[data-theme='dark'] .signature-pad-actions label {
+  color: #94a4bb;
+}
+
+body[data-theme='dark'] .editor-selection-panel,
+body[data-theme='dark'] .editor-object-size-panel {
+  background: #121c2c;
+  border-color: #2b3850;
+}
+
+body[data-theme='dark'] .editor-status.success {
+  background: #10261e;
+  color: #95dfbd;
+}
+
+body[data-theme='dark'] .editor-status.error {
+  background: #26131a;
+  color: #f3a9b3;
+}
+
+body[data-theme='dark'] .editor-status.processing {
+  background: #251d0f;
+  color: #e7be6d;
+}
+
+/* Organizador e junção de arquivos */
+body[data-theme='dark'] .page-select span,
+body[data-theme='dark'] .merge-source-summary,
+body[data-theme='dark'] .merge-source-item {
+  background: #121c2c;
+  border-color: #2b3850;
+  color: #dce5f5;
+}
+
+body[data-theme='dark'] .merge-source-summary .split-plan-header {
+  border-color: #2b3850;
+}
+
+body[data-theme='dark'] .merge-source-index {
+  background: #24204a;
+  color: #c8c1ff;
+}
+
+body[data-theme='dark'] .merge-source-item small,
+body[data-theme='dark'] .merge-source-toolbar label {
+  color: #94a4bb;
+}
+
+body[data-theme='dark'] .merge-source-item:hover,
+body[data-theme='dark'] .merge-source-item.drop-target {
+  background: #1a2640;
+  border-color: #7569ff;
+}
+
+/* Conversões, inteligência e revisão OCR */
+body[data-theme='dark'] .conversion-format-grid span,
+body[data-theme='dark'] .conversion-output-row,
+body[data-theme='dark'] .ocr-review-dialog > section,
+body[data-theme='dark'] .ocr-review-dialog main,
+body[data-theme='dark'] .ocr-review-file,
+body[data-theme='dark'] .ocr-review-summary,
+body[data-theme='dark'] .ocr-review-pages > div,
+body[data-theme='dark'] .ocr-output-note {
+  background: #121c2c;
+  border-color: #2b3850;
+  color: #dce5f5;
+}
+
+body[data-theme='dark'] .conversion-format-grid b,
+body[data-theme='dark'] .conversion-output-row strong,
+body[data-theme='dark'] .ocr-review-dialog h2,
+body[data-theme='dark'] .ocr-review-summary strong {
+  color: #edf2ff;
+}
+
+body[data-theme='dark'] .conversion-format-grid small,
+body[data-theme='dark'] .conversion-output-row small,
+body[data-theme='dark'] .ocr-review-dialog header p,
+body[data-theme='dark'] .ocr-review-dialog footer span,
+body[data-theme='dark'] .ocr-review-summary small,
+body[data-theme='dark'] .ocr-review-pages span,
+body[data-theme='dark'] .ocr-review-pages small,
+body[data-theme='dark'] .ocr-output-note p {
+  color: #94a4bb;
+}
+
+body[data-theme='dark'] .ocr-review-dialog header,
+body[data-theme='dark'] .ocr-review-dialog footer {
+  border-color: #2b3850;
+}
+
+body[data-theme='dark'] .ocr-review-dialog button {
+  background: #151f31;
+  border-color: #34435c;
+  color: #d8e1f0;
+}
+
+body[data-theme='dark'] .archive-certification-note,
+body[data-theme='dark'] .intelligence-warning {
+  background: #251d0f;
+  border-color: #5b4928;
+  color: #e7c77e;
+}
+
+body[data-theme='dark'] .archive-certification-note strong,
+body[data-theme='dark'] .archive-certification-note p {
+  color: #e7c77e;
+}
+
+@media (max-width: 760px) {
+  .pdf-editor-toolbar > .editor-tool-group:first-child,
+  .pdf-editor-toolbar > .editor-tool-group.secondary {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
