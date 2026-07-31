@@ -1,5 +1,10 @@
 ## 1.2.0 — auditoria profunda das 34 ferramentas
 
+- GitHub Pages passa a publicar somente a aplicação web com todos os motores opcionais verificados.
+- Corrigida a preparação do OCR 7 com as variantes Relaxed SIMD exigidas pelo navegador.
+- UTIF passa a usar o arquivo original e estável do pacote npm, evitando hash variável da minificação do CDN.
+- A preparação offline reutiliza arquivos existentes quando tamanho e SHA-256 já estão corretos.
+- O cache do Service Worker foi renovado para atualizar instalações que abriram a publicação anterior.
 - Reaplicado consentimento explícito antes de executar motores remotos de PDF, OCR, LibPDF, HEIC ou TIFF.
 - Removida a rota HTTP local de desligamento e restringido `/__health` ao método GET.
 - Adicionadas Content Security Policy e Permissions Policy ao servidor local para limitar origens executáveis e recursos sensíveis do navegador.

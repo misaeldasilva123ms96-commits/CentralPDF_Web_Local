@@ -49,7 +49,7 @@
   async function ensureOptionalDecoder(kind) {
     if(kind==='tiff') {
       if(window.UTIF) return window.UTIF;
-      const candidates=['vendor/UTIF.min.js'];
+      const candidates=['vendor/UTIF.js'];
       if(window.CentralPDFRemoteEngines?.isAllowed?.()) candidates.push('https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js');
       let last;
       for(const url of candidates){try{await scriptLoader(url,()=>Boolean(window.UTIF));return window.UTIF;}catch(e){last=e;}}
