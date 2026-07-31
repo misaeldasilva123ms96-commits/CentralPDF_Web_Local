@@ -78,7 +78,7 @@ func newHandler(root string) http.Handler {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"status":"ok","app":"Central PDF","version":"1.2.0"}`))
+		_, _ = w.Write([]byte(`{"status":"ok","app":"Central PDF","version":"1.2.1"}`))
 	})
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

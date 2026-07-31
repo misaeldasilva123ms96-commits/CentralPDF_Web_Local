@@ -1,5 +1,6 @@
-## Próxima atualização — exportação PowerPoint validada
+## 1.2.1 — motores atualizados e releases verificáveis
 
+- PDF.js atualizado de 3.11.174 para 6.2.108, com recursos locais completos e execução de JavaScript interno desativada.
 - PptxGenJS atualizado de 4.0.0 para 4.0.1 usando a distribuição oficial do npm e sua licença MIT.
 - Exportação PPTX passa a ter teste dedicado com múltiplos slides, imagens, notas, relacionamentos e validação de todos os XMLs do pacote.
 - Releases futuras passam a montar o pacote offline, publicar hashes SHA-256 e gerar atestações criptográficas de procedência automaticamente.
