@@ -10,21 +10,33 @@ attributes = (root / ".gitattributes").read_text(encoding="utf-8")
 for fragment in (
     'tags:',
     '"v[0-9]+.[0-9]+.[0-9]+"',
+    'workflow_dispatch:',
+    'RELEASE_TAG:',
+    'ref: ${{ env.RELEASE_TAG }}',
     'contents: write',
     'id-token: write',
     'attestations: write',
     'actions/attest@v4',
     'fetch-depth: 0',
-    'git merge-base --is-ancestor "$GITHUB_SHA" origin/main',
+    'git rev-parse "$RELEASE_TAG^{commit}"',
+    'git merge-base --is-ancestor "$tag_commit" origin/main',
     'sha256sum -c checksums.sha256',
     'cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.release.exe',
     './scripts/prepare-offline.ps1',
     './scripts/build-release.ps1',
     'gh release create',
+    '"$release_dir/CentralPDF_Web_Local_v$version.zip"',
+    '"$release_dir/CentralPDF_Local_Server.exe"',
+    '"$release_dir/CentralPDF_Web_Local_v$version.sha256"',
+    'if [[ ! -f "$asset" ]]',
+    '"${release_assets[@]}"',
+    '--repo "$GITHUB_REPOSITORY"',
     '--verify-tag',
     '--fail-on-no-commits',
 ):
     assert fragment in workflow, fragment
+
+assert '"${{ runner.temp }}"/release/*' not in workflow
 
 for fragment in (
     "A saída da release deve ficar fora da árvore do projeto.",
