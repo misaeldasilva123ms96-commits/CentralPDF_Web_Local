@@ -1,6 +1,6 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v1.2.0-pages-2';
+const CACHE_VERSION = 'centralpdf-v1.2.1-pages-1';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [

@@ -116,7 +116,7 @@
 
   function relabelButtons() {
     const qualityLabel = $('#cp10QualityButton .cp10-label');
-    if (qualityLabel) qualityLabel.textContent = 'Qualidade 1.2.0';
+    if (qualityLabel) qualityLabel.textContent = 'Qualidade 1.2.1';
     const resultsButton = $('#cp15ResultsBtn span');
     if (resultsButton) resultsButton.textContent = 'Resultados';
   }

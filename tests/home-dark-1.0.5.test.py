@@ -41,6 +41,6 @@ with sync_playwright() as p:
     assert 'gradient' in values['cardBg']
     assert values['chipBg'] == 'rgb(26, 36, 64)'
     assert 'gradient' in values['searchBg']
-    assert values['homeVersion'] == 'Web local 1.2.0'
+    assert values['homeVersion'] == 'Web local 1.2.1'
     print('home-dark-1.0.5: passed')
     browser.close()
