@@ -84,17 +84,19 @@ jobs:
             exit 1
           fi
 
+          version="${RELEASE_TAG#v}"
           release_dir="${{ runner.temp }}/release"
-          mapfile -t release_assets < <(
-            find "$release_dir" -maxdepth 1 -type f \
-              \( -name '*.zip' -o -name '*.exe' -o -name '*.sha256' \) \
-              -print | sort
+          release_assets=(
+            "$release_dir/CentralPDF_Web_Local_v$version.zip"
+            "$release_dir/CentralPDF_Local_Server.exe"
+            "$release_dir/CentralPDF_Web_Local_v$version.sha256"
           )
-          if [[ "${#release_assets[@]}" -ne 3 ]]; then
-            echo "Esperados exatamente 3 artefatos de release; encontrados ${#release_assets[@]}."
-            printf '  %s\n' "${release_assets[@]}"
-            exit 1
-          fi
+          for asset in "${release_assets[@]}"; do
+            if [[ ! -f "$asset" ]]; then
+              echo "Artefato obrigatório ausente: $asset"
+              exit 1
+            fi
+          done
 
           gh release create "$RELEASE_TAG" "${release_assets[@]}" \
             --repo "$GITHUB_REPOSITORY" \
