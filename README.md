@@ -12,6 +12,10 @@ O GitHub Pages é publicado com os mesmos motores verificados usados no pacote
 offline. Os arquivos enviados permanecem no navegador; o site não possui rota
 de upload nem backend de processamento de documentos.
 
+Depois que uma alteração é integrada na `main`, o workflow **Pages** remonta o
+pacote, confere os motores por SHA-256 e publica automaticamente. Pull requests
+montam o mesmo artefato para validação, mas não recebem permissão de deploy.
+
 ## Versão estável 1.2.0
 
 A versão 1.2.0 preserva as 34 ferramentas e adiciona auditoria profunda, pré-verificação e validação de execução para todo o catálogo:
