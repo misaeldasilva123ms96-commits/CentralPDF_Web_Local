@@ -15,6 +15,16 @@ test-results/
 CentralPDF_Local_Server.ci.exe
 CentralPDF_Local_Server.build*.exe
 
+# Optional browser engines downloaded by PREPARAR_OFFLINE.bat
+vendor/pdf-lib.min.js
+vendor/pdf.min.js
+vendor/pdf.worker.min.js
+vendor/UTIF.js
+vendor/heic2any.min.js
+vendor/tesseract/
+vendor/tesseract-core/
+vendor/tessdata/
+
 # Local logs and temporary files
 *.log
 *.tmp

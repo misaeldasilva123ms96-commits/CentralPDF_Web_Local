@@ -17,9 +17,13 @@ $items = @(
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-simd.wasm.js'; Path = 'vendor/tesseract-core/tesseract-core-simd.wasm.js'; MinBytes = 3000000; Sha256 = '6b61ef4e911b5cf57e656bbfe983d6e2b3711a02dd164154ddda064566e8e09d' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-lstm.wasm.js'; Path = 'vendor/tesseract-core/tesseract-core-lstm.wasm.js'; MinBytes = 2500000; Sha256 = 'eef5f8b2f8e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-simd-lstm.wasm.js'; Path = 'vendor/tesseract-core/tesseract-core-simd-lstm.wasm.js'; MinBytes = 2500000; Sha256 = 'c58b46a4c796c0b8afccf77591d5b875b6896b45d402bbce8caa6f5362447b38' },
+    @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-relaxedsimd.wasm.js'; Path = 'vendor/tesseract-core/tesseract-core-relaxedsimd.wasm.js'; MinBytes = 3000000; Sha256 = '843074aa5bad1cc6421b74a86201768ced9f244795e4d81435435a61a40ce535' },
+    @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-relaxedsimd-lstm.wasm.js'; Path = 'vendor/tesseract-core/tesseract-core-relaxedsimd-lstm.wasm.js'; MinBytes = 2500000; Sha256 = '861a536cf9ef8e63cb644d57bab39c388f37f7d6b6f60024b741c5f6b39a59b3' },
     @{ Url = 'https://tessdata.projectnaptha.com/4.0.0/por.traineddata.gz'; Path = 'vendor/tessdata/4.0.0/por.traineddata.gz'; MinBytes = 500000; Sha256 = '3f5feea9dfc39106c92348089097a39bec66e9d6d09ca49befebb0bb60947374' },
     @{ Url = 'https://tessdata.projectnaptha.com/4.0.0/eng.traineddata.gz'; Path = 'vendor/tessdata/4.0.0/eng.traineddata.gz'; MinBytes = 500000; Sha256 = 'ed350f3752f81ee8f38769edc14d92d997dababe23b565c59879372cc46a2468' },
-    @{ Url = 'https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js'; Path = 'vendor/UTIF.min.js'; MinBytes = 20000; Sha256 = '14213e3d31a30b1bc535e35359f3b91ad7d8539192ae191d63f6e6b49039b56f' },
+    # jsDelivr minifica UTIF.min.js dinamicamente, portanto o hash pode mudar
+    # sem alteração da versão. UTIF.js é o arquivo original do pacote npm.
+    @{ Url = 'https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.js'; Path = 'vendor/UTIF.js'; MinBytes = 50000; Sha256 = 'e3e76115f49571e39624c3316a76b3c4c5b2c5ca518dfec4b66a9f7af8c6d059' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js'; Path = 'vendor/heic2any.min.js'; MinBytes = 10000; Sha256 = '0963cfa50e9e1e7e6af929a40a81e3e898a673f1270eafa6917dd137e4968164' }
 )
 
@@ -34,6 +38,15 @@ foreach ($item in $items) {
     $partial = "$target.partial"
     New-Item -ItemType Directory -Path $targetDirectory -Force | Out-Null
     Remove-Item -LiteralPath $partial -Force -ErrorAction SilentlyContinue
+
+    if (Test-Path -LiteralPath $target) {
+        $existing = Get-Item -LiteralPath $target
+        $existingHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $target).Hash.ToLowerInvariant()
+        if ($existing.Length -ge [int64]$item.MinBytes -and $existingHash -eq $item.Sha256) {
+            Write-Host "Reutilizando $($item.Path): SHA-256 válido."
+            continue
+        }
+    }
 
     try {
         Write-Host "Baixando $($item.Path)..."

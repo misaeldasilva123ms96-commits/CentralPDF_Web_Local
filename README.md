@@ -2,6 +2,16 @@
 
 Aplicação web local com 34 ferramentas para organizar, editar, converter, proteger, pesquisar, comparar e auditar PDFs e imagens.
 
+## Acesso online
+
+A versão web está disponível em:
+
+**https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/**
+
+O GitHub Pages é publicado com os mesmos motores verificados usados no pacote
+offline. Os arquivos enviados permanecem no navegador; o site não possui rota
+de upload nem backend de processamento de documentos.
+
 ## Versão estável 1.2.0
 
 A versão 1.2.0 preserva as 34 ferramentas e adiciona auditoria profunda, pré-verificação e validação de execução para todo o catálogo:

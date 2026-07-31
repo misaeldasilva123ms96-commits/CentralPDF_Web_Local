@@ -3,6 +3,11 @@
 ## Processamento local
 A aplicação e o servidor local não possuem rota de upload. O servidor atende apenas `127.0.0.1`. Resultados, favoritos, fluxos e predefinições permanecem no navegador utilizado.
 
+Na versão publicada pelo GitHub Pages, a interface e os motores verificados são
+baixados como arquivos estáticos do próprio site. PDFs e imagens continuam
+processados no navegador e não são enviados ao GitHub ou a um backend da
+aplicação.
+
 ## Resultados e fluxos
 Resultados da sessão podem permanecer temporariamente na memória para serem usados na próxima ferramenta. Fechar a aba elimina esses resultados. Fluxos não enviam documentos para serviços externos.
 
