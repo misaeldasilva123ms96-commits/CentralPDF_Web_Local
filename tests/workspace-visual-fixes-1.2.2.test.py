@@ -20,8 +20,14 @@ html = f"""<!doctype html><html><head><style>{css}</style></head>
       <div class="editor-tool-group secondary"><button class="editor-action">Imagem</button><button class="editor-action">Páginas de PDF</button><button class="editor-action">Página em branco</button></div>
     </div>
     <div class="pdf-editor-subtoolbar">Ações da página</div>
-    <div class="editor-work-header"><span>Selecionar objetos</span><span>Página 1</span></div>
-    <div class="editor-stage">Papel</div><div class="editor-status">Pronto</div>
+    <div class="pdf-editor-layout">
+      <aside class="editor-page-sidebar"><div class="editor-page-sidebar-head"><strong>Páginas</strong><span>1 / 1</span></div></aside>
+      <div class="editor-work-area">
+        <div class="editor-work-header"><span>Selecionar objetos</span><span>Página 1</span></div>
+        <div class="editor-scroll-area"><div class="editor-stage">Papel</div></div>
+        <div class="editor-status">Pronto</div>
+      </div>
+    </div>
   </section>
   <section class="redaction-section"><div class="redaction-toolbar"><button>Censurar</button></div><div class="redaction-layout"><aside><strong>Páginas</strong><button>1</button></aside><main><div id="redactCanvasWrap">Papel</div></main></div></section>
   <section class="cp18-designer"><div class="cp18-designer-toolbar"><button>Campo</button></div><div class="cp18-designer-layout"><aside><strong>Páginas</strong><button>1</button></aside><main><div class="cp18-canvas-wrap">Papel</div></main></div></section>
@@ -37,18 +43,21 @@ with sync_playwright() as playwright:
     )
     page = browser.new_page(viewport={"width": 1280, "height": 720})
     page.set_content(html, wait_until="domcontentloaded")
-    values = page.evaluate("""() => {
+    values = page.evaluate(r"""() => {
       const style = selector => getComputedStyle(document.querySelector(selector));
       const dark = selector => {
         const match = style(selector).backgroundColor.match(/\d+/g).map(Number);
         return Math.max(...match.slice(0, 3)) < 80;
       };
       const toolbar = document.querySelector('.pdf-editor-toolbar');
+      const header = document.querySelector('.editor-work-header').getBoundingClientRect();
+      const canvasArea = document.querySelector('.editor-scroll-area').getBoundingClientRect();
       return {
         toolbarPosition: style('.pdf-editor-toolbar').position,
         toolbarTop: style('.pdf-editor-toolbar').top,
         headerPosition: style('.editor-work-header').position,
         toolbarFits: toolbar.scrollWidth <= toolbar.clientWidth + 1,
+        headerBeforeCanvas: header.bottom <= canvasArea.top + 1,
         editorDark: dark('.pdf-editor-section'),
         editorToolbarDark: dark('.pdf-editor-toolbar'),
         editorButtonDark: dark('.editor-tool'),
@@ -68,6 +77,7 @@ with sync_playwright() as playwright:
     assert values["toolbarTop"] == "auto"
     assert values["headerPosition"] == "static"
     assert values["toolbarFits"] is True
+    assert values["headerBeforeCanvas"] is True
     for key in (
         "editorDark", "editorToolbarDark", "editorButtonDark",
         "redactionDark", "redactionButtonDark", "formsDark",
@@ -77,6 +87,25 @@ with sync_playwright() as playwright:
     assert values["editorPaper"] == "rgb(255, 255, 255)"
     assert values["redactionPaper"] == "rgb(255, 255, 255)"
     assert values["formsPaper"] == "rgb(255, 255, 255)"
+
+    page.set_viewport_size({"width": 390, "height": 844})
+    mobile = page.evaluate(r"""() => {
+      const toolbar = document.querySelector('.pdf-editor-toolbar');
+      const header = document.querySelector('.editor-work-header').getBoundingClientRect();
+      const canvasArea = document.querySelector('.editor-scroll-area').getBoundingClientRect();
+      return {
+        noDocumentOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+        toolbarFits: toolbar.scrollWidth <= toolbar.clientWidth + 1,
+        toolbarWraps: toolbar.getBoundingClientRect().height > 50,
+        headerBeforeCanvas: header.bottom <= canvasArea.top + 1,
+        toolbarPosition: getComputedStyle(toolbar).position,
+      };
+    }""")
+    assert mobile["noDocumentOverflow"] is True
+    assert mobile["toolbarFits"] is True
+    assert mobile["toolbarWraps"] is True
+    assert mobile["headerBeforeCanvas"] is True
+    assert mobile["toolbarPosition"] == "static"
     browser.close()
 
 print("workspace-visual-fixes-1.2.2: passed")
