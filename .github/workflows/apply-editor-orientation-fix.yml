@@ -53,3 +53,5 @@ jobs:
           git add assets/js/pdf-editor.js tests/pdf-editor-orientation.test.js tests/editor-page-orientation.test.py
           git commit -m 'fix: preserve page orientation in PDF editor'
           git push origin HEAD:fix/editor-orientation-and-page-rotation
+
+# Workflow bootstrap complete; this follow-up push starts the run.
