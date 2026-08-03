@@ -1,0 +1,55 @@
+name: Apply editor orientation fix
+
+on:
+  push:
+    branches:
+      - fix/editor-orientation-and-page-rotation
+    paths:
+      - scripts/.editor-orientation-patch.part*
+      - .github/workflows/apply-editor-orientation-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/editor-orientation-and-page-rotation
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Apply orientation patch
+        shell: bash
+        run: |
+          cat scripts/.editor-orientation-patch.part* | base64 --decode > "$RUNNER_TEMP/editor-orientation.patch"
+          git apply --whitespace=error-all "$RUNNER_TEMP/editor-orientation.patch"
+
+      - name: Validate focused changes
+        shell: bash
+        run: |
+          node --check assets/js/pdf-editor.js
+          node tests/pdf-editor.test.js
+          node tests/pdf-editor-orientation.test.js
+          python -m py_compile tests/editor-page-orientation.test.py
+          git diff --check
+
+      - name: Commit implementation
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/js/pdf-editor.js tests/pdf-editor-orientation.test.js tests/editor-page-orientation.test.py
+          git commit -m 'fix: preserve page orientation in PDF editor'
+          git push origin HEAD:fix/editor-orientation-and-page-rotation
