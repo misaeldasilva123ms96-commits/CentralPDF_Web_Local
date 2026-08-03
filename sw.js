@@ -1,6 +1,6 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v1.2.1-pages-2';
+const CACHE_VERSION = 'centralpdf-v1.2.1-pages-3';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
@@ -51,6 +51,20 @@ self.addEventListener('fetch', event => {
   }
 
   if (url.origin === self.location.origin) {
+    const networkFirst = request.mode === 'navigate'
+      || url.pathname.endsWith('/index.html')
+      || url.pathname.endsWith('/assets/js/pdf-editor.js');
+
+    if (networkFirst) {
+      event.respondWith(fetch(request, { cache: 'no-store' }).then(response => {
+        if (response && response.ok) {
+          caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
+        }
+        return response;
+      }).catch(() => caches.match(request)));
+      return;
+    }
+
     event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
       caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
       return response;

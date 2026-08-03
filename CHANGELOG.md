@@ -1,3 +1,10 @@
+## Correção de entrega da orientação do Editor PDF
+
+- exibe os botões de rotação diretamente na barra de ações da página;
+- renova o cache do aplicativo para entregar a implementação mesclada no PR #12;
+- usa estratégia network-first para a página inicial e o módulo do Editor PDF, mantendo fallback offline;
+- adiciona teste de regressão para controles, orientação e invalidação de cache.
+
 ## 1.2.1 — motores atualizados e releases verificáveis
 
 - PDF.js atualizado de 3.11.174 para 6.2.108, com recursos locais completos e execução de JavaScript interno desativada.
