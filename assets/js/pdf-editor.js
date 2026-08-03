@@ -49,7 +49,21 @@
     renderEmpty();
   }
 
+  function ensurePageRotationControls() {
+    const actions = $('.editor-page-actions');
+    if (!actions || $('#editorRotatePageLeft') || typeof actions.insertBefore !== 'function') return;
+    const group = document.createElement('span');
+    group.className = 'editor-page-rotation-actions';
+    group.style.display = 'inline-flex';
+    group.style.gap = '6px';
+    group.style.flexWrap = 'wrap';
+    group.setAttribute('aria-label', 'Rotação da página');
+    group.innerHTML = '<button id="editorRotatePageLeft" class="small-button" type="button" title="Girar página 90° para a esquerda">↶ Girar página</button><button id="editorRotatePageRight" class="small-button" type="button" title="Girar página 90° para a direita">↷ Girar página</button>';
+    actions.insertBefore(group, $('#editorDuplicatePage') || null);
+  }
+
   function bindStaticUi() {
+    ensurePageRotationControls();
     document.querySelectorAll('[data-editor-tool]').forEach(button => {
       button.addEventListener('click', () => setTool(button.dataset.editorTool));
     });
@@ -63,6 +77,8 @@
     $('#editorDeletePage')?.addEventListener('click', deleteCurrentPage);
     $('#editorMovePageUp')?.addEventListener('click', () => moveCurrentPage(-1));
     $('#editorMovePageDown')?.addEventListener('click', () => moveCurrentPage(1));
+    $('#editorRotatePageLeft')?.addEventListener('click', () => rotateCurrentPage(-90));
+    $('#editorRotatePageRight')?.addEventListener('click', () => rotateCurrentPage(90));
     $('#editorUndo')?.addEventListener('click', undo);
     $('#editorRedo')?.addEventListener('click', redo);
     $('#editorZoom')?.addEventListener('input', event => {
@@ -192,10 +208,11 @@
     for (let index = 0; index < rendered.numPages; index++) {
       if (generation !== state.loadGeneration) return;
       const page = await rendered.getPage(index + 1);
-      const viewport = page.getViewport({ scale: 1 });
+      const sourceRotation = normalizeAngle(Number(page.rotate || 0));
+      const viewport = page.getViewport({ scale: 1, rotation: sourceRotation });
       state.pages.push({
         id: nextPageId(), kind: 'pdf', sourceId, sourceIndex: index,
-        width: viewport.width, height: viewport.height, rotation: 0,
+        width: viewport.width, height: viewport.height, sourceRotation, rotation: 0,
         crop: null, objects: []
       });
     }
@@ -208,6 +225,70 @@
   }
 
   function currentPage() { return state.pages[state.activeIndex] || null; }
+
+  function getPageRenderRotation(page) {
+    return normalizeAngle(Number(page?.sourceRotation || 0) + Number(page?.rotation || 0));
+  }
+
+  function pageOrientation(page) {
+    const width = Number(page?.width || 0);
+    const height = Number(page?.height || 0);
+    if (Math.abs(width - height) < 0.5) return 'Quadrado';
+    return width > height ? 'Paisagem' : 'Retrato';
+  }
+
+  function rotateVisualPoint(point, width, height, delta = 90) {
+    const angle = normalizeAngle(delta);
+    if (angle === 90) return { x: height - point.y, y: point.x };
+    if (angle === 180) return { x: width - point.x, y: height - point.y };
+    if (angle === 270) return { x: point.y, y: width - point.x };
+    return { x: point.x, y: point.y };
+  }
+
+  function rotateVisualRect(rect, width, height, delta = 90) {
+    const angle = normalizeAngle(delta);
+    if (angle === 90) return { x: height - rect.y - rect.height, y: rect.x, width: rect.height, height: rect.width };
+    if (angle === 180) return { x: width - rect.x - rect.width, y: height - rect.y - rect.height, width: rect.width, height: rect.height };
+    if (angle === 270) return { x: rect.y, y: width - rect.x - rect.width, width: rect.height, height: rect.width };
+    return { ...rect };
+  }
+
+  function rotatePageGeometry(page, delta = 90) {
+    const steps = Math.round(normalizeAngle(delta) / 90) % 4;
+    for (let step = 0; step < steps; step++) {
+      const width = page.width;
+      const height = page.height;
+      page.objects.forEach(object => {
+        if (object.type === 'path' && Array.isArray(object.points)) {
+          object.points = object.points.map(point => rotateVisualPoint(point, width, height, 90));
+          return;
+        }
+        const center = rotateVisualPoint({ x: object.x + object.width / 2, y: object.y + object.height / 2 }, width, height, 90);
+        object.x = center.x - object.width / 2;
+        object.y = center.y - object.height / 2;
+        object.rotation = normalizeAngle(Number(object.rotation || 0) + 90);
+      });
+      if (page.crop) page.crop = rotateVisualRect(page.crop, width, height, 90);
+      if (page === currentPage() && state.tempCrop) state.tempCrop = rotateVisualRect(state.tempCrop, width, height, 90);
+      page.width = height;
+      page.height = width;
+      page.rotation = normalizeAngle(Number(page.rotation || 0) + 90);
+      page.objects.forEach(object => object.type === 'path' || clampObjectInsidePage(object, page));
+    }
+    return page;
+  }
+
+  function rotateCurrentPage(delta) {
+    const page = currentPage();
+    if (!page) return;
+    checkpoint();
+    rotatePageGeometry(page, delta);
+    renderThumbnails();
+    renderCurrentPage();
+    updatePageControls();
+    updateInspector();
+    setEditorStatus(`Página girada. Orientação atual: ${pageOrientation(page)}.`, 'success');
+  }
 
   function checkpoint() {
     state.history.push({ pages: deepClone(state.pages), activeIndex: state.activeIndex, selectedObjectId: state.selectedObjectId });
@@ -282,12 +363,23 @@
     const stage = $('#editorStage');
     stage.classList.remove('empty');
     stage.classList.toggle('crop-adjusting', Boolean(state.tempCrop));
+    let renderedPage = null;
+    let displayWidth = page.width;
+    let displayHeight = page.height;
+    const renderRotation = getPageRenderRotation(page);
+    if (page.kind === 'pdf') {
+      const source = state.sources.get(page.sourceId);
+      renderedPage = await source.rendered.getPage(page.sourceIndex + 1);
+      const baseViewport = renderedPage.getViewport({ scale: 1, rotation: renderRotation });
+      displayWidth = baseViewport.width;
+      displayHeight = baseViewport.height;
+    }
     const viewportLimitW = 860;
     const viewportLimitH = 1020;
-    const fit = Math.min(viewportLimitW / page.width, viewportLimitH / page.height, 1.45);
+    const fit = Math.min(viewportLimitW / displayWidth, viewportLimitH / displayHeight, 1.45);
     state.scale = fit * (state.zoom / 100);
-    const cssWidth = Math.max(160, Math.round(page.width * state.scale));
-    const cssHeight = Math.max(220, Math.round(page.height * state.scale));
+    const cssWidth = Math.max(160, Math.round(displayWidth * state.scale));
+    const cssHeight = Math.max(160, Math.round(displayHeight * state.scale));
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     stage.style.width = `${cssWidth}px`;
     stage.style.height = `${cssHeight}px`;
@@ -296,10 +388,8 @@
     base.width = Math.round(cssWidth * dpr); base.height = Math.round(cssHeight * dpr);
     const baseCtx = base.getContext('2d', { alpha: false });
     baseCtx.setTransform(1,0,0,1,0,0); baseCtx.fillStyle = '#fff'; baseCtx.fillRect(0,0,base.width,base.height);
-    if (page.kind === 'pdf') {
-      const source = state.sources.get(page.sourceId);
-      const renderedPage = await source.rendered.getPage(page.sourceIndex + 1);
-      const viewport = renderedPage.getViewport({ scale: state.scale * dpr, rotation: page.rotation || 0 });
+    if (renderedPage) {
+      const viewport = renderedPage.getViewport({ scale: state.scale * dpr, rotation: renderRotation });
       if (Math.abs(viewport.width - base.width) > 2 || Math.abs(viewport.height - base.height) > 2) {
         base.width = Math.ceil(viewport.width); base.height = Math.ceil(viewport.height);
         base.style.width = `${Math.round(viewport.width/dpr)}px`; base.style.height = `${Math.round(viewport.height/dpr)}px`;
@@ -316,7 +406,7 @@
     drawVectorObjects();
     drawCropOverlay();
     $('#editorPageIndicator').textContent = `${state.activeIndex + 1} / ${state.pages.length}`;
-    $('#editorCurrentPageInfo').textContent = `Página ${state.activeIndex + 1} • ${Math.round(page.width)} × ${Math.round(page.height)} pt${page.crop ? ' • recortada' : ''}`;
+    $('#editorCurrentPageInfo').textContent = `Página ${state.activeIndex + 1} • ${Math.round(displayWidth)} × ${Math.round(displayHeight)} pt • ${pageOrientation({ width: displayWidth, height: displayHeight })}${page.crop ? ' • recortada' : ''}`;
     updatePageControls();
   }
 
@@ -886,8 +976,8 @@
       state.sources.set(sourceId,{id:sourceId,name:file.name,file,rendered,pdfLibDoc,bytes:libraryBytes});
       const additions=[];
       for(let index=0;index<rendered.numPages;index++){
-        const p=await rendered.getPage(index+1); const v=p.getViewport({scale:1});
-        additions.push({id:nextPageId(),kind:'pdf',sourceId,sourceIndex:index,width:v.width,height:v.height,rotation:0,crop:null,objects:[]});
+        const p=await rendered.getPage(index+1); const sourceRotation=normalizeAngle(Number(p.rotate||0)); const v=p.getViewport({scale:1,rotation:sourceRotation});
+        additions.push({id:nextPageId(),kind:'pdf',sourceId,sourceIndex:index,width:v.width,height:v.height,sourceRotation,rotation:0,crop:null,objects:[]});
       }
       state.pages.splice(insertAt,0,...additions); insertAt+=additions.length;
     }
@@ -896,7 +986,7 @@
 
   function addBlankPage() {
     const page=currentPage(); const width=page?.width||595.28,height=page?.height||841.89;
-    checkpoint(); const blank={id:nextPageId(),kind:'blank',width,height,rotation:0,crop:null,objects:[]};
+    checkpoint(); const blank={id:nextPageId(),kind:'blank',width,height,sourceRotation:0,rotation:0,crop:null,objects:[]};
     state.pages.splice(state.activeIndex+1,0,blank); state.activeIndex+=1; renderThumbnails(); renderCurrentPage(); updatePageControls();
   }
 
@@ -921,9 +1011,9 @@
       const page=state.pages[index]; const button=document.createElement('button'); button.type='button'; button.className=`editor-thumbnail${index===state.activeIndex?' active':''}`;
       const canvas=document.createElement('canvas'); canvas.width=108; canvas.height=144; const ctx=canvas.getContext('2d',{alpha:false}); ctx.fillStyle='#fff';ctx.fillRect(0,0,108,144);
       if(page.kind==='pdf'){
-        try{const source=state.sources.get(page.sourceId);const renderedPage=await source.rendered.getPage(page.sourceIndex+1);const base=renderedPage.getViewport({scale:1});const scale=Math.min(100/base.width,132/base.height);const viewport=renderedPage.getViewport({scale});const temp=document.createElement('canvas');temp.width=Math.ceil(viewport.width);temp.height=Math.ceil(viewport.height);await renderedPage.render({canvasContext:temp.getContext('2d'),viewport}).promise;ctx.drawImage(temp,(108-temp.width)/2,(144-temp.height)/2);}catch(_){drawBlankThumb(ctx,'PDF');}
+        try{const source=state.sources.get(page.sourceId);const renderedPage=await source.rendered.getPage(page.sourceIndex+1);const rotation=getPageRenderRotation(page);const base=renderedPage.getViewport({scale:1,rotation});const scale=Math.min(100/base.width,132/base.height);const viewport=renderedPage.getViewport({scale,rotation});const temp=document.createElement('canvas');temp.width=Math.ceil(viewport.width);temp.height=Math.ceil(viewport.height);await renderedPage.render({canvasContext:temp.getContext('2d'),viewport}).promise;ctx.drawImage(temp,(108-temp.width)/2,(144-temp.height)/2);}catch(_){drawBlankThumb(ctx,'PDF');}
       }else drawBlankThumb(ctx,'Em branco');
-      button.appendChild(canvas); const span=document.createElement('span');span.textContent=`Página ${index+1}`;button.appendChild(span);
+      button.appendChild(canvas); const span=document.createElement('span');span.textContent=`Página ${index+1} · ${pageOrientation(page)}`;button.appendChild(span);
       if(page.objects.length){const badge=document.createElement('small');badge.textContent=`${page.objects.length} edição(ões)`;button.appendChild(badge);}
       button.addEventListener('click',()=>{state.activeIndex=index;state.selectedObjectId=null;renderThumbnails();renderCurrentPage();updateInspector();});
       list.appendChild(button);
@@ -935,10 +1025,39 @@
 
   function updatePageControls(){
     const has=Boolean(currentPage());
-    ['editorDeletePage','editorDuplicatePage','editorMovePageUp','editorMovePageDown','editorAddBlank','editorAddPdf','editorAddImage'].forEach(id=>{const el=$(`#${id}`);if(el)el.disabled=!has;});
+    ['editorDeletePage','editorDuplicatePage','editorMovePageUp','editorMovePageDown','editorRotatePageLeft','editorRotatePageRight','editorAddBlank','editorAddPdf','editorAddImage'].forEach(id=>{const el=$(`#${id}`);if(el)el.disabled=!has;});
     if($('#editorDeletePage'))$('#editorDeletePage').disabled=!has||state.pages.length<=1;
     if($('#editorMovePageUp'))$('#editorMovePageUp').disabled=!has||state.activeIndex===0;
     if($('#editorMovePageDown'))$('#editorMovePageDown').disabled=!has||state.activeIndex===state.pages.length-1;
+  }
+
+  function getExportRotation(model, pdfPage) {
+    if (model.kind !== 'pdf') return 0;
+    const pageRotation = Number(pdfPage?.getRotation?.().angle || 0);
+    const sourceRotation = Number.isFinite(Number(model.sourceRotation)) ? Number(model.sourceRotation) : pageRotation;
+    return normalizeAngle(sourceRotation + Number(model.rotation || 0));
+  }
+
+  function visualPointToPdf(point, rotation, pageWidth, pageHeight) {
+    const angle = normalizeAngle(rotation);
+    if (angle === 90) return { x: point.y, y: point.x };
+    if (angle === 180) return { x: pageWidth - point.x, y: point.y };
+    if (angle === 270) return { x: pageWidth - point.y, y: pageHeight - point.x };
+    return { x: point.x, y: pageHeight - point.y };
+  }
+
+  function visualRectToPdfBox(rect, rotation, pageWidth, pageHeight) {
+    const points = [
+      visualPointToPdf({ x: rect.x, y: rect.y }, rotation, pageWidth, pageHeight),
+      visualPointToPdf({ x: rect.x + rect.width, y: rect.y }, rotation, pageWidth, pageHeight),
+      visualPointToPdf({ x: rect.x, y: rect.y + rect.height }, rotation, pageWidth, pageHeight),
+      visualPointToPdf({ x: rect.x + rect.width, y: rect.y + rect.height }, rotation, pageWidth, pageHeight)
+    ];
+    const xs = points.map(point => point.x);
+    const ys = points.map(point => point.y);
+    const x = Math.min(...xs);
+    const y = Math.min(...ys);
+    return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y };
   }
 
   async function exportPdf() {
@@ -951,22 +1070,25 @@
       if(model.kind==='pdf'){
         const source=state.sources.get(model.sourceId); const [copied]=await output.copyPages(source.pdfLibDoc,[model.sourceIndex]); page=copied; output.addPage(page);
       }else page=output.addPage([model.width,model.height]);
-      if(model.rotation)page.setRotation(degrees((page.getRotation().angle+model.rotation)%360));
-      if(model.crop){const y=model.height-model.crop.y-model.crop.height;page.setCropBox(model.crop.x,y,model.crop.width,model.crop.height);}
+      const exportRotation=getExportRotation(model,page);
+      if(model.kind==='pdf')page.setRotation(degrees(exportRotation));
+      const pageSize=page.getSize();
+      if(model.crop){const cropBox=visualRectToPdfBox(model.crop,exportRotation,pageSize.width,pageSize.height);page.setCropBox(cropBox.x,cropBox.y,cropBox.width,cropBox.height);}
       for(const object of model.objects){
         if(object.type==='text'){
           const key=fontKey(object); if(!fonts.has(key)){const standard=StandardFonts[resolveStandardFont(object)];fonts.set(key,await output.embedFont(standard));}
           const font=fonts.get(key); const color=hexRgb(object.color); const lineHeight=object.fontSize*1.2;
           const maxLines=Math.max(1,Math.floor(object.height/lineHeight)); const lines=wrapText(object.text,font,object.fontSize,object.width).slice(0,maxLines);
-          const center={x:object.x+object.width/2,y:model.height-object.y-object.height/2}; const pdfAngle=-normalizeAngle(object.rotation||0);
-          lines.forEach((line,lineIndex)=>{let x=object.x;const width=font.widthOfTextAtSize(line,object.fontSize);if(object.align==='center')x=object.x+(object.width-width)/2;if(object.align==='right')x=object.x+object.width-width;const y=model.height-object.y-object.fontSize-lineIndex*lineHeight;const point=rotatePoint({x,y},center,pdfAngle);page.drawText(line,{x:point.x,y:point.y,size:object.fontSize,font,color:rgb(color.r,color.g,color.b),opacity:object.opacity??1,rotate:degrees(pdfAngle)});});
+          const visualCenter={x:object.x+object.width/2,y:object.y+object.height/2};
+          const pdfAngle=normalizeAngle(exportRotation-normalizeAngle(object.rotation||0));
+          lines.forEach((line,lineIndex)=>{let visualX=object.x;const width=font.widthOfTextAtSize(line,object.fontSize);if(object.align==='center')visualX=object.x+(object.width-width)/2;if(object.align==='right')visualX=object.x+object.width-width;const visualY=object.y+object.fontSize+lineIndex*lineHeight;const rotatedVisual=rotatePoint({x:visualX,y:visualY},visualCenter,normalizeAngle(object.rotation||0));const point=visualPointToPdf(rotatedVisual,exportRotation,pageSize.width,pageSize.height);page.drawText(line,{x:point.x,y:point.y,size:object.fontSize,font,color:rgb(color.r,color.g,color.b),opacity:object.opacity??1,rotate:degrees(pdfAngle)});});
         }else if(object.type==='image'){
           if(!images.has(object.dataUrl)){const bytes=dataUrlBytes(object.dataUrl);images.set(object.dataUrl,await output.embedPng(bytes));}
-          const placement=rotatedPdfPlacement(object,model.height);page.drawImage(images.get(object.dataUrl),{x:placement.x,y:placement.y,width:object.width,height:object.height,rotate:degrees(placement.angle)});
+          const placement=rotatedPdfPlacement(object,model,page);page.drawImage(images.get(object.dataUrl),{x:placement.x,y:placement.y,width:object.width,height:object.height,rotate:degrees(placement.angle)});
         }else if(object.type==='cover'){
-          const color=hexRgb(object.color||'#ffffff');const placement=rotatedPdfPlacement(object,model.height);page.drawRectangle({x:placement.x,y:placement.y,width:object.width,height:object.height,color:rgb(color.r,color.g,color.b),opacity:object.opacity??1,rotate:degrees(placement.angle)});
+          const color=hexRgb(object.color||'#ffffff');const placement=rotatedPdfPlacement(object,model,page);page.drawRectangle({x:placement.x,y:placement.y,width:object.width,height:object.height,color:rgb(color.r,color.g,color.b),opacity:object.opacity??1,rotate:degrees(placement.angle)});
         }else if(object.type==='path'&&object.points.length>1){
-          const color=hexRgb(object.color);for(let p=1;p<object.points.length;p++){const a=object.points[p-1],b=object.points[p];page.drawLine({start:{x:a.x,y:model.height-a.y},end:{x:b.x,y:model.height-b.y},thickness:object.width,color:rgb(color.r,color.g,color.b),opacity:object.opacity??1});}
+          const color=hexRgb(object.color);for(let p=1;p<object.points.length;p++){const a=visualPointToPdf(object.points[p-1],exportRotation,pageSize.width,pageSize.height),b=visualPointToPdf(object.points[p],exportRotation,pageSize.width,pageSize.height);page.drawLine({start:a,end:b,thickness:object.width,color:rgb(color.r,color.g,color.b),opacity:object.opacity??1});}
         }
       }
       const progress=10+Math.round(((index+1)/state.pages.length)*80);window.dispatchEvent(new CustomEvent('central-editor-progress',{detail:progress}));
@@ -974,8 +1096,16 @@
     return {bytes:await output.save({useObjectStreams:true}),message:`PDF editado com ${state.pages.length} página(s) e ${state.pages.reduce((sum,p)=>sum+p.objects.length,0)} objeto(s) adicionados.`};
   }
 
-  function rotatedPdfPlacement(object,pageHeight){
-    const angle=-normalizeAngle(object.rotation||0); const center={x:object.x+object.width/2,y:pageHeight-object.y-object.height/2};
+  function rotatedPdfPlacement(object,modelOrHeight,pdfPage){
+    if(typeof modelOrHeight==='number'){
+      const angle=-normalizeAngle(object.rotation||0); const center={x:object.x+object.width/2,y:modelOrHeight-object.y-object.height/2};
+      const rotatedHalf=rotateVector({x:object.width/2,y:object.height/2},angle);
+      return{x:center.x-rotatedHalf.x,y:center.y-rotatedHalf.y,angle};
+    }
+    const model=modelOrHeight; const rotation=getExportRotation(model,pdfPage); const size=pdfPage.getSize();
+    const visualCenter={x:object.x+object.width/2,y:object.y+object.height/2};
+    const center=visualPointToPdf(visualCenter,rotation,size.width,size.height);
+    const angle=normalizeAngle(rotation-normalizeAngle(object.rotation||0));
     const rotatedHalf=rotateVector({x:object.width/2,y:object.height/2},angle);
     return{x:center.x-rotatedHalf.x,y:center.y-rotatedHalf.y,angle};
   }
@@ -1023,6 +1153,18 @@
       state.sources.set(sourceDescriptor.id, { id: sourceDescriptor.id, name: sourceDescriptor.name || file.name, file, rendered, pdfLibDoc, bytes: libraryBytes });
     }
     state.pages = deepClone(snapshot.pages || []);
+    for (const page of state.pages) {
+      if (page.kind === 'blank') {
+        page.sourceRotation = 0;
+        continue;
+      }
+      if (!Number.isFinite(Number(page.sourceRotation))) {
+        const source = state.sources.get(page.sourceId);
+        const renderedPage = source ? await source.rendered.getPage(page.sourceIndex + 1) : null;
+        page.sourceRotation = normalizeAngle(Number(renderedPage?.rotate || 0));
+      }
+      page.rotation = normalizeAngle(Number(page.rotation || 0));
+    }
     state.activeIndex = clamp(Number(snapshot.activeIndex || 0), 0, Math.max(0, state.pages.length - 1));
     state.selectedObjectId = snapshot.selectedObjectId || null;
     state.zoom = Number(snapshot.zoom || 100);
@@ -1047,6 +1189,6 @@
     };
   }
 
-  window.PDFVisualEditor = { init, activate, deactivate, reset, loadFile, addPdfPages, exportPdf, exportProjectState, restoreProjectState, getProjectSummary, hasDocument:()=>state.pages.length>0, __test:{ normalizedRect, wrapText, hexRgb, resolveStandardFont, normalizeAngle, rotatePoint, rotateVector, rotatedPdfPlacement, clampObjectInsidePage } };
+  window.PDFVisualEditor = { init, activate, deactivate, reset, loadFile, addPdfPages, exportPdf, exportProjectState, restoreProjectState, getProjectSummary, hasDocument:()=>state.pages.length>0, __test:{ normalizedRect, wrapText, hexRgb, resolveStandardFont, normalizeAngle, rotatePoint, rotateVector, rotatedPdfPlacement, clampObjectInsidePage, getPageRenderRotation, pageOrientation, rotateVisualPoint, rotateVisualRect, rotatePageGeometry, visualPointToPdf, visualRectToPdfBox, getExportRotation } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
