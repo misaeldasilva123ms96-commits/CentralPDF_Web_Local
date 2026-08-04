@@ -20,10 +20,10 @@ jobs:
           fetch-depth: 0
 
       - name: Bootstrap restricted PDF editor fix
-        if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]' && hashFiles('scripts/apply-editor-restricted-pdf-fix.py') != ''
+        if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]' && hashFiles('scripts/run-editor-restricted-pdf-migration.py') != ''
         shell: bash
         run: |
-          python scripts/apply-editor-restricted-pdf-fix.py
+          python scripts/run-editor-restricted-pdf-migration.py
           node --check assets/js/pdf-editor.js
           node --check sw.js
           node tests/pdf-editor.test.js
@@ -35,7 +35,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git checkout origin/main -- .github/workflows/ci.yml
-          git rm scripts/apply-editor-restricted-pdf-fix.py
+          git rm scripts/apply-editor-restricted-pdf-fix.py scripts/run-editor-restricted-pdf-migration.py
           git add assets/js/pdf-editor.js sw.js CHANGELOG.md tests/version-sync-1.1.1.test.py tests/editor-orientation-delivery.test.py tests/workspace-visual-fixes-1.2.2.test.py tests/pdf-editor-restricted.test.js tests/editor-restricted-runtime.test.py
           git commit -m 'fix: support restricted PDFs and isolate editor renders'
           git push origin HEAD:${{ github.head_ref }}
