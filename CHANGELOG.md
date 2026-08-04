@@ -1,3 +1,13 @@
+## Editor PDF — documentos restritos e renderização concorrente
+
+- abre PDFs com criptografia de permissões e senha de usuário vazia em modo compatível;
+- preserva a aparência do documento e achata apenas a página-base na exportação quando o pdf-lib não consegue copiar a origem;
+- mantém textos, imagens, desenhos, recortes e rotação editáveis sobre a página compatível;
+- cancela renderizações anteriores e usa canvas temporário por operação, eliminando o erro de canvas reutilizado;
+- evita intercalamento de miniaturas de execuções antigas;
+- reduz o aviso de página mínima a uma orientação sem registro de erro;
+- renova o cache do aplicativo para entregar o runtime corrigido.
+
 ## Correção de entrega da orientação do Editor PDF
 
 - exibe os botões de rotação diretamente na barra de ações da página;
