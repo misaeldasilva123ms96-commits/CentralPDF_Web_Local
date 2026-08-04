@@ -24,6 +24,13 @@ jobs:
         shell: bash
         run: |
           python scripts/run-editor-restricted-pdf-migration.py
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('tests/pdf-editor-restricted.test.js')
+          text=path.read_text(encoding='utf-8')
+          text=text.replace("['compatibilityMode = 'raster'',", '["compatibilityMode = \'raster\'",', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
           node --check assets/js/pdf-editor.js
           node --check sw.js
           node tests/pdf-editor.test.js
