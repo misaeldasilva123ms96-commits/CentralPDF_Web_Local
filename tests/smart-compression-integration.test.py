@@ -15,7 +15,7 @@ assert 'CentralPDFCompressionEngine.shouldRasterizePage' in app
 assert 'raster inteligente por conteúdo' in app
 assert 'Páginas apenas com texto e vetores permanecem nativas' in app
 assert 'minImageCoverage: .05' in planner
-assert 'minImageCoverage: .003' in planner
-assert 'targetReduction: .50' in planner
-assert 'targetReduction: .62' in planner
+assert 'minImageCoverage: .005' in planner
+assert 'targetReduction: .48' in planner
+assert 'targetReduction: .60' in planner
 print('smart-compression-integration: passed')

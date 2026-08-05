@@ -138,7 +138,8 @@
   function compressionProfile(mode, custom = {}) {
     if (mode === 'preserve') return { rasterize: false, adaptive: false, attempts: [], targetReduction: 0, grayscale: false };
     if (mode === 'recommended') return {
-      rasterize: true, adaptive: true, targetReduction: .50, grayscale: false,
+      rasterize: true, adaptive: true, targetReduction: .48, grayscale: false,
+      largeDocumentAttempt: { dpi: 52, quality: .27, minImageCoverage: .008 },
       attempts: [
         { dpi: 78, quality: .48, minImageCoverage: .05 },
         { dpi: 64, quality: .36, minImageCoverage: .02 },
@@ -146,11 +147,12 @@
       ]
     };
     if (mode === 'extreme') return {
-      rasterize: true, adaptive: true, targetReduction: .62, grayscale: false,
+      rasterize: true, adaptive: true, targetReduction: .60, grayscale: false,
+      largeDocumentAttempt: { dpi: 46, quality: .22, minImageCoverage: .005 },
       attempts: [
         { dpi: 60, quality: .34, minImageCoverage: .02 },
         { dpi: 52, quality: .27, minImageCoverage: .008 },
-        { dpi: 46, quality: .23, minImageCoverage: .003 }
+        { dpi: 46, quality: .22, minImageCoverage: .005 }
       ]
     };
     if (mode === 'custom') {

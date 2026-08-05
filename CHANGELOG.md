@@ -2,7 +2,7 @@
 
 - analisa imagens, texto e vetores de cada página antes de decidir pela rasterização;
 - preserva páginas somente textuais ou vetoriais, evitando transformar centenas de páginas leves em imagens maiores;
-- aplica limiares progressivos de cobertura visual e perfis adaptativos para documentos extensos;
+- aplica limiares progressivos de cobertura visual e usa uma única passagem calibrada em documentos com 250+ páginas ou 8 MB+, evitando consumo excessivo de memória;
 - amplia o perfil forte para buscar reduções acima de 60% quando o conteúdo permite;
 - informa no relatório quantas páginas foram rasterizadas e quantas permaneceram nativas;
 - mantém o arquivo original quando nenhum candidato é menor;

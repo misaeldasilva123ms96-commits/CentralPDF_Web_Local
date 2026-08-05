@@ -55,9 +55,9 @@ with sync_playwright() as p:
     assert result['dpi'] == 88
     assert result['reduction'] > .42
     assert result['recommendedAttempts'] == 3
-    assert result['recommendedTarget'] == .50
+    assert result['recommendedTarget'] == .48
     assert result['strongAttempts'] == 3
-    assert result['strongTarget'] == .62
+    assert result['strongTarget'] == .60
     browser.close()
 
 engine_html = f"""<!doctype html><html><head><base href="http://test.local/"></head><body>

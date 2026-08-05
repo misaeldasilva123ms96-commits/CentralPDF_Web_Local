@@ -2581,21 +2581,30 @@
   }
 
   async function rasterCompressPdfAdaptive(file, profile, scope, pageText, stripMetadata, fileIndex, fileTotal) {
-    const attempts = profile.attempts?.length ? profile.attempts : [{
+    const configuredAttempts = profile.attempts?.length ? profile.attempts : [{
       dpi: profile.dpi || 72,
       quality: profile.quality || .42,
       minImageCoverage: profile.minImageCoverage ?? 0
     }];
     const analysis = await analyzeCompressionPages(file, scope, pageText, fileIndex, fileTotal);
-    const candidates = [];
+    const largeDocument = analysis.numPages >= 250 || file.size >= 8 * 1024 * 1024;
+    const attempts = largeDocument && profile.largeDocumentAttempt
+      ? [profile.largeDocumentAttempt]
+      : configuredAttempts;
+    let bestCandidate = null;
     for (let attemptIndex = 0; attemptIndex < attempts.length; attemptIndex++) {
       const attempt = { ...attempts[attemptIndex], grayscale: Boolean(profile.grayscale) };
       const result = await rasterCompressPdfAdvanced(file, attempt, scope, pageText, stripMetadata, fileIndex, fileTotal, analysis);
-      candidates.push({ ...attempt, bytes: result.bytes, stats: result.stats });
-      const reduction = file.size ? 1 - result.bytes.byteLength / file.size : 0;
-      if (!profile.adaptive || reduction >= (profile.targetReduction || 0)) break;
+      const candidate = {
+        ...attempt,
+        bytes: result.bytes,
+        stats: result.stats,
+        reduction: file.size ? 1 - result.bytes.byteLength / file.size : 0
+      };
+      if (!bestCandidate || candidate.bytes.byteLength < bestCandidate.bytes.byteLength) bestCandidate = candidate;
+      if (!profile.adaptive || candidate.reduction >= (profile.targetReduction || 0)) return candidate;
     }
-    return AdvancedPlanner.chooseCompressionCandidate(candidates, file.size, profile.targetReduction || 0);
+    return bestCandidate;
   }
   async function compress() {
     if (!window.pdfjsLib) throw new Error('O motor de renderização PDF.js não carregou.');
