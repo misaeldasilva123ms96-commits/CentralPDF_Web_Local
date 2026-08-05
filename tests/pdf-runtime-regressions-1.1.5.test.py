@@ -25,7 +25,7 @@ assert 'const originalBytes = new Uint8Array(await file.arrayBuffer())' in code
 assert 'const pdfJsBytes = originalBytes.slice()' in code
 assert 'const pdfLibBytes = originalBytes.slice()' in code
 assert 'getDocument({ data: pdfJsBytes })' in code
-assert 'PDFLib.PDFDocument.load(pdfLibBytes)' in code
+assert re.search(r'PDFLib\s*\.\s*PDFDocument\s*\.\s*load\s*\(\s*pdfLibBytes', app)
 assert 'await loadingTask.destroy()' in code
 
 # Legacy logs from fixed failures are migrated out of the active list.
