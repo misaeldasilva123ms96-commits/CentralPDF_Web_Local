@@ -18,14 +18,14 @@ assert 'isEvalSupported: false' in engine
 assert "local: 'vendor/pdfjs/pdf.min.mjs'" in engine
 
 # Static regression: PDF.js and pdf-lib receive separate byte copies.
-block = re.search(r'async function rasterCompressPdfAdvanced\([\s\S]*?\n  }\n\n  async function pdfToImage', app)
+block = re.search(r'async function rasterCompressPdfAdvanced\([\s\S]*?\n  }\n+  async function pdfToImage', app)
 assert block, 'rasterCompressPdfAdvanced not found'
 code = block.group(0)
 assert 'const originalBytes = new Uint8Array(await file.arrayBuffer())' in code
 assert 'const pdfJsBytes = originalBytes.slice()' in code
 assert 'const pdfLibBytes = originalBytes.slice()' in code
 assert 'getDocument({ data: pdfJsBytes })' in code
-assert 'PDFDocument.load(pdfLibBytes)' in code
+assert re.search(r'PDFLib\s*\.\s*PDFDocument\s*\.\s*load\s*\(\s*pdfLibBytes', app)
 assert 'await loadingTask.destroy()' in code
 
 # Legacy logs from fixed failures are migrated out of the active list.

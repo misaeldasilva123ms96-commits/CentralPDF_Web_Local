@@ -19,6 +19,8 @@ assert "adaptiveCompression: 'multi-pass-target-selection'" in engine
 
 assert 'Inteligente — equilíbrio e redução automática' in app
 assert 'Forte — priorizar arquivo menor' in app
+assert 'analyzeCompressionPages' in app
+assert 'raster inteligente por conteúdo' in app
 assert 'rasterCompressPdfAdaptive' in app
 assert 'structuralCompressPdfBytes' in app
 assert 'originalBytes.byteLength <= selected.bytes.byteLength' in app
@@ -53,9 +55,9 @@ with sync_playwright() as p:
     assert result['dpi'] == 88
     assert result['reduction'] > .42
     assert result['recommendedAttempts'] == 3
-    assert result['recommendedTarget'] == .25
+    assert result['recommendedTarget'] == .48
     assert result['strongAttempts'] == 3
-    assert result['strongTarget'] == .45
+    assert result['strongTarget'] == .60
     browser.close()
 
 engine_html = f"""<!doctype html><html><head><base href="http://test.local/"></head><body>

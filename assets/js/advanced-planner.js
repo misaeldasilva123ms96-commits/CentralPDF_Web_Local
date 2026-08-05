@@ -138,29 +138,30 @@
   function compressionProfile(mode, custom = {}) {
     if (mode === 'preserve') return { rasterize: false, adaptive: false, attempts: [], targetReduction: 0, grayscale: false };
     if (mode === 'recommended') return {
-      rasterize: true, adaptive: true, targetReduction: .25, grayscale: false,
+      rasterize: true, adaptive: true, targetReduction: .48, grayscale: false,
+      largeDocumentAttempt: { dpi: 52, quality: .27, minImageCoverage: .008 },
       attempts: [
-        { dpi: 108, quality: .62 },
-        { dpi: 94, quality: .52 },
-        { dpi: 82, quality: .43 }
+        { dpi: 78, quality: .48, minImageCoverage: .05 },
+        { dpi: 64, quality: .36, minImageCoverage: .02 },
+        { dpi: 56, quality: .30, minImageCoverage: .01 }
       ]
     };
     if (mode === 'extreme') return {
-      rasterize: true, adaptive: true, targetReduction: .45, grayscale: false,
+      rasterize: true, adaptive: true, targetReduction: .60, grayscale: false,
+      largeDocumentAttempt: { dpi: 46, quality: .22, minImageCoverage: .005 },
       attempts: [
-        { dpi: 82, quality: .44 },
-        { dpi: 72, quality: .36 },
-        { dpi: 64, quality: .31 }
+        { dpi: 60, quality: .34, minImageCoverage: .02 },
+        { dpi: 52, quality: .27, minImageCoverage: .008 },
+        { dpi: 46, quality: .22, minImageCoverage: .005 }
       ]
     };
     if (mode === 'custom') {
-      const dpi = Math.max(60, Math.min(300, Number(custom.dpi || 108)));
-      const quality = Math.max(.3, Math.min(1, Number(custom.quality || 62) / 100));
-      return { rasterize: true, dpi, quality, grayscale: Boolean(custom.grayscale) };
+      const dpi = Math.max(40, Math.min(300, Number(custom.dpi || 96)));
+      const quality = Math.max(.2, Math.min(1, Number(custom.quality || 52) / 100));
+      return { rasterize: true, adaptive: false, dpi, quality, minImageCoverage: 0, grayscale: Boolean(custom.grayscale) };
     }
     throw new Error(`Perfil de compressão desconhecido: ${mode}`);
   }
-
   function chooseCompressionCandidate(candidates, originalSize, targetReduction = 0) {
     const list = (candidates || []).filter(item => item?.bytes?.byteLength >= 0).map(item => ({
       ...item,
