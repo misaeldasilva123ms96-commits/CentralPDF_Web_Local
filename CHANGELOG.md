@@ -1,3 +1,13 @@
+## Compressão inteligente por conteúdo
+
+- analisa imagens, texto e vetores de cada página antes de decidir pela rasterização;
+- preserva páginas somente textuais ou vetoriais, evitando transformar centenas de páginas leves em imagens maiores;
+- aplica limiares progressivos de cobertura visual e perfis adaptativos para documentos extensos;
+- amplia o perfil forte para buscar reduções acima de 60% quando o conteúdo permite;
+- informa no relatório quantas páginas foram rasterizadas e quantas permaneceram nativas;
+- mantém o arquivo original quando nenhum candidato é menor;
+- renova o cache para entregar o novo motor imediatamente.
+
 ## Editor PDF — documentos restritos e renderização concorrente
 
 - abre PDFs com criptografia de permissões e senha de usuário vazia em modo compatível;

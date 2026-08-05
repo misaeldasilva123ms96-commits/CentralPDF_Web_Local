@@ -224,17 +224,17 @@
       settings: '<div class="field"><label for="outputFormat">Formato</label><select id="outputFormat"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WEBP</option></select></div><div class="field-row"><div class="field"><label for="maxWidth">Largura máxima</label><input id="maxWidth" type="number" min="1" value="1920" /></div><div class="field"><label for="maxHeight">Altura máxima</label><input id="maxHeight" type="number" min="1" value="1080" /></div></div><div class="field"><label for="quality">Qualidade JPG/WEBP</label><input id="quality" type="number" min="10" max="100" value="88" /></div><p class="help-text">Mantém a proporção e não amplia imagens menores.</p>'
     },
     compress: {
-      title: 'Comprimir PDF avançado', description: 'Escolha o perfil, as páginas rasterizadas, qualidade, escala de cinza e relatório de redução.',
+      title: 'Comprimir PDF avançado', description: 'Analise o conteúdo e comprima somente páginas com imagens relevantes, preservando texto e vetores quando possível.',
       accept: 'application/pdf,.pdf', multiple: true, typeLabel: 'PDF', button: 'Comprimir PDF(s)', outputExt: 'auto', outputBase: 'PDFs_comprimidos',
       settings: `
         <div class="field"><label for="compressionMode">Perfil</label><select id="compressionMode"><option value="preserve">Estrutural — preservar texto e links</option><option value="recommended" selected>Inteligente — equilíbrio e redução automática</option><option value="extreme">Forte — priorizar arquivo menor</option><option value="custom">Personalizada</option></select></div>
-        <div id="compressionCustomPanel" class="hidden"><div class="field-row"><div class="field"><label for="compressionDpi">DPI</label><input id="compressionDpi" type="number" min="60" max="300" value="108" /></div><div class="field"><label for="compressionQuality">Qualidade JPG (%)</label><input id="compressionQuality" type="number" min="30" max="100" value="62" /></div></div><label class="toggle-row"><input id="compressionGrayscale" type="checkbox" /><span>Converter as páginas rasterizadas para tons de cinza</span></label></div>
+        <div id="compressionCustomPanel" class="hidden"><div class="field-row"><div class="field"><label for="compressionDpi">DPI</label><input id="compressionDpi" type="number" min="40" max="300" value="96" /></div><div class="field"><label for="compressionQuality">Qualidade JPG (%)</label><input id="compressionQuality" type="number" min="20" max="100" value="52" /></div></div><label class="toggle-row"><input id="compressionGrayscale" type="checkbox" /><span>Converter as páginas rasterizadas para tons de cinza</span></label></div>
         <div class="field"><label for="compressionScope">Páginas a rasterizar</label><select id="compressionScope"><option value="all">Todas</option><option value="selected">Informar páginas</option><option value="odd">Ímpares</option><option value="even">Pares</option></select></div>
         <div id="compressionPagesPanel" class="hidden"><div class="field"><label for="compressionPages">Páginas</label><input id="compressionPages" placeholder="Exemplo: 1-5,9" /></div></div>
         <label class="toggle-row"><input id="compressionStripMetadata" type="checkbox" checked /><span>Remover metadados básicos</span></label>
         <label class="toggle-row"><input id="compressionKeepSmaller" type="checkbox" checked /><span>Manter o original quando a versão comprimida ficar maior</span></label>
         <label class="toggle-row"><input id="compressionReport" type="checkbox" checked /><span>Incluir relatório TXT com tamanho antes e depois</span></label>
-        <div class="notice-card warning"><strong>Rasterização</strong><p>Os perfis recomendada, extrema e personalizada transformam as páginas escolhidas em imagens. Nessas páginas, texto selecionável, links, formulários e assinaturas deixam de existir.</p></div>`
+        <div class="notice-card warning"><strong>Rasterização</strong><p>O motor analisa cada página. Páginas apenas com texto e vetores permanecem nativas; somente páginas com imagens relevantes são reconstruídas. Nas páginas reconstruídas, texto selecionável, links, formulários e assinaturas deixam de existir.</p></div>`
     },
     pdfToImage: {
       title: 'PDF para imagens avançado', description: 'Converta páginas selecionadas para JPG, PNG ou WEBP, com DPI, cor e organização configuráveis.',
@@ -2547,19 +2547,56 @@
     return await doc.save({ useObjectStreams: true, addDefaultPage: false, objectsPerTick: 40 });
   }
 
+  async function analyzeCompressionPages(file, scope, pageText, fileIndex, fileTotal) {
+    await ensurePdfWorker();
+    if (!window.CentralPDFCompressionEngine) throw new Error('O analisador inteligente de compressão não carregou.');
+    const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+    let rendered = null;
+    try {
+      rendered = await loadingTask.promise;
+      const selectedPages = new Set(AdvancedPlanner.resolveScope(scope, rendered.numPages, pageText));
+      const metricsByPage = Array(rendered.numPages).fill(null);
+      let completed = 0;
+      for (const pageIndex of selectedPages) {
+        const page = await rendered.getPage(pageIndex + 1);
+        try {
+          metricsByPage[pageIndex] = await window.CentralPDFCompressionEngine.analyzePage(page, pdfjsLib);
+        } catch (_) {
+          metricsByPage[pageIndex] = {
+            imageCount: 1, textOps: 0, vectorOps: 0,
+            imageCoverage: 1, maxImageCoverage: 1, likelyScanned: true,
+            analysisFallback: true
+          };
+        } finally {
+          try { page.cleanup(); } catch (_) {}
+        }
+        completed += 1;
+        setProgress(5 + Math.round(((fileIndex + (completed / Math.max(1, selectedPages.size)) * .18) / fileTotal) * 80));
+      }
+      return { metricsByPage, selectedPages, numPages: rendered.numPages };
+    } finally {
+      try { await rendered?.cleanup?.(); } catch (_) {}
+      try { await loadingTask.destroy(); } catch (_) {}
+    }
+  }
+
   async function rasterCompressPdfAdaptive(file, profile, scope, pageText, stripMetadata, fileIndex, fileTotal) {
-    const attempts = profile.attempts?.length ? profile.attempts : [{ dpi: profile.dpi || 108, quality: profile.quality || .62 }];
+    const attempts = profile.attempts?.length ? profile.attempts : [{
+      dpi: profile.dpi || 72,
+      quality: profile.quality || .42,
+      minImageCoverage: profile.minImageCoverage ?? 0
+    }];
+    const analysis = await analyzeCompressionPages(file, scope, pageText, fileIndex, fileTotal);
     const candidates = [];
     for (let attemptIndex = 0; attemptIndex < attempts.length; attemptIndex++) {
       const attempt = { ...attempts[attemptIndex], grayscale: Boolean(profile.grayscale) };
-      const bytes = await rasterCompressPdfAdvanced(file, attempt, scope, pageText, stripMetadata, fileIndex, fileTotal);
-      candidates.push({ ...attempt, bytes });
-      const reduction = file.size ? 1 - bytes.byteLength / file.size : 0;
+      const result = await rasterCompressPdfAdvanced(file, attempt, scope, pageText, stripMetadata, fileIndex, fileTotal, analysis);
+      candidates.push({ ...attempt, bytes: result.bytes, stats: result.stats });
+      const reduction = file.size ? 1 - result.bytes.byteLength / file.size : 0;
       if (!profile.adaptive || reduction >= (profile.targetReduction || 0)) break;
     }
     return AdvancedPlanner.chooseCompressionCandidate(candidates, file.size, profile.targetReduction || 0);
   }
-
   async function compress() {
     if (!window.pdfjsLib) throw new Error('O motor de renderização PDF.js não carregou.');
     const mode = $('#compressionMode')?.value || 'recommended';
@@ -2584,7 +2621,7 @@
         selected = { bytes, dpi: null, quality: null, reduction: file.size ? 1 - bytes.byteLength / file.size : 0, method: 'estrutural' };
       } else {
         selected = await rasterCompressPdfAdaptive(file, profile, scope, pageText, stripMetadata, fileIndex, state.files.length);
-        selected.method = 'raster adaptativa';
+        selected.method = 'raster inteligente por conteúdo';
       }
 
       let usedOriginal = false;
@@ -2596,7 +2633,8 @@
       totalFinal += selected.bytes.byteLength;
       outputs.push({ name: `${baseName(file.name)}_comprimido.pdf`, bytes: selected.bytes });
       const reduction = file.size ? Math.round((1 - selected.bytes.byteLength / file.size) * 100) : 0;
-      const details = selected.dpi ? `${selected.dpi} DPI, JPG ${Math.round(selected.quality * 100)}%` : selected.method;
+      const pageStats = selected.stats ? window.CentralPDFCompressionEngine.describeStats(selected.stats) : '';
+      const details = selected.dpi ? `${selected.dpi} DPI, JPG ${Math.round(selected.quality * 100)}%${pageStats ? `; ${pageStats}` : ''}` : selected.method;
       reportLines.push(
         `Arquivo: ${file.name}`,
         `Perfil: ${mode}`,
@@ -2620,7 +2658,7 @@
     return { message: `Compressão concluída: ${formatBytes(totalOriginal)} → ${formatBytes(totalFinal)} (${reduction}% de redução total).` };
   }
 
-  async function rasterCompressPdfAdvanced(file, profile, scope, pageText, stripMetadata, fileIndex, fileTotal) {
+  async function rasterCompressPdfAdvanced(file, profile, scope, pageText, stripMetadata, fileIndex, fileTotal, analysis = null) {
     await ensurePdfWorker();
     const originalBytes = new Uint8Array(await file.arrayBuffer());
     const pdfJsBytes = originalBytes.slice();
@@ -2629,21 +2667,28 @@
     let rendered = null;
     try {
       rendered = await loadingTask.promise;
-      const source = await PDFLib.PDFDocument.load(pdfLibBytes);
+      const source = await PDFLib.PDFDocument.load(pdfLibBytes, { updateMetadata: false });
       const output = await PDFLib.PDFDocument.create();
       if (!stripMetadata) copyDocumentMetadata(source, output);
-      const selectedPages = new Set(AdvancedPlanner.resolveScope(scope, rendered.numPages, pageText));
+      const selectedPages = analysis?.selectedPages || new Set(AdvancedPlanner.resolveScope(scope, rendered.numPages, pageText));
+      const metricsByPage = analysis?.metricsByPage || Array(rendered.numPages).fill(null);
+      let rasterizedPages = 0;
+      let preservedPages = 0;
       for (let pageIndex = 0; pageIndex < rendered.numPages; pageIndex++) {
-        if (!selectedPages.has(pageIndex)) {
+        const metrics = metricsByPage[pageIndex];
+        const shouldRasterize = selectedPages.has(pageIndex)
+          && window.CentralPDFCompressionEngine.shouldRasterizePage(metrics, profile);
+        if (!shouldRasterize) {
           const [copied] = await output.copyPages(source, [pageIndex]);
           output.addPage(copied);
+          if (selectedPages.has(pageIndex)) preservedPages += 1;
         } else {
           const page = await rendered.getPage(pageIndex + 1);
           const baseViewport = page.getViewport({ scale: 1 });
           const viewport = page.getViewport({ scale: profile.dpi / 72 });
           const canvas = document.createElement('canvas');
-          canvas.width = Math.ceil(viewport.width);
-          canvas.height = Math.ceil(viewport.height);
+          canvas.width = Math.max(1, Math.ceil(viewport.width));
+          canvas.height = Math.max(1, Math.ceil(viewport.height));
           const context = canvas.getContext('2d', { alpha: false });
           context.fillStyle = '#fff';
           context.fillRect(0, 0, canvas.width, canvas.height);
@@ -2653,19 +2698,30 @@
           const image = await output.embedJpg(await blob.arrayBuffer());
           const newPage = output.addPage([baseViewport.width, baseViewport.height]);
           newPage.drawImage(image, { x: 0, y: 0, width: baseViewport.width, height: baseViewport.height });
+          rasterizedPages += 1;
           canvas.width = 1;
           canvas.height = 1;
           try { page.cleanup(); } catch (_) {}
         }
-        setProgress(10 + Math.round(((fileIndex + (pageIndex + 1) / rendered.numPages) / fileTotal) * 80));
+        setProgress(20 + Math.round(((fileIndex + (pageIndex + 1) / rendered.numPages) / fileTotal) * 75));
       }
-      return await output.save({ useObjectStreams: true, objectsPerTick: 40 });
+      const bytes = await output.save({ useObjectStreams: true, objectsPerTick: 40 });
+      return {
+        bytes,
+        stats: {
+          selectedPages: selectedPages.size,
+          rasterizedPages,
+          preservedPages,
+          totalPages: rendered.numPages,
+          scannedPages: metricsByPage.filter(item => item?.likelyScanned).length,
+          textOnlyPages: metricsByPage.filter(item => item && item.imageCount === 0).length
+        }
+      };
     } finally {
       try { await rendered?.cleanup?.(); } catch (_) {}
       try { await loadingTask.destroy(); } catch (_) {}
     }
   }
-
   async function pdfToImage() {
     if (!window.pdfjsLib) throw new Error('O motor PDF.js não carregou.');
     await ensurePdfWorker();
