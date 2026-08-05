@@ -11,7 +11,14 @@ assert.deepStrictEqual(planner.buildExtractPlan('remove', 5, { pages: '2,4' }), 
 assert.deepStrictEqual(planner.buildExtractPlan('oddEven', 5, {}), [[0,2,4],[1,3]]);
 assert.deepStrictEqual(planner.buildMergePlan([5,4,3], 'all;2-3;1,3').map(x => x.pages), [[0,1,2,3,4],[1,2],[0,2]]);
 assert.strictEqual(planner.formatPages([0,1,2,4,6,7]), '1-3,5,7-8');
-assert.deepStrictEqual(planner.compressionProfile('custom', { dpi: 180, quality: 65, grayscale: true }), { rasterize: true, dpi: 180, quality: .65, grayscale: true });
+assert.deepStrictEqual(planner.compressionProfile('custom', { dpi: 180, quality: 65, grayscale: true }), {
+  rasterize: true,
+  adaptive: false,
+  dpi: 180,
+  quality: .65,
+  minImageCoverage: 0,
+  grayscale: true
+});
 assert.strictEqual(planner.normalizeHexColor('#AABBCC'), '#aabbcc');
 assert.throws(() => planner.parsePageSpec('8', 7), /não existe/);
 assert.throws(() => planner.buildExtractPlan('remove', 2, { pages: '1-2' }), /todas/);
