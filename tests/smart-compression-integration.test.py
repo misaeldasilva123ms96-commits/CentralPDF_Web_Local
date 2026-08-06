@@ -9,7 +9,7 @@ sw = (root / 'sw.js').read_text(encoding='utf-8')
 
 assert 'assets/js/compression-engine.js' in index
 assert './assets/js/compression-engine.js' in sw
-assert 'centralpdf-v1.2.1-pages-6' in sw
+assert 'centralpdf-v1.2.1-pages-7' in sw
 assert 'analyzeCompressionPages' in app
 assert 'CentralPDFCompressionEngine.analyzePage' in app
 assert 'CentralPDFCompressionEngine.shouldRasterizePage' in app
