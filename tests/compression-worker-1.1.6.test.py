@@ -17,7 +17,7 @@ assert 'pdfWorkerBlobWrapperDisabled: true' in engine
 assert 'pdfJsEvalDisabled: true' in engine
 assert "adaptiveCompression: 'multi-pass-target-selection'" in engine
 
-assert 'Inteligente — equilíbrio e redução automática' in app
+assert 'Automático — boa qualidade e boa redução' in app
 assert 'Forte — priorizar arquivo menor' in app
 assert 'analyzeCompressionPages' in app
 assert 'raster inteligente por conteúdo' in app
@@ -36,7 +36,7 @@ with sync_playwright() as p:
       const original = 1600000;
       const candidates = [
         { dpi: 120, quality: .72, bytes: new Uint8Array(1832095) },
-        { dpi: 88, quality: .52, bytes: new Uint8Array(912683) }
+        { dpi: 96, quality: .60, bytes: new Uint8Array(912683) }
       ];
       const selected = AdvancedPlanner.chooseCompressionCandidate(candidates, original, .25);
       const recommended = AdvancedPlanner.compressionProfile('recommended');
@@ -47,15 +47,19 @@ with sync_playwright() as p:
         reduction: selected.reduction,
         recommendedAttempts: recommended.attempts.length,
         recommendedTarget: recommended.targetReduction,
+        recommendedMinDpi: Math.min(...recommended.attempts.map(item => item.dpi)),
+        recommendedMinQuality: Math.min(...recommended.attempts.map(item => item.quality)),
         strongAttempts: strong.attempts.length,
         strongTarget: strong.targetReduction,
       };
     }""")
     assert result['size'] == 912683
-    assert result['dpi'] == 88
+    assert result['dpi'] == 96
     assert result['reduction'] > .42
     assert result['recommendedAttempts'] == 3
-    assert result['recommendedTarget'] == .48
+    assert result['recommendedTarget'] == .35
+    assert result['recommendedMinDpi'] >= 96
+    assert result['recommendedMinQuality'] >= .60
     assert result['strongAttempts'] == 3
     assert result['strongTarget'] == .60
     browser.close()

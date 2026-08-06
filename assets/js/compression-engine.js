@@ -85,15 +85,19 @@
     }
 
     const safePageArea = Math.max(1, finite(pageArea, 1));
+    const imageCoverage = Math.min(1, imageArea / safePageArea);
+    const maxImageCoverage = Math.min(1, maxImageArea / safePageArea);
+    const imageDominated = imageCount > 0 && maxImageCoverage >= .65;
     return {
       imageCount,
       textOps,
       vectorOps,
-      imageCoverage: Math.min(1, imageArea / safePageArea),
-      maxImageCoverage: Math.min(1, maxImageArea / safePageArea),
+      imageCoverage,
+      maxImageCoverage,
       imageArea,
       pageArea: safePageArea,
-      likelyScanned: imageCount > 0 && textOps === 0 && maxImageArea / safePageArea >= 0.18
+      imageDominated,
+      likelyScanned: imageCount > 0 && (imageDominated || (textOps === 0 && maxImageCoverage >= .18))
     };
   }
 
@@ -105,7 +109,10 @@
 
   function shouldRasterizePage(metrics, profile = {}) {
     if (!metrics || metrics.imageCount < 1) return false;
-    if (metrics.likelyScanned) return true;
+    const dominatedThreshold = Math.max(.2, finite(profile.imageDominatedThreshold, .65));
+    const imageDominated = Boolean(metrics.imageDominated || metrics.maxImageCoverage >= dominatedThreshold);
+    if (profile.preserveText && metrics.textOps > 0 && !imageDominated) return false;
+    if (metrics.likelyScanned || imageDominated) return true;
     const threshold = Math.max(0, finite(profile.minImageCoverage, 0));
     if (metrics.maxImageCoverage >= threshold) return true;
     if (metrics.imageCoverage >= threshold * 1.35) return true;

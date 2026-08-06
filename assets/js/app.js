@@ -98,9 +98,9 @@
           <div class="split-plan-header"><span>Documentos da união</span><strong id="mergePlanCount">0 páginas</strong></div>
           <div class="merge-source-toolbar">
             <label for="mergeSourceSort"><span>Ordenar documentos</span><select id="mergeSourceSort">
+              <option value="nameAsc" selected>Nome: A → Z</option>
               <option value="manual">Ordem manual</option>
               <option value="added">Ordem de adição</option>
-              <option value="nameAsc">Nome: A → Z</option>
               <option value="nameDesc">Nome: Z → A</option>
               <option value="numberAsc">Número do nome: menor → maior</option>
               <option value="numberDesc">Número do nome: maior → menor</option>
@@ -227,14 +227,14 @@
       title: 'Comprimir PDF avançado', description: 'Analise o conteúdo e comprima somente páginas com imagens relevantes, preservando texto e vetores quando possível.',
       accept: 'application/pdf,.pdf', multiple: true, typeLabel: 'PDF', button: 'Comprimir PDF(s)', outputExt: 'auto', outputBase: 'PDFs_comprimidos',
       settings: `
-        <div class="field"><label for="compressionMode">Perfil</label><select id="compressionMode"><option value="preserve">Estrutural — preservar texto e links</option><option value="recommended" selected>Inteligente — equilíbrio e redução automática</option><option value="extreme">Forte — priorizar arquivo menor</option><option value="custom">Personalizada</option></select></div>
-        <div id="compressionCustomPanel" class="hidden"><div class="field-row"><div class="field"><label for="compressionDpi">DPI</label><input id="compressionDpi" type="number" min="40" max="300" value="96" /></div><div class="field"><label for="compressionQuality">Qualidade JPG (%)</label><input id="compressionQuality" type="number" min="20" max="100" value="52" /></div></div><label class="toggle-row"><input id="compressionGrayscale" type="checkbox" /><span>Converter as páginas rasterizadas para tons de cinza</span></label></div>
+        <div class="field"><label for="compressionMode">Perfil</label><select id="compressionMode"><option value="preserve">Estrutural — preservar texto e links</option><option value="recommended" selected>Automático — boa qualidade e boa redução</option><option value="extreme">Forte — priorizar arquivo menor</option><option value="custom">Personalizada</option></select></div>
+        <div id="compressionCustomPanel" class="hidden"><div class="field-row"><div class="field"><label for="compressionDpi">DPI</label><input id="compressionDpi" type="number" min="60" max="300" value="120" /></div><div class="field"><label for="compressionQuality">Qualidade JPG (%)</label><input id="compressionQuality" type="number" min="30" max="100" value="68" /></div></div><label class="toggle-row"><input id="compressionGrayscale" type="checkbox" /><span>Converter as páginas rasterizadas para tons de cinza</span></label></div>
         <div class="field"><label for="compressionScope">Páginas a rasterizar</label><select id="compressionScope"><option value="all">Todas</option><option value="selected">Informar páginas</option><option value="odd">Ímpares</option><option value="even">Pares</option></select></div>
         <div id="compressionPagesPanel" class="hidden"><div class="field"><label for="compressionPages">Páginas</label><input id="compressionPages" placeholder="Exemplo: 1-5,9" /></div></div>
         <label class="toggle-row"><input id="compressionStripMetadata" type="checkbox" checked /><span>Remover metadados básicos</span></label>
         <label class="toggle-row"><input id="compressionKeepSmaller" type="checkbox" checked /><span>Manter o original quando a versão comprimida ficar maior</span></label>
         <label class="toggle-row"><input id="compressionReport" type="checkbox" checked /><span>Incluir relatório TXT com tamanho antes e depois</span></label>
-        <div class="notice-card warning"><strong>Rasterização</strong><p>O motor analisa cada página. Páginas apenas com texto e vetores permanecem nativas; somente páginas com imagens relevantes são reconstruídas. Nas páginas reconstruídas, texto selecionável, links, formulários e assinaturas deixam de existir.</p></div>`
+        <div class="notice-card warning"><strong>Rasterização</strong><p>No modo Automático, o motor prioriza nitidez: preserva páginas com texto e vetores e só reconstrói páginas escaneadas ou dominadas por imagens. O modo Forte busca arquivos menores e pode reduzir mais a qualidade. Nas páginas reconstruídas, texto selecionável, links, formulários e assinaturas deixam de existir.</p></div>`
     },
     pdfToImage: {
       title: 'PDF para imagens avançado', description: 'Converta páginas selecionadas para JPG, PNG ou WEBP, com DPI, cor e organização configuráveis.',
@@ -1423,6 +1423,22 @@
     return ordered;
   }
 
+  function applyDefaultMergeNameOrder() {
+    const entries = mergePdfSources();
+    if (entries.length < 2) return;
+    const collator = new Intl.Collator('pt-BR', { numeric: true, sensitivity: 'base' });
+    const ordered = [...entries].sort((a, b) => collator.compare(a[1]?.name || a[1]?.file?.name || '', b[1]?.name || b[1]?.file?.name || ''));
+    const sourceKeys = ordered.map(([key]) => key);
+    const sources = new Map(entries);
+    const orderedFiles = sourceKeys.map(key => sources.get(key)?.file).filter(Boolean);
+    const orderedFileKeys = new Set(orderedFiles.map(getFileCacheKey));
+    state.files = [...orderedFiles, ...state.files.filter(file => !orderedFileKeys.has(getFileCacheKey(file)))];
+    state.organizerPages = reorderPagesBySourceKeys(state.organizerPages, sourceKeys);
+    state.originalOrganizerPages = reorderPagesBySourceKeys(state.originalOrganizerPages, sourceKeys);
+    const selector = $('#mergeSourceSort');
+    if (selector) selector.value = 'nameAsc';
+  }
+
   function applyMergeSourceOrder(sourceKeys, options = {}) {
     const currentSources = new Map(mergePdfSources());
     const validKeys = sourceKeys.filter(key => currentSources.has(key));
@@ -1791,6 +1807,7 @@
     if (state.organizerPages.length) pushOrganizerHistory();
     state.organizerPages.push(...additions);
     state.originalOrganizerPages = snapshotOrganizerPages();
+    if (prefix === 'merge' && ($('#mergeSourceSort')?.value || 'nameAsc') === 'nameAsc') applyDefaultMergeNameOrder();
     dropzone.classList.add('compact');
     await renderOrganizerPreviews();
     updateMergePreview();
