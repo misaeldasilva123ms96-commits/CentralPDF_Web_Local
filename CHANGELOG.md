@@ -1,3 +1,13 @@
+## Compressão automática com prioridade de qualidade e união A-Z
+
+- recalibra o modo Automático para 96-120 DPI e qualidade JPEG de 60-72%;
+- preserva páginas mistas com texto e vetores, evitando a perda visual observada na rasterização de página inteira em baixa resolução;
+- reconhece páginas escaneadas e imagens dominantes, inclusive documentos com camada OCR;
+- mantém o modo Forte separado para quem prioriza o menor tamanho possível;
+- altera a ordem inicial de Juntar PDFs para Nome: A → Z;
+- novos PDFs continuam em A-Z enquanto o usuário não mudar para ordem manual;
+- renova o cache do aplicativo.
+
 ## Compressão inteligente por conteúdo
 
 - analisa imagens, texto e vetores de cada página antes de decidir pela rasterização;

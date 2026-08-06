@@ -65,8 +65,9 @@ with sync_playwright() as p:
     def names():
         return page.locator('#mergePlanPreview .merge-source-item strong').all_text_contents()
 
-    assert names() == ['30 Relatorio.pdf','2 Contrato.pdf','11 Certidao.pdf'], names()
+    assert names() == ['2 Contrato.pdf','11 Certidao.pdf','30 Relatorio.pdf'], names()
     assert page.locator('#mergeSourceSort').count() == 1
+    assert page.locator('#mergeSourceSort').input_value() == 'nameAsc'
     assert page.locator('#mergeReverseSources').count() == 1
 
     page.locator('#mergeSourceSort').select_option('nameAsc')

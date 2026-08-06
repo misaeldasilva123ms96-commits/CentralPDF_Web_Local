@@ -138,12 +138,13 @@
   function compressionProfile(mode, custom = {}) {
     if (mode === 'preserve') return { rasterize: false, adaptive: false, attempts: [], targetReduction: 0, grayscale: false };
     if (mode === 'recommended') return {
-      rasterize: true, adaptive: true, targetReduction: .48, grayscale: false,
-      largeDocumentAttempt: { dpi: 52, quality: .27, minImageCoverage: .008 },
+      rasterize: true, adaptive: true, targetReduction: .35, grayscale: false,
+      qualityPriority: true,
+      largeDocumentAttempt: { dpi: 96, quality: .62, minImageCoverage: .08, preserveText: true, imageDominatedThreshold: .65 },
       attempts: [
-        { dpi: 78, quality: .48, minImageCoverage: .05 },
-        { dpi: 64, quality: .36, minImageCoverage: .02 },
-        { dpi: 56, quality: .30, minImageCoverage: .01 }
+        { dpi: 120, quality: .72, minImageCoverage: .16, preserveText: true, imageDominatedThreshold: .65 },
+        { dpi: 108, quality: .66, minImageCoverage: .11, preserveText: true, imageDominatedThreshold: .65 },
+        { dpi: 96, quality: .60, minImageCoverage: .07, preserveText: true, imageDominatedThreshold: .65 }
       ]
     };
     if (mode === 'extreme') return {
@@ -156,8 +157,8 @@
       ]
     };
     if (mode === 'custom') {
-      const dpi = Math.max(40, Math.min(300, Number(custom.dpi || 96)));
-      const quality = Math.max(.2, Math.min(1, Number(custom.quality || 52) / 100));
+      const dpi = Math.max(40, Math.min(300, Number(custom.dpi || 120)));
+      const quality = Math.max(.2, Math.min(1, Number(custom.quality || 68) / 100));
       return { rasterize: true, adaptive: false, dpi, quality, minImageCoverage: 0, grayscale: Boolean(custom.grayscale) };
     }
     throw new Error(`Perfil de compressão desconhecido: ${mode}`);
