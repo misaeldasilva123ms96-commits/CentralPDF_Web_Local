@@ -8,7 +8,7 @@ css_files = [
     'assets/css/layout-controls.css',
     'assets/css/tool-quality-1.2.0.css',
     'assets/css/dark-theme-polish-1.0.4.css',
-    'assets/css/workspace-compact-panels-1.2.3.css',
+    'assets/css/workspace-visual-fixes-1.2.2.css',
 ]
 css = '\n'.join((root / path).read_text(encoding='utf-8') for path in css_files)
 
