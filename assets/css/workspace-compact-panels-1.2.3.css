@@ -1,4 +1,5 @@
 /* Central PDF 1.2.3 — compact workspace side panels and tool summary */
+/* Applies globally to every workspace tool without changing processing logic. */
 
 @media (min-width: 821px) {
   .sidebar { padding-top: 0 !important; }
