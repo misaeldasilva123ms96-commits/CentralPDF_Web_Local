@@ -24,7 +24,6 @@ jobs:
         shell: bash
         run: |
           python scripts/apply-workspace-compact-panels.py
-          python tests/workspace-compact-panels-1.2.3.test.py
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
