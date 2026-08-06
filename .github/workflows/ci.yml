@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   test:
@@ -15,23 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
-
-      - name: Apply compact workspace panel integration
-        if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]' && hashFiles('scripts/apply-workspace-compact-panels.py') != ''
-        shell: bash
-        run: |
-          python scripts/apply-workspace-compact-panels.py
-          git diff --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git checkout origin/main -- .github/workflows/ci.yml
-          git rm scripts/apply-workspace-compact-panels.py
-          git add assets/css/workspace-compact-panels-1.2.3.css index.html sw.js CHANGELOG.md tests
-          git commit -m 'fix: compact and align workspace side panels'
-          git push origin HEAD:${{ github.head_ref }}
 
       - uses: actions/setup-node@v7
         with:
