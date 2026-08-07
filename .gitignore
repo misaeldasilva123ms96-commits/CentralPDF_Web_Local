@@ -30,3 +30,8 @@ vendor/tessdata/
 *.tmp
 *.bak
 ~$*
+
+# CentralPDF 2.0 (app/ — Vite + React)
+app/node_modules/
+app/dist/
+app/coverage/
