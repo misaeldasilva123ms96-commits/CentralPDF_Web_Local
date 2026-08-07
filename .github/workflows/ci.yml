@@ -76,7 +76,7 @@ jobs:
           cd ..
           cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.ci.exe
 
-  app-2.0:
+  app-2-0:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
