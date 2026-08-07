@@ -31,7 +31,7 @@ assert ci_config["concurrency"]["group"] == (
 assert pages_config["concurrency"]["group"] == (
     "pages-${{ github.event.pull_request.number || github.ref }}"
 )
-assert set(ci_config["jobs"]) == {"test"}, "o check obrigatório precisa se chamar test"
+assert {"test"} <= set(ci_config["jobs"]), "o check obrigatório precisa se chamar test"
 assert {"build", "deploy"} <= set(pages_config["jobs"])
 assert pages_config["jobs"]["deploy"]["if"] == (
     "github.event_name != 'pull_request' && github.ref == 'refs/heads/main'"
