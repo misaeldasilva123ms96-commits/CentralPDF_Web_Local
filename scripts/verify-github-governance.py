@@ -35,8 +35,12 @@ def audit_ruleset(
     errors: list[str] = []
     conditions = ruleset.get("conditions", {}).get("ref_name", {})
     includes = set(conditions.get("include", []))
-    if "refs/heads/main" not in includes and "~DEFAULT_BRANCH" not in includes:
-        errors.append("ruleset não se limita à main")
+    if includes != {"refs/heads/main"}:
+        errors.append("ruleset não se limita exclusivamente à main")
+    if conditions.get("exclude", []):
+        errors.append("ruleset contém exclusões de referência inesperadas")
+    if ruleset.get("bypass_actors"):
+        errors.append("ruleset permite bypass")
     if ruleset.get("target") != "branch":
         errors.append("ruleset não tem target branch")
     if ruleset.get("enforcement") != "active":

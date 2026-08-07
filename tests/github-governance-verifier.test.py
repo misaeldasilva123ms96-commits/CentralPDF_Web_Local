@@ -14,6 +14,7 @@ valid_ruleset = {
     "name": "Protect main",
     "target": "branch",
     "enforcement": "active",
+    "bypass_actors": [],
     "conditions": {"ref_name": {"include": ["refs/heads/main"], "exclude": []}},
     "rules": [
         {"type": "deletion"},
@@ -40,6 +41,13 @@ assert governance.audit_ruleset(valid_ruleset) == []
 unsafe_ruleset = {
     **valid_ruleset,
     "enforcement": "disabled",
+    "bypass_actors": [{"actor_type": "RepositoryRole", "actor_id": 5}],
+    "conditions": {
+        "ref_name": {
+            "include": ["refs/heads/main", "refs/heads/release"],
+            "exclude": ["refs/heads/release"],
+        }
+    },
     "rules": [
         {
             "type": "required_status_checks",
@@ -52,6 +60,9 @@ unsafe_ruleset = {
 }
 errors = governance.audit_ruleset(unsafe_ruleset)
 for expected in (
+    "ruleset não se limita exclusivamente à main",
+    "ruleset contém exclusões de referência inesperadas",
+    "ruleset permite bypass",
     "ruleset não está ativo",
     "exclusão da main não está bloqueada",
     "force push não está bloqueado",
