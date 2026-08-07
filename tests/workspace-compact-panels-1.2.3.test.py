@@ -14,6 +14,7 @@ css = '\n'.join((root / path).read_text(encoding='utf-8') for path in css_files)
 
 html = f'''<!doctype html><html><head><style>{css}</style></head>
 <body class="sidebar-collapsed" data-theme="dark" data-workspace-open="true">
+  <header class="topbar">Cabeçalho</header>
   <main class="workspace" style="height:700px">
     <aside class="sidebar">
       <div class="sidebar-sticky-head">
@@ -27,15 +28,9 @@ html = f'''<!doctype html><html><head><style>{css}</style></head>
     <section class="main-panel"><div class="stepper">Conteúdo</div></section>
     <aside class="settings-panel">
       <div class="settings-heading"><div><span>Configuração</span><h2>Resumo da união</h2><p>Revise as opções.</p></div><button class="settings-panel-close">›</button></div>
-      <section id="cpToolPreflight" class="cp-tool-preflight">
-        <header><div><small>Profundidade da ferramenta</small><strong>Avançada · Páginas</strong></div><span>pdf-lib</span></header>
-        <div class="cp-tool-preflight-grid">
-          <div><small>Entrada</small><strong>2+ PDFs</strong></div><div><small>Saída</small><strong>PDF</strong></div>
-          <div><small>Lote</small><strong>Sim</strong></div><div><small>Arquivos</small><strong>7</strong></div>
-        </div>
-        <div class="cp-tool-depth"><span>ordenação por página</span><span>fontes múltiplas</span></div>
+      <section id="cpToolPreflight" class="cp-tool-preflight" aria-label="Resumo técnico da ferramenta">
+        <header><div class="cp-tool-preflight-summary"><strong>Avançada</strong><span>Páginas</span><span>2+ PDFs → PDF</span><span>Lote</span><span>7 arquivos</span></div><span class="cp-tool-preflight-engine">pdf-lib</span></header>
         <ul><li class="ok"><span>✓</span>Pré-verificação sem bloqueios.</li></ul>
-        <p><strong>Revisão:</strong> Conferir a sequência visual completa.</p>
       </section>
       <div style="height:900px"></div>
     </aside>
@@ -44,10 +39,11 @@ html = f'''<!doctype html><html><head><style>{css}</style></head>
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'])
-    page = browser.new_page(viewport={'width': 1368, 'height': 768})
+    page = browser.new_page(viewport={'width': 1368, 'height': 596})
     page.set_content(html, wait_until='domcontentloaded')
     values = page.evaluate('''() => {
       const sidebar = document.querySelector('.sidebar').getBoundingClientRect();
+      const workspace = document.querySelector('.workspace').getBoundingClientRect();
       const sidebarHead = document.querySelector('.sidebar-sticky-head').getBoundingClientRect();
       const collapse = document.querySelector('.sidebar-collapse-button').getBoundingClientRect();
       const settings = document.querySelector('.settings-panel').getBoundingClientRect();
@@ -55,22 +51,26 @@ with sync_playwright() as p:
       const card = document.querySelector('.cp-tool-preflight').getBoundingClientRect();
       return {
         sidebarHeadGap: sidebarHead.top - sidebar.top,
+        sidebarGap: sidebar.top - workspace.top,
         collapseGap: collapse.top - sidebar.top,
+        settingsGap: settings.top - workspace.top,
         settingsHeadingGap: heading.top - settings.top,
         cardHeight: card.height,
-        depthDisplay: getComputedStyle(document.querySelector('.cp-tool-depth')).display,
-        reviewDisplay: getComputedStyle(document.querySelector('.cp-tool-preflight > p')).display,
+        sidebarTop: getComputedStyle(document.querySelector('.sidebar')).top,
+        settingsTop: getComputedStyle(document.querySelector('.settings-panel')).top,
         okListDisplay: getComputedStyle(document.querySelector('.cp-tool-preflight > ul')).display,
         headingPosition: getComputedStyle(document.querySelector('.settings-heading')).position,
         headingBackground: getComputedStyle(document.querySelector('.settings-heading')).backgroundColor,
       };
     }''')
     assert values['sidebarHeadGap'] <= 1, values
+    assert values['sidebarGap'] <= 1, values
     assert values['collapseGap'] <= 10, values
+    assert values['settingsGap'] <= 1, values
     assert values['settingsHeadingGap'] <= 1, values
-    assert values['cardHeight'] <= 105, values
-    assert values['depthDisplay'] == 'none', values
-    assert values['reviewDisplay'] == 'none', values
+    assert values['sidebarTop'] == '0px', values
+    assert values['settingsTop'] == '0px', values
+    assert values['cardHeight'] <= 50, values
     assert values['okListDisplay'] == 'none', values
     assert values['headingPosition'] == 'sticky', values
     rgb = [int(part) for part in values['headingBackground'].replace('rgba(', '').replace('rgb(', '').replace(')', '').split(',')[:3]]
@@ -82,11 +82,15 @@ with sync_playwright() as p:
       height: document.querySelector('.cp-tool-preflight').getBoundingClientRect().height
     })''')
     assert warning['display'] == 'grid', warning
-    assert warning['height'] <= 135, warning
+    assert warning['height'] <= 80, warning
 
     page.set_viewport_size({'width': 480, 'height': 800})
-    mobile_columns = page.evaluate("getComputedStyle(document.querySelector('.cp-tool-preflight-grid')).gridTemplateColumns.split(' ').length")
-    assert mobile_columns == 2, mobile_columns
+    mobile = page.evaluate('''() => ({
+      height: document.querySelector('.cp-tool-preflight').getBoundingClientRect().height,
+      summaryDisplay: getComputedStyle(document.querySelector('.cp-tool-preflight-summary')).display
+    })''')
+    assert mobile['height'] <= 100, mobile
+    assert mobile['summaryDisplay'] == 'flex', mobile
     browser.close()
 
 print('workspace-compact-panels-1.2.3: passed')

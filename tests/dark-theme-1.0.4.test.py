@@ -4,7 +4,7 @@ import re
 
 root = Path(__file__).resolve().parents[1]
 html = (root / 'index.html').read_text(encoding='utf-8')
-css_links = re.findall(r'<link rel="stylesheet" href="([^"]+)"\s*/>', html)
+css_links = [link.split('?', 1)[0] for link in re.findall(r'<link rel="stylesheet" href="([^"]+)"\s*/>', html)]
 css = '\n'.join((root / path).read_text(encoding='utf-8') for path in css_links)
 html = re.sub(r'\s*<link rel="stylesheet" href="[^"]+"\s*/>', '', html)
 html = re.sub(r'\s*<link rel="manifest" href="[^"]+"\s*/>', '', html)

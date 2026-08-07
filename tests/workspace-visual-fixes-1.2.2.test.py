@@ -5,12 +5,12 @@ import re
 
 root = Path(__file__).resolve().parents[1]
 index = (root / "index.html").read_text(encoding="utf-8")
-links = re.findall(r'<link rel="stylesheet" href="([^"]+)"\s*/>', index)
+links = [link.split('?', 1)[0] for link in re.findall(r'<link rel="stylesheet" href="([^"]+)"\s*/>', index)]
 assert "assets/css/workspace-visual-fixes-1.2.2.css" in links
 css = "\n".join((root / link).read_text(encoding="utf-8") for link in links)
 service_worker = (root / "sw.js").read_text(encoding="utf-8")
-assert "'./assets/css/workspace-visual-fixes-1.2.2.css'" in service_worker
-assert "centralpdf-v1.2.1-pages-7" in service_worker
+assert "'./assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3'" in service_worker
+assert "centralpdf-v1.2.1-pages-8" in service_worker
 
 html = f"""<!doctype html><html><head><style>{css}</style></head>
 <body data-theme="dark">

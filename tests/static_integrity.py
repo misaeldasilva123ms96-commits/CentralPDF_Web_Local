@@ -7,7 +7,7 @@ app=(root/'assets/js/app.js').read_text(encoding='utf-8')
 soup=BeautifulSoup(html,'html.parser')
 assert len(soup.select('.tool-card[data-tool]')) == 34
 assert len(soup.select('.sidebar .tool[data-tool]')) == 34
-scripts=[tag.get('src') for tag in soup.find_all('script')]
+scripts=[tag.get('src').split('?', 1)[0] if tag.get('src') else None for tag in soup.find_all('script')]
 assert scripts.index('assets/js/advanced-planner.js') < scripts.index('assets/js/app.js')
 assert scripts.index('assets/js/pdf-editor.js') < scripts.index('assets/js/app.js')
 assert scripts.index('assets/js/ocr-0.16.js') < scripts.index('assets/js/app.js')

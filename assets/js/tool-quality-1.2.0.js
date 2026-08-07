@@ -167,7 +167,8 @@
   function preflightHtml(tool){
     const report=preflight(tool);const meta=report.meta;if(!meta)return'';
     const checks=report.issues.length?report.issues.map(item=>`<li class="${item.level}"><span>${item.level==='error'?'×':'!'}</span>${esc(item.message)}</li>`).join(''):'<li class="ok"><span>✓</span>Pré-verificação sem bloqueios.</li>';
-    return `<section id="cpToolPreflight" class="cp-tool-preflight"><header><div><small>Profundidade da ferramenta</small><strong>${esc(meta.level)} · ${esc(meta.category)}</strong></div><span>${esc(meta.engine)}</span></header><div class="cp-tool-preflight-grid"><div><small>Entrada</small><strong>${esc(meta.input)}</strong></div><div><small>Saída</small><strong>${esc(meta.output)}</strong></div><div><small>Lote</small><strong>${meta.batch?'Sim':'Não'}</strong></div><div><small>Arquivos</small><strong>${report.files}</strong></div></div><div class="cp-tool-depth">${meta.depth.map(item=>`<span>${esc(item)}</span>`).join('')}</div><ul>${checks}</ul><p><strong>Revisão:</strong> ${esc(meta.review)}</p></section>`;
+    const fileLabel=`${report.files} ${report.files===1?'arquivo':'arquivos'}`;
+    return `<section id="cpToolPreflight" class="cp-tool-preflight" aria-label="Resumo técnico da ferramenta"><header><div class="cp-tool-preflight-summary"><strong>${esc(meta.level)}</strong><span>${esc(meta.category)}</span><span>${esc(meta.input)} → ${esc(meta.output)}</span><span>${meta.batch?'Lote':'Individual'}</span><span>${fileLabel}</span></div><span class="cp-tool-preflight-engine">${esc(meta.engine)}</span></header><ul>${checks}</ul></section>`;
   }
   function mountPreflight(){
     const host=$('#settingsContent');if(!host||$('#cpToolPreflight',host))return;host.insertAdjacentHTML('afterbegin',preflightHtml(activeTool()));
