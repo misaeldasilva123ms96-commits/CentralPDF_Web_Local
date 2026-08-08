@@ -9,6 +9,9 @@ const TOOL_VERSION = '0.1.0';
  * @returns The validation status, error messages, and warnings for files without a PDF signature
  */
 function validate(context: ToolContext): ValidationResult {
+  if (compressPdfTool.availability === 'planned') {
+    return { ok: false, errors: ['Ferramenta planejada ainda não executa.'], warnings: [] };
+  }
   const errors: string[] = [];
   const warnings: string[] = [];
 

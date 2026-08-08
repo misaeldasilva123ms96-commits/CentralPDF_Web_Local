@@ -121,7 +121,7 @@ export async function rasterizePage(
 
     const prefix = 'data:image/png;base64,';
     if (!dataUrl.startsWith(prefix) || dataUrl.length <= prefix.length) {
-      throw new Error('A página não pôde ser codificada como imagem PNG.');
+      throw new RasterizerUnavailableError();
     }
     const base64 = dataUrl.slice(prefix.length);
     const binary = atob(base64);

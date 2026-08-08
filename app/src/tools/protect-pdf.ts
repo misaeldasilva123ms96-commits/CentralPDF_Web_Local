@@ -99,7 +99,11 @@ function validate(context: ToolContext): ValidationResult {
   } else if (password.length > MAX_PASSWORD_LENGTH) {
     errors.push(`A senha pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`);
   }
-  if (password.startsWith('-') || String(context.parameters.ownerPassword ?? '').startsWith('-')) {
+  const ownerPassword = String(context.parameters.ownerPassword ?? '');
+  if (ownerPassword.length > MAX_PASSWORD_LENGTH) {
+    errors.push(`A senha de administrador pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`);
+  }
+  if (password.startsWith('-') || ownerPassword.startsWith('-')) {
     errors.push('As senhas não podem começar com "-".');
   }
 

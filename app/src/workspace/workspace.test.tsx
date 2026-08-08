@@ -137,6 +137,17 @@ describe('Workspace (fluxo da ferramenta)', () => {
     expect(await screen.findByRole('alert')).toBeInTheDocument();
     expect(screen.getByText('Processamento cancelado')).toBeInTheDocument();
   });
+
+  it('trava a fila de arquivos enquanto a tarefa está rodando', async () => {
+    centralCatalog.register(slowTool);
+    const user = await openTool('Compressão lenta');
+    await addPdf(user, await pdfFile('arquivo.pdf', 1));
+    await user.click(screen.getByRole('button', { name: 'Compressão lenta' }));
+
+    await screen.findByRole('button', { name: 'Cancelar' });
+    expect(screen.getByRole('button', { name: 'Remover arquivo.pdf' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Escolha ou arraste seus arquivos' })).toHaveAttribute('aria-disabled', 'true');
+  });
 });
 
 const slowTool: ToolDefinition = {

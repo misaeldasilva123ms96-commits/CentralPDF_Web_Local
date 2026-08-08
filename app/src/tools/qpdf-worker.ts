@@ -61,7 +61,7 @@ workerScope.addEventListener('message', async (event: MessageEvent<QpdfWorkerReq
     const input = new Uint8Array(request.input);
     module.FS.writeFile(`/${fileTitle}.in.pdf`, input);
 
-    const exitCode = module.callMain([...request.argv, `/${fileTitle}.in.pdf`, `/${fileTitle}.out.pdf`]);
+    const exitCode = module.callMain([...request.argv, '--', `/${fileTitle}.in.pdf`, `/${fileTitle}.out.pdf`]);
     if (exitCode !== 0) {
       const response: QpdfWorkerResponse = {
         ok: false,

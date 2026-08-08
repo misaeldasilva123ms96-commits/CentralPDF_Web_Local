@@ -122,7 +122,7 @@ export function ToolLayout({ tool, runtimeRouter, generateFileId }: ToolLayoutPr
       <div className="cp-tool-layout">
         <section className="cp-panel cp-card" aria-label="Arquivos">
           <div className="cp-panel__title">Arquivos</div>
-          <FileList contracts={tool.inputs} generateId={generateFileId} />
+          <FileList contracts={tool.inputs} generateId={generateFileId} disabled={busy} />
         </section>
 
         <section className="cp-panel cp-card" aria-label="Visualização">

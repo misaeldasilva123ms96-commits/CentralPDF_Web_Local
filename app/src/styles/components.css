@@ -193,6 +193,17 @@
   background: var(--cp-color-primary-soft);
 }
 
+.cp-dropzone.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cp-dropzone.is-disabled:hover,
+.cp-dropzone.is-disabled.is-dragging {
+  border-color: var(--cp-color-border);
+  background: var(--cp-color-surface-alt);
+}
+
 /* Página de ferramenta: grid 3 colunas */
 .cp-tool-layout-wrap {
   width: 100%;

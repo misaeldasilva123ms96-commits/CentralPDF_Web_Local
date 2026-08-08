@@ -172,7 +172,7 @@ describe('ToolRegistry', () => {
     );
   });
 
-  it('não registra ferramenta com contrato que falha no meio da lista (rollback de estado)', () => {
+  it('registra ferramenta com múltiplos contratos de entrada', () => {
     expect(() =>
       registry.register(
         makeTool({
@@ -184,6 +184,22 @@ describe('ToolRegistry', () => {
       )
     ).not.toThrow();
     expect(registry.count()).toBe(1);
+  });
+
+  it('faz rollback do estado quando um contrato posterior é inválido', () => {
+    registry.register(makeTool({ id: 'merge-pdfs' }));
+    expect(() =>
+      registry.register(
+        makeTool({
+          inputs: [
+            { kind: 'pdf', accept: ['application/pdf'], multiple: true, minFiles: 1 },
+            { kind: 'arquivo-invalido', accept: ['application/pdf'], multiple: false, minFiles: 0 } as never
+          ]
+        })
+      )
+    ).toThrow(RegistryError);
+    expect(registry.count()).toBe(1);
+    expect(registry.has('merge-pdfs')).toBe(true);
   });
 });
 

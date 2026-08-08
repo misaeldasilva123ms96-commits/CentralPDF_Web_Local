@@ -1,4 +1,4 @@
-import { useRef, useState, type DragEvent, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type DragEvent, type ChangeEvent } from 'react';
 import { useAppStore } from '../store/app-store';
 import { formatBytes } from './format';
 import type { FileContract, FileInput } from '../core/types';
@@ -6,6 +6,7 @@ import type { FileContract, FileInput } from '../core/types';
 interface FileListProps {
   contracts: FileContract[];
   generateId?: () => string;
+  disabled?: boolean;
 }
 
 /**
@@ -14,13 +15,22 @@ interface FileListProps {
  * @param contracts - File selection contracts that define accepted formats and whether multiple files are allowed.
  * @param generateId - Generates an identifier for each added file.
  */
-export function FileList({ contracts, generateId = defaultId }: FileListProps) {
+export function FileList({ contracts, generateId = defaultId, disabled = false }: FileListProps) {
   const files = useAppStore((state) => state.files);
   const addFiles = useAppStore((state) => state.addFiles);
   const removeFile = useAppStore((state) => state.removeFile);
   const reorderFileTo = useAppStore((state) => state.reorderFileTo);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mountedRef = useRef(true);
+  const commitChainRef = useRef<Promise<void>>(Promise.resolve());
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const multiple = contracts.some((contract) => contract.multiple);
 
@@ -41,32 +51,41 @@ export function FileList({ contracts, generateId = defaultId }: FileListProps) {
         })
       )
     );
-    addFiles(inputs);
+    if (!mountedRef.current) return;
+    commitChainRef.current = commitChainRef.current.then(() => {
+      if (mountedRef.current) addFiles(inputs);
+    });
+    await commitChainRef.current;
   }
 
   function onDrop(event: DragEvent): void {
     event.preventDefault();
     setDragging(false);
+    if (disabled) return;
     void ingest(event.dataTransfer.files);
   }
 
   function onChange(event: ChangeEvent<HTMLInputElement>): void {
-    if (event.target.files) void ingest(event.target.files);
+    if (event.target.files && !disabled) void ingest(event.target.files);
     event.target.value = '';
   }
 
   return (
     <div className="cp-panel__body">
       <div
-        className={`cp-dropzone${dragging ? ' is-dragging' : ''}`}
+        className={`cp-dropzone${dragging ? ' is-dragging' : ''}${disabled ? ' is-disabled' : ''}`}
         role="button"
-        tabIndex={0}
+        tabIndex={disabled ? -1 : 0}
         aria-label={multiple ? 'Escolha ou arraste seus arquivos' : 'Escolha ou arraste um arquivo'}
-        onClick={() => inputRef.current?.click()}
+        aria-disabled={disabled}
+        onClick={() => {
+          if (!disabled) inputRef.current?.click();
+        }}
         onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') inputRef.current?.click();
+          if (!disabled && (event.key === 'Enter' || event.key === ' ')) inputRef.current?.click();
         }}
         onDragOver={(event) => {
+          if (disabled) return;
           event.preventDefault();
           setDragging(true);
         }}
@@ -112,7 +131,7 @@ export function FileList({ contracts, generateId = defaultId }: FileListProps) {
                     type="button"
                     className="cp-btn cp-btn--ghost cp-btn--small"
                     aria-label={`Mover ${file.name} para cima`}
-                    disabled={index === 0}
+                    disabled={disabled || index === 0}
                     onClick={() => reorderFileTo(file.id, index - 1)}
                   >
                     ↑
@@ -121,7 +140,7 @@ export function FileList({ contracts, generateId = defaultId }: FileListProps) {
                     type="button"
                     className="cp-btn cp-btn--ghost cp-btn--small"
                     aria-label={`Mover ${file.name} para baixo`}
-                    disabled={index === files.length - 1}
+                    disabled={disabled || index === files.length - 1}
                     onClick={() => reorderFileTo(file.id, index + 1)}
                   >
                     ↓
@@ -132,6 +151,7 @@ export function FileList({ contracts, generateId = defaultId }: FileListProps) {
                 type="button"
                 className="cp-btn cp-btn--ghost cp-btn--small"
                 aria-label={`Remover ${file.name}`}
+                disabled={disabled}
                 onClick={() => removeFile(file.id)}
               >
                 Remover
