@@ -75,3 +75,37 @@ jobs:
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -buildvcs=false -ldflags="-s -w -buildid=" -o ../CentralPDF_Local_Server.ci.exe .
           cd ..
           cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.ci.exe
+
+  app-2-0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc -b --noEmit
+
+      - name: Run Vitest tests
+        run: npm run test
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Check legacy catalog script still extracts 34 tools
+        working-directory: ./
+        run: |
+          node scripts/extract-tool-catalog.mjs
+          test "$(grep -cE '^\| (organize|editPdf|merge|split|extract|rotate|watermark|pageNumbers|imagesToPdf|imageConvert|compress|pdfToImage|crop|metadata|normalize|pdfToText|ocr|compare|redact|formBuilder|signPdf|pdfToOffice|documentsToPdf|extractImages|archivePdf|documentAssistant|structuredExtraction|documentAudit|classifyRename|protect|unlock|diagnose|repairAdvanced|flattenForms) ' docs/architecture/_CATALOGO_RAW.md)" -eq 34
