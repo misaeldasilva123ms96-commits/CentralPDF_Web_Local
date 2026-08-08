@@ -12,8 +12,11 @@ function makeJpeg(width: number, height: number, quality: number): Uint8Array {
   return Uint8Array.from(jpegEncode({ width, height, data }, quality).data);
 }
 
+let nextId = 1;
+
 function toFileInput(name: string, pdfBytes: Uint8Array): FileInput {
   return {
+    id: `file-${nextId++}`,
     name,
     size: pdfBytes.byteLength,
     mimeType: 'application/pdf',

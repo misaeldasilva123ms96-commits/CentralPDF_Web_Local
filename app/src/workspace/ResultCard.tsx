@@ -1,24 +1,58 @@
+import { useEffect, useMemo } from 'react';
 import type { ToolResult } from '../core/types';
+import type { TaskStatus } from '../core/task-engine';
 import { formatBytes, formatDuration, percentReduction } from './format';
 
 interface ResultCardProps {
-  result: ToolResult;
+  status: TaskStatus;
+  result?: ToolResult;
+  error?: string;
   toolName: string;
-  onContinue: () => void;
+  onReprocess: () => void;
 }
 
-export function ResultCard({ result, toolName, onContinue }: ResultCardProps) {
-  const metrics = result.metrics;
+export function ResultCard({ status, result, error, toolName, onReprocess }: ResultCardProps) {
+  const succeeded = status === 'succeeded' && Boolean(result);
+
+  const downloads = useMemo(() => {
+    if (!succeeded || !result) return [];
+    return result.outputs.map((output) => ({
+      name: output.name,
+      bytes: output.data.byteLength,
+      url: URL.createObjectURL(
+        new Blob([output.data], { type: output.mimeType || 'application/octet-stream' })
+      )
+    }));
+  }, [succeeded, result]);
+
+  useEffect(() => {
+    return () => {
+      for (const download of downloads) {
+        URL.revokeObjectURL(download.url);
+      }
+    };
+  }, [downloads]);
+
+  if (!succeeded) {
+    const heading = status === 'cancelled' ? 'Processamento cancelado' : 'Falha ao processar';
+    return (
+      <div className="cp-result" role="alert">
+        <h3 style={{ margin: 0 }}>{heading}</h3>
+        {status === 'failed' && error && (
+          <div className="cp-validation__error">{error}</div>
+        )}
+        <div className="cp-result__actions">
+          <button type="button" className="cp-btn" onClick={onReprocess}>
+            Processar novos arquivos
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const metrics = result!.metrics;
   const reduction =
     metrics && metrics.bytesIn > 0 ? percentReduction(metrics.bytesIn, metrics.bytesOut) : null;
-
-  const downloads = result.outputs.map((output) => ({
-    name: output.name,
-    bytes: output.data.byteLength,
-    url: URL.createObjectURL(
-      new Blob([output.data], { type: output.mimeType || 'application/octet-stream' })
-    )
-  }));
 
   return (
     <div className="cp-result">
@@ -54,9 +88,9 @@ export function ResultCard({ result, toolName, onContinue }: ResultCardProps) {
         )}
       </div>
 
-      {result.warnings.length > 0 && (
+      {result!.warnings.length > 0 && (
         <div className="cp-validation">
-          {result.warnings.map((warning) => (
+          {result!.warnings.map((warning) => (
             <span key={warning} className="cp-validation__warning">
               {warning}
             </span>
@@ -75,10 +109,13 @@ export function ResultCard({ result, toolName, onContinue }: ResultCardProps) {
             Baixar {download.name}
           </a>
         ))}
-        <button type="button" className="cp-btn" onClick={onContinue}>
-          Enviar para outra ferramenta ({toolName})
+        <button type="button" className="cp-btn" onClick={onReprocess}>
+          Processar novos arquivos
         </button>
       </div>
+      <p className="muted" style={{ fontSize: 'var(--cp-font-size-sm)', marginBottom: 0 }}>
+        {toolName} · pronto para revisão
+      </p>
     </div>
   );
 }

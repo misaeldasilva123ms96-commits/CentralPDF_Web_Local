@@ -1,48 +1,28 @@
-import type { FileContract, JSONSchema } from '../core/types';
+import type { FileInput, ToolDefinition } from '../core/types';
 import type { RuntimeDecision } from '../core/runtime';
+import { validateToolRequest, type ToolRequestValidation } from '../core/tool-validation';
 
 interface ValidationBarProps {
-  files: { name: string }[];
-  contracts: FileContract[];
-  schema: JSONSchema;
+  tool: ToolDefinition;
+  files: FileInput[];
+  parameters: Record<string, unknown>;
   runtime: RuntimeDecision | null;
 }
 
-export function ValidationBar({ files, contracts, schema, runtime }: ValidationBarProps) {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+export function ValidationBar({ tool, files, parameters, runtime }: ValidationBarProps) {
+  const result: ToolRequestValidation = validateToolRequest({
+    tool,
+    files,
+    parameters,
+    runtime
+  });
 
-  for (const contract of contracts) {
-    if (files.length < contract.minFiles) {
-      errors.push(
-        `Envie pelo menos ${contract.minFiles} arquivo${contract.minFiles > 1 ? 's' : ''}${contract.multiple ? '' : ' deste tipo'}`
-      );
-    }
-  }
-
-  if (files.length === 0) {
-    warnings.push('Nenhum arquivo selecionado ainda.');
-  }
-
-  const required = schema.required ?? [];
-  if (required.length > 0) {
-    for (const key of required) {
-      const property = schema.properties?.[key];
-      const hasDefault = property?.default !== undefined;
-      if (!hasDefault) warnings.push(`Parâmetro "${key}" é necessário.`);
-    }
-  }
-
-  if (runtime && runtime.reason === 'unavailable') {
-    errors.push('Nenhum motor disponível para esta ferramenta no momento.');
-  }
-
-  if (errors.length > 0) {
+  if (result.errors.length > 0) {
     return (
       <div className="cp-validation" role="status" aria-live="polite">
-        {errors.map((error) => (
-          <span key={error} className="cp-validation__error">
-            {error}
+        {result.errors.map((issue) => (
+          <span key={`${issue.code}-${issue.fileId ?? issue.field ?? issue.message}`} className="cp-validation__error">
+            {issue.message}
           </span>
         ))}
       </div>
@@ -52,9 +32,9 @@ export function ValidationBar({ files, contracts, schema, runtime }: ValidationB
   return (
     <div className="cp-validation" role="status" aria-live="polite">
       <span className="cp-validation--ok">Pronto para processar</span>
-      {warnings.map((warning) => (
-        <span key={warning} className="cp-validation__warning">
-          {warning}
+      {result.warnings.map((issue) => (
+        <span key={`${issue.code}-${issue.fileId ?? issue.field ?? issue.message}`} className="cp-validation__warning">
+          {issue.message}
         </span>
       ))}
     </div>

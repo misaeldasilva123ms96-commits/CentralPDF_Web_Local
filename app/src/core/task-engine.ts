@@ -1,4 +1,6 @@
 import type { ToolContext, ToolDefinition, ToolResult } from './types';
+import type { RuntimeDecision } from './runtime';
+import { validateToolRequest } from './tool-validation';
 
 export type TaskStatus = 'queued' | 'running' | 'paused' | 'cancelled' | 'failed' | 'succeeded';
 
@@ -25,13 +27,23 @@ export interface TaskRun {
   result?: ToolResult;
   error?: string;
   attempts: number;
+  runtime?: RuntimeDecision;
+  retryOf?: string;
 }
 
 export interface TaskRunOptions {
   inputs: ToolContext['inputs'];
   parameters: Record<string, unknown>;
+  runtimeDecision?: RuntimeDecision | null;
   signal?: AbortSignal;
   onUpdate?: (task: TaskRun) => void;
+  retryOf?: string;
+}
+
+interface ActiveTask {
+  task: TaskRun;
+  controller: AbortController;
+  listener?: (task: TaskRun) => void;
 }
 
 const TASK_STATUSES: TaskStatus[] = [
@@ -42,6 +54,8 @@ const TASK_STATUSES: TaskStatus[] = [
   'failed',
   'succeeded'
 ];
+
+const TERMINAL_STATUSES: TaskStatus[] = ['cancelled', 'failed', 'succeeded'];
 
 export function resolveParameters(
   schema: ToolDefinition['parametersSchema'],
@@ -56,6 +70,21 @@ export function resolveParameters(
   return resolved;
 }
 
+function clampPercent(percent: number): number {
+  return Math.min(100, Math.max(0, percent));
+}
+
+function snapshotTask(task: TaskRun): TaskRun {
+  return {
+    ...task,
+    events: [...task.events],
+    warnings: [...task.warnings],
+    result: task.result
+      ? { ...task.result, outputs: [...task.result.outputs], warnings: [...task.result.warnings] }
+      : undefined
+  };
+}
+
 export class TaskEngineError extends Error {
   constructor(message: string) {
     super(message);
@@ -65,12 +94,12 @@ export class TaskEngineError extends Error {
 
 export class TaskEngine {
   private readonly history: TaskRun[] = [];
+  private readonly activeRuns = new Map<string, ActiveTask>();
   private nextId = 1;
-  private listener?: (task: TaskRun) => void;
 
   private createTask(toolId: string): TaskRun {
     const now = Date.now();
-    const task: TaskRun = {
+    return {
       id: `run_${this.nextId++}`,
       toolId,
       status: 'queued',
@@ -79,69 +108,120 @@ export class TaskEngine {
       stage: 'queued',
       events: [],
       warnings: [],
+      error: undefined,
       attempts: 0
     };
-    return task;
   }
 
-  private record(task: TaskRun, event: TaskEvent): void {
-    task.events.push(event);
-    if (this.listener) {
-      this.listener({ ...task, events: [...task.events], warnings: [...task.warnings] });
+  private record(active: ActiveTask, event: TaskEvent): void {
+    active.task.events.push(event);
+    if (active.listener) {
+      active.listener(snapshotTask(active.task));
     }
   }
 
-  private finish(task: TaskRun, status: TaskStatus): void {
+  private finish(active: ActiveTask, status: TaskStatus): void {
+    const task = active.task;
+    if (TERMINAL_STATUSES.includes(task.status)) return;
     task.status = status;
     task.endedAt = Date.now();
     task.durationMs = task.endedAt - task.startedAt;
-    this.record(task, { type: 'status', timestamp: task.endedAt, status });
+    this.record(active, { type: 'status', timestamp: task.endedAt, status });
+    this.activeRuns.delete(task.id);
     this.history.push(task);
   }
 
-  async run(
-    tool: ToolDefinition,
-    options: TaskRunOptions
-  ): Promise<TaskRun> {
+  async run(tool: ToolDefinition, options: TaskRunOptions): Promise<TaskRun> {
     const task = this.createTask(tool.id);
-    const runAbort = options.signal ?? new AbortController().signal;
-    this.listener = options.onUpdate;
+    if (options.runtimeDecision) task.runtime = options.runtimeDecision;
+    if (options.retryOf) task.retryOf = options.retryOf;
+    const controller = new AbortController();
+    const externalSignal = options.signal;
+    let onExternalAbort: (() => void) | null = null;
+    if (externalSignal) {
+      if (externalSignal.aborted) controller.abort();
+      else {
+        onExternalAbort = () => controller.abort();
+        externalSignal.addEventListener('abort', onExternalAbort);
+      }
+    }
+    const active: ActiveTask = {
+      task,
+      controller,
+      listener: options.onUpdate
+    };
+    this.activeRuns.set(task.id, active);
+    try {
+      return await this.runTask(tool, options, active);
+    } finally {
+      if (externalSignal && onExternalAbort) {
+        externalSignal.removeEventListener('abort', onExternalAbort);
+      }
+    }
+  }
+
+  private async runTask(
+    tool: ToolDefinition,
+    options: TaskRunOptions,
+    active: ActiveTask
+  ): Promise<TaskRun> {
+    const { task, controller } = active;
+    const signal = controller.signal;
 
     try {
-      this.record(task, { type: 'status', timestamp: task.startedAt, status: 'queued' });
+      this.record(active, { type: 'status', timestamp: task.startedAt, status: 'queued' });
       task.status = 'running';
-      task.attempts += 1;
       task.stage = 'validating';
-      this.record(task, { type: 'status', timestamp: Date.now(), status: 'running' });
+      task.attempts += 1;
+      this.record(active, { type: 'status', timestamp: Date.now(), status: 'running' });
 
       const context: ToolContext = {
         inputs: options.inputs,
         parameters: resolveParameters(tool.parametersSchema, options.parameters),
-        signal: runAbort,
+        signal,
         progress: (percent, stage) => {
-          if (runAbort.aborted) return;
-          task.percent = Math.min(100, Math.max(0, percent));
+          if (signal.aborted) return;
+          task.percent = clampPercent(percent);
           task.stage = stage;
-          this.record(task, { type: 'progress', timestamp: Date.now(), percent: task.percent, stage });
+          this.record(active, {
+            type: 'progress',
+            timestamp: Date.now(),
+            percent: task.percent,
+            stage
+          });
         }
       };
 
+      const request = validateToolRequest({
+        tool,
+        files: options.inputs,
+        parameters: options.parameters,
+        runtime: options.runtimeDecision ?? null
+      });
       const validation = tool.validate(context);
-      if (!validation.ok) {
-        task.warnings.push(...validation.warnings);
-        this.finish(task, 'failed');
-        task.error = validation.errors.join('; ');
-        throw new TaskEngineError(task.error);
+      const warnMessages = [
+        ...request.warnings.map((issue) => issue.message),
+        ...validation.warnings
+      ];
+
+      if (!request.valid || !validation.ok) {
+        task.warnings.push(...warnMessages);
+        task.error = [...request.errors.map((issue) => issue.message), ...validation.errors].join('; ');
+        for (const message of warnMessages) {
+          this.record(active, { type: 'warning', timestamp: Date.now(), message });
+        }
+        this.finish(active, 'failed');
+        return task;
       }
-      task.warnings.push(...validation.warnings);
-      for (const warning of validation.warnings) {
-        this.record(task, { type: 'warning', timestamp: Date.now(), message: warning });
+      task.warnings.push(...warnMessages);
+      for (const message of warnMessages) {
+        this.record(active, { type: 'warning', timestamp: Date.now(), message });
       }
 
       task.stage = 'executing';
       const result = await tool.execute(context);
-      if (runAbort.aborted) {
-        this.finish(task, 'cancelled');
+      if (signal.aborted) {
+        this.finish(active, 'cancelled');
         return task;
       }
       task.result = result;
@@ -149,21 +229,19 @@ export class TaskEngine {
       task.stage = 'done';
       task.warnings.push(...result.warnings);
       for (const warning of result.warnings) {
-        this.record(task, { type: 'warning', timestamp: Date.now(), message: warning });
+        this.record(active, { type: 'warning', timestamp: Date.now(), message: warning });
       }
-      this.finish(task, result.ok ? 'succeeded' : 'failed');
       if (!result.ok) task.error = 'Falha ao executar a ferramenta';
+      this.finish(active, result.ok ? 'succeeded' : 'failed');
       return task;
     } catch (error) {
-      if (runAbort.aborted) {
-        this.finish(task, 'cancelled');
+      if (signal.aborted) {
+        this.finish(active, 'cancelled');
         return task;
       }
-      this.finish(task, 'failed');
       task.error = error instanceof Error ? error.message : String(error);
+      this.finish(active, 'failed');
       return task;
-    } finally {
-      this.listener = undefined;
     }
   }
 
@@ -175,31 +253,33 @@ export class TaskEngine {
     const previous = this.history.find((run) => run.id === previousRunId);
     if (!previous) throw new TaskEngineError(`Execução "${previousRunId}" não encontrada`);
     if (previous.status !== 'failed' && previous.status !== 'cancelled') {
-      throw new TaskEngineError(`Execução "${previousRunId}" não pode ser repetida (estado ${previous.status})`);
+      throw new TaskEngineError(
+        `Execução "${previousRunId}" não pode ser repetida (estado ${previous.status})`
+      );
     }
-    return this.run(tool, options);
+    return this.run(tool, { ...options, retryOf: previous.id });
   }
 
   cancel(taskId: string): boolean {
-    const task = this.history.find((run) => run.id === taskId);
-    if (!task) return false;
-    if (task.status === 'queued' || task.status === 'running' || task.status === 'paused') {
-      this.finish(task, 'cancelled');
-      return true;
-    }
-    return false;
+    const active = this.activeRuns.get(taskId);
+    if (!active) return false;
+    active.controller.abort();
+    return true;
   }
 
   getHistory(): TaskRun[] {
-    return [...this.history];
+    return this.history.map(snapshotTask);
   }
 
   getTask(taskId: string): TaskRun | undefined {
-    return this.history.find((run) => run.id === taskId);
+    const active = this.activeRuns.get(taskId);
+    if (active) return snapshotTask(active.task);
+    const done = this.history.find((run) => run.id === taskId);
+    return done ? snapshotTask(done) : undefined;
   }
 
   isTerminal(status: TaskStatus): boolean {
-    return ['cancelled', 'failed', 'succeeded'].includes(status);
+    return TERMINAL_STATUSES.includes(status);
   }
 
   statuses(): TaskStatus[] {

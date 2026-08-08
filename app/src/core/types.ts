@@ -7,7 +7,9 @@ export type ToolCategory =
   | 'seguranca'
   | 'higiene';
 
-export type RuntimeMode = 'BROWSER_NATIVE' | 'BROWSER_WASM' | 'LOCAL_COMPANION' | 'REMOTE_OPTIONAL';
+export type RuntimeMode = 'BROWSER_NATIVE' | 'BROWSER_WASM';
+
+export type ToolAvailability = 'available' | 'experimental' | 'planned' | 'disabled';
 
 export interface FileContract {
   kind: 'pdf' | 'image' | 'document' | 'office' | 'archive' | 'text' | 'zip' | 'any';
@@ -25,10 +27,12 @@ export interface ToolContext {
 }
 
 export interface FileInput {
+  id: string;
   name: string;
   size: number;
   mimeType: string;
   data: ArrayBuffer;
+  lastModified?: number;
 }
 
 export interface ValidationResult {
@@ -55,6 +59,8 @@ export interface ToolResult {
     bytesOut: number;
     pages?: number;
     imagesRecompressed?: number;
+    filesProcessed?: number;
+    filesIgnored?: number;
   };
 }
 
@@ -77,6 +83,7 @@ export interface ToolDefinition {
   id: string;
   version: string;
   category: ToolCategory;
+  availability: ToolAvailability;
 
   title: string;
   description: string;

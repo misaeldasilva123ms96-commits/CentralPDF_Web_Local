@@ -5,11 +5,21 @@ interface ToolCardProps {
   tool: ToolDefinition;
 }
 
+const AVAILABILITY_LABEL: Record<ToolDefinition['availability'], string> = {
+  available: 'Disponível',
+  experimental: 'Experimental',
+  planned: 'Em breve',
+  disabled: 'Desabilitada'
+};
+
 export function ToolCard({ tool }: ToolCardProps) {
   const selectTool = useAppStore((state) => state.selectTool);
   const favorites = useAppStore((state) => state.favorites);
   const toggleFavorite = useAppStore((state) => state.toggleFavorite);
   const favorite = favorites.includes(tool.id);
+  const planned = tool.availability === 'planned';
+
+  if (tool.availability === 'disabled') return null;
 
   return (
     <article className="cp-tool-card">
@@ -36,8 +46,9 @@ export function ToolCard({ tool }: ToolCardProps) {
         <span className="cp-tool-card__desc">{tool.description}</span>
       </button>
       <div className="cp-tool-card__badges">
-        <span className="cp-badge">{tool.runtime[0].replace('_', ' ')}</span>
-        {tool.capabilities.batch && <span className="cp-badge cp-badge--neutral">lote</span>}
+        <span className={`cp-badge${planned ? ' cp-badge--planned' : ''}`}>
+          {AVAILABILITY_LABEL[tool.availability]}
+        </span>
         {tool.capabilities.offline && <span className="cp-badge cp-badge--neutral">offline</span>}
       </div>
     </article>

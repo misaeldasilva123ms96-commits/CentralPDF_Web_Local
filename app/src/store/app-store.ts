@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { FileInput, ToolDefinition } from '../core/types';
+import type { FileInput } from '../core/types';
 import type { TaskRun } from '../core/task-engine';
 
 export type WorkspaceStep =
@@ -13,7 +13,6 @@ export type WorkspaceStep =
   | 'download';
 
 interface AppState {
-  tools: Map<string, ToolDefinition>;
   searchQuery: string;
   favorites: string[];
   activeToolId: string | null;
@@ -22,22 +21,22 @@ interface AppState {
   currentStep: WorkspaceStep;
   task: TaskRun | null;
 
-  setTools: (tools: ToolDefinition[]) => void;
   setSearchQuery: (query: string) => void;
   toggleFavorite: (toolId: string) => void;
   selectTool: (toolId: string | null) => void;
   setFiles: (files: FileInput[]) => void;
   addFiles: (files: FileInput[]) => void;
-  removeFile: (name: string) => void;
+  removeFile: (fileId: string) => void;
+  reorderFileTo: (fileId: string, toIndex: number) => void;
   setParameter: (key: string, value: unknown) => void;
   setStep: (step: WorkspaceStep) => void;
   setTask: (task: TaskRun | null) => void;
+  clearWorkspace: () => void;
 }
 
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      tools: new Map(),
       searchQuery: '',
       favorites: [],
       activeToolId: null,
@@ -46,7 +45,6 @@ export const useAppStore = create<AppState>()(
       currentStep: 'select',
       task: null,
 
-      setTools: (tools) => set({ tools: new Map(tools.map((t) => [t.id, t])) }),
       setSearchQuery: (query) => set({ searchQuery: query }),
       toggleFavorite: (toolId) =>
         set((state) => ({
@@ -59,21 +57,43 @@ export const useAppStore = create<AppState>()(
       setFiles: (files) => set({ files }),
       addFiles: (files) =>
         set((state) => {
+          let added = false;
           const merged = [...state.files];
           for (const file of files) {
-            if (!merged.some((existing) => existing.name === file.name)) merged.push(file);
+            if (!file.id) continue;
+            if (!merged.some((existing) => existing.id === file.id)) {
+              merged.push(file);
+              added = true;
+            }
           }
-          return { files: merged, currentStep: merged.length > 0 ? 'preview' : 'select' };
+          return {
+            files: merged,
+            currentStep: added ? (state.files.length === 0 ? 'preview' : state.currentStep) : state.currentStep
+          };
         }),
-      removeFile: (name) =>
-        set((state) => ({
-          files: state.files.filter((file) => file.name !== name),
-          currentStep: state.files.length <= 1 ? 'select' : state.currentStep
-        })),
+      removeFile: (fileId) =>
+        set((state) => {
+          const files = state.files.filter((file) => file.id !== fileId);
+          return {
+            files,
+            currentStep: files.length <= 1 ? 'select' : state.currentStep
+          };
+        }),
+      reorderFileTo: (fileId, toIndex) =>
+        set((state) => {
+          const files = [...state.files];
+          const fromIndex = files.findIndex((file) => file.id === fileId);
+          if (fromIndex < 0) return {};
+          const [moved] = files.splice(fromIndex, 1);
+          const clamped = Math.max(0, Math.min(toIndex, files.length));
+          files.splice(clamped, 0, moved);
+          return { files };
+        }),
       setParameter: (key, value) =>
         set((state) => ({ parameters: { ...state.parameters, [key]: value } })),
       setStep: (step) => set({ currentStep: step }),
-      setTask: (task) => set({ task })
+      setTask: (task) => set({ task }),
+      clearWorkspace: () => set({ files: [], parameters: {}, task: null, currentStep: 'select' })
     }),
     {
       name: 'centralpdf2-state',

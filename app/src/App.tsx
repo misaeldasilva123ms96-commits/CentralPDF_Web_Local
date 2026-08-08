@@ -1,19 +1,15 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useAppStore } from './store/app-store';
 import { HomeView } from './home/HomeView';
 import { ToolLayout } from './workspace/ToolLayout';
 import { RuntimeRouter } from './core/runtime';
-import { demoTools } from './demo-tools';
+import { centralCatalog } from './core/catalog';
 
 const BUILD_VERSION = '2.0.0-alpha.1';
 
 export function App() {
   const activeToolId = useAppStore((state) => state.activeToolId);
-  const tools = Array.from(useAppStore((state) => state.tools).values());
-
-  useEffect(() => {
-    useAppStore.getState().setTools(demoTools);
-  }, []);
+  const tools = useMemo(() => centralCatalog.list(), []);
 
   const runtimeRouter = useMemo(() => new RuntimeRouter(), []);
   const activeTool = tools.find((tool) => tool.id === activeToolId) ?? null;
@@ -41,9 +37,13 @@ export function App() {
 
       <main className="app-main">
         {activeTool ? (
-          <ToolLayout tool={activeTool} runtimeRouter={runtimeRouter} />
+          activeTool.availability === 'planned' ? (
+            <PlannedView title={activeTool.title} description={activeTool.description} />
+          ) : (
+            <ToolLayout tool={activeTool} runtimeRouter={runtimeRouter} />
+          )
         ) : (
-          <HomeView tools={tools.length > 0 ? tools : demoTools} />
+          <HomeView tools={tools} />
         )}
       </main>
 
@@ -51,5 +51,25 @@ export function App() {
         CentralPDF 2.0 · processamento local, sem envio de documentos
       </footer>
     </div>
+  );
+}
+
+function PlannedView({ title, description }: { title: string; description: string }) {
+  const selectTool = useAppStore((state) => state.selectTool);
+  return (
+    <section className="cp-panel cp-card" aria-label={title}>
+      <div className="cp-panel__title">{title}</div>
+      <div className="cp-panel__body">
+        <p className="cp-validation__warning">Em breve — esta ferramenta ainda não executa.</p>
+        <p className="muted">{description}</p>
+        <button
+          type="button"
+          className="cp-btn"
+          onClick={() => selectTool(null)}
+        >
+          Voltar para o catálogo
+        </button>
+      </div>
+    </section>
   );
 }

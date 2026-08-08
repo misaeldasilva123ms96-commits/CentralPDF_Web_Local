@@ -1,118 +1,60 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import {
-  RuntimeRouter,
-  DEFAULT_AVAILABILITY,
-  type RuntimeAvailability
-} from './runtime';
+import { RuntimeRouter, DEFAULT_AVAILABILITY, type RuntimeAvailability } from './runtime';
 
-class MemoryStorage implements Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
-  private map = new Map<string, string>();
-  getItem(key: string): string | null {
-    return this.map.get(key) ?? null;
-  }
-  setItem(key: string, value: string): void {
-    this.map.set(key, value);
-  }
-  removeItem(key: string): void {
-    this.map.delete(key);
-  }
-}
-
-const allAvailable: RuntimeAvailability = {
-  BROWSER_NATIVE: true,
-  BROWSER_WASM: true,
-  LOCAL_COMPANION: true,
-  REMOTE_OPTIONAL: false
-};
+const allAvailable: RuntimeAvailability = { BROWSER_NATIVE: true, BROWSER_WASM: true };
+const noneAvailable: RuntimeAvailability = { BROWSER_NATIVE: false, BROWSER_WASM: false };
 
 describe('RuntimeRouter', () => {
-  let storage: MemoryStorage;
+  let router: RuntimeRouter;
 
   beforeEach(() => {
-    storage = new MemoryStorage();
+    router = new RuntimeRouter(() => allAvailable);
   });
 
-  it('escolhe o primeiro runtime suportado pela ordem de prioridade', () => {
-    const router = new RuntimeRouter(() => allAvailable, storage);
+  it('escolhe BROWSER_NATIVE como preferido quando ambos estão disponíveis', () => {
     const decision = router.resolve(['BROWSER_WASM', 'BROWSER_NATIVE']);
-    expect(decision.mode).toBe('BROWSER_NATIVE');
-    expect(decision.reason).toBe('supported');
+    expect(decision.selected).toBe('BROWSER_NATIVE');
+    expect(decision.available).toBe(true);
+    expect(decision.reason).toBe('preferred');
   });
 
   it('resolve apenas runtimes suportados pela ferramenta', () => {
-    const router = new RuntimeRouter(() => allAvailable, storage);
     const decision = router.resolve(['BROWSER_WASM']);
-    expect(decision.mode).toBe('BROWSER_WASM');
+    expect(decision.selected).toBe('BROWSER_WASM');
+    expect(decision.reason).toBe('preferred');
   });
 
-  it('faz fallback para próximo modo disponível quando o preferido está indisponível', () => {
-    const unavailable: RuntimeAvailability = { ...allAvailable, BROWSER_NATIVE: false };
-    const router = new RuntimeRouter(() => unavailable, storage);
-    const decision = router.resolve(['BROWSER_NATIVE', 'BROWSER_WASM']);
-    expect(decision.mode).toBe('BROWSER_WASM');
+  it('faz fallback explícito quando o runtime preferido está indisponível', () => {
+    const routerWasm = new RuntimeRouter(() => ({ BROWSER_NATIVE: false, BROWSER_WASM: true }));
+    const decision = routerWasm.resolve(['BROWSER_NATIVE', 'BROWSER_WASM']);
+    expect(decision.selected).toBe('BROWSER_WASM');
+    expect(decision.reason).toBe('fallback');
   });
 
-  it('retorna unavailable quando nenhum runtime está disponível', () => {
-    const none: RuntimeAvailability = {
-      BROWSER_NATIVE: false,
-      BROWSER_WASM: false,
-      LOCAL_COMPANION: false,
-      REMOTE_OPTIONAL: false
-    };
-    const router = new RuntimeRouter(() => none, storage);
-    const decision = router.resolve(['BROWSER_NATIVE', 'BROWSER_WASM']);
+  it('retorna decision indisponível quando nenhum runtime está disponível', () => {
+    const routerNone = new RuntimeRouter(() => noneAvailable);
+    const decision = routerNone.resolve(['BROWSER_NATIVE', 'BROWSER_WASM']);
+    expect(decision.selected).toBeNull();
+    expect(decision.available).toBe(false);
     expect(decision.reason).toBe('unavailable');
-    expect(decision.availableModes).toEqual([]);
+    expect(decision.supported).toEqual(['BROWSER_NATIVE', 'BROWSER_WASM']);
   });
 
-  it('rejeita ferramenta sem seletor de runtime', () => {
-    const router = new RuntimeRouter(() => allAvailable, storage);
+  it('rejeita ferramenta sem runtime suportado', () => {
     expect(() => router.resolve([])).toThrow(/sem runtime/);
+    expect(() => router.resolve(undefined as never)).toThrow(/sem runtime/);
   });
 
-  it('REMOTE_OPTIONAL fica indisponível sem consentimento', () => {
-    const withRemote: RuntimeAvailability = { ...allAvailable, REMOTE_OPTIONAL: true };
-    const router = new RuntimeRouter(() => withRemote, storage);
-    expect(router.resolve(['REMOTE_OPTIONAL']).reason).toBe('unavailable');
-    expect(router.hasRemoteConsent()).toBe(false);
+  it('produz decisão determinística para a mesma entrada', () => {
+    const first = router.resolve(['BROWSER_WASM', 'BROWSER_NATIVE']);
+    const second = router.resolve(['BROWSER_WASM', 'BROWSER_NATIVE']);
+    expect(first).toEqual(second);
   });
 
-it('REMOTE_OPTIONAL fica disponível após consentimento explícito', () => {
-    const withRemote: RuntimeAvailability = { ...allAvailable, REMOTE_OPTIONAL: true };
-    const router = new RuntimeRouter(() => withRemote, storage);
-    expect(router.isModeAvailable('REMOTE_OPTIONAL')).toBe(false);
-    router.setRemoteConsent(true);
-    expect(router.hasRemoteConsent()).toBe(true);
-    expect(router.isModeAvailable('REMOTE_OPTIONAL')).toBe(true);
-    const decision = router.resolve(['REMOTE_OPTIONAL']);
-    expect(decision.mode).toBe('REMOTE_OPTIONAL');
-    expect(decision.reason).toBe('supported');
-  });
-
-  it('revoga o consentimento remoto', () => {
-    const withRemote: RuntimeAvailability = { ...allAvailable, REMOTE_OPTIONAL: true };
-    const router = new RuntimeRouter(() => withRemote, storage);
-    router.setRemoteConsent(true);
-    router.setRemoteConsent(false);
-    expect(router.hasRemoteConsent()).toBe(false);
-    expect(router.isModeAvailable('REMOTE_OPTIONAL')).toBe(false);
-  });
-
-  it('usa disponibilidade padrão (LOCAL e REMOTE desligados) quando não há provider', () => {
-    const router = new RuntimeRouter(undefined, storage);
-    expect(router.getAvailability()).toEqual(DEFAULT_AVAILABILITY);
-    expect(router.isModeAvailable('LOCAL_COMPANION')).toBe(false);
-    expect(router.isModeAvailable('BROWSER_NATIVE')).toBe(true);
-  });
-
-  it('trata localStorage indisponível sem lançar', () => {
-    const broken: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> = {
-      getItem: () => { throw new Error('blocked'); },
-      setItem: () => { throw new Error('blocked'); },
-      removeItem: () => { throw new Error('blocked'); }
-    };
-    const router = new RuntimeRouter(undefined, broken);
-    router.setRemoteConsent(true);
-    expect(router.hasRemoteConsent()).toBe(false);
+  it('usa a disponibilidade padrão quando não há provider', () => {
+    const plain = new RuntimeRouter();
+    expect(plain.getAvailability()).toEqual(DEFAULT_AVAILABILITY);
+    expect(plain.isModeAvailable('BROWSER_NATIVE')).toBe(true);
+    expect(plain.isModeAvailable('BROWSER_WASM')).toBe(true);
   });
 });

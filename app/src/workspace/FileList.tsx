@@ -1,35 +1,39 @@
 import { useRef, useState, type DragEvent, type ChangeEvent } from 'react';
 import { useAppStore } from '../store/app-store';
 import { formatBytes } from './format';
-import type { FileContract } from '../core/types';
+import type { FileContract, FileInput } from '../core/types';
 
 interface FileListProps {
   contracts: FileContract[];
+  generateId?: () => string;
 }
 
-export function FileList({ contracts }: FileListProps) {
+export function FileList({ contracts, generateId = defaultId }: FileListProps) {
   const files = useAppStore((state) => state.files);
   const addFiles = useAppStore((state) => state.addFiles);
   const removeFile = useAppStore((state) => state.removeFile);
+  const reorderFileTo = useAppStore((state) => state.reorderFileTo);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const multiple = contracts.some((contract) => contract.multiple);
 
-  const accept = contracts
-    .flatMap((contract) => contract.accept)
-    .join(',');
+  const accept = contracts.flatMap((contract) => contract.accept).join(',');
 
   async function ingest(reader: ArrayLike<File>): Promise<void> {
     const selected = Array.from(reader);
     if (selected.length === 0) return;
     const inputs = await Promise.all(
-      selected.map(async (file) => ({
-        name: file.name,
-        size: file.size,
-        mimeType: file.type || 'application/octet-stream',
-        data: await readFileData(file)
-      }))
+      selected.map(
+        async (file): Promise<FileInput> => ({
+          id: generateId(),
+          name: file.name,
+          size: file.size,
+          mimeType: file.type || 'application/octet-stream',
+          data: await readFileData(file),
+          lastModified: file.lastModified
+        })
+      )
     );
     addFiles(inputs);
   }
@@ -82,8 +86,11 @@ export function FileList({ contracts }: FileListProps) {
 
       {files.length > 0 && (
         <div className="cp-file-list" style={{ marginTop: 'var(--cp-space-3)' }}>
-          {files.map((file) => (
-            <div key={file.name} className="cp-file-item">
+          {files.map((file, index) => (
+            <div key={file.id} className="cp-file-item">
+              <div className="cp-file-item__order" aria-hidden="true">
+                {index + 1}
+              </div>
               <span className="cp-file-item__icon" aria-hidden="true">
                 {documentIcon(file.name)}
               </span>
@@ -93,11 +100,33 @@ export function FileList({ contracts }: FileListProps) {
                 </div>
                 <div className="cp-file-item__size">{formatBytes(file.size)}</div>
               </div>
+              {multiple && (
+                <span className="cp-file-item__move">
+                  <button
+                    type="button"
+                    className="cp-btn cp-btn--ghost cp-btn--small"
+                    aria-label={`Mover ${file.name} para cima`}
+                    disabled={index === 0}
+                    onClick={() => reorderFileTo(file.id, index - 1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    className="cp-btn cp-btn--ghost cp-btn--small"
+                    aria-label={`Mover ${file.name} para baixo`}
+                    disabled={index === files.length - 1}
+                    onClick={() => reorderFileTo(file.id, index + 1)}
+                  >
+                    ↓
+                  </button>
+                </span>
+              )}
               <button
                 type="button"
                 className="cp-btn cp-btn--ghost cp-btn--small"
                 aria-label={`Remover ${file.name}`}
-                onClick={() => removeFile(file.name)}
+                onClick={() => removeFile(file.id)}
               >
                 Remover
               </button>
@@ -107,6 +136,10 @@ export function FileList({ contracts }: FileListProps) {
       )}
     </div>
   );
+}
+
+function defaultId(): string {
+  return crypto.randomUUID();
 }
 
 function readFileData(file: File): Promise<ArrayBuffer> {

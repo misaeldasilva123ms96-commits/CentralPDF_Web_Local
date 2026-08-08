@@ -3,77 +3,53 @@ import type { RuntimeMode } from './types';
 export interface RuntimeAvailability {
   BROWSER_NATIVE: boolean;
   BROWSER_WASM: boolean;
-  LOCAL_COMPANION: boolean;
-  REMOTE_OPTIONAL: boolean;
 }
 
 export interface RuntimeDecision {
-  mode: RuntimeMode;
-  reason: 'supported' | 'unavailable';
-  availableModes: RuntimeMode[];
+  selected: RuntimeMode | null;
+  available: boolean;
+  reason: 'preferred' | 'fallback' | 'unavailable';
+  supported: RuntimeMode[];
 }
 
 export type AvailabilityProvider = () => RuntimeAvailability;
 
 export const DEFAULT_AVAILABILITY: RuntimeAvailability = {
   BROWSER_NATIVE: true,
-  BROWSER_WASM: true,
-  LOCAL_COMPANION: false,
-  REMOTE_OPTIONAL: false
+  BROWSER_WASM: true
 };
 
-const REMOTE_CONSENT_KEY = 'centralpdf2-remote-consent';
+const PRIORITY_ORDER: RuntimeMode[] = ['BROWSER_NATIVE', 'BROWSER_WASM'];
 
 export class RuntimeRouter {
-  private readonly priorities: RuntimeMode[] = [
-    'BROWSER_NATIVE',
-    'BROWSER_WASM',
-    'LOCAL_COMPANION',
-    'REMOTE_OPTIONAL'
-  ];
-
-  constructor(
-    private readonly availability: AvailabilityProvider = () => DEFAULT_AVAILABILITY,
-    private readonly consent: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> = window.localStorage
-  ) {}
+  constructor(private readonly availability: AvailabilityProvider = () => DEFAULT_AVAILABILITY) {}
 
   resolve(supported: readonly RuntimeMode[]): RuntimeDecision {
     if (!supported || supported.length === 0) {
       throw new Error('Ferramenta sem runtime suportado');
     }
     const state = this.availability();
-    const availableModes = this.priorities.filter(
-      (mode) => supported.includes(mode) && this.isModeAvailable(mode, state)
+    const awaited = PRIORITY_ORDER.filter(
+      (mode) => supported.includes(mode) && state[mode]
     );
-    if (availableModes.length === 0) {
-      return { mode: supported[0], reason: 'unavailable', availableModes: [] };
+    if (awaited.length === 0) {
+      return {
+        selected: null,
+        available: false,
+        reason: 'unavailable',
+        supported: [...supported]
+      };
     }
-    return { mode: availableModes[0], reason: 'supported', availableModes };
+    const selected = awaited[0];
+    const reason: RuntimeDecision['reason'] =
+      selected === 'BROWSER_WASM' && supported.includes('BROWSER_NATIVE')
+        ? 'fallback'
+        : 'preferred';
+    return { selected, available: true, reason, supported: [...supported] };
   }
 
-  isModeAvailable(mode: RuntimeMode, state?: RuntimeAvailability): boolean {
-    const current = state ?? this.availability();
-    if (mode === 'REMOTE_OPTIONAL') {
-      return current.REMOTE_OPTIONAL && this.hasRemoteConsent();
-    }
-    return current[mode];
-  }
-
-  setRemoteConsent(allowed: boolean): void {
-    try {
-      if (allowed) this.consent.setItem(REMOTE_CONSENT_KEY, '1');
-      else this.consent.removeItem(REMOTE_CONSENT_KEY);
-    } catch (_) {
-      /* localStorage indisponível (modo privado): consentimento não persiste */
-    }
-  }
-
-  hasRemoteConsent(): boolean {
-    try {
-      return this.consent.getItem(REMOTE_CONSENT_KEY) === '1';
-    } catch (_) {
-      return false;
-    }
+  isModeAvailable(mode: RuntimeMode): boolean {
+    return this.availability()[mode];
   }
 
   getAvailability(): RuntimeAvailability {

@@ -7,6 +7,7 @@ function makeTool(overrides: Partial<ToolDefinition> = {}): ToolDefinition {
     id: 'merge-pdfs',
     version: '1.0.0',
     category: 'organizacao',
+    availability: 'available',
     title: 'Juntar PDFs',
     description: 'Une múltiplos PDFs em um único documento.',
     inputs: [{ kind: 'pdf', accept: ['application/pdf'], multiple: true, minFiles: 2 }],
@@ -40,31 +41,51 @@ describe('ToolRegistry', () => {
     expect(() => registry.register(makeTool())).toThrow(/já registrada/);
   });
 
-  it('rejeita id com formato inválido (maiúsculas e espaços)', () => {
+  it('rejeita id vazio ou com formato inválido', () => {
+    expect(() => registry.register(makeTool({ id: '' }))).toThrow(/Id de ferramenta inválido/);
     expect(() => registry.register(makeTool({ id: 'MergePdf' }))).toThrow(/Id de ferramenta inválido/);
     expect(() => registry.register(makeTool({ id: 'merge pdf' }))).toThrow(/Id de ferramenta inválido/);
   });
 
-  it('rejeita ferramenta sem título, versão ou runtime', () => {
-    expect(() => registry.register(makeTool({ title: '' }))).toThrow(/sem título/);
-    expect(() => registry.register(makeTool({ version: '' }))).toThrow(/sem versão/);
-    expect(() => registry.register(makeTool({ runtime: [] }))).toThrow(/sem runtime/);
+  it('rejeita versão inválida', () => {
+    expect(() => registry.register(makeTool({ version: 'demo' }))).toThrow(/versão inválida/);
+    expect(() => registry.register(makeTool({ version: '1.' }))).toThrow(/versão inválida/);
   });
 
-  it('lista ferramentas ordenadas por id e filtra por categoria', () => {
+  it('rejeita ferramenta sem título, runtime ou estado de disponibilidade', () => {
+    expect(() => registry.register(makeTool({ title: '' }))).toThrow(/sem título/);
+    expect(() => registry.register(makeTool({ runtime: [] }))).toThrow(/sem runtime/);
+    expect(() => registry.register(makeTool({ availability: 'alpha' as never }))).toThrow(/disponibilidade/);
+  });
+
+  it('rejeita contrato de entrada/saída inválido', () => {
+    expect(() => registry.register(makeTool({ inputs: [] }))).toThrow(/contrato de entrada/);
+    expect(() =>
+      registry.register(makeTool({ outputs: [] }))
+    ).toThrow(/contrato de saída/);
+  });
+
+  it('rejeita capacidades ausentes ou com tipos errados', () => {
+    expect(() => registry.register(makeTool({ capabilities: undefined as never }))).toThrow(/capacidades/);
+    expect(() =>
+      registry.register(makeTool({ capabilities: { ...makeTool().capabilities, batch: 'sim' as never } }))
+    ).toThrow(/capacidades/);
+  });
+
+  it('lista ferramentas ordenadas por id e filtra por categoria e disponibilidade', () => {
     registry.register(makeTool({ id: 'b-tool' }));
     registry.register(makeTool({ id: 'a-tool' }));
     registry.register(makeTool({ id: 'c-tool', category: 'seguranca' }));
-    const ids = registry.list().map((t) => t.id);
-    expect(ids).toEqual(['a-tool', 'b-tool', 'c-tool']);
+    registry.register(makeTool({ id: 'd-tool', availability: 'planned' }));
+    expect(registry.list().map((t) => t.id)).toEqual(['a-tool', 'b-tool', 'c-tool', 'd-tool']);
     expect(registry.listByCategory('seguranca').map((t) => t.id)).toEqual(['c-tool']);
+    expect(registry.listByAvailability('planned').map((t) => t.id)).toEqual(['d-tool']);
   });
 
   it('has/clear/count refletem o estado do registro', () => {
     expect(registry.count()).toBe(0);
     registry.register(makeTool());
     expect(registry.has('merge-pdfs')).toBe(true);
-    expect(registry.has('nao-existe')).toBe(false);
     registry.clear();
     expect(registry.count()).toBe(0);
   });

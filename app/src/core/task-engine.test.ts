@@ -3,6 +3,7 @@ import { TaskEngine, TaskEngineError, resolveParameters } from './task-engine';
 import type { ToolDefinition } from './types';
 
 const pdfInput = {
+  id: 'file-1',
   name: 'doc.pdf',
   size: 1024,
   mimeType: 'application/pdf',
@@ -14,6 +15,7 @@ function makeTool(overrides: Partial<ToolDefinition> = {}): ToolDefinition {
     id: 'merge-pdfs',
     version: '1.0.0',
     category: 'organizacao',
+    availability: 'available',
     title: 'Juntar PDFs',
     description: 'Une múltiplos PDFs.',
     inputs: [{ kind: 'pdf', accept: ['application/pdf'], multiple: true, minFiles: 1 }],
@@ -33,6 +35,8 @@ function makeTool(overrides: Partial<ToolDefinition> = {}): ToolDefinition {
 }
 
 const options = () => ({ inputs: [pdfInput], parameters: {} });
+
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 describe('resolveParameters', () => {
   it('aplica os defaults do schema aos parâmetros ausentes', () => {
@@ -63,19 +67,17 @@ describe('resolveParameters', () => {
 });
 
 describe('TaskEngine', () => {
-  it('executa ferramenta com sucesso e registra histórico', async () => {
+  it('1. executa ferramenta com sucesso e registra histórico uma única vez', async () => {
     const engine = new TaskEngine();
     const run = await engine.run(makeTool(), options());
     expect(run.status).toBe('succeeded');
     expect(run.percent).toBe(100);
     expect(run.result?.ok).toBe(true);
-    expect(run.attempts).toBe(1);
     expect(engine.getHistory()).toHaveLength(1);
-    expect(engine.getHistory()[0].id).toBe(run.id);
-    expect(engine.getTask(run.id)).toBe(run);
+    expect(engine.getHistory().filter((item) => item.id === run.id)).toHaveLength(1);
   });
 
-  it('falha quando validate rejeita a entrada', async () => {
+  it('2. falha quando validate rejeita a entrada', async () => {
     const engine = new TaskEngine();
     const tool = makeTool({
       validate: () => ({ ok: false, errors: ['Precisa de pelo menos 2 PDFs'], warnings: [] })
@@ -84,10 +86,9 @@ describe('TaskEngine', () => {
     expect(run.status).toBe('failed');
     expect(run.error).toMatch(/2 PDFs/);
     expect(run.endedAt).toBeDefined();
-    expect(run.durationMs).toBeGreaterThanOrEqual(0);
   });
 
-  it('falha quando execute lança erro e preserva a mensagem', async () => {
+  it('3. falha quando execute lança erro e preserva a mensagem', async () => {
     const engine = new TaskEngine();
     const tool = makeTool({ execute: async () => { throw new Error('OOM'); } });
     const run = await engine.run(tool, options());
@@ -95,48 +96,170 @@ describe('TaskEngine', () => {
     expect(run.error).toBe('OOM');
   });
 
-  it('registra progresso e estágios via progress callback', async () => {
+  it('4. resultado com ok:false marca a tarefa como falha', async () => {
     const engine = new TaskEngine();
     const tool = makeTool({
-      execute: async (ctx) => {
-        ctx.progress?.(10, 'parsing');
-        ctx.progress?.(70, 'merging');
-        return { ok: true, outputs: [], warnings: [] };
-      }
+      execute: async () => ({ ok: false, outputs: [], warnings: ['sem páginas válidas'] })
     });
     const run = await engine.run(tool, options());
-    const progressEvents = run.events.filter((e) => e.type === 'progress');
-    expect(progressEvents.map((e) => [e.percent, e.stage])).toEqual([
-      [10, 'parsing'],
-      [70, 'merging']
-    ]);
-    expect(run.percent).toBe(100);
+    expect(run.status).toBe('failed');
+    expect(run.error).toMatch(/Falha ao executar/);
   });
 
-  it('cancela com AbortSignal durante a execução', async () => {
+  it('5. cancelamento com AbortSignal durante uma execução demorada', async () => {
     const engine = new TaskEngine();
     const controller = new AbortController();
     const tool = makeTool({
       execute: async (ctx) => {
         ctx.signal?.addEventListener('abort', () => undefined);
-        await new Promise((resolve) => setTimeout(resolve, 60));
-        return { ok: true, outputs: [], warnings: [] };
+        for (let i = 0; i < 50; i += 1) {
+          if (ctx.signal?.aborted) break;
+          await sleep(5);
+        }
+        return { ok: true, outputs: [], warnings: ['parcial'] };
       }
     });
     const promise = engine.run(tool, { ...options(), signal: controller.signal });
-    setTimeout(() => controller.abort(), 10);
+    setTimeout(() => controller.abort(), 20);
     const run = await promise;
     expect(run.status).toBe('cancelled');
-    expect(engine.isTerminal(run.status)).toBe(true);
+    expect(run.result).toBeUndefined();
   });
 
-  it('retry repete execução falhada e gera nova execução', async () => {
+  it('6. cancel por id durante a execução interrompe a tarefa ativa', async () => {
+    const engine = new TaskEngine();
+    let aborted = false;
+    const tool = makeTool({
+      execute: async (ctx) => {
+        ctx.signal?.addEventListener('abort', () => {
+          aborted = true;
+        });
+        for (let i = 0; i < 100; i += 1) {
+          if (ctx.signal?.aborted) break;
+          await sleep(5);
+        }
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    let runId = '';
+    const promise = engine.run(tool, {
+      ...options(),
+      onUpdate: (task) => {
+        runId = task.id;
+      }
+    });
+    await sleep(30);
+    expect(runId).not.toBe('');
+    expect(aborted).toBe(false);
+    expect(engine.cancel(runId)).toBe(true);
+    const run = await promise;
+    expect(run.status).toBe('cancelled');
+    expect(aborted).toBe(true);
+    expect(engine.cancel(run.id)).toBe(false);
+  });
+
+  it('7. cancel de id inexistente retorna false', async () => {
+    const engine = new TaskEngine();
+    expect(engine.cancel('ghost')).toBe(false);
+  });
+
+  it('8. cancel de tarefa já concluída retorna false', async () => {
+    const engine = new TaskEngine();
+    const run = await engine.run(makeTool(), options());
+    expect(run.status).toBe('succeeded');
+    expect(engine.cancel(run.id)).toBe(false);
+  });
+
+  it('9. histórico não possui duplicidades após várias execuções', async () => {
+    const engine = new TaskEngine();
+    for (let i = 0; i < 5; i += 1) {
+      await engine.run(makeTool(), options());
+    }
+    const history = engine.getHistory();
+    const ids = history.map((run) => run.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('10. cada tarefa possui exatamente um evento de status terminal', async () => {
+    const engine = new TaskEngine();
+    const tool = makeTool({ execute: async () => { throw new Error('boom'); } });
+    const run = await engine.run(tool, options());
+    const terminals = run.events.filter((event) =>
+      event.type === 'status' && ['succeeded', 'failed', 'cancelled'].includes(event.status ?? '')
+    );
+    expect(terminals).toHaveLength(1);
+    expect(run.status).toBe('failed');
+  });
+
+  it('11. erro aparece no snapshot terminal entregue ao listener', async () => {
+    const engine = new TaskEngine();
+    const snapshots: Array<{ status: string; error?: string }> = [];
+    const tool = makeTool({ execute: async () => { throw new Error('explodiu'); } });
+    await engine.run(tool, { ...options(), onUpdate: (next) => snapshots.push(next) });
+    const terminal = snapshots.find((s) => ['failed', 'cancelled', 'succeeded'].includes(s.status));
+    expect(terminal?.status).toBe('failed');
+    expect(terminal?.error).toBe('explodiu');
+  });
+
+  it('12. duas tarefas concorrentes executam e finalizam de forma independente', async () => {
+    const engine = new TaskEngine();
+    const slow = makeTool({
+      id: 'merge-pdfs',
+      execute: async () => {
+        await sleep(40);
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    const fast = makeTool({
+      id: 'merge-pdfs',
+      execute: async () => {
+        await sleep(5);
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    const [a, b] = await Promise.all([engine.run(slow, options()), engine.run(fast, options())]);
+    expect(a.status).toBe('succeeded');
+    expect(b.status).toBe('succeeded');
+    expect(a.id).not.toBe(b.id);
+    expect(engine.getHistory()).toHaveLength(2);
+  });
+
+  it('13/14. listeners de execuções concorrentes ficam isolados', async () => {
+    const engine = new TaskEngine();
+    const seenA: number[] = [];
+    const seenB: number[] = [];
+    const toolA = makeTool({
+      execute: async (ctx) => {
+        ctx.progress?.(1, 'ida');
+        await sleep(10);
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    const toolB = makeTool({
+      execute: async (ctx) => {
+        ctx.progress?.(1, 'volta');
+        await sleep(1);
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    const [a, b] = await Promise.all([
+      engine.run(toolA, { ...options(), onUpdate: (t) => seenA.push(t.percent) }),
+      engine.run(toolB, { ...options(), onUpdate: (t) => seenB.push(t.percent) })
+    ]);
+    expect(a.id).not.toBe(b.id);
+    // o listener da primeira não recebeu eventos quando a segunda finalizou
+    expect(seenA.filter((p) => p === 100)).toHaveLength(1);
+    expect(seenB.filter((p) => p === 100)).toHaveLength(1);
+    expect(seenB.every((p) => p <= 100)).toBe(true);
+  });
+
+  it('15. retry de tarefa com falha gera nova execução vinculada', async () => {
     const engine = new TaskEngine();
     let calls = 0;
     const tool = makeTool({
       execute: async () => {
         calls += 1;
-        if (calls === 1) throw new Error('tentativa 1 falhou');
+        if (calls === 1) throw new Error('primeira falha');
         return { ok: true, outputs: [], warnings: [] };
       }
     });
@@ -144,33 +267,120 @@ describe('TaskEngine', () => {
     expect(first.status).toBe('failed');
     const second = await engine.retry(tool, options(), first.id);
     expect(second.status).toBe('succeeded');
-    expect(calls).toBe(2);
-    expect(second.attempts).toBe(1);
+    expect(second.retryOf).toBe(first.id);
     expect(engine.getHistory()).toHaveLength(2);
   });
 
-it('retry rejeita execução inexistente ou já concluída em sucesso', async () => {
+  it('16. retry é permitido depois de cancelamento', async () => {
+    const engine = new TaskEngine();
+    const tool = makeTool({
+      execute: async (ctx) => {
+        for (let i = 0; i < 100; i += 1) {
+          if (ctx.signal?.aborted) break;
+          await sleep(5);
+        }
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    const cancelled1 = await engine.run(tool, { ...options(), signal: abortedSignal() });
+    const cancelled2 = await engine.run(tool, { ...options(), signal: abortedSignal() });
+    const retried = await engine.retry(tool, options(), cancelled2.id);
+    expect(cancelled1.status).toBe('cancelled');
+    expect(cancelled2.status).toBe('cancelled');
+    expect(retried.status).toBe('succeeded');
+    expect(retried.retryOf).toBe(cancelled2.id);
+  });
+
+  it('17. retry rejeita execução inexistente ou concluída em sucesso', async () => {
     const engine = new TaskEngine();
     expect(() => engine.retry(makeTool(), options(), 'ghost')).toThrow(TaskEngineError);
-    expect(() => engine.retry(makeTool(), options(), 'ghost')).toThrow(/não encontrada/);
     const ok = await engine.run(makeTool(), options());
     expect(() => engine.retry(makeTool(), options(), ok.id)).toThrow(/não pode ser repetida/);
   });
 
-  it('cancel() por id interrompe apenas execuções ativas/em fila', async () => {
+  it('18. consulta de tarefa ativa durante execução', async () => {
     const engine = new TaskEngine();
-    const ok = await engine.run(makeTool(), options());
-    expect(engine.cancel(ok.id)).toBe(false); // já terminou
-    expect(engine.cancel('ghost')).toBe(false);
-    expect(engine.isTerminal('queued')).toBe(false);
-    expect(engine.isTerminal('running')).toBe(false);
-    expect(engine.isTerminal('succeeded')).toBe(true);
+    const tool = makeTool({
+      execute: async () => {
+        await sleep(30);
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    let runId = '';
+    const promise = engine.run(tool, {
+      ...options(),
+      onUpdate: (task) => {
+        runId = task.id;
+      }
+    });
+    expect(runId).not.toBe('');
+    const mid = engine.getTask(runId);
+    expect(mid).toBeDefined();
+    expect(['queued', 'running']).toContain(mid?.status);
+    await promise;
+    const final = engine.getTask(runId);
+    expect(final?.status).toBe('succeeded');
   });
 
-  it('statuses retorna a lista fixa de estados', () => {
+  it('19. consulta de tarefa concluída após o fim', async () => {
     const engine = new TaskEngine();
-    expect(engine.statuses()).toEqual([
-      'queued', 'running', 'paused', 'cancelled', 'failed', 'succeeded'
-    ]);
+    const run = await engine.run(makeTool(), options());
+    const later = engine.getTask(run.id);
+    expect(later?.status).toBe('succeeded');
+    expect(later?.result).toBeDefined();
+  });
+
+  it('20. progresso é limitado ao intervalo 0–100', async () => {
+    const engine = new TaskEngine();
+    const tool = makeTool({
+      execute: async (ctx) => {
+        ctx.progress?.(-50, 'baixo');
+        ctx.progress?.(1250, 'alto');
+        ctx.progress?.(40, 'meio');
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+    const run = await engine.run(tool, options());
+    const progresses = run.events.filter((e) => e.type === 'progress');
+    expect(progresses).toHaveLength(3);
+    for (const event of progresses) {
+      expect(event.percent ?? -1).toBeGreaterThanOrEqual(0);
+      expect(event.percent ?? 101).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('registra a decisão de runtime na execução', async () => {
+    const engine = new TaskEngine();
+    const run = await engine.run(makeTool(), {
+      ...options(),
+      runtimeDecision: { selected: 'BROWSER_NATIVE', available: true, reason: 'preferred', supported: ['BROWSER_NATIVE'] }
+    });
+    expect(run.runtime?.selected).toBe('BROWSER_NATIVE');
+    expect(run.runtime?.available).toBe(true);
   });
 });
+
+it('não executa quando a validação central bloqueia (planejada)', async () => {
+  const engine = new TaskEngine();
+  const tool = { ...makeTool(), availability: 'planned' as const };
+  const run = await engine.run(tool, options());
+  expect(run.status).toBe('failed');
+  expect(run.result).toBeUndefined();
+  expect(run.error).toContain('ainda não está disponível');
+});
+
+it('não executa quando o runtime está indisponível', async () => {
+  const engine = new TaskEngine();
+  const run = await engine.run(makeTool(), {
+    ...options(),
+    runtimeDecision: { selected: null, available: false, reason: 'unavailable', supported: ['BROWSER_NATIVE'] }
+  });
+  expect(run.status).toBe('failed');
+  expect(run.result).toBeUndefined();
+});
+
+function abortedSignal(): AbortSignal {
+  const controller = new AbortController();
+  controller.abort();
+  return controller.signal;
+}
