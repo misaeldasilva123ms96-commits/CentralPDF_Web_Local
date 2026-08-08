@@ -5,6 +5,11 @@ interface SettingsPanelProps {
   schema: JSONSchema;
 }
 
+/**
+ * Renders controls for each configurable property defined by a tool schema.
+ *
+ * @param schema - The schema defining the tool's configurable properties
+ */
 export function SettingsPanel({ schema }: SettingsPanelProps) {
   const parameters = useAppStore((state) => state.parameters);
   const setParameter = useAppStore((state) => state.setParameter);
@@ -40,6 +45,15 @@ interface SettingsControlProps {
   onValue: (value: unknown) => void;
 }
 
+/**
+ * Renders an input control for a schema-defined setting.
+ *
+ * @param name - The setting name used to identify and label the control
+ * @param toolParam - The setting schema that determines the control type and constraints
+ * @param value - The setting's current value
+ * @param onValue - Callback invoked with the updated setting value
+ * @returns The rendered setting control
+ */
 function SettingsControl({ name, toolParam, value, onValue }: SettingsControlProps) {
   const label = toolParam.title ?? name;
 

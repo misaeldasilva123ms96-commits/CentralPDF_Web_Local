@@ -29,6 +29,12 @@ export interface ValidateToolRequestOptions {
 
 const MIME_FALLBACK = 'application/octet-stream';
 
+/**
+ * Extracts the lowercase file extension from a name.
+ *
+ * @param name - The file name or path to inspect
+ * @returns The extension including its leading period, or an empty string when no period is present
+ */
 function extensionOf(name: string): string {
   const dot = name.lastIndexOf('.');
   return dot >= 0 ? name.slice(dot).toLowerCase() : '';
@@ -43,6 +49,13 @@ const EXT_BY_MIME: Record<string, string[]> = {
   'text/plain': ['.txt']
 };
 
+/**
+ * Determines whether a file satisfies an acceptance contract based on its extension or MIME type.
+ *
+ * @param contract - The file acceptance rules to apply
+ * @param file - The file to evaluate
+ * @returns `true` if the file matches the contract, `false` otherwise.
+ */
 function acceptsFile(contract: FileContract, file: FileInput): boolean {
   if (contract.accept.length === 0) return true;
   const mime = file.mimeType || MIME_FALLBACK;
@@ -56,6 +69,13 @@ function acceptsFile(contract: FileContract, file: FileInput): boolean {
   return false;
 }
 
+/**
+ * Determines whether binary data begins with the specified marker.
+ *
+ * @param data - The binary data to inspect
+ * @param marker - The marker expected at the beginning of the data
+ * @returns `true` if the data begins with the marker, `false` otherwise
+ */
 function headerStartsWith(data: ArrayBuffer, marker: string): boolean {
   const bytes = new Uint8Array(data.slice(0, marker.length));
   let head = '';
@@ -68,6 +88,13 @@ const MAGIC_BY_KIND: Partial<Record<FileContract['kind'], (data: ArrayBuffer) =>
   zip: (data) => headerStartsWith(data, 'PK\u0003\u0004') || headerStartsWith(data, 'PK\u0005\u0006')
 };
 
+/**
+ * Validates tool parameters against a JSON Schema.
+ *
+ * @param schema - The schema defining required properties and validation constraints
+ * @param parameters - The parameter values to validate
+ * @returns Validation issues found in the parameters; an empty array when all values are valid
+ */
 function validateSchemaParameters(
   schema: JSONSchema,
   parameters: Record<string, unknown>
@@ -116,6 +143,14 @@ function validateSchemaParameters(
   return errors;
 }
 
+/**
+ * Validates a value against a basic JSON schema type.
+ *
+ * @param property - The schema property defining the expected type
+ * @param value - The value to validate
+ * @param key - The parameter name associated with the value
+ * @returns A validation issue when the value has an invalid type, or `null` when it is valid
+ */
 function checkBasicType(
   property: JSONSchemaProperty,
   value: unknown,
@@ -148,6 +183,12 @@ function checkBasicType(
   return null;
 }
 
+/**
+ * Validates a tool request against the tool's availability, runtime, file contracts, and parameter schema.
+ *
+ * @param options - The tool request and validation context.
+ * @returns The validation result, including errors, warnings, and whether the request is valid.
+ */
 export function validateToolRequest(
   options: ValidateToolRequestOptions
 ): ToolRequestValidation {

@@ -7,6 +7,11 @@ interface HomeViewProps {
   tools: ToolDefinition[];
 }
 
+/**
+ * Renders the CentralPDF home page with searchable tools and favorites.
+ *
+ * @returns The home page content with search results, favorite tools, and all available tools.
+ */
 export function HomeView({ tools }: HomeViewProps) {
   const searchQuery = useAppStore((state) => state.searchQuery);
   const setSearchQuery = useAppStore((state) => state.setSearchQuery);

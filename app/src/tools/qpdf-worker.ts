@@ -19,6 +19,12 @@ const workerScope = self as unknown as {
   postMessage: (message: QpdfWorkerResponse, transfer?: Transferable[]) => void;
 };
 
+/**
+ * Initializes the QPDF WebAssembly module with the bundled runtime assets.
+ *
+ * @param printErr - Callback that receives QPDF error output lines
+ * @returns The initialized QPDF module
+ */
 async function loadQpdf(printErr: (line: string) => void): Promise<QpdfModule> {
   return (await init({
     locateFile: (file: string) => {
@@ -31,6 +37,12 @@ async function loadQpdf(printErr: (line: string) => void): Promise<QpdfModule> {
   })) as unknown as QpdfModule;
 }
 
+/**
+ * Creates a filesystem-safe title for the input file.
+ *
+ * @param title - The requested file title
+ * @returns The title with unsupported characters replaced by underscores, limited to 60 characters, or `entrada` when empty
+ */
 function sanitizeFileTitle(title: string): string {
   return title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60) || 'entrada';
 }

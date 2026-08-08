@@ -57,6 +57,13 @@ const TASK_STATUSES: TaskStatus[] = [
 
 const TERMINAL_STATUSES: TaskStatus[] = ['cancelled', 'failed', 'succeeded'];
 
+/**
+ * Applies schema defaults to undefined parameters while preserving provided values.
+ *
+ * @param schema - The parameter schema containing default values
+ * @param raw - The input parameter values
+ * @returns A copy of the input parameters with applicable defaults applied
+ */
 export function resolveParameters(
   schema: ToolDefinition['parametersSchema'],
   raw: Record<string, unknown>
@@ -70,10 +77,22 @@ export function resolveParameters(
   return resolved;
 }
 
+/**
+ * Restricts a percentage value to the range from 0 to 100.
+ *
+ * @param percent - The percentage value to constrain
+ * @returns The constrained percentage value
+ */
 function clampPercent(percent: number): number {
   return Math.min(100, Math.max(0, percent));
 }
 
+/**
+ * Creates an independent snapshot of a task run and its mutable collections.
+ *
+ * @param task - The task run to snapshot
+ * @returns A task run with cloned events, warnings, result, outputs, and result warnings
+ */
 function snapshotTask(task: TaskRun): TaskRun {
   return {
     ...task,

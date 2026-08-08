@@ -11,6 +11,16 @@ interface ResultCardProps {
   onReprocess: () => void;
 }
 
+/**
+ * Displays processing results, warnings, downloadable output files, or failure and cancellation messages.
+ *
+ * @param status - The current processing status
+ * @param result - The processing result and output files, when available
+ * @param error - The failure message to display for failed processing
+ * @param toolName - The name of the tool that produced the result
+ * @param onReprocess - Called when the user requests processing new files
+ * @returns The result card element
+ */
 export function ResultCard({ status, result, error, toolName, onReprocess }: ResultCardProps) {
   const succeeded = status === 'succeeded' && Boolean(result);
 

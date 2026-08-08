@@ -26,6 +26,13 @@ const FLOW_STEPS: { id: WorkspaceStep; label: string }[] = [
   { id: 'download', label: 'Baixar' }
 ];
 
+/**
+ * Renders the file-processing workflow for a tool, including configuration, validation, progress, and results.
+ *
+ * @param tool - The tool definition and its workflow configuration
+ * @param runtimeRouter - Router used to resolve the tool's execution runtime
+ * @param generateFileId - Optional function for generating identifiers for selected files
+ */
 export function ToolLayout({ tool, runtimeRouter, generateFileId }: ToolLayoutProps) {
   const files = useAppStore((state) => state.files);
   const task = useAppStore((state) => state.task);

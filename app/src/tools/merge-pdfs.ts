@@ -4,6 +4,12 @@ import type { JSONSchema, ToolContext, ToolDefinition, ToolResult, ValidationRes
 const TOOL_VERSION = '0.1.0';
 const DEFAULT_OUTPUT_NAME = 'PDF_unido.pdf';
 
+/**
+ * Validates the number of input PDF files and reports batch-size warnings.
+ *
+ * @param context - The tool context containing the input files
+ * @returns The validation status, errors, and warnings
+ */
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -22,6 +28,12 @@ function validate(context: ToolContext): ValidationResult {
   return { ok: errors.length === 0, errors, warnings };
 }
 
+/**
+ * Sanitizes an output filename and ensures it uses the `.pdf` extension.
+ *
+ * @param raw - The user-provided output filename
+ * @returns A sanitized PDF filename, or `PDF_unido.pdf` when no usable name is provided
+ */
 function sanitizeOutputName(raw: string | undefined): string {
   const candidates: string[] = [];
   if (typeof raw === 'string') candidates.push(raw);
@@ -37,11 +49,28 @@ function sanitizeOutputName(raw: string | undefined): string {
   return `${base || 'PDF_unido'}.pdf`;
 }
 
+/**
+ * Determines whether an error message indicates encryption, password protection, cipher usage, or permission restrictions.
+ *
+ * @param error - The error to inspect.
+ * @returns `true` if the error message matches an encryption-related condition, `false` otherwise.
+ */
 function isEncryptionError(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error);
   return /encrypt|password|cipher|permis/i.test(message);
 }
 
+/**
+ * Creates a failed result for a cancelled merge operation.
+ *
+ * @param warnings - Warnings collected before cancellation
+ * @param startedAt - Timestamp when processing began
+ * @param bytesIn - Total input bytes processed
+ * @param pages - Number of pages processed
+ * @param filesProcessed - Number of files processed
+ * @param filesIgnored - Number of files ignored
+ * @returns A failed result containing cancellation details and processing metrics
+ */
 function cancelledResult(
   warnings: string[],
   startedAt: number,
@@ -65,6 +94,13 @@ function cancelledResult(
   };
 }
 
+/**
+ * Merges valid input PDFs into a single output PDF.
+ *
+ * Preserves metadata from the first input when enabled, reports progress, supports cancellation, and records warnings for unreadable or protected files.
+ *
+ * @returns A result containing the merged PDF and processing metrics, or a failure result when no valid pages are available, generation fails, or the operation is cancelled.
+ */
 async function execute(context: ToolContext): Promise<ToolResult> {
   const warnings: string[] = [];
   const merged = await PDFDocument.create();

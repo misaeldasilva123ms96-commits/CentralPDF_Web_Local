@@ -16,10 +16,20 @@ export type AvailabilityProvider = () => RuntimeAvailability;
 
 export type ConsentStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
+/**
+ * Determines whether WebAssembly is available in the current environment.
+ *
+ * @returns `true` if WebAssembly is available, `false` otherwise.
+ */
 export function detectWasmAvailability(): boolean {
   return typeof WebAssembly !== 'undefined';
 }
 
+/**
+ * Provides the default availability of supported browser runtimes.
+ *
+ * @returns Availability indicating that the native browser runtime is available and whether WebAssembly is available
+ */
 export function defaultAvailability(): RuntimeAvailability {
   return {
     BROWSER_NATIVE: true,
@@ -27,6 +37,11 @@ export function defaultAvailability(): RuntimeAvailability {
   };
 }
 
+/**
+ * Provides the browser's local storage when it is accessible.
+ *
+ * @returns The available local storage, or `undefined` when access fails or storage is unavailable.
+ */
 export function defaultConsentStorage(): ConsentStorage | undefined {
   try {
     return globalThis.localStorage ?? undefined;

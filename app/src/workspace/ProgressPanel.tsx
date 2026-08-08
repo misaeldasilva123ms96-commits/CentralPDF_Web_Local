@@ -15,6 +15,12 @@ const RUNNING: Record<TaskRun['status'], string> = {
   succeeded: 'Concluído'
 };
 
+/**
+ * Displays a task's status, progress, stage, attempts, and duration.
+ *
+ * @param task - The task whose progress should be displayed
+ * @param onCancel - Callback invoked when cancellation is requested
+ */
 export function ProgressPanel({ task, onCancel }: ProgressPanelProps) {
   const active = task.status === 'queued' || task.status === 'running' || task.status === 'paused';
 

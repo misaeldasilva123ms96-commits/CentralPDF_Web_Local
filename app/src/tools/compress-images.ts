@@ -29,10 +29,23 @@ export interface RecompressSummary {
   height?: number;
 }
 
+/**
+ * Converts a quality value to a supported compression quality preset.
+ *
+ * @param value - The requested compression quality
+ * @returns The supported quality value, or `balanced` for unsupported input
+ */
 export function toCompressionQuality(value: string): CompressionQuality {
   return value === 'high' || value === 'balanced' || value === 'auto' ? value : 'balanced';
 }
 
+/**
+ * Recompresses a JPEG, optionally resizing it to fit within a maximum dimension.
+ *
+ * @param jpegBytes - The source JPEG bytes
+ * @param options - Recompression quality and size constraints
+ * @returns Recompression status, input and output sizes, and output dimensions; includes output bytes when recompression occurs
+ */
 export function recompressJpeg(
   jpegBytes: Uint8Array,
   options: RecompressOptions

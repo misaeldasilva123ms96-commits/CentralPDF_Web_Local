@@ -9,6 +9,11 @@ interface ValidationBarProps {
   runtime: RuntimeDecision | null;
 }
 
+/**
+ * Displays validation errors, warnings, or a ready-to-process status for a tool request.
+ *
+ * @returns The validation status interface for the tool request.
+ */
 export function ValidationBar({ tool, files, parameters, runtime }: ValidationBarProps) {
   const result: ToolRequestValidation = validateToolRequest({
     tool,

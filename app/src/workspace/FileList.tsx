@@ -8,6 +8,12 @@ interface FileListProps {
   generateId?: () => string;
 }
 
+/**
+ * Provides a file drop zone and file list with support for selection, removal, and reordering.
+ *
+ * @param contracts - File selection contracts that define accepted formats and whether multiple files are allowed.
+ * @param generateId - Generates an identifier for each added file.
+ */
 export function FileList({ contracts, generateId = defaultId }: FileListProps) {
   const files = useAppStore((state) => state.files);
   const addFiles = useAppStore((state) => state.addFiles);
@@ -138,10 +144,21 @@ export function FileList({ contracts, generateId = defaultId }: FileListProps) {
   );
 }
 
+/**
+ * Generates a unique identifier.
+ *
+ * @returns A randomly generated UUID
+ */
 function defaultId(): string {
   return crypto.randomUUID();
 }
 
+/**
+ * Reads a file's contents as an array buffer.
+ *
+ * @param file - The file to read
+ * @returns The file contents
+ */
 function readFileData(file: File): Promise<ArrayBuffer> {
   if (typeof file.arrayBuffer === 'function') return file.arrayBuffer();
   return new Promise((resolve, reject) => {
@@ -152,6 +169,12 @@ function readFileData(file: File): Promise<ArrayBuffer> {
   });
 }
 
+/**
+ * Determines the display label for a document based on its file extension.
+ *
+ * @param name - The document filename
+ * @returns `PDF` for PDF files, `IMG` for image files, `OFF` for Office files, the first three characters of other extensions, or `ARQ` when no extension is present.
+ */
 function documentIcon(name: string): string {
   const normalized = (name.split('.').pop() ?? '').toLowerCase();
   if (normalized === 'pdf') return 'PDF';

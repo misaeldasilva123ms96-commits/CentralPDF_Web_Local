@@ -3,6 +3,12 @@ import { extractPageText, loadPdf, sanitizeOutputBase } from './pdf-engine';
 
 const TOOL_VERSION = '0.1.0';
 
+/**
+ * Validates that exactly one PDF file is selected.
+ *
+ * @param context - The tool context containing the selected input files
+ * @returns The validation status, errors, and warnings
+ */
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -22,6 +28,15 @@ function validate(context: ToolContext): ValidationResult {
   return { ok: errors.length === 0, errors, warnings };
 }
 
+/**
+ * Creates a failed result for an extraction that was cancelled before completion.
+ *
+ * @param warnings - Warnings accumulated before cancellation
+ * @param startedAt - Start time used to calculate elapsed duration
+ * @param bytesIn - Number of input bytes processed
+ * @param pages - Number of pages processed
+ * @returns A failed result containing the cancellation warning and processing metrics
+ */
 function cancelledResult(
   warnings: string[],
   startedAt: number,
@@ -41,6 +56,14 @@ function cancelledResult(
   };
 }
 
+/**
+ * Extracts text from all pages of a PDF, optionally adding page-number headers.
+ *
+ * Processing can be cancelled through the execution context. PDFs without
+ * extractable text produce a failed result with an OCR recommendation.
+ *
+ * @returns The extraction result, including a UTF-8 text output on success.
+ */
 async function execute(context: ToolContext): Promise<ToolResult> {
   const file = context.inputs[0];
   const bytesIn = file.size;

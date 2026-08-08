@@ -119,6 +119,12 @@ if (!Array.isArray(tool.runtime) || tool.runtime.length === 0) {
   }
 }
 
+/**
+ * Validates whether a value conforms to the file contract structure.
+ *
+ * @param contract - The value to validate.
+ * @returns `true` if the value is a valid file contract, `false` otherwise.
+ */
 function isValidContract(contract: unknown): contract is FileContract {
   if (!contract || typeof contract !== 'object') return false;
   const candidate = contract as Partial<FileContract>;

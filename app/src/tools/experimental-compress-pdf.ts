@@ -16,6 +16,12 @@ import { recompressJpeg } from './compress-images';
 
 const NO_IMAGE_BYTES_MIN = 8 * 1024;
 
+/**
+ * Extracts filter names from a PDF name or array of PDF names.
+ *
+ * @param filterValue - The PDF filter value to inspect
+ * @returns The decoded filter names, or an empty array when the value contains no supported names
+ */
 function filterNames(filterValue: unknown): string[] {
   if (filterValue instanceof PDFName) return [filterValue.decodeText().replace(/^\//, '')];
   if (filterValue instanceof PDFArray) {
@@ -32,6 +38,14 @@ interface CompressOutcome {
   imagesRecompressed: number;
 }
 
+/**
+ * Recompresses eligible JPEG images in a PDF document.
+ *
+ * @param data - The PDF document data
+ * @param quality - JPEG compression quality; values greater than or equal to `1` preserve the document content
+ * @param maxDimension - Optional maximum dimension for recompressed images
+ * @returns The saved PDF bytes, page count, and number of images recompressed
+ */
 async function compressDocument(
   data: ArrayBuffer,
   quality: number,
@@ -96,6 +110,11 @@ for (const key of xobjects.keys()) {
   return { bytes, pages: pageIndices.length, imagesRecompressed };
 }
 
+/**
+ * Validates the selected PDF inputs and compression quality parameter.
+ *
+ * @returns A validation result containing errors for missing inputs or unsupported quality values, and warnings for files whose signature does not indicate a PDF.
+ */
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];

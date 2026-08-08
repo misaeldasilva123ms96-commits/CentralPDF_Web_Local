@@ -30,6 +30,14 @@ const RESTRICTION_VALUES_FORCE_DENIED: Record<keyof PdfRestrictions, string> = {
   allowEditing: 'none'
 };
 
+/**
+ * Builds qpdf arguments for encrypting a PDF with configured permissions.
+ *
+ * @param password - The user password required to open the PDF
+ * @param ownerPassword - The owner password used to manage PDF permissions
+ * @param restrictions - Permissions to allow or deny in the encrypted PDF
+ * @returns qpdf encryption arguments
+ */
 export function buildEncryptArgv(
   password: string,
   ownerPassword: string,
@@ -52,10 +60,23 @@ export function buildEncryptArgv(
   return args;
 }
 
+/**
+ * Resolves the owner password, using the user password when the provided value is empty or unavailable.
+ *
+ * @param password - The user password used as the fallback.
+ * @param ownerPasswordValue - The optional owner password value.
+ * @returns The trimmed owner password or the user password when no owner password is provided.
+ */
 export function resolveOwnerPassword(password: string, ownerPasswordValue: unknown): string {
   return String(ownerPasswordValue ?? '').trim() || password;
 }
 
+/**
+ * Validates the selected PDF input and password settings.
+ *
+ * @param context - The tool context containing inputs and password parameters
+ * @returns Validation status with any errors and warnings
+ */
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -85,6 +106,14 @@ function validate(context: ToolContext): ValidationResult {
   return { ok: errors.length === 0, errors, warnings };
 }
 
+/**
+ * Creates a failed result for a cancelled PDF protection operation.
+ *
+ * @param warnings - Warnings collected before cancellation
+ * @param startedAt - Timestamp when the operation started
+ * @param bytesIn - Number of input bytes processed
+ * @returns A failed result with a cancellation warning and zero output bytes
+ */
 function cancelledResult(
   warnings: string[],
   startedAt: number,
@@ -102,6 +131,11 @@ function cancelledResult(
   };
 }
 
+/**
+ * Protects a PDF with password-based encryption and configured permissions.
+ *
+ * @returns The protection result containing the encrypted PDF and processing metrics, or warnings and metrics when protection fails.
+ */
 async function execute(context: ToolContext): Promise<ToolResult> {
   const file = context.inputs[0];
   const bytesIn = file.size;

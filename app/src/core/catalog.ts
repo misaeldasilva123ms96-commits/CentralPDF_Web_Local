@@ -16,6 +16,19 @@ interface PlannedToolOptions {
   parametersSchema?: JSONSchema;
 }
 
+/**
+ * Creates a tool definition for a planned, unavailable tool.
+ *
+ * @param id - Unique identifier for the tool
+ * @param category - Tool category
+ * @param title - Display name for the tool
+ * @param description - Description of the tool's intended functionality
+ * @param inputs - Accepted input file contracts
+ * @param outputs - Produced output file contracts
+ * @param parametersSchema - Schema for the tool's parameters
+ * @returns A tool definition marked as planned with disabled execution
+ * @throws Error when execution is attempted
+ */
 function plannedTool({
   id,
   category,
@@ -59,6 +72,11 @@ const PDF_OUTPUT: FileContract = {
   minFiles: 1
 };
 
+/**
+ * Creates a registry containing the default implemented and planned PDF tools.
+ *
+ * @returns A registry populated with the default PDF tools
+ */
 export function createDefaultRegistry(): ToolRegistry {
   const registry = new ToolRegistry();
   registry.register(mergePdfsTool);

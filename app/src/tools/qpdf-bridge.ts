@@ -26,6 +26,12 @@ export class QpdfCommandError extends Error {
 
 const WORKER_PROTOCOL_ERROR = 'Resposta inválida do worker de proteção.';
 
+/**
+ * Creates a module worker for processing qpdf jobs.
+ *
+ * @returns The created qpdf worker
+ * @throws QpdfUnavailableError if Web Worker support is unavailable
+ */
 function createWorker(): Worker {
   if (typeof Worker === 'undefined') {
     throw new QpdfUnavailableError();
@@ -33,6 +39,13 @@ function createWorker(): Worker {
   return new Worker(new URL('./qpdf-worker.ts', import.meta.url), { type: 'module' });
 }
 
+/**
+ * Executes a QPDF request in a Web Worker.
+ *
+ * @param request - The QPDF operation and input data to process
+ * @param signal - Optional signal used to cancel processing
+ * @returns The processed PDF output and any warnings
+ */
 export async function runQpdfJob(
   request: QpdfWorkerRequest,
   signal?: AbortSignal

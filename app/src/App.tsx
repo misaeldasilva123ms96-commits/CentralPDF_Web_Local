@@ -7,6 +7,9 @@ import { centralCatalog } from './core/catalog';
 
 const BUILD_VERSION = '2.0.0-alpha.1';
 
+/**
+ * Renders the CentralPDF application shell and the view for the currently selected tool.
+ */
 export function App() {
   const activeToolId = useAppStore((state) => state.activeToolId);
   const tools = useMemo(() => centralCatalog.list(), []);
@@ -54,6 +57,12 @@ export function App() {
   );
 }
 
+/**
+ * Displays a planned tool's details and provides navigation back to the catalog.
+ *
+ * @param title - The tool title displayed in the panel.
+ * @param description - The tool description displayed beneath its availability status.
+ */
 function PlannedView({ title, description }: { title: string; description: string }) {
   const selectTool = useAppStore((state) => state.selectTool);
   return (

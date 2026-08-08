@@ -2,6 +2,12 @@ import type { JSONSchema, ToolContext, ToolDefinition, ValidationResult } from '
 
 const TOOL_VERSION = '0.1.0';
 
+/**
+ * Validates the input files and compression quality selection.
+ *
+ * @param context - Tool context containing the input files and selected parameters
+ * @returns The validation status, error messages, and warnings for files without a PDF signature
+ */
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];

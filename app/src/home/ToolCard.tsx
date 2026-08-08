@@ -12,6 +12,12 @@ const AVAILABILITY_LABEL: Record<ToolDefinition['availability'], string> = {
   disabled: 'Desabilitada'
 };
 
+/**
+ * Renders a tool card with selection, favorite, availability, and offline controls.
+ *
+ * @param tool - The tool definition displayed by the card
+ * @returns The tool card, or `null` when the tool is disabled
+ */
 export function ToolCard({ tool }: ToolCardProps) {
   const selectTool = useAppStore((state) => state.selectTool);
   const favorites = useAppStore((state) => state.favorites);

@@ -7,6 +7,12 @@ const MIN_SCALE = 0.5;
 const MAX_SCALE = 4;
 const MAX_PAGES = 100;
 
+/**
+ * Validates the PDF input count, file signature, and rendering scale.
+ *
+ * @param context - The tool context containing input files and parameters
+ * @returns The validation status, errors, and warnings
+ */
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -31,6 +37,15 @@ function validate(context: ToolContext): ValidationResult {
   return { ok: errors.length === 0, errors, warnings };
 }
 
+/**
+ * Creates a failed result for a conversion cancelled before completion.
+ *
+ * @param warnings - Warnings collected before cancellation
+ * @param startedAt - Timestamp when conversion started
+ * @param bytesIn - Size of the input data in bytes
+ * @param pageNumber - Number of pages reached before cancellation
+ * @returns A failed tool result with cancellation details and conversion metrics
+ */
 function cancelledResult(
   warnings: string[],
   startedAt: number,
@@ -50,6 +65,15 @@ function cancelledResult(
   };
 }
 
+/**
+ * Converts the input PDF pages into PNG image outputs.
+ *
+ * The conversion is limited to the first 100 pages and may return partial
+ * results with warnings when individual pages cannot be converted.
+ *
+ * @param context - Execution context containing the input PDF, rendering parameters, progress reporting, and cancellation signal
+ * @returns The conversion result with PNG outputs, warnings, and processing metrics
+ */
 async function execute(context: ToolContext): Promise<ToolResult> {
   const file = context.inputs[0];
   const bytesIn = file.size;
