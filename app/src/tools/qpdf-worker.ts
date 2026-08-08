@@ -18,13 +18,8 @@ const workerScope = self as unknown as {
   addEventListener: (type: 'message', listener: (event: MessageEvent<QpdfWorkerRequest>) => void) => void;
   postMessage: (message: QpdfWorkerResponse, transfer?: Transferable[]) => void;
 };
-let stderrLines: string[] = [];
 
-const printErr = (line: string): void => {
-  stderrLines.push(line);
-};
-
-async function loadQpdf(): Promise<QpdfModule> {
+async function loadQpdf(printErr: (line: string) => void): Promise<QpdfModule> {
   return (await init({
     locateFile: (file: string) => {
       if (file === 'qpdf.wasm') return wasmUrl;
@@ -36,17 +31,25 @@ async function loadQpdf(): Promise<QpdfModule> {
   })) as unknown as QpdfModule;
 }
 
+function sanitizeFileTitle(title: string): string {
+  return title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60) || 'entrada';
+}
+
 workerScope.addEventListener('message', async (event: MessageEvent<QpdfWorkerRequest>) => {
   const request = event.data;
+  const fileTitle = sanitizeFileTitle(request.fileTitle);
+  const stderrLines: string[] = [];
+  const printErr = (line: string): void => {
+    stderrLines.push(line);
+  };
   let module: QpdfModule | null = null;
 
   try {
-    stderrLines = [];
-    module = await loadQpdf();
+    module = await loadQpdf(printErr);
     const input = new Uint8Array(request.input);
-    module.FS.writeFile(`/${request.fileTitle}.in.pdf`, input);
+    module.FS.writeFile(`/${fileTitle}.in.pdf`, input);
 
-    const exitCode = module.callMain([...request.argv, `/${request.fileTitle}.in.pdf`, `/${request.fileTitle}.out.pdf`]);
+    const exitCode = module.callMain([...request.argv, `/${fileTitle}.in.pdf`, `/${fileTitle}.out.pdf`]);
     if (exitCode !== 0) {
       const response: QpdfWorkerResponse = {
         ok: false,
@@ -56,9 +59,9 @@ workerScope.addEventListener('message', async (event: MessageEvent<QpdfWorkerReq
       return;
     }
 
-    const output = module.FS.readFile(`/${request.fileTitle}.out.pdf`);
-    module.FS.unlink(`/${request.fileTitle}.in.pdf`);
-    module.FS.unlink(`/${request.fileTitle}.out.pdf`);
+    const output = module.FS.readFile(`/${fileTitle}.out.pdf`);
+    module.FS.unlink(`/${fileTitle}.in.pdf`);
+    module.FS.unlink(`/${fileTitle}.out.pdf`);
 
     const payload = output.slice().buffer as ArrayBuffer;
     workerScope.postMessage({ ok: true, output: payload }, [payload]);

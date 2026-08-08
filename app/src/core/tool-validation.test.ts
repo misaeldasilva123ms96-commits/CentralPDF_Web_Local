@@ -199,7 +199,9 @@ describe('validateToolRequest', () => {
           nome: { type: 'string' },
           idade: { type: 'number', minimum: 0, maximum: 120 },
           quantidade: { type: 'integer' },
-          ativo: { type: 'boolean' }
+          ativo: { type: 'boolean' },
+          tags: { type: 'array' },
+          meta: { type: 'object' }
         },
         required: []
       }
@@ -236,6 +238,33 @@ describe('validateToolRequest', () => {
       const issue = result.errors.find((e) => e.code === 'invalid_type');
       expect(issue?.message).toContain('"ativo"');
       expect(issue?.field).toBe('ativo');
+    });
+
+    it('array recebendo objeto reporta field = chave real', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { tags: { a: 1 } }, schemaTool);
+      const issue = result.errors.find((e) => e.code === 'invalid_type');
+      expect(issue?.message).toContain('"tags"');
+      expect(issue?.field).toBe('tags');
+    });
+
+    it('array aceita lista', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { tags: ['a', 'b'] }, schemaTool);
+      expect(result.errors.some((e) => e.code === 'invalid_type')).toBe(false);
+    });
+
+    it('object recebendo array reporta field = chave real', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { meta: [1, 2] }, schemaTool);
+      const issue = result.errors.find((e) => e.code === 'invalid_type');
+      expect(issue?.message).toContain('"meta"');
+      expect(issue?.field).toBe('meta');
+    });
+
+    it('object aceita objeto, mas não null', () => {
+      const ok = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { meta: { cor: 'azul' } }, schemaTool);
+      expect(ok.errors.some((e) => e.code === 'invalid_type')).toBe(false);
+      const nulo = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { meta: null }, schemaTool);
+      const issue = nulo.errors.find((e) => e.code === 'invalid_type');
+      expect(issue?.field).toBe('meta');
     });
 
     it('valor abaixo do mínimo de um parâmetro numérico', () => {

@@ -90,6 +90,7 @@ export async function runQpdfJob(
     worker.addEventListener('error', (event) => fail(event.error ?? new Error(event.message)));
     signal?.addEventListener('abort', onAbort, { once: true });
 
-    worker.postMessage(request, [request.input]);
+    const input = request.input.slice(0);
+    worker.postMessage({ ...request, input }, [input]);
   });
 }

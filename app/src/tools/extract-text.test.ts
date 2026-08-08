@@ -116,6 +116,17 @@ describe('extractTextTool', () => {
     expect(result.metrics?.pages).toBe(2);
   });
 
+  it('mantém a detecção de texto vazio mesmo com números de página habilitados', async () => {
+    const input = await pdfWithoutText();
+    const result = await extractTextTool.execute({
+      inputs: [input],
+      parameters: { includePageNumbers: true }
+    });
+    expect(result.ok).toBe(false);
+    expect(result.outputs).toHaveLength(0);
+    expect(result.warnings.some((w) => w.includes('OCR'))).toBe(true);
+  });
+
   it('cancela cooperativamente e reporta páginas processadas', async () => {
     const input = await pdfWithText([
       { title: 'A', body: 'página um' },

@@ -48,7 +48,14 @@ class DOMMatrixPolyfill {
   }
 
   translate(x: number, y = 0): DOMMatrixPolyfill {
-    return new DOMMatrixPolyfill([this.a, this.b, this.c, this.d, this.e + x, this.f + y]);
+    return new DOMMatrixPolyfill([
+      this.a,
+      this.b,
+      this.c,
+      this.d,
+      this.e + this.a * x + this.c * y,
+      this.f + this.b * x + this.d * y
+    ]);
   }
 
   scale(sx: number, sy = sx): DOMMatrixPolyfill {

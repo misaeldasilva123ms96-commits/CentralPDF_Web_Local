@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PDFDocument } from 'pdf-lib';
-import { buildEncryptArgv, protectPdfTool } from './protect-pdf';
+import { buildEncryptArgv, protectPdfTool, resolveOwnerPassword } from './protect-pdf';
 import type { FileInput } from '../core/types';
 
 let nextId = 1;
@@ -109,9 +109,41 @@ describe('protectPdfTool', () => {
     expect(result.metrics?.bytesOut).toBe(0);
   });
 
+  it('rejeita senha que começa com hífen (proteção de argv)', () => {
+    const result = protectPdfTool.validate({
+      inputs: [corruptPdf('a.pdf')],
+      parameters: { password: '--force' }
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.some((e) => e.includes('"-"'))).toBe(true);
+  });
+
+  it('rejeita owner password que começa com hífen', () => {
+    const result = protectPdfTool.validate({
+      inputs: [corruptPdf('a.pdf')],
+      parameters: { password: 'ab12cd', ownerPassword: '--admin' }
+    });
+    expect(result.ok).toBe(false);
+  });
+
   it('é anotada como WASM no catálogo', () => {
     expect(protectPdfTool.availability).toBe('available');
     expect(protectPdfTool.runtime).toEqual(['BROWSER_WASM']);
     expect(protectPdfTool.parametersSchema.required).toContain('password');
+  });
+});
+
+describe('resolveOwnerPassword', () => {
+  it('usa a senha de abertura quando owner password não é informado', () => {
+    expect(resolveOwnerPassword('segredo123', undefined)).toBe('segredo123');
+  });
+
+  it('usa a senha de abertura quando owner password vem em branco (default do esquema)', () => {
+    expect(resolveOwnerPassword('segredo123', '')).toBe('segredo123');
+    expect(resolveOwnerPassword('segredo123', '   ')).toBe('segredo123');
+  });
+
+  it('mantém owner password informado', () => {
+    expect(resolveOwnerPassword('segredo123', 'adm456')).toBe('adm456');
   });
 });

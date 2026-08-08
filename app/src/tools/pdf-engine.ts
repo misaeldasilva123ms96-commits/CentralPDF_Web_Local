@@ -17,13 +17,18 @@ async function ensurePdfjsWorker(): Promise<void> {
   }
 }
 
-export async function loadPdf(data: ArrayBuffer): Promise<PdfjsTypes.PDFDocumentProxy> {
-  const pdfjs = await loadPdfjsModule();
-  await ensurePdfjsWorker();
-  return pdfjs.getDocument({ data: new Uint8Array(data) }).promise;
+export interface LoadedPdf {
+  document: PdfjsTypes.PDFDocumentProxy;
+  destroy: () => Promise<void>;
 }
 
-export type LoadedPdf = Awaited<ReturnType<typeof loadPdf>>;
+export async function loadPdf(data: ArrayBuffer): Promise<LoadedPdf> {
+  const pdfjs = await loadPdfjsModule();
+  await ensurePdfjsWorker();
+  const task = pdfjs.getDocument({ data: new Uint8Array(data) });
+  const document = await task.promise;
+  return { document, destroy: () => task.destroy() };
+}
 
 export async function extractPageText(
   document: PdfjsTypes.PDFDocumentProxy,
@@ -86,7 +91,11 @@ export async function rasterizePage(
     canvas.width = 0;
     canvas.height = 0;
 
-    const base64 = dataUrl.split(',')[1] ?? '';
+    const prefix = 'data:image/png;base64,';
+    if (!dataUrl.startsWith(prefix) || dataUrl.length <= prefix.length) {
+      throw new Error('A página não pôde ser codificada como imagem PNG.');
+    }
+    const base64 = dataUrl.slice(prefix.length);
     const binary = atob(base64);
     const bytes = new Uint8Array(binary.length);
     for (let index = 0; index < binary.length; index += 1) {

@@ -5,6 +5,7 @@ const TOOL_VERSION = '0.1.0';
 const DEFAULT_SCALE = 1.5;
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 4;
+const MAX_PAGES = 100;
 
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
@@ -57,43 +58,55 @@ async function execute(context: ToolContext): Promise<ToolResult> {
   const scale = Number(context.parameters.scale ?? DEFAULT_SCALE);
   const base = sanitizeOutputBase(file.name) || 'pagina';
 
-  const document = await loadPdf(file.data);
+  const loaded = await loadPdf(file.data);
+  const document = loaded.document;
   const totalPages = document.numPages;
+  const pageCeiling = Math.min(totalPages, MAX_PAGES);
   const outputs: ToolResult['outputs'] = [];
   let bytesOut = 0;
   let hasRasterSupport = true;
 
-  for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
-    if (context.signal?.aborted) {
-      return cancelledResult(warnings, startedAt, bytesIn, pageNumber - 1);
-    }
-
-    context.progress?.(
-      Math.round((pageNumber / totalPages) * 90),
-      `convertendo página ${pageNumber} de ${totalPages}`
+  if (totalPages > MAX_PAGES) {
+    warnings.push(
+      `O arquivo tem ${totalPages} páginas; a conversão foi limitada às ${MAX_PAGES} primeiras.`
     );
+  }
 
-    try {
-      const png = await rasterizePage(document, { pageNumber, scale });
-      bytesOut += png.byteLength;
-      outputs.push({
-        name: `${base}-pagina-${String(pageNumber).padStart(2, '0')}.png`,
-        mimeType: 'image/png',
-        kind: 'image',
-        data: png.slice().buffer as ArrayBuffer
-      });
-    } catch (error) {
-      if (error instanceof RasterizerUnavailableError) {
-        hasRasterSupport = false;
-        warnings.push(
-          'Não foi possível rasterizar as páginas: esta operação requer um navegador com suporte a canvas.'
-        );
-        break;
+  try {
+    for (let pageNumber = 1; pageNumber <= pageCeiling; pageNumber += 1) {
+      if (context.signal?.aborted) {
+        return cancelledResult(warnings, startedAt, bytesIn, pageNumber - 1);
       }
-      warnings.push(
-        `A página ${pageNumber} não pôde ser convertida (${error instanceof Error ? error.message : 'erro desconhecido'}).`
+
+      context.progress?.(
+        Math.round((pageNumber / totalPages) * 90),
+        `convertendo página ${pageNumber} de ${totalPages}`
       );
+
+      try {
+        const png = await rasterizePage(document, { pageNumber, scale });
+        bytesOut += png.byteLength;
+        outputs.push({
+          name: `${base}-pagina-${String(pageNumber).padStart(2, '0')}.png`,
+          mimeType: 'image/png',
+          kind: 'image',
+          data: png.slice().buffer as ArrayBuffer
+        });
+      } catch (error) {
+        if (error instanceof RasterizerUnavailableError) {
+          hasRasterSupport = false;
+          warnings.push(
+            'Não foi possível rasterizar as páginas: esta operação requer um navegador com suporte a canvas.'
+          );
+          break;
+        }
+        warnings.push(
+          `A página ${pageNumber} não pôde ser convertida (${error instanceof Error ? error.message : 'erro desconhecido'}).`
+        );
+      }
     }
+  } finally {
+    await loaded.destroy();
   }
 
   if (context.signal?.aborted) {

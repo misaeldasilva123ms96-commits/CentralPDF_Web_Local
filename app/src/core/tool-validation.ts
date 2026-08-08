@@ -134,6 +134,14 @@ function checkBasicType(
     case 'boolean':
       if (typeof value !== 'boolean') return { code: 'invalid_type', message: `"${key}" deve ser booleano.`, field: key };
       break;
+    case 'array':
+      if (!Array.isArray(value)) return { code: 'invalid_type', message: `"${key}" deve ser uma lista.`, field: key };
+      break;
+    case 'object':
+      if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+        return { code: 'invalid_type', message: `"${key}" deve ser um objeto.`, field: key };
+      }
+      break;
     default:
       break;
   }

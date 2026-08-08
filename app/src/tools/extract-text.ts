@@ -48,39 +48,65 @@ async function execute(context: ToolContext): Promise<ToolResult> {
   const warnings: string[] = [];
   const includePageNumbers = context.parameters.includePageNumbers === true;
 
-  const document = await loadPdf(file.data);
+  const loaded = await loadPdf(file.data);
+  const document = loaded.document;
   const totalPages = document.numPages;
   const segments: string[] = [];
+  const pageTexts: string[] = [];
 
-  for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
-    if (context.signal?.aborted) {
-      return cancelledResult(warnings, startedAt, bytesIn, pageNumber - 1);
+  try {
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
+      if (context.signal?.aborted) {
+        return cancelledResult(warnings, startedAt, bytesIn, pageNumber - 1);
+      }
+
+      context.progress?.(
+        Math.round((pageNumber / totalPages) * 95),
+        `extraindo página ${pageNumber} de ${totalPages}`
+      );
+
+      const text = await extractPageText(document, pageNumber);
+      pageTexts.push(text);
+      const header = includePageNumbers ? `----- Página ${pageNumber} -----` : '';
+      segments.push(header ? `${header}\n${text}` : text);
     }
 
-    context.progress?.(
-      Math.round((pageNumber / totalPages) * 95),
-      `extraindo página ${pageNumber} de ${totalPages}`
-    );
+    if (context.signal?.aborted) {
+      return cancelledResult(warnings, startedAt, bytesIn, totalPages);
+    }
 
-    const text = await extractPageText(document, pageNumber);
-    const header = includePageNumbers ? `----- Página ${pageNumber} -----` : '';
-    segments.push(header ? `${header}\n${text}` : text);
-  }
+    const joined = segments.join('\n\n');
+    const bytes = new TextEncoder().encode(joined);
 
-  if (context.signal?.aborted) {
-    return cancelledResult(warnings, startedAt, bytesIn, totalPages);
-  }
+    if (pageTexts.every((text) => text.trim().length === 0)) {
+      warnings.push(
+        'Nenhum texto foi encontrado. Se o PDF for digitalizado (imagens), use a ferramenta de OCR.'
+      );
+      return {
+        ok: false,
+        outputs: [],
+        warnings,
+        metrics: {
+          durationMs: Date.now() - startedAt,
+          bytesIn,
+          bytesOut: bytes.byteLength,
+          pages: totalPages
+        }
+      };
+    }
 
-  const joined = segments.join('\n\n');
-  const bytes = new TextEncoder().encode(joined);
+    context.progress?.(100, 'concluído');
 
-  if (segments.every((segment) => segment.trim().length === 0)) {
-    warnings.push(
-      'Nenhum texto foi encontrado. Se o PDF for digitalizado (imagens), use a ferramenta de OCR.'
-    );
     return {
-      ok: false,
-      outputs: [],
+      ok: true,
+      outputs: [
+        {
+          name: `${sanitizeOutputBase(file.name) || 'documento'}.txt`,
+          mimeType: 'text/plain',
+          kind: 'text',
+          data: bytes.slice().buffer as ArrayBuffer
+        }
+      ],
       warnings,
       metrics: {
         durationMs: Date.now() - startedAt,
@@ -89,28 +115,9 @@ async function execute(context: ToolContext): Promise<ToolResult> {
         pages: totalPages
       }
     };
+  } finally {
+    await loaded.destroy();
   }
-
-  context.progress?.(100, 'concluído');
-
-  return {
-    ok: true,
-    outputs: [
-      {
-        name: `${sanitizeOutputBase(file.name) || 'documento'}.txt`,
-        mimeType: 'text/plain',
-        kind: 'text',
-        data: bytes.slice().buffer as ArrayBuffer
-      }
-    ],
-    warnings,
-    metrics: {
-      durationMs: Date.now() - startedAt,
-      bytesIn,
-      bytesOut: bytes.byteLength,
-      pages: totalPages
-    }
-  };
 }
 
 const parametersSchema: JSONSchema = {

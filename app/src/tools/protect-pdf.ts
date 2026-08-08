@@ -52,6 +52,10 @@ export function buildEncryptArgv(
   return args;
 }
 
+export function resolveOwnerPassword(password: string, ownerPasswordValue: unknown): string {
+  return String(ownerPasswordValue ?? '').trim() || password;
+}
+
 function validate(context: ToolContext): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -73,6 +77,9 @@ function validate(context: ToolContext): ValidationResult {
     errors.push(`A senha deve ter ao menos ${MIN_PASSWORD_LENGTH} caracteres.`);
   } else if (password.length > MAX_PASSWORD_LENGTH) {
     errors.push(`A senha pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`);
+  }
+  if (password.startsWith('-') || String(context.parameters.ownerPassword ?? '').startsWith('-')) {
+    errors.push('As senhas não podem começar com "-".');
   }
 
   return { ok: errors.length === 0, errors, warnings };
@@ -102,7 +109,7 @@ async function execute(context: ToolContext): Promise<ToolResult> {
   const warnings: string[] = [];
 
   const password = String(context.parameters.password ?? '');
-  const ownerPassword = String(context.parameters.ownerPassword ?? password);
+  const ownerPassword = resolveOwnerPassword(password, context.parameters.ownerPassword);
   const restrictions: PdfRestrictions = {
     allowPrinting: context.parameters.allowPrinting === true,
     allowCopying: context.parameters.allowCopying === true,
