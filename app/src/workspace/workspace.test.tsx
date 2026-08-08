@@ -108,7 +108,7 @@ describe('Workspace (fluxo da ferramenta)', () => {
   it('ferramenta planejada mostra "Em breve" e não abre o workspace', async () => {
     const user = userEvent.setup();
     render(<App />);
-    await user.click(screen.getByRole('button', { name: 'Extrair texto do PDF' }));
+    await user.click(screen.getByRole('button', { name: 'OCR e PDF pesquisável' }));
     expect(screen.getByText(/Em breve/)).toBeInTheDocument();
     expect(screen.queryByTestId('flow-bar')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Processando…' })).not.toBeInTheDocument();

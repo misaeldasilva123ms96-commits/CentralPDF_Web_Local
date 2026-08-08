@@ -14,25 +14,69 @@ export interface RuntimeDecision {
 
 export type AvailabilityProvider = () => RuntimeAvailability;
 
-export const DEFAULT_AVAILABILITY: RuntimeAvailability = {
-  BROWSER_NATIVE: true,
-  BROWSER_WASM: true
-};
+export type ConsentStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+
+export function detectWasmAvailability(): boolean {
+  return typeof WebAssembly !== 'undefined';
+}
+
+export function defaultAvailability(): RuntimeAvailability {
+  return {
+    BROWSER_NATIVE: true,
+    BROWSER_WASM: detectWasmAvailability()
+  };
+}
+
+export function defaultConsentStorage(): ConsentStorage | undefined {
+  try {
+    return globalThis.localStorage ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 const PRIORITY_ORDER: RuntimeMode[] = ['BROWSER_NATIVE', 'BROWSER_WASM'];
 
+export const DEFAULT_CONSENT_KEY = 'centralpdf2:runtime-preference';
+
+export interface RuntimeRouterOptions {
+  availability?: AvailabilityProvider;
+  consent?: ConsentStorage | null;
+  consentKey?: string;
+}
+
 export class RuntimeRouter {
-  constructor(private readonly availability: AvailabilityProvider = () => DEFAULT_AVAILABILITY) {}
+  private readonly availability: AvailabilityProvider;
+  private readonly consent: ConsentStorage | null;
+  private readonly consentKey: string;
+
+  constructor(options: RuntimeRouterOptions = {}) {
+    this.availability = options.availability ?? defaultAvailability;
+    this.consent =
+      'consent' in options ? (options.consent ?? null) : (defaultConsentStorage() ?? null);
+    this.consentKey = options.consentKey ?? DEFAULT_CONSENT_KEY;
+  }
 
   resolve(supported: readonly RuntimeMode[]): RuntimeDecision {
     if (!supported || supported.length === 0) {
       throw new Error('Ferramenta sem runtime suportado');
     }
     const state = this.availability();
-    const awaited = PRIORITY_ORDER.filter(
-      (mode) => supported.includes(mode) && state[mode]
-    );
-    if (awaited.length === 0) {
+
+    const toolPreferred = PRIORITY_ORDER.find((mode) => supported.includes(mode)) ?? null;
+
+    const stored = this.readStoredPreference();
+    const storedPreferred =
+      stored && supported.includes(stored) && state[stored] ? stored : null;
+
+    let selected: RuntimeMode | null =
+      storedPreferred ?? (toolPreferred && state[toolPreferred] ? toolPreferred : null);
+
+    if (!selected) {
+      selected = PRIORITY_ORDER.find((mode) => supported.includes(mode) && state[mode]) ?? null;
+    }
+
+    if (!selected) {
       return {
         selected: null,
         available: false,
@@ -40,12 +84,20 @@ export class RuntimeRouter {
         supported: [...supported]
       };
     }
-    const selected = awaited[0];
+
     const reason: RuntimeDecision['reason'] =
-      selected === 'BROWSER_WASM' && supported.includes('BROWSER_NATIVE')
-        ? 'fallback'
-        : 'preferred';
+      selected === toolPreferred && state[toolPreferred] ? 'preferred' : 'fallback';
     return { selected, available: true, reason, supported: [...supported] };
+  }
+
+  remember(mode: RuntimeMode | null): void {
+    if (!this.consent) return;
+    try {
+      if (mode) this.consent.setItem(this.consentKey, mode);
+      else this.consent.removeItem(this.consentKey);
+    } catch {
+      // Armazenamento de consentimento é opcional; falhas não interrompem o roteamento.
+    }
   }
 
   isModeAvailable(mode: RuntimeMode): boolean {
@@ -54,5 +106,15 @@ export class RuntimeRouter {
 
   getAvailability(): RuntimeAvailability {
     return this.availability();
+  }
+
+  private readStoredPreference(): RuntimeMode | null {
+    if (!this.consent) return null;
+    try {
+      const value = this.consent.getItem(this.consentKey);
+      return value === 'BROWSER_NATIVE' || value === 'BROWSER_WASM' ? value : null;
+    } catch {
+      return null;
+    }
   }
 }

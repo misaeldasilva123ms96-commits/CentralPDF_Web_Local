@@ -37,6 +37,34 @@ function sanitizeOutputName(raw: string | undefined): string {
   return `${base || 'PDF_unido'}.pdf`;
 }
 
+function isEncryptionError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /encrypt|password|cipher|permis/i.test(message);
+}
+
+function cancelledResult(
+  warnings: string[],
+  startedAt: number,
+  bytesIn: number,
+  pages: number,
+  filesProcessed: number,
+  filesIgnored: number
+): ToolResult {
+  return {
+    ok: false,
+    outputs: [],
+    warnings: [...warnings, 'Junção cancelada antes de terminar.'],
+    metrics: {
+      durationMs: Date.now() - startedAt,
+      bytesIn,
+      bytesOut: 0,
+      pages,
+      filesProcessed,
+      filesIgnored
+    }
+  };
+}
+
 async function execute(context: ToolContext): Promise<ToolResult> {
   const warnings: string[] = [];
   const merged = await PDFDocument.create();
@@ -44,7 +72,6 @@ async function execute(context: ToolContext): Promise<ToolResult> {
   if (context.parameters.preserveMetadata !== false && context.inputs.length > 0) {
     try {
       const first = await PDFDocument.load(context.inputs[0].data, {
-        ignoreEncryption: false,
         updateMetadata: false
       });
       const title = first.getTitle();
@@ -71,20 +98,7 @@ async function execute(context: ToolContext): Promise<ToolResult> {
   for (let index = 0; index < context.inputs.length; index += 1) {
     const file = context.inputs[index];
     if (context.signal?.aborted) {
-      warnings.push('Junção Cancelado antes de terminar.');
-      return {
-        ok: false,
-        outputs: [],
-        warnings,
-        metrics: {
-          durationMs: Date.now() - startedAt,
-          bytesIn,
-          bytesOut: 0,
-          pages,
-          filesProcessed: processed,
-          filesIgnored: ignored
-        }
-      };
+      return cancelledResult(warnings, startedAt, bytesIn, pages, processed, ignored);
     }
 
     context.progress?.(
@@ -94,15 +108,26 @@ async function execute(context: ToolContext): Promise<ToolResult> {
 
     let source: PDFDocument;
     try {
-      source = await PDFDocument.load(file.data, { ignoreEncryption: true });
-    } catch {
+      source = await PDFDocument.load(file.data);
+    } catch (error) {
       ignored += 1;
-      warnings.push(`"${file.name}" não pôde ser lido e foi ignorado.`);
+      if (isEncryptionError(error)) {
+        warnings.push(`"${file.name}" está protegido por senha e foi ignorado.`);
+      } else {
+        warnings.push(`"${file.name}" não pôde ser lido e foi ignorado.`);
+      }
       continue;
+    }
+
+    if (context.signal?.aborted) {
+      return cancelledResult(warnings, startedAt, bytesIn, pages, processed, ignored);
     }
 
     processed += 1;
     const copied = await merged.copyPages(source, source.getPageIndices());
+    if (context.signal?.aborted) {
+      return cancelledResult(warnings, startedAt, bytesIn, pages, processed, ignored);
+    }
     pages += copied.length;
     for (const page of copied) {
       merged.addPage(page);
@@ -128,9 +153,17 @@ async function execute(context: ToolContext): Promise<ToolResult> {
     };
   }
 
+  if (context.signal?.aborted) {
+    return cancelledResult(warnings, startedAt, bytesIn, pages, processed, ignored);
+  }
+
   const bytes = await merged.save();
+  if (context.signal?.aborted) {
+    return cancelledResult(warnings, startedAt, bytesIn, pages, processed, ignored);
+  }
+
   try {
-    await PDFDocument.load(bytes, { ignoreEncryption: true });
+    await PDFDocument.load(bytes);
   } catch (error) {
     warnings.push(
       `O PDF final não pôde ser validado (${error instanceof Error ? error.message : 'erro desconhecido'}).`
@@ -148,6 +181,10 @@ async function execute(context: ToolContext): Promise<ToolResult> {
         filesIgnored: ignored
       }
     };
+  }
+
+  if (context.signal?.aborted) {
+    return cancelledResult(warnings, startedAt, bytesIn, pages, processed, ignored);
   }
 
   const outputName =

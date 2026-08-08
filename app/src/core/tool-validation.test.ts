@@ -190,4 +190,77 @@ describe('validateToolRequest', () => {
     expect(result.valid).toBe(true);
     expect(warningsOf(result).some((e) => e.includes('experimental'))).toBe(true);
   });
+
+  describe('campo e faixa de parâmetros', () => {
+    const schemaTool = makeTool({
+      parametersSchema: {
+        type: 'object',
+        properties: {
+          nome: { type: 'string' },
+          idade: { type: 'number', minimum: 0, maximum: 120 },
+          quantidade: { type: 'integer' },
+          ativo: { type: 'boolean' }
+        },
+        required: []
+      }
+    });
+
+    it('string recebendo número reporta field = chave real', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { nome: 42 }, schemaTool);
+      const issue = result.errors.find((e) => e.code === 'invalid_type');
+      expect(issue).toBeDefined();
+      expect(issue!.field).toBe('nome');
+      expect(issue!.message).toContain('"nome"');
+    });
+
+    it('number recebendo texto reporta field = chave real', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { idade: 'trinta' }, schemaTool);
+      const issue = result.errors.find((e) => e.code === 'invalid_type');
+      expect(issue?.message).toContain('"idade"');
+      expect(issue?.field).toBe('idade');
+    });
+
+    it('integer recebendo decimal reporta field = chave real', () => {
+      const result = call(
+        [makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')],
+        { quantidade: 1.5 },
+        schemaTool
+      );
+      const issue = result.errors.find((e) => e.code === 'invalid_type');
+      expect(issue?.message).toContain('"quantidade"');
+      expect(issue?.field).toBe('quantidade');
+    });
+
+    it('boolean recebendo string reporta field = chave real', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { ativo: 'sim' }, schemaTool);
+      const issue = result.errors.find((e) => e.code === 'invalid_type');
+      expect(issue?.message).toContain('"ativo"');
+      expect(issue?.field).toBe('ativo');
+    });
+
+    it('valor abaixo do mínimo de um parâmetro numérico', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { idade: -1 }, schemaTool);
+      expect(result.valid).toBe(false);
+      const issue = result.errors.find((e) => e.code === 'below_minimum');
+      expect(issue?.field).toBe('idade');
+    });
+
+    it('valor acima do máximo de um parâmetro numérico', () => {
+      const result = call([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')], { idade: 200 }, schemaTool);
+      expect(result.valid).toBe(false);
+      const issue = result.errors.find((e) => e.code === 'above_maximum');
+      expect(issue?.field).toBe('idade');
+      expect(issue?.message).toContain('120');
+    });
+
+    it('valor válido dentro da faixa não gera erros de faixa', () => {
+      const issue = call(
+        [makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')],
+        { nome: 'Ana', idade: 30, quantidade: 3, ativo: true },
+        schemaTool
+      );
+      expect(issue.valid).toBe(true);
+      expect(issue.errors.some((e) => e.code.startsWith('below') || e.code.startsWith('above'))).toBe(false);
+    });
+  });
 });

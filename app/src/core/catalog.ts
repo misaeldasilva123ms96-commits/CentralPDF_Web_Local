@@ -1,15 +1,30 @@
 import { ToolRegistry } from './registry';
-import type { JSONSchema, ToolCategory, ToolDefinition } from './types';
+import type { FileContract, JSONSchema, ToolCategory, ToolDefinition } from './types';
 import { mergePdfsTool } from '../tools/merge-pdfs';
 import { compressPdfTool } from '../tools/compress-pdf';
+import { extractTextTool } from '../tools/extract-text';
+import { pdfToImagesTool } from '../tools/pdf-to-images';
+import { protectPdfTool } from '../tools/protect-pdf';
 
-function plannedTool(
-  id: string,
-  category: ToolCategory,
-  title: string,
-  description: string,
-  inputsSchema: JSONSchema = { type: 'object', properties: {} }
-): ToolDefinition {
+interface PlannedToolOptions {
+  id: string;
+  category: ToolCategory;
+  title: string;
+  description: string;
+  inputs?: FileContract[];
+  outputs: FileContract[];
+  parametersSchema?: JSONSchema;
+}
+
+function plannedTool({
+  id,
+  category,
+  title,
+  description,
+  inputs,
+  outputs,
+  parametersSchema = { type: 'object', properties: {} }
+}: PlannedToolOptions): ToolDefinition {
   return {
     id,
     version: '0.1.0',
@@ -17,10 +32,10 @@ function plannedTool(
     availability: 'planned',
     title,
     description,
-    inputs: [{ kind: 'pdf', accept: ['application/pdf', '.pdf'], multiple: false, minFiles: 1 }],
-    outputs: [{ kind: 'pdf', accept: ['application/pdf'], multiple: false, minFiles: 1 }],
+    inputs: inputs ?? [{ kind: 'pdf', accept: ['application/pdf', '.pdf'], multiple: false, minFiles: 1 }],
+    outputs,
     runtime: ['BROWSER_NATIVE'],
-    parametersSchema: inputsSchema,
+    parametersSchema,
     validate: () => ({ ok: false, errors: ['Ferramenta planejada ainda não executa.'], warnings: [] }),
     estimate: () => ({}),
     execute: async () => {
@@ -30,41 +45,36 @@ function plannedTool(
   };
 }
 
+const PDF_INPUT: FileContract = {
+  kind: 'pdf',
+  accept: ['application/pdf', '.pdf'],
+  multiple: false,
+  minFiles: 1
+};
+
+const PDF_OUTPUT: FileContract = {
+  kind: 'pdf',
+  accept: ['application/pdf'],
+  multiple: false,
+  minFiles: 1
+};
+
 export function createDefaultRegistry(): ToolRegistry {
   const registry = new ToolRegistry();
   registry.register(mergePdfsTool);
   registry.register(compressPdfTool);
+  registry.register(extractTextTool);
+  registry.register(protectPdfTool);
+  registry.register(pdfToImagesTool);
   registry.register(
-    plannedTool(
-      'extract-text',
-      'texto',
-      'Extrair texto do PDF',
-      'Extrai o texto de todas as páginas para um arquivo TXT.'
-    )
-  );
-  registry.register(
-    plannedTool(
-      'ocr-pdf',
-      'texto',
-      'OCR e PDF pesquisável',
-      'Reconhece texto em imagens e gera PDF pesquisável (planejado).'
-    )
-  );
-  registry.register(
-    plannedTool(
-      'protect-pdf',
-      'seguranca',
-      'Proteger PDF',
-      'Adiciona senha de abertura e restrições de uso ao PDF.'
-    )
-  );
-  registry.register(
-    plannedTool(
-      'pdf-to-images',
-      'conversao',
-      'PDF para imagens',
-      'Converte cada página do PDF em imagens PNG no navegador.'
-    )
+    plannedTool({
+      id: 'ocr-pdf',
+      category: 'texto',
+      title: 'OCR e PDF pesquisável',
+      description: 'Reconhece texto em imagens e gera PDF pesquisável (planejado).',
+      inputs: [PDF_INPUT],
+      outputs: [PDF_OUTPUT]
+    })
   );
   return registry;
 }

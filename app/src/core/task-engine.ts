@@ -175,9 +175,11 @@ export class TaskEngine {
       task.attempts += 1;
       this.record(active, { type: 'status', timestamp: Date.now(), status: 'running' });
 
+      const effectiveParameters = resolveParameters(tool.parametersSchema, options.parameters);
+
       const context: ToolContext = {
         inputs: options.inputs,
-        parameters: resolveParameters(tool.parametersSchema, options.parameters),
+        parameters: effectiveParameters,
         signal,
         progress: (percent, stage) => {
           if (signal.aborted) return;
@@ -195,7 +197,7 @@ export class TaskEngine {
       const request = validateToolRequest({
         tool,
         files: options.inputs,
-        parameters: options.parameters,
+        parameters: effectiveParameters,
         runtime: options.runtimeDecision ?? null
       });
       const validation = tool.validate(context);

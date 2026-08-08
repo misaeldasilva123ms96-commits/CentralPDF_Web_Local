@@ -94,6 +94,97 @@ describe('ToolRegistry', () => {
     expect(() => registry.get('ghost')).toThrow(RegistryError);
     expect(() => registry.get('ghost')).toThrow(/não registrada/);
   });
+
+  it('aprova múltiplos contratos de entrada e saída válidos', () => {
+    const tool = makeTool({
+      inputs: [
+        { kind: 'pdf', accept: ['application/pdf', '.pdf'], multiple: true, minFiles: 1 },
+        { kind: 'image', accept: ['image/png', '.png'], multiple: true, minFiles: 0 }
+      ],
+      outputs: [
+        { kind: 'pdf', accept: ['application/pdf'], multiple: false, minFiles: 1 },
+        { kind: 'image', accept: ['image/png', '.png'], multiple: true, minFiles: 1 }
+      ]
+    });
+    expect(() => registry.register(tool)).not.toThrow();
+    expect(registry.count()).toBe(1);
+  });
+
+  it('rejeita segundo contrato de entrada inválido', () => {
+    const tool = makeTool({
+      inputs: [
+        { kind: 'pdf', accept: ['application/pdf'], multiple: true, minFiles: 1 },
+        { kind: 'unknown-kind' as never, accept: [], multiple: true, minFiles: 0 }
+      ]
+    });
+    expect(() => registry.register(tool)).toThrow(/contrato de entrada/);
+  });
+
+  it('rejeita terceiro contrato de entrada inválido', () => {
+    const tool = makeTool({
+      inputs: [
+        { kind: 'pdf', accept: ['application/pdf'], multiple: true, minFiles: 1 },
+        { kind: 'image', accept: ['image/png'], multiple: true, minFiles: 0 },
+        { kind: 'pdf', accept: ['application/pdf'], multiple: true, minFiles: -1 }
+      ]
+    });
+    expect(() => registry.register(tool)).toThrow(/contrato de entrada/);
+  });
+
+  it('rejeita segundo contrato de saída inválido', () => {
+    const tool = makeTool({
+      outputs: [
+        { kind: 'pdf', accept: ['application/pdf'], multiple: false, minFiles: 1 },
+        { kind: 'pdf', accept: ['application/pdf'], multiple: false, minFiles: 1, maxFiles: 0 }
+      ]
+    });
+    expect(() => registry.register(tool)).toThrow(/contrato de saída/);
+  });
+
+  it('rejeita runtime vazio', () => {
+    expect(() => registry.register(makeTool({ runtime: [] }))).toThrow(/sem runtime/);
+  });
+
+  it('rejeita runtime fora da allowlist', () => {
+    expect(() => registry.register(makeTool({ runtime: ['BROWSER_FFMPEG'] as never }))).toThrow(
+      /runtime inválido/
+    );
+    expect(() => registry.register(makeTool({ runtime: ['BROWSER_NATIVE', 'NODE' ] as never }))).toThrow(
+      /runtime inválido/
+    );
+  });
+
+  it('aprova runtime dentro da allowlist', () => {
+    expect(() =>
+      registry.register(makeTool({ runtime: ['BROWSER_NATIVE', 'BROWSER_WASM'] }))
+    ).not.toThrow();
+  });
+
+  it('rejeita ferramenta sem validate', () => {
+    expect(() => registry.register(makeTool({ validate: undefined as never }))).toThrow(
+      /validate\/estimate\/execute/
+    );
+  });
+
+  it('rejeita ferramenta sem execute', () => {
+    expect(() => registry.register(makeTool({ execute: undefined as never }))).toThrow(
+      /validate\/estimate\/execute/
+    );
+  });
+
+  it('não registra ferramenta com contrato que falha no meio da lista (rollback de estado)', () => {
+    expect(() =>
+      registry.register(
+        makeTool({
+          inputs: [
+            { kind: 'pdf', accept: ['application/pdf'], multiple: true, minFiles: 1 },
+            { kind: 'image', accept: ['image/png'], multiple: false, minFiles: 0 }
+          ]
+        })
+      )
+    ).not.toThrow();
+    expect(registry.count()).toBe(1);
+  });
 });
 
 describe('singleton toolRegistry', () => {

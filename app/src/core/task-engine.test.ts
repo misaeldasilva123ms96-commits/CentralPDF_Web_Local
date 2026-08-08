@@ -367,6 +367,7 @@ it('não executa quando a validação central bloqueia (planejada)', async () =>
   expect(run.status).toBe('failed');
   expect(run.result).toBeUndefined();
   expect(run.error).toContain('ainda não está disponível');
+  expect(engine.getHistory()).toHaveLength(1);
 });
 
 it('não executa quando o runtime está indisponível', async () => {
@@ -377,6 +378,95 @@ it('não executa quando o runtime está indisponível', async () => {
   });
   expect(run.status).toBe('failed');
   expect(run.result).toBeUndefined();
+  expect(engine.getHistory()).toHaveLength(1);
+});
+
+it('aplica defaults do schema antes da validação central', async () => {
+  const engine = new TaskEngine();
+  const seen: string[] = [];
+  const tool = makeTool({
+    parametersSchema: {
+      type: 'object',
+      properties: { qualidade: { type: 'string', enum: ['alta', 'baixa'], default: 'alta' } },
+      required: ['qualidade']
+    },
+    execute: async (ctx) => {
+      seen.push(String(ctx.parameters.qualidade));
+      return { ok: true, outputs: [], warnings: [] };
+    }
+  });
+  const run = await engine.run(tool, options());
+  expect(run.status).toBe('succeeded');
+  expect(seen).toEqual(['alta']);
+});
+
+it('falha de validação central não registra a tarefa duas vezes no histórico', async () => {
+  const engine = new TaskEngine();
+  const tool = makeTool({
+    validate: () => ({ ok: false, errors: ['rejeitado'], warnings: [] })
+  });
+  const run = await engine.run(tool, options());
+  expect(run.status).toBe('failed');
+  expect(engine.getHistory().filter((item) => item.id === run.id)).toHaveLength(1);
+});
+
+it('cancel(taskId) aborta uma tarefa ativa cooperativa', async () => {
+  const engine = new TaskEngine();
+  let capturedId = '';
+  const tool = makeTool({
+    execute: async (ctx) => {
+      ctx.progress?.(10, 'inicio');
+      await sleep(60);
+      if (ctx.signal?.aborted) return { ok: false, outputs: [], warnings: ['cancelado'] };
+      return { ok: true, outputs: [], warnings: [] };
+    }
+  });
+  const promise = engine.run(tool, {
+    ...options(),
+    onUpdate: (next) => {
+      capturedId = next.id;
+    }
+  });
+  await sleep(15);
+  expect(capturedId).toMatch(/^run_/);
+  expect(engine.cancel(capturedId)).toBe(true);
+  const run = await promise;
+  expect(run.status).toBe('cancelled');
+  expect(run.result?.outputs ?? []).toHaveLength(0);
+  expect(engine.getHistory().filter((item) => item.id === run.id)).toHaveLength(1);
+});
+
+it('cancel(taskId) retorna false para tarefa inexistente ou já finalizada', async () => {
+  const engine = new TaskEngine();
+  expect(engine.cancel('run_inexistente')).toBe(false);
+  const run = await engine.run(makeTool(), options());
+  expect(engine.cancel(run.id)).toBe(false);
+});
+
+it('execuções concorrentes mantêm listeners isolados', async () => {
+  const engine = new TaskEngine();
+  const seenA: string[] = [];
+  const seenB: string[] = [];
+  const slow = (id: string) =>
+    makeTool({
+      id,
+      execute: async (ctx) => {
+        ctx.progress?.(5, 'inicio');
+        await sleep(20);
+        ctx.progress?.(50, 'meio');
+        return { ok: true, outputs: [], warnings: [] };
+      }
+    });
+  const runA = engine.run(slow('tool-a'), { ...options(), onUpdate: (next) => seenA.push(next.id) });
+  const runB = engine.run(slow('tool-b'), { ...options(), onUpdate: (next) => seenB.push(next.id) });
+  const [a, b] = await Promise.all([runA, runB]);
+  expect(a.status).toBe('succeeded');
+  expect(b.status).toBe('succeeded');
+  expect(seenA.length).toBeGreaterThan(0);
+  expect(seenB.length).toBeGreaterThan(0);
+  expect(seenA.every((id) => id === a.id)).toBe(true);
+  expect(seenB.every((id) => id === b.id)).toBe(true);
+  expect(engine.getHistory()).toHaveLength(2);
 });
 
 function abortedSignal(): AbortSignal {

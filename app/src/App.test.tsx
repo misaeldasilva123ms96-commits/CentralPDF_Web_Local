@@ -25,11 +25,14 @@ describe('App (shell 2.0)', () => {
     expect(screen.getByText(/v2\.0\.0-alpha/)).toBeInTheDocument();
   });
 
-  it('exibe o catálogo oficial na home com apenas uma ferramenta disponível', () => {
+  it('exibe o catálogo oficial na home com as ferramentas disponíveis', () => {
     render(<App />);
     expect(screen.getByRole('heading', { name: /Todas as ferramentas/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Juntar PDFs' })).toBeInTheDocument();
-    expect(screen.getByText('Disponível')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Extrair texto do PDF' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Proteger PDF' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'PDF para imagens' })).toBeInTheDocument();
+    expect(screen.getAllByText('Disponível').length).toBeGreaterThanOrEqual(4);
     expect(screen.getAllByText('Em breve').length).toBeGreaterThan(0);
   });
 

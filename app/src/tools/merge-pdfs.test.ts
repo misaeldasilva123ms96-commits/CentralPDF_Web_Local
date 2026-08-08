@@ -31,6 +31,38 @@ function corruptPdf(name: string): FileInput {
   };
 }
 
+function makeEncryptedPdf(name?: string): FileInput {
+  const objects: string[] = [];
+  objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+  objects[2] = '<< /Type /Pages /Kids [3 0 R] /Count 1 >>';
+  objects[3] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] >>';
+  objects[4] = '<< /Length 0 /Filter /FlateDecode >>';
+
+  let body = '%PDF-1.4\n';
+  const offsets: Record<number, number> = {};
+  for (let id = 1; id <= 4; id += 1) {
+    offsets[id] = body.length;
+    body += `${id} 0 obj\n${objects[id]}\nendobj\n`;
+  }
+
+  const xrefStart = body.length;
+  body +=
+    'xref\n0 5\n0000000000 65535 f \n' +
+    [1, 2, 3, 4]
+      .map((id) => `${String(offsets[id]).padStart(10, '0')} 00000 n \n`)
+      .join('');
+  body += `trailer\n<< /Size 5 /Root 1 0 R /Encrypt 4 0 R >>\nstartxref\n${xrefStart}\n%%EOF\n`;
+
+  const encoded = Uint8Array.from(new TextEncoder().encode(body));
+  return {
+    id: `file-${nextId++}`,
+    name: name ?? 'protegido.pdf',
+    size: encoded.byteLength,
+    mimeType: 'application/pdf',
+    data: encoded.slice().buffer as ArrayBuffer
+  };
+}
+
 describe('mergePdfsTool', () => {
   it('1. rejeita a validação sem arquivos', () => {
     const result = mergePdfsTool.validate({ inputs: [], parameters: {} });
@@ -164,7 +196,98 @@ describe('mergePdfsTool', () => {
     const result = await resultPromise;
     expect(result.ok).toBe(false);
     expect(result.outputs).toHaveLength(0);
-    expect(result.warnings.some((w) => w.includes('Cancelado'))).toBe(true);
+    expect(result.warnings.some((w) => w.includes('Junção cancelada antes de terminar.'))).toBe(true);
+  });
+
+  it('cancela antes de processar o primeiro arquivo', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const result = await mergePdfsTool.execute({
+      inputs: [await makePdf(1, 'a.pdf'), await makePdf(1, 'b.pdf')],
+      parameters: {},
+      signal: controller.signal
+    });
+    expect(result.ok).toBe(false);
+    expect(result.outputs).toHaveLength(0);
+    expect(result.warnings.some((w) => w.includes('Junção cancelada'))).toBe(true);
+    expect(result.metrics?.filesProcessed).toBe(0);
+  });
+
+  it('cancela entre arquivos no meio da junção', async () => {
+    const controller = new AbortController();
+    const progress: string[] = [];
+    const result = await mergePdfsTool.execute({
+      inputs: [await makePdf(1, 'a.pdf'), await makePdf(1, 'b.pdf'), await makePdf(1, 'c.pdf')],
+      parameters: {},
+      signal: controller.signal,
+      progress: (_percent, stage) => {
+        progress.push(stage ?? '');
+        if (progress.filter((s) => s.startsWith('processando')).length === 2) {
+          controller.abort();
+        }
+      }
+    });
+    expect(result.ok).toBe(false);
+    expect(result.outputs).toHaveLength(0);
+    expect(result.warnings.some((w) => w.includes('Junção cancelada antes de terminar.'))).toBe(true);
+    expect(result.metrics?.pages).toBeLessThan(3);
+  });
+
+  it('cancela antes de salvar o arquivo final', async () => {
+    const controller = new AbortController();
+    const result = await mergePdfsTool.execute({
+      inputs: [await makePdf(1, 'a.pdf'), await makePdf(1, 'b.pdf')],
+      parameters: {},
+      signal: controller.signal,
+      progress: (_percent, stage) => {
+        if (stage === 'gerando arquivo final') controller.abort();
+      }
+    });
+    expect(result.ok).toBe(false);
+    expect(result.outputs).toHaveLength(0);
+    expect(result.warnings.some((w) => w.includes('Junção cancelada antes de terminar.'))).toBe(true);
+  });
+
+  it('ignora PDF protegido por senha entre válidos com aviso específico', async () => {
+    const locked = makeEncryptedPdf('segredo.pdf');
+    const result = await mergePdfsTool.execute({
+      inputs: [await makePdf(1, 'v1.pdf'), locked, await makePdf(1, 'v2.pdf')],
+      parameters: {}
+    });
+    expect(result.ok).toBe(true);
+    expect(result.warnings.some((w) => w.includes('protegido por senha'))).toBe(true);
+    expect(result.warnings.some((w) => w.includes('segredo.pdf'))).toBe(true);
+    expect(result.metrics?.pages).toBe(2);
+    expect(result.metrics?.filesIgnored).toBe(1);
+  });
+
+  it('falha com ok:false quando todos os PDFs estão protegidos', async () => {
+    const result = await mergePdfsTool.execute({
+      inputs: [makeEncryptedPdf('p1.pdf'), makeEncryptedPdf('p2.pdf')],
+      parameters: {}
+    });
+    expect(result.ok).toBe(false);
+    expect(result.outputs).toHaveLength(0);
+    expect(result.warnings.some((w) => w.includes('protegido por senha'))).toBe(true);
+    expect(result.metrics?.filesIgnored).toBe(2);
+  });
+
+  it('único PDF é bloqueado na validação (minFiles: 2)', async () => {
+    const result = mergePdfsTool.validate({ inputs: [await makePdf(1, 'apenas-um.pdf')], parameters: {} });
+    expect(result.ok).toBe(false);
+    expect(result.errors.some((error) => error.includes('dois'))).toBe(true);
+  });
+
+  it('nome de saída vazio cai no padrão com extensão .pdf', async () => {
+    const pdfs = [await makePdf(1), await makePdf(1)];
+    const result = await mergePdfsTool.execute({ inputs: pdfs, parameters: { outputName: '   ' } });
+    expect(result.outputs[0].name).toBe('PDF_unido.pdf');
+  });
+
+  it('nome de saída sanitiza caracteres de controle', async () => {
+    const pdfs = [await makePdf(1), await makePdf(1)];
+    const result = await mergePdfsTool.execute({ inputs: pdfs, parameters: { outputName: 'a\u0000b\u001f.pdf' } });
+    expect(result.outputs[0].name).toBe('ab.pdf');
   });
 
   it('14. nunca retorna ok:true com um PDF vazio (zero páginas validas)', async () => {

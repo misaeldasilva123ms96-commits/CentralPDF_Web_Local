@@ -96,7 +96,7 @@ function validateSchemaParameters(
       });
       continue;
     }
-    const typeError = checkBasicType(property, value);
+    const typeError = checkBasicType(property, value, key);
     if (typeError) errors.push(typeError);
     if (typeof value === 'number' && property.minimum !== undefined && value < property.minimum) {
       errors.push({
@@ -116,19 +116,23 @@ function validateSchemaParameters(
   return errors;
 }
 
-function checkBasicType(property: JSONSchemaProperty, value: unknown): ValidationIssue | null {
+function checkBasicType(
+  property: JSONSchemaProperty,
+  value: unknown,
+  key: string
+): ValidationIssue | null {
   switch (property.type) {
     case 'string':
-      if (typeof value !== 'string') return { code: 'invalid_type', message: 'Valor deve ser texto.', field: property.title };
+      if (typeof value !== 'string') return { code: 'invalid_type', message: `"${key}" deve ser texto.`, field: key };
       break;
     case 'number':
-      if (typeof value !== 'number') return { code: 'invalid_type', message: 'Valor deve ser numérico.', field: property.title };
+      if (typeof value !== 'number') return { code: 'invalid_type', message: `"${key}" deve ser numérico.`, field: key };
       break;
     case 'integer':
-      if (typeof value !== 'number' || !Number.isInteger(value)) return { code: 'invalid_type', message: 'Valor deve ser inteiro.', field: property.title };
+      if (typeof value !== 'number' || !Number.isInteger(value)) return { code: 'invalid_type', message: `"${key}" deve ser inteiro.`, field: key };
       break;
     case 'boolean':
-      if (typeof value !== 'boolean') return { code: 'invalid_type', message: 'Valor deve ser booleano.', field: property.title };
+      if (typeof value !== 'boolean') return { code: 'invalid_type', message: `"${key}" deve ser booleano.`, field: key };
       break;
     default:
       break;

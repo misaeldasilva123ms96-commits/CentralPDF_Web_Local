@@ -1,7 +1,15 @@
-import type { FileContract, ToolAvailability, ToolCategory, ToolDefinition } from './types';
+import type {
+  FileContract,
+  RuntimeMode,
+  ToolAvailability,
+  ToolCategory,
+  ToolDefinition
+} from './types';
 
 export const TOOL_ID_PATTERN = /^[a-z][a-z0-9-]*$/;
 export const TOOL_VERSION_PATTERN = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
+
+export const RUNTIMES: readonly RuntimeMode[] = ['BROWSER_NATIVE', 'BROWSER_WASM'];
 
 const AVAILABILITIES: ToolAvailability[] = ['available', 'experimental', 'planned', 'disabled'];
 const CATEGORIES: ToolCategory[] = [
@@ -79,13 +87,16 @@ export class ToolRegistry {
     if (!AVAILABILITIES.includes(tool.availability)) {
       throw new RegistryError(`Ferramenta "${tool.id}" com estado de disponibilidade inválido`);
     }
-    if (!tool.runtime || tool.runtime.length === 0) {
+if (!Array.isArray(tool.runtime) || tool.runtime.length === 0) {
       throw new RegistryError(`Ferramenta "${tool.id}" sem runtime suportado`);
     }
-    if (!Array.isArray(tool.inputs) || tool.inputs.length === 0 || !isValidContract(tool.inputs[0])) {
+    if (!tool.runtime.every((mode) => RUNTIMES.includes(mode))) {
+      throw new RegistryError(`Ferramenta "${tool.id}" com runtime inválido`);
+    }
+    if (!Array.isArray(tool.inputs) || tool.inputs.length === 0 || !tool.inputs.every(isValidContract)) {
       throw new RegistryError(`Ferramenta "${tool.id}" sem contrato de entrada válido`);
     }
-    if (!Array.isArray(tool.outputs) || tool.outputs.length === 0 || !isValidContract(tool.outputs[0])) {
+    if (!Array.isArray(tool.outputs) || tool.outputs.length === 0 || !tool.outputs.every(isValidContract)) {
       throw new RegistryError(`Ferramenta "${tool.id}" sem contrato de saída válido`);
     }
     if (
@@ -108,15 +119,19 @@ export class ToolRegistry {
   }
 }
 
-function isValidContract(contract: FileContract): boolean {
+function isValidContract(contract: unknown): contract is FileContract {
   if (!contract || typeof contract !== 'object') return false;
-  if (!['pdf', 'image', 'document', 'office', 'archive', 'text', 'zip', 'any'].includes(contract.kind)) {
+  const candidate = contract as Partial<FileContract>;
+  if (!['pdf', 'image', 'document', 'office', 'archive', 'text', 'zip', 'any'].includes(candidate.kind as string)) {
     return false;
   }
-  if (!Array.isArray(contract.accept)) return false;
-  if (typeof contract.multiple !== 'boolean') return false;
-  if (typeof contract.minFiles !== 'number' || contract.minFiles < 0) return false;
-  if (contract.maxFiles !== undefined && (typeof contract.maxFiles !== 'number' || contract.maxFiles < contract.minFiles)) {
+  if (!Array.isArray(candidate.accept)) return false;
+  if (typeof candidate.multiple !== 'boolean') return false;
+  if (typeof candidate.minFiles !== 'number' || candidate.minFiles < 0) return false;
+  if (
+    candidate.maxFiles !== undefined &&
+    (typeof candidate.maxFiles !== 'number' || candidate.maxFiles < candidate.minFiles)
+  ) {
     return false;
   }
   return true;
