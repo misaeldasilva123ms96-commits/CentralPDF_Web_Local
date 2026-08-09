@@ -125,3 +125,51 @@ jobs:
           node scripts/extract-tool-catalog.mjs
           git diff --exit-code -- docs/architecture/_CATALOGO_RAW.md
           test "$(grep -cE '^\| (organize|editPdf|merge|split|extract|rotate|watermark|pageNumbers|imagesToPdf|imageConvert|compress|pdfToImage|crop|metadata|normalize|pdfToText|ocr|compare|redact|formBuilder|signPdf|pdfToOffice|documentsToPdf|extractImages|archivePdf|documentAssistant|structuredExtraction|documentAudit|classifyRename|protect|unlock|diagnose|repairAdvanced|flattenForms) ' docs/architecture/_CATALOGO_RAW.md)" -eq 34
+
+  release-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.5"
+          cache-dependency-path: server/go.mod
+
+      - name: Build application
+        working-directory: app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build Windows server
+        working-directory: server
+        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -buildvcs=false -ldflags="-s -w -buildid=" -o ../CentralPDF_Local_Server.release-smoke.exe .
+
+      - name: Assemble release package
+        shell: pwsh
+        run: |
+          $version = (Get-Content -LiteralPath './app/package.json' -Raw | ConvertFrom-Json).version
+          ./scripts/build-release.ps1 `
+            -Version $version `
+            -OutputDirectory '${{ runner.temp }}/release-smoke' `
+            -ServerExecutable './CentralPDF_Local_Server.release-smoke.exe'
+
+      - name: Verify release artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./app/package.json').version")"
+          test -f "${{ runner.temp }}/release-smoke/CentralPDF_Web_Local_v$version.zip"
+          test -f "${{ runner.temp }}/release-smoke/CentralPDF_Local_Server.exe"
+          test -f "${{ runner.temp }}/release-smoke/CentralPDF_Web_Local_v$version.sha256"
