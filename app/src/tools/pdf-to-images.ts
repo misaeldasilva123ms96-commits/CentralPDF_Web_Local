@@ -107,8 +107,8 @@ async function execute(context: ToolContext): Promise<ToolResult> {
       }
 
       context.progress?.(
-        Math.round((pageNumber / totalPages) * 90),
-        `convertendo página ${pageNumber} de ${totalPages}`
+        Math.round((pageNumber / pageCeiling) * 90),
+        `convertendo página ${pageNumber} de ${pageCeiling}`
       );
 
       try {

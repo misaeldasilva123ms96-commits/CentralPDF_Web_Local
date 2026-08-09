@@ -25,7 +25,8 @@ globalThis.fetch = async (
   input: RequestInfo | URL,
   init?: RequestInit
 ): Promise<Response> => {
-  const url = new URL(String(input));
+  const raw = typeof Request !== 'undefined' && input instanceof Request ? input.url : String(input);
+  const url = new URL(raw);
   const parts = url.pathname.split('/');
   const fontFile = parts[parts.length - 1];
   if (parts.includes('standard_fonts') && fontFile) {

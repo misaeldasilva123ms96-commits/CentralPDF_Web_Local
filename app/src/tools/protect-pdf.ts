@@ -99,7 +99,7 @@ function validate(context: ToolContext): ValidationResult {
   } else if (password.length > MAX_PASSWORD_LENGTH) {
     errors.push(`A senha pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`);
   }
-  const ownerPassword = String(context.parameters.ownerPassword ?? '');
+  const ownerPassword = resolveOwnerPassword(password, context.parameters.ownerPassword);
   if (ownerPassword.length > MAX_PASSWORD_LENGTH) {
     errors.push(`A senha de administrador pode ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`);
   }

@@ -144,6 +144,15 @@ describe('protectPdfTool', () => {
     expect(result.ok).toBe(false);
   });
 
+  it('rejeita owner password com espaço antes de hífen (normalização executada)', () => {
+    const result = protectPdfTool.validate({
+      inputs: [corruptPdf('a.pdf')],
+      parameters: { password: 'ab12cd', ownerPassword: '  --admin' }
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.some((e) => e.includes('"-"'))).toBe(true);
+  });
+
   it('é anotada como WASM e experimental no catálogo', () => {
     expect(protectPdfTool.availability).toBe('experimental');
     expect(protectPdfTool.runtime).toEqual(['BROWSER_WASM']);

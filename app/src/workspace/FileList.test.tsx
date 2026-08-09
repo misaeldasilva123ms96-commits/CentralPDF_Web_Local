@@ -16,7 +16,10 @@ type ReadHandle = { resolve: (b: ArrayBuffer) => void; reject: (e: Error) => voi
 
 const pendingReads: ReadHandle[] = [];
 
+let originalArrayBuffer: PropertyDescriptor | undefined;
+
 function installReadControl(): void {
+  originalArrayBuffer = Object.getOwnPropertyDescriptor(File.prototype, 'arrayBuffer');
   Object.defineProperty(File.prototype, 'arrayBuffer', {
     configurable: true,
     writable: true,
@@ -55,6 +58,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  if (originalArrayBuffer) {
+    Object.defineProperty(File.prototype, 'arrayBuffer', originalArrayBuffer);
+  } else {
+    delete (File.prototype as { arrayBuffer?: unknown }).arrayBuffer;
+  }
   vi.restoreAllMocks();
 });
 
