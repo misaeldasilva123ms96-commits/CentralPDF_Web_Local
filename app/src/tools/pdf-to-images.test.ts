@@ -94,8 +94,8 @@ describe('pdfToImagesTool', () => {
     expect(progress[progress.length - 1]).toBe(100);
   });
 
-  it('metadados e anúncio disponível no catálogo', () => {
-    expect(pdfToImagesTool.availability).toBe('available');
+  it('metadados e anúncio experimental no catálogo', () => {
+    expect(pdfToImagesTool.availability).toBe('experimental');
     expect(pdfToImagesTool.id).toBe('pdf-to-images');
     expect(pdfToImagesTool.outputs[0].kind).toBe('image');
     expect(pdfToImagesTool.capabilities.cancellable).toBe(true);

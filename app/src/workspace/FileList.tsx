@@ -23,7 +23,8 @@ export function FileList({ contracts, generateId = defaultId, disabled = false }
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const mountedRef = useRef(true);
-  const commitChainRef = useRef<Promise<void>>(Promise.resolve());
+  const disabledRef = useRef(disabled);
+  const ingestChainRef = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
     mountedRef.current = true;
@@ -32,41 +33,63 @@ export function FileList({ contracts, generateId = defaultId, disabled = false }
     };
   }, []);
 
+  useEffect(() => {
+    disabledRef.current = disabled;
+  }, [disabled]);
+
   const multiple = contracts.some((contract) => contract.multiple);
 
   const accept = contracts.flatMap((contract) => contract.accept).join(',');
 
-  async function ingest(reader: ArrayLike<File>): Promise<void> {
+  function enqueueIngest(reader: ArrayLike<File>): void {
     const selected = Array.from(reader);
-    if (selected.length === 0) return;
-    const inputs = await Promise.all(
-      selected.map(
-        async (file): Promise<FileInput> => ({
-          id: generateId(),
-          name: file.name,
-          size: file.size,
-          mimeType: file.type || 'application/octet-stream',
-          data: await readFileData(file),
-          lastModified: file.lastModified
-        })
-      )
-    );
-    if (!mountedRef.current) return;
-    commitChainRef.current = commitChainRef.current.then(() => {
-      if (mountedRef.current) addFiles(inputs);
-    });
-    await commitChainRef.current;
+
+    if (selected.length === 0 || disabledRef.current || !mountedRef.current) {
+      return;
+    }
+
+    ingestChainRef.current = ingestChainRef.current
+      .catch(() => undefined)
+      .then(async () => {
+        if (!mountedRef.current || disabledRef.current) {
+          return;
+        }
+
+        const inputs: FileInput[] = [];
+        for (const file of selected) {
+          try {
+            inputs.push({
+              id: generateId(),
+              name: file.name,
+              size: file.size,
+              mimeType: file.type || 'application/octet-stream',
+              data: await readFileData(file),
+              lastModified: file.lastModified
+            });
+          } catch {
+            // Um arquivo ilegível é ignorado sem quebrar a seleção restante.
+          }
+        }
+
+        if (!mountedRef.current || disabledRef.current) {
+          return;
+        }
+
+        if (inputs.length > 0) {
+          addFiles(inputs);
+        }
+      });
   }
 
   function onDrop(event: DragEvent): void {
     event.preventDefault();
     setDragging(false);
     if (disabled) return;
-    void ingest(event.dataTransfer.files);
+    enqueueIngest(event.dataTransfer.files);
   }
 
   function onChange(event: ChangeEvent<HTMLInputElement>): void {
-    if (event.target.files && !disabled) void ingest(event.target.files);
+    if (event.target.files && !disabled) enqueueIngest(event.target.files);
     event.target.value = '';
   }
 

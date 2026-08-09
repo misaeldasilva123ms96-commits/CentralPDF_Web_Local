@@ -255,7 +255,7 @@ export const protectPdfTool: ToolDefinition = {
   id: 'protect-pdf',
   version: TOOL_VERSION,
   category: 'seguranca',
-  availability: 'available',
+  availability: 'experimental',
   title: 'Proteger PDF',
   description: 'Adiciona senha de abertura e restrições de uso ao PDF.',
   inputs: [{ kind: 'pdf', accept: ['application/pdf', '.pdf'], multiple: false, minFiles: 1 }],

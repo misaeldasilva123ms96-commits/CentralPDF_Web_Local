@@ -255,6 +255,10 @@ Pop-Location
 
 A CI repete essas verificações e também compara o executável Windows recompilado com `CentralPDF_Local_Server.exe`.
 
+### Ferramentas experimentais (WASM) no app 2.x
+
+No aplicativo 2.x, **Proteger PDF** e **PDF para imagens** carregam o qpdf e o pdf.js via WASM no navegador. Eles ficam marcados como **Experimental** no catálogo e têm cobertura unitária (validação de parâmetros, contagem de páginas, limites de saída), mas **não possuem teste de integração realista no CI**: executar o WASM do qpdf exige baixar o motor no ambiente de execução, o que torna a suíte lenta e frágil. A validação deles deve continuar sendo feita manualmente no navegador com um documento de teste antes de cada lançamento.
+
 ## Estrutura principal
 
 | Caminho | Conteúdo |

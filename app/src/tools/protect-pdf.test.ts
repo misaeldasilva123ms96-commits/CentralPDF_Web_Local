@@ -109,6 +109,24 @@ describe('protectPdfTool', () => {
     expect(result.metrics?.bytesOut).toBe(0);
   });
 
+  it('executa duas vezes com o mesmo FileInput e ambas chegam ao mesmo resultado', async () => {
+    const input = await makePdf(1);
+    const first = await protectPdfTool.execute({
+      inputs: [input],
+      parameters: { password: 'ab12cd34' }
+    });
+    const second = await protectPdfTool.execute({
+      inputs: [input],
+      parameters: { password: 'ab12cd34' }
+    });
+    expect(first.ok).toBe(false);
+    expect(second.ok).toBe(false);
+    expect(second.outputs).toHaveLength(0);
+    expect(second.warnings.some((w) => w.includes('navegador'))).toBe(true);
+    expect(second.metrics?.bytesOut).toBe(0);
+    expect(input.data.byteLength).toBeGreaterThan(0);
+  });
+
   it('rejeita senha que começa com hífen (proteção de argv)', () => {
     const result = protectPdfTool.validate({
       inputs: [corruptPdf('a.pdf')],
@@ -126,8 +144,8 @@ describe('protectPdfTool', () => {
     expect(result.ok).toBe(false);
   });
 
-  it('é anotada como WASM no catálogo', () => {
-    expect(protectPdfTool.availability).toBe('available');
+  it('é anotada como WASM e experimental no catálogo', () => {
+    expect(protectPdfTool.availability).toBe('experimental');
     expect(protectPdfTool.runtime).toEqual(['BROWSER_WASM']);
     expect(protectPdfTool.parametersSchema.required).toContain('password');
   });

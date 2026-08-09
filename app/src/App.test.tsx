@@ -32,7 +32,8 @@ describe('App (shell 2.0)', () => {
     expect(screen.getByRole('button', { name: 'Extrair texto do PDF' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Proteger PDF' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'PDF para imagens' })).toBeInTheDocument();
-    expect(screen.getAllByText('Disponível').length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText('Disponível')).toHaveLength(2);
+    expect(screen.getAllByText('Experimental')).toHaveLength(2);
     expect(screen.getAllByText('Em breve').length).toBeGreaterThan(0);
   });
 

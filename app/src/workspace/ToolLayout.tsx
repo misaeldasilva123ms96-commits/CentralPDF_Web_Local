@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ToolDefinition } from '../core/types';
 import { RuntimeRouter, type RuntimeDecision } from '../core/runtime';
 import { TaskEngine } from '../core/task-engine';
@@ -41,8 +41,24 @@ export function ToolLayout({ tool, runtimeRouter, generateFileId }: ToolLayoutPr
   const setTask = useAppStore((state) => state.setTask);
   const [running, setRunning] = useState(false);
   const runIdRef = useRef<string | null>(null);
+  const mountedRef = useRef(true);
   const engine = useMemo(() => new TaskEngine(), []);
   const parameters = useAppStore((state) => state.parameters);
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+
+      const activeRunId = runIdRef.current;
+      runIdRef.current = null;
+
+      if (activeRunId) {
+        engine.cancel(activeRunId);
+      }
+    };
+  }, [engine]);
 
   const decision = useMemo<RuntimeDecision>(
     () => runtimeRouter.resolve(tool.runtime),
@@ -75,10 +91,16 @@ export function ToolLayout({ tool, runtimeRouter, generateFileId }: ToolLayoutPr
       parameters,
       runtimeDecision: decision,
       onUpdate: (next) => {
-        if (runIdRef.current === null) runIdRef.current = next.id;
+        if (!mountedRef.current) return;
+
+        if (runIdRef.current === null) {
+          runIdRef.current = next.id;
+        }
+
         setTask(next);
       }
     });
+    if (!mountedRef.current) return;
     setTask(run);
     setRunning(false);
     if (run.status === 'succeeded') setStep('review');
@@ -86,10 +108,15 @@ export function ToolLayout({ tool, runtimeRouter, generateFileId }: ToolLayoutPr
   }
 
   function cancelActive(): void {
-    if (runIdRef.current) {
-      engine.cancel(runIdRef.current);
-      runIdRef.current = null;
+    const activeRunId = runIdRef.current;
+    runIdRef.current = null;
+
+    if (activeRunId) {
+      engine.cancel(activeRunId);
     }
+
+    if (!mountedRef.current) return;
+
     setRunning(false);
     setStep('configure');
   }

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import { readFileSync } from 'node:fs';
 
 Object.defineProperty(URL, 'createObjectURL', {
   writable: true,
@@ -8,6 +9,40 @@ Object.defineProperty(URL, 'revokeObjectURL', {
   writable: true,
   value: () => undefined
 });
+
+const standardFontDir = new URL('../../public/standard_fonts/', import.meta.url);
+
+/**
+ * Serves the bundled standard fonts of PDF.js during tests.
+ *
+ * The engine configures `standardFontDataUrl` pointing at the local
+ * `public/standard_fonts` assets; this stub answers those requests with the
+ * real font files from disk so tests exercise the actual font data path
+ * instead of hiding the warning behind a console mock.
+ */
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async (
+  input: RequestInfo | URL,
+  init?: RequestInit
+): Promise<Response> => {
+  const url = new URL(String(input));
+  const parts = url.pathname.split('/');
+  const fontFile = parts[parts.length - 1];
+  if (parts.includes('standard_fonts') && fontFile) {
+    const fileUrl = new URL(fontFile, standardFontDir);
+    try {
+      const data = readFileSync(fileUrl);
+      return new Response(new Uint8Array(data), {
+        status: 200,
+        headers: { 'Content-Type': 'application/octet-stream' }
+      });
+    } catch {
+      return new Response('Not Found', { status: 404 });
+    }
+  }
+  if (!originalFetch) return new Response('Not Found', { status: 404 });
+  return originalFetch(input, init);
+};
 
 class DOMMatrixPolyfill {
   a: number;

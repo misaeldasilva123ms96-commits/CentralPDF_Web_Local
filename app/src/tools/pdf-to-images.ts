@@ -1,11 +1,14 @@
 import type { JSONSchema, ToolContext, ToolDefinition, ToolResult, ValidationResult } from '../core/types';
 import { loadPdf, RasterizerUnavailableError, rasterizePage, sanitizeOutputBase } from './pdf-engine';
+import { formatBytes } from '../workspace/format';
 
 const TOOL_VERSION = '0.1.0';
 const DEFAULT_SCALE = 1.5;
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 4;
 const MAX_PAGES = 100;
+
+export const MAX_IMAGES_OUTPUT_BYTES = 250 * 1024 * 1024;
 
 /**
  * Validates the PDF input count, file signature, and rendering scale.
@@ -68,8 +71,9 @@ function cancelledResult(
 /**
  * Converts the input PDF pages into PNG image outputs.
  *
- * The conversion is limited to the first 100 pages and may return partial
- * results with warnings when individual pages cannot be converted.
+ * The conversion is limited to the first 100 pages and to 250 MB of
+ * generated images, and may return partial results with warnings when
+ * individual pages cannot be converted or the output limit is reached.
  *
  * @param context - Execution context containing the input PDF, rendering parameters, progress reporting, and cancellation signal
  * @returns The conversion result with PNG outputs, warnings, and processing metrics
@@ -109,6 +113,12 @@ async function execute(context: ToolContext): Promise<ToolResult> {
 
       try {
         const png = await rasterizePage(document, { pageNumber, scale });
+        if (bytesOut + png.byteLength > MAX_IMAGES_OUTPUT_BYTES) {
+          warnings.push(
+            `A conversão foi interrompida ao atingir o limite de ${formatBytes(MAX_IMAGES_OUTPUT_BYTES)} de imagens geradas.`
+          );
+          break;
+        }
         bytesOut += png.byteLength;
         outputs.push({
           name: `${base}-pagina-${String(pageNumber).padStart(2, '0')}.png`,
@@ -198,7 +208,7 @@ export const pdfToImagesTool: ToolDefinition = {
   id: 'pdf-to-images',
   version: TOOL_VERSION,
   category: 'conversao',
-  availability: 'available',
+  availability: 'experimental',
   title: 'PDF para imagens',
   description: 'Converte cada página do PDF em imagens PNG no navegador.',
   inputs: [{ kind: 'pdf', accept: ['application/pdf', '.pdf'], multiple: false, minFiles: 1 }],

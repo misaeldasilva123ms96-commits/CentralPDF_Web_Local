@@ -48,7 +48,8 @@ describe('HomeView', () => {
 
   it('mostra estados de disponibilidade nos cards', () => {
     render(<HomeView tools={tools} />);
-    expect(screen.getAllByText('Disponível').length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText('Disponível')).toHaveLength(2);
+    expect(screen.getAllByText('Experimental')).toHaveLength(2);
     expect(screen.getAllByText('Em breve').length).toBeGreaterThan(0);
     expect(screen.getAllByText('offline').length).toBeGreaterThan(0);
   });

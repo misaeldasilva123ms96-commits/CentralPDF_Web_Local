@@ -3,6 +3,8 @@ import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url';
 
 type PdfjsModule = typeof import('pdfjs-dist/legacy/build/pdf.mjs');
 
+const STANDARD_FONT_DATA_URL = `${import.meta.env.BASE_URL}standard_fonts/`;
+
 let pdfjsModulePromise: Promise<PdfjsModule> | null = null;
 
 /**
@@ -39,7 +41,10 @@ export interface LoadedPdf {
 export async function loadPdf(data: ArrayBuffer): Promise<LoadedPdf> {
   const pdfjs = await loadPdfjsModule();
   await ensurePdfjsWorker();
-  const task = pdfjs.getDocument({ data: new Uint8Array(data) });
+  const task = pdfjs.getDocument({
+    data: new Uint8Array(data),
+    standardFontDataUrl: STANDARD_FONT_DATA_URL
+  });
   const document = await task.promise;
   return { document, destroy: () => task.destroy() };
 }

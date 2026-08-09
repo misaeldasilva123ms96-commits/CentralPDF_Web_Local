@@ -1,7 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import type { ToolResult } from '../core/types';
 import type { TaskStatus } from '../core/task-engine';
 import { formatBytes, formatDuration, percentReduction } from './format';
+
+interface DownloadItem {
+  name: string;
+  bytes: number;
+  url: string;
+}
 
 interface ResultCardProps {
   status: TaskStatus;
@@ -23,25 +29,30 @@ interface ResultCardProps {
  */
 export function ResultCard({ status, result, error, toolName, onReprocess }: ResultCardProps) {
   const succeeded = status === 'succeeded' && Boolean(result);
+  const [downloads, setDownloads] = useState<DownloadItem[]>([]);
 
-  const downloads = useMemo(() => {
-    if (!succeeded || !result) return [];
-    return result.outputs.map((output) => ({
+  useEffect(() => {
+    if (!succeeded || !result || result.outputs.length === 0) {
+      setDownloads([]);
+      return undefined;
+    }
+
+    const created = result.outputs.map((output) => ({
       name: output.name,
       bytes: output.data.byteLength,
       url: URL.createObjectURL(
         new Blob([output.data], { type: output.mimeType || 'application/octet-stream' })
       )
     }));
-  }, [succeeded, result]);
 
-  useEffect(() => {
+    setDownloads(created);
+
     return () => {
-      for (const download of downloads) {
+      for (const download of created) {
         URL.revokeObjectURL(download.url);
       }
     };
-  }, [downloads]);
+  }, [succeeded, result]);
 
   if (!succeeded) {
     const heading = status === 'cancelled' ? 'Processamento cancelado' : 'Falha ao processar';

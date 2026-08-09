@@ -21,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v7
         with:
@@ -85,6 +87,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v7
         with:
@@ -104,8 +108,9 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
-      - name: Check legacy catalog script still extracts 34 tools
+      - name: Check catalog file is up to date
         working-directory: ./
         run: |
           node scripts/extract-tool-catalog.mjs
+          git diff --exit-code -- docs/architecture/_CATALOGO_RAW.md
           test "$(grep -cE '^\| (organize|editPdf|merge|split|extract|rotate|watermark|pageNumbers|imagesToPdf|imageConvert|compress|pdfToImage|crop|metadata|normalize|pdfToText|ocr|compare|redact|formBuilder|signPdf|pdfToOffice|documentsToPdf|extractImages|archivePdf|documentAssistant|structuredExtraction|documentAudit|classifyRename|protect|unlock|diagnose|repairAdvanced|flattenForms) ' docs/architecture/_CATALOGO_RAW.md)" -eq 34
