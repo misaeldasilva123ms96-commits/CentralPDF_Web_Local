@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const appJs = readFileSync(resolve(import.meta.dirname, '../assets/js/app.js'), 'utf8');
+const appJs = readFileSync(resolve(import.meta.dirname, '../assets/js/app.js'), 'utf8').replace(/\r\n/g, '\n');
 
 const start = appJs.indexOf('const toolConfig = {');
 const endMarker = appJs.indexOf('\n  };', start);
