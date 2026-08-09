@@ -15,8 +15,6 @@ import (
 	"time"
 )
 
-const appVersion = "2.0.0-alpha.1"
-
 func main() {
 	exe, err := os.Executable()
 	if err != nil {
@@ -80,7 +78,7 @@ func newHandler(root string) http.Handler {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = fmt.Fprintf(w, `{"status":"ok","app":"Central PDF","version":"%s"}`, appVersion)
+		_, _ = w.Write([]byte(`{"status":"ok","app":"Central PDF","version":"1.2.1"}`))
 	})
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
