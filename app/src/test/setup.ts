@@ -1,0 +1,156 @@
+import '@testing-library/jest-dom/vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+Object.defineProperty(URL, 'createObjectURL', {
+  writable: true,
+  value: () => 'blob:mock'
+});
+Object.defineProperty(URL, 'revokeObjectURL', {
+  writable: true,
+  value: () => undefined
+});
+
+const standardFontDir = join(import.meta.dirname, '../../public/standard_fonts');
+
+/**
+ * Serves the bundled standard fonts of PDF.js during tests.
+ *
+ * The engine configures `standardFontDataUrl` pointing at the local
+ * `public/standard_fonts` assets; this stub answers those requests with the
+ * real font files from disk so tests exercise the actual font data path
+ * instead of hiding the warning behind a console mock.
+ */
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async (
+  input: RequestInfo | URL,
+  init?: RequestInit
+): Promise<Response> => {
+  const raw = typeof Request !== 'undefined' && input instanceof Request ? input.url : String(input);
+  const url = new URL(raw, 'http://localhost');
+  const parts = url.pathname.split('/');
+  const fontFile = parts[parts.length - 1];
+  const safeFontFile = fontFile.replace(/[^A-Za-z0-9._-]/g, '');
+  if (parts.includes('standard_fonts') && fontFile) {
+    if (!safeFontFile || safeFontFile !== fontFile) {
+      return new Response('Not Found', { status: 404 });
+    }
+    const fileUrl = join(standardFontDir, safeFontFile);
+    try {
+      const data = readFileSync(fileUrl);
+      return new Response(new Uint8Array(data), {
+        status: 200,
+        headers: { 'Content-Type': 'application/octet-stream' }
+      });
+    } catch {
+      return new Response('Not Found', { status: 404 });
+    }
+  }
+  if (!originalFetch) return new Response('Not Found', { status: 404 });
+  return originalFetch(input, init);
+};
+
+class DOMMatrixPolyfill {
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+  e: number;
+  f: number;
+
+  constructor(init?: string | number[] | Record<string, number> | DOMMatrixPolyfill) {
+    this.a = 1;
+    this.b = 0;
+    this.c = 0;
+    this.d = 1;
+    this.e = 0;
+    this.f = 0;
+    if (typeof init === 'string') {
+      const match = /matrix\(\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*,\s*([-\d.e]+)\s*\)/.exec(init);
+      if (match) {
+        [this.a, this.b, this.c, this.d, this.e, this.f] = match.slice(1).map(Number);
+      }
+      return;
+    }
+    if (Array.isArray(init)) {
+      [this.a, this.b, this.c, this.d, this.e, this.f] = init;
+    } else if (init) {
+      this.a = init.a ?? 1;
+      this.b = init.b ?? 0;
+      this.c = init.c ?? 0;
+      this.d = init.d ?? 1;
+      this.e = init.e ?? 0;
+      this.f = init.f ?? 0;
+    }
+  }
+
+  private values(): [number, number, number, number, number, number] {
+    return [this.a, this.b, this.c, this.d, this.e, this.f];
+  }
+
+  translate(x: number, y = 0): DOMMatrixPolyfill {
+    return new DOMMatrixPolyfill([
+      this.a,
+      this.b,
+      this.c,
+      this.d,
+      this.e + this.a * x + this.c * y,
+      this.f + this.b * x + this.d * y
+    ]);
+  }
+
+  scale(sx: number, sy = sx): DOMMatrixPolyfill {
+    return new DOMMatrixPolyfill([this.a * sx, this.b * sx, this.c * sy, this.d * sy, this.e, this.f]);
+  }
+
+  multiplySelf(other: DOMMatrixPolyfill): DOMMatrixPolyfill {
+    const [a, b, c, d, e, f] = this.values();
+    this.a = a * other.a + c * other.b;
+    this.b = b * other.a + d * other.b;
+    this.c = a * other.c + c * other.d;
+    this.d = b * other.c + d * other.d;
+    this.e = a * other.e + c * other.f + e;
+    this.f = b * other.e + d * other.f + f;
+    return this;
+  }
+
+  preMultiplySelf(other: DOMMatrixPolyfill): DOMMatrixPolyfill {
+    const [a, b, c, d, e, f] = this.values();
+    this.a = other.a * a + other.c * b;
+    this.b = other.b * a + other.d * b;
+    this.c = other.a * c + other.c * d;
+    this.d = other.b * c + other.d * d;
+    this.e = other.a * e + other.c * f + other.e;
+    this.f = other.b * e + other.d * f + other.f;
+    return this;
+  }
+
+  invertSelf(): DOMMatrixPolyfill {
+    const [a, b, c, d, e, f] = this.values();
+    const det = a * d - c * b;
+    if (det === 0) {
+      this.a = NaN;
+      this.b = NaN;
+      this.c = NaN;
+      this.d = NaN;
+      this.e = NaN;
+      this.f = NaN;
+      return this;
+    }
+    this.a = d / det;
+    this.b = -b / det;
+    this.c = -c / det;
+    this.d = a / det;
+    this.e = (c * f - d * e) / det;
+    this.f = (b * e - a * f) / det;
+    return this;
+  }
+}
+
+if (typeof globalThis.DOMMatrix === 'undefined') {
+  Object.defineProperty(globalThis, 'DOMMatrix', {
+    writable: true,
+    configurable: true,
+    value: DOMMatrixPolyfill
+  });
+}
