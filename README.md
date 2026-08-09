@@ -5,7 +5,7 @@
 
 > **Pré-lançamento:** esta é a primeira versão alpha da nova arquitetura CentralPDF 2.0. Algumas ferramentas ainda estão experimentais ou planejadas.
 
-Plataforma documental local-first desenvolvida com Vite, React e TypeScript. O processamento acontece no navegador ou no servidor local do próprio computador, sem upload dos documentos para a aplicação.
+Plataforma documental local-first desenvolvida com Vite, React e TypeScript. O processamento acontece no navegador; o servidor local apenas entrega os arquivos da aplicação no próprio computador, sem upload dos documentos.
 
 **[Abrir o CentralPDF 2.0](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/)**
 
@@ -46,14 +46,19 @@ O Release inclui:
 - `CentralPDF_Local_Server.exe`;
 - `CentralPDF_Web_Local_v2.0.0-alpha.1.sha256`.
 
-No PowerShell, confira o executável com:
+No PowerShell, confira os hashes com:
 
 ```powershell
 (Get-FileHash -Algorithm SHA256 .\CentralPDF_Local_Server.exe).Hash.ToLowerInvariant()
 Get-Content .\CentralPDF_Web_Local_v2.0.0-alpha.1.sha256
 ```
 
-A automação também publica atestações de procedência dos artefatos pelo GitHub Actions.
+Para verificar a procedência publicada pelo GitHub Actions:
+
+```powershell
+gh attestation verify .\CentralPDF_Web_Local_v2.0.0-alpha.1.zip --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
+gh attestation verify .\CentralPDF_Local_Server.exe --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
+```
 
 ## Desenvolvimento
 
