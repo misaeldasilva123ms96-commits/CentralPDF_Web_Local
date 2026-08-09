@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 Object.defineProperty(URL, 'createObjectURL', {
   writable: true,
@@ -10,7 +11,7 @@ Object.defineProperty(URL, 'revokeObjectURL', {
   value: () => undefined
 });
 
-const standardFontDir = new URL('../../public/standard_fonts/', import.meta.url);
+const standardFontDir = join(import.meta.dirname, '../../public/standard_fonts');
 
 /**
  * Serves the bundled standard fonts of PDF.js during tests.
@@ -26,11 +27,15 @@ globalThis.fetch = async (
   init?: RequestInit
 ): Promise<Response> => {
   const raw = typeof Request !== 'undefined' && input instanceof Request ? input.url : String(input);
-  const url = new URL(raw);
+  const url = new URL(raw, 'http://localhost');
   const parts = url.pathname.split('/');
   const fontFile = parts[parts.length - 1];
+  const safeFontFile = fontFile.replace(/[^A-Za-z0-9._-]/g, '');
   if (parts.includes('standard_fonts') && fontFile) {
-    const fileUrl = new URL(fontFile, standardFontDir);
+    if (!safeFontFile || safeFontFile !== fontFile) {
+      return new Response('Not Found', { status: 404 });
+    }
+    const fileUrl = join(standardFontDir, safeFontFile);
     try {
       const data = readFileSync(fileUrl);
       return new Response(new Uint8Array(data), {
