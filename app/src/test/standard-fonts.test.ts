@@ -45,6 +45,10 @@ describe('fetch wrapper — fontes padrão do PDF.js', () => {
   });
 
   it('delega requisições que não são de fonte ao fetch original', async () => {
-    await expect(fetch('http://localhost/outro/arquivo.txt')).rejects.toThrow();
+    const response = await fetch('data:text/plain;base64,aGVsbG8=', {
+      method: 'GET'
+    });
+    expect(response.ok).toBe(true);
+    expect(await response.text()).toBe('hello');
   });
 });
