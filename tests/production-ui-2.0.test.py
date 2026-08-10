@@ -285,6 +285,7 @@ def run_local_package_scenario(browser, local_root):
     if shutil.which("go") is None:
         print("production-ui-2.0: go ausente no PATH; cenário do pacote local ignorado")
         return
+    local_root.mkdir(parents=True, exist_ok=True)
     for item in DIST.iterdir():
         dest = local_root / item.name
         if item.is_dir():
