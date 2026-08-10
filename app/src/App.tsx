@@ -5,7 +5,7 @@ import { ToolLayout } from './workspace/ToolLayout';
 import { RuntimeRouter } from './core/runtime';
 import { centralCatalog } from './core/catalog';
 
-const BUILD_VERSION = '2.0.0-alpha.2';
+const BUILD_VERSION = '2.0.0-alpha.1';
 
 /**
  * Renders the CentralPDF application shell and the view for the currently selected tool.

@@ -8,70 +8,45 @@ readme = (root / "README.md").read_text(encoding="utf-8")
 attributes = (root / ".gitattributes").read_text(encoding="utf-8")
 
 for fragment in (
-    "push:",
-    "tags:",
-    '"v[0-9]+.[0-9]+.[0-9]+*"',
-    "workflow_dispatch:",
-    "inputs:",
-    "tag:",
-    "contents: write",
-    "id-token: write",
-    "attestations: write",
-    "actions/attest@v4",
-    "fetch-depth: 0",
-    "persist-credentials: false",
-    "Resolve release metadata",
-    "require('./app/package.json').version",
-    'if [[ "$version" == *-* ]]',
-    'echo "prerelease=true"',
-    'gh release view "$tag"',
-    "merge-base --is-ancestor",
-    "nao pertence a main",
-    "Build CentralPDF 2.0",
-    "cmp --silent CentralPDF_Local_Server.release-1.exe CentralPDF_Local_Server.release-2.exe",
-    "./scripts/build-release.ps1",
-    "-ServerExecutable",
-    "actions/attest@v4",
-    "gh api --method POST",
-    'ref="refs/tags/$RELEASE_TAG"',
-    "gh release create",
-    '"$release_dir/CentralPDF_Web_Local_v$RELEASE_VERSION.zip"',
+    'tags:',
+    '"v[0-9]+.[0-9]+.[0-9]+"',
+    'workflow_dispatch:',
+    'RELEASE_TAG:',
+    'ref: ${{ env.RELEASE_TAG }}',
+    'contents: write',
+    'id-token: write',
+    'attestations: write',
+    'actions/attest@v4',
+    'fetch-depth: 0',
+    'git rev-parse "$RELEASE_TAG^{commit}"',
+    'git merge-base --is-ancestor "$tag_commit" origin/main',
+    'sha256sum -c checksums.sha256',
+    'cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.release.exe',
+    './scripts/prepare-offline.ps1',
+    './scripts/build-release.ps1',
+    'gh release create',
+    '"$release_dir/CentralPDF_Web_Local_v$version.zip"',
     '"$release_dir/CentralPDF_Local_Server.exe"',
-    '"$release_dir/CentralPDF_Web_Local_v$RELEASE_VERSION.sha256"',
+    '"$release_dir/CentralPDF_Web_Local_v$version.sha256"',
     'if [[ ! -f "$asset" ]]',
     '"${release_assets[@]}"',
     '--repo "$GITHUB_REPOSITORY"',
-    "--verify-tag",
-    "--fail-on-no-commits",
-    '--notes-file "docs/releases/$RELEASE_VERSION.md"',
-    "--prerelease",
+    '--verify-tag',
+    '--fail-on-no-commits',
 ):
     assert fragment in workflow, fragment
 
-assert "branches: [main]" not in workflow
 assert '"${{ runner.temp }}"/release/*' not in workflow
-assert 'tags:' in workflow
 
 for fragment in (
-    "ValidatePattern('^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$')",
-    "[string]$ServerExecutable",
-    "app/package.json",
-    "app/dist",
-    "docs/releases/$Version.md",
     "A saída da release deve ficar fora da árvore do projeto.",
+    "O executável não corresponde ao checksums.sha256 versionado.",
+    "Os motores offline ainda não foram preparados e verificados.",
     "Compress-Archive",
     "Get-FileHash",
     "CentralPDF_Local_Server.exe",
-    "THIRD_PARTY_NOTICES.md",
-    "RELEASE_NOTES.md",
 ):
     assert fragment in builder, fragment
-
-for obsolete_fragment in (
-    "O executável não corresponde ao checksums.sha256 versionado.",
-    "Os motores offline ainda não foram preparados e verificados.",
-):
-    assert obsolete_fragment not in builder, obsolete_fragment
 
 assert "gh attestation verify" in readme
 assert "Releases" in readme
