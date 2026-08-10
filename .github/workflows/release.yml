@@ -44,6 +44,7 @@ jobs:
         id: metadata
         env:
           GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
         shell: bash
         run: |
           set -euo pipefail
@@ -54,7 +55,7 @@ jobs:
           fi
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            requested="${{ inputs.tag }}"
+            requested="$INPUT_TAG"
             if [[ ! "$requested" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
               echo "Tag informada invalida: $requested"
               exit 1
@@ -80,17 +81,18 @@ jobs:
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
           fi
 
-          git fetch origin main
-          tag_sha="$(git rev-parse "refs/tags/$tag" 2>/dev/null || echo "$GITHUB_SHA")"
-          if [[ "$tag_sha" == "$GITHUB_SHA" ]]; then
-            base_sha="$GITHUB_SHA"
+          git fetch origin --tags
+          resolved="$(git rev-parse "refs/tags/$tag^{commit}" 2>/dev/null || echo "$GITHUB_SHA")"
+          if [[ "$resolved" != "$GITHUB_SHA" ]]; then
+            base_sha="$resolved"
           else
-            base_sha="$tag_sha"
+            base_sha="$GITHUB_SHA"
           fi
           if ! git merge-base --is-ancestor "$base_sha" origin/main 2>/dev/null; then
             echo "O commit da tag $tag nao pertence a main."
             exit 1
           fi
+          echo "commit=$resolved" >> "$GITHUB_OUTPUT"
 
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "publish=false" >> "$GITHUB_OUTPUT"
@@ -98,6 +100,10 @@ jobs:
           else
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Checkout release commit
+        if: steps.metadata.outputs.publish == 'true' && steps.metadata.outputs.commit != github.sha
+        run: git checkout "${{ steps.metadata.outputs.commit }}"
 
       - name: Install application dependencies
         if: steps.metadata.outputs.publish == 'true'
@@ -145,18 +151,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.metadata.outputs.tag }}
+          RELEASE_COMMIT: ${{ steps.metadata.outputs.commit }}
         shell: bash
         run: |
           set -euo pipefail
-          if existing_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" --jq '.object.sha' 2>/dev/null)"; then
-            if [[ "$existing_sha" != "$GITHUB_SHA" ]]; then
-              echo "A tag $RELEASE_TAG já aponta para outro commit: $existing_sha"
+          existing_ref="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" --jq '.object.sha' 2>/dev/null || true)"
+          if [[ -n "$existing_ref" ]]; then
+            existing_commit="$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}" 2>/dev/null || echo "$existing_ref")"
+            if [[ "$existing_commit" != "$RELEASE_COMMIT" ]]; then
+              echo "A tag $RELEASE_TAG ja aponta para outro commit: $existing_commit"
               exit 1
             fi
           else
             gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
               -f ref="refs/tags/$RELEASE_TAG" \
-              -f sha="$GITHUB_SHA" >/dev/null
+              -f sha="$RELEASE_COMMIT" >/dev/null
           fi
 
       - name: Publish release without replacing existing assets

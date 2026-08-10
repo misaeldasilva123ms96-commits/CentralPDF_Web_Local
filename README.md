@@ -88,7 +88,7 @@ A versão deve permanecer sincronizada em:
 - `app/src/App.tsx`;
 - `server/main.go`.
 
-A CI bloqueia divergências entre essas fontes. Após o merge manual de uma alteração versionada na `main`, o workflow de Release cria a tag correspondente, monta os artefatos, calcula os hashes e publica o Release. Versões com sufixo, como `2.0.0-alpha.2`, são publicadas como pré-lançamento.
+A CI bloqueia divergências entre essas fontes. O workflow de Release é acionado por uma tag correspondente enviada ao repositório (ex.: `v2.0.0-alpha.2`) ou por execução manual informando a tag como parâmetro. Ele valida se a versão da tag corresponde ao `package.json` e se o commit pertence à `main`, monta os artefatos, calcula os hashes e publica o Release, sem substituir assets de releases já existentes. Versões com sufixo, como `2.0.0-alpha.2`, são publicadas como pré-lançamento.
 
 ## Privacidade e segurança
 

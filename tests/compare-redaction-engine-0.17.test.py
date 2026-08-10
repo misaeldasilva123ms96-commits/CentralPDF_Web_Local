@@ -22,9 +22,10 @@ window.CentralPDFApp={{getFiles:()=>[]}};
 with sync_playwright() as p:
  exe_override=None
  if os.name=='nt':
-  cand=Path(os.environ.get('LOCALAPPDATA',''))/'ms-playwright'/'chromium-1234'/'chrome-win64'/'chrome.exe'
-  if cand.exists():
-   exe_override=str(cand)
+  mp=Path(os.environ.get('LOCALAPPDATA',''))/'ms-playwright'
+  candidates=sorted(mp.glob('chromium-*/chrome-win*/chrome.exe')) if mp.is_dir() else []
+  if candidates:
+   exe_override=str(candidates[-1])
  b=p.chromium.launch(headless=True, executable_path=exe_override, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
  page=b.new_page(viewport={'width':1200,'height':900}); errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.set_content(html)
  result=page.evaluate('''async()=>{const a=new File([new Uint8Array([1])],'original.pdf',{type:'application/pdf'}),b=new File([new Uint8Array([2])],'revisado.pdf',{type:'application/pdf'});const r=await CentralPDFCompare.process({files:[a,b],progress:()=>{},cancelled:()=>false});return {message:r.message,size:r.outputs[0].blob.size};}''')

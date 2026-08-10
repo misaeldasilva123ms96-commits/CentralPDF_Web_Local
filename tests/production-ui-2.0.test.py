@@ -17,6 +17,8 @@ valida o endpoint /__health.
 
 import json
 import os
+import queue
+import re
 import shutil
 import subprocess
 import tempfile
@@ -309,13 +311,32 @@ def run_local_package_scenario(browser, local_root):
     )
     try:
         url = None
+        lines = queue.Queue()
+
+        def _reader(stream, q):
+            for line in iter(stream.readline, ""):
+                q.put(line)
+            q.put(None)
+
+        threading.Thread(target=_reader, args=(proc.stdout, lines), daemon=True).start()
+
         deadline = time.time() + 30
         while time.time() < deadline:
-            line = proc.stdout.readline().strip()
+            if proc.poll() is not None:
+                raise SystemExit(
+                    f"servidor local encerrou antes de imprimir a URL (exit {proc.poll()}); "
+                    f"stderr: {proc.stderr.read()[-500:]}"
+                )
+            try:
+                line = lines.get(timeout=0.5)
+            except queue.Empty:
+                continue
+            if line is None:
+                break
+            line = line.strip()
             if line.startswith("http://"):
                 url = line
                 break
-            time.sleep(0.2)
         if not url:
             raise SystemExit(f"servidor local nao imprimiu a URL (stderr: {proc.stderr.read()[-500:]})")
 
