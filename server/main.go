@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-const appVersion = "2.0.0-alpha.1"
+const appVersion = "2.0.0-alpha.2"
 
 func main() {
 	exe, err := os.Executable()

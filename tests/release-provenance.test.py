@@ -8,11 +8,12 @@ readme = (root / "README.md").read_text(encoding="utf-8")
 attributes = (root / ".gitattributes").read_text(encoding="utf-8")
 
 for fragment in (
-    "branches: [main]",
-    "paths:",
-    '"app/package.json"',
-    '"docs/releases/**"',
+    "push:",
+    "tags:",
+    '"v[0-9]+.[0-9]+.[0-9]+*"',
     "workflow_dispatch:",
+    "inputs:",
+    "tag:",
     "contents: write",
     "id-token: write",
     "attestations: write",
@@ -24,6 +25,8 @@ for fragment in (
     'if [[ "$version" == *-* ]]',
     'echo "prerelease=true"',
     'gh release view "$tag"',
+    "merge-base --is-ancestor",
+    "nao pertence a main",
     "Build CentralPDF 2.0",
     "cmp --silent CentralPDF_Local_Server.release-1.exe CentralPDF_Local_Server.release-2.exe",
     "./scripts/build-release.ps1",
@@ -45,8 +48,9 @@ for fragment in (
 ):
     assert fragment in workflow, fragment
 
+assert "branches: [main]" not in workflow
 assert '"${{ runner.temp }}"/release/*' not in workflow
-assert 'tags:' not in workflow
+assert 'tags:' in workflow
 
 for fragment in (
     "ValidatePattern('^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$')",

@@ -21,16 +21,16 @@ for tool_name in (
     assert tool_name in readme, f"ferramenta 2.0 ausente no README: {tool_name}"
 
 required_guidance = [
-    "# CentralPDF 2.0.0-alpha.1",
+    "# CentralPDF 2.0.0-alpha.2",
     "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/",
     "https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/releases",
     "ABRIR_CENTRAL_PDF.bat",
-    "CentralPDF_Web_Local_v2.0.0-alpha.1.sha256",
+    "CentralPDF_Web_Local_v2.0.0-alpha.2.sha256",
     "gh attestation verify",
     "npm run typecheck",
     "npm run test",
     "docs/architecture/BASELINE_1.2.1.md",
-    "docs/releases/2.0.0-alpha.1.md",
+    "docs/releases/2.0.0-alpha.2.md",
 ]
 
 for value in required_guidance:

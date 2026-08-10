@@ -28,7 +28,7 @@ server = (root / "server" / "main.go").read_text(encoding="utf-8")
 readme = (root / "README.md").read_text(encoding="utf-8")
 
 version = package["version"]
-assert version == "2.0.0-alpha.1"
+assert version == "2.0.0-alpha.2"
 assert package_lock["version"] == version
 assert package_lock["packages"][""]["version"] == version
 assert f"const BUILD_VERSION = '{version}';" in app_source

@@ -1,4 +1,4 @@
-# CentralPDF 2.0.0-alpha.1
+# CentralPDF 2.0.0-alpha.2
 
 [![CI](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/ci.yml/badge.svg)](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/ci.yml)
 [![Pages](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/pages.yml/badge.svg)](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/pages.yml)
@@ -32,7 +32,7 @@ Os arquivos permanecem no dispositivo. O aplicativo não possui uma rota de uplo
 ## Uso local no Windows
 
 1. Abra a página de [Releases](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/releases).
-2. Baixe `CentralPDF_Web_Local_v2.0.0-alpha.1.zip`.
+2. Baixe `CentralPDF_Web_Local_v2.0.0-alpha.2.zip`.
 3. Extraia todo o conteúdo para uma pasta comum.
 4. Execute `ABRIR_CENTRAL_PDF.bat`.
 
@@ -42,21 +42,21 @@ O pacote inclui o build do CentralPDF 2.0 e o servidor local `CentralPDF_Local_S
 
 O Release inclui:
 
-- `CentralPDF_Web_Local_v2.0.0-alpha.1.zip`;
+- `CentralPDF_Web_Local_v2.0.0-alpha.2.zip`;
 - `CentralPDF_Local_Server.exe`;
-- `CentralPDF_Web_Local_v2.0.0-alpha.1.sha256`.
+- `CentralPDF_Web_Local_v2.0.0-alpha.2.sha256`.
 
 No PowerShell, confira os hashes com:
 
 ```powershell
 (Get-FileHash -Algorithm SHA256 .\CentralPDF_Local_Server.exe).Hash.ToLowerInvariant()
-Get-Content .\CentralPDF_Web_Local_v2.0.0-alpha.1.sha256
+Get-Content .\CentralPDF_Web_Local_v2.0.0-alpha.2.sha256
 ```
 
 Para verificar a procedência publicada pelo GitHub Actions:
 
 ```powershell
-gh attestation verify .\CentralPDF_Web_Local_v2.0.0-alpha.1.zip --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
+gh attestation verify .\CentralPDF_Web_Local_v2.0.0-alpha.2.zip --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
 gh attestation verify .\CentralPDF_Local_Server.exe --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
 ```
 
@@ -88,7 +88,7 @@ A versão deve permanecer sincronizada em:
 - `app/src/App.tsx`;
 - `server/main.go`.
 
-A CI bloqueia divergências entre essas fontes. Após o merge manual de uma alteração versionada na `main`, o workflow de Release cria a tag correspondente, monta os artefatos, calcula os hashes e publica o Release. Versões com sufixo, como `2.0.0-alpha.1`, são publicadas como pré-lançamento.
+A CI bloqueia divergências entre essas fontes. O workflow de Release é acionado por uma tag correspondente enviada ao repositório (ex.: `v2.0.0-alpha.2`) ou por execução manual informando a tag como parâmetro. Ele valida se a versão da tag corresponde ao `package.json` e se o commit pertence à `main`, monta os artefatos, calcula os hashes e publica o Release, sem substituir assets de releases já existentes. Versões com sufixo, como `2.0.0-alpha.2`, são publicadas como pré-lançamento.
 
 ## Privacidade e segurança
 
@@ -105,6 +105,6 @@ A CI bloqueia divergências entre essas fontes. Após o merge manual de uma alte
 - `docs/architecture/ADR-0001-centralpdf-2.md` — arquitetura da CentralPDF 2.0.
 - `docs/architecture/CATALOGO_FERRAMENTAS.md` — inventário e migração das ferramentas.
 - `docs/architecture/MOTORES.md` — motores documentais.
-- `docs/releases/2.0.0-alpha.1.md` — notas desta versão.
+- `docs/releases/2.0.0-alpha.2.md` — notas desta versão.
 - `SECURITY.md` — política e controles de segurança.
 - `THIRD_PARTY_NOTICES.md` — licenças e componentes de terceiros.

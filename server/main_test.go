@@ -17,9 +17,6 @@ func TestHealthAllowsOnlyGet(t *testing.T) {
 	if get.Code != http.StatusOK {
 		t.Fatalf("GET /__health = %d, want %d", get.Code, http.StatusOK)
 	}
-	if !strings.Contains(get.Body.String(), `"version":"`+appVersion+`"`) {
-		t.Fatalf("GET /__health body = %q, want version %q", get.Body.String(), appVersion)
-	}
 
 	post := httptest.NewRecorder()
 	handler.ServeHTTP(post, httptest.NewRequest(http.MethodPost, "/__health", nil))

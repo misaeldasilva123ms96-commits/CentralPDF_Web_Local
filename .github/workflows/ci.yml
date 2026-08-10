@@ -58,6 +58,7 @@ jobs:
       - name: Run Python tests
         shell: bash
         run: |
+          export PYTHONPATH="$PWD/tests"
           find tests -maxdepth 1 -name '*.test.py' -print0 | sort -z | xargs -0 -n1 python
           python tests/static_integrity.py
 

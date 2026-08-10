@@ -2,16 +2,13 @@ name: Release
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "app/package.json"
-      - "app/package-lock.json"
-      - "app/src/App.tsx"
-      - "server/main.go"
-      - "scripts/build-release.ps1"
-      - "docs/releases/**"
-      - ".github/workflows/release.yml"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag da release (ex.: v2.0.0-alpha.2); se não existir, será criada a partir da main"
+        required: true
 
 permissions:
   contents: write
@@ -47,16 +44,34 @@ jobs:
         id: metadata
         env:
           GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
         shell: bash
         run: |
           set -euo pipefail
           version="$(node -p "require('./app/package.json').version")"
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
-            echo "Versão inválida no app/package.json: $version"
+            echo "Versao invalida no app/package.json: $version"
             exit 1
           fi
 
-          tag="v$version"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            requested="$INPUT_TAG"
+            if [[ ! "$requested" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "Tag informada invalida: $requested"
+              exit 1
+            fi
+            if [[ "${requested#v}" != "$version" ]]; then
+              echo "A tag $requested nao corresponde a versao $version do app/package.json."
+              exit 1
+            fi
+            tag="$requested"
+          else
+            tag="${GITHUB_REF#refs/tags/}"
+            if [[ "${tag#v}" != "$version" ]]; then
+              echo "A tag $tag nao corresponde a versao $version do app/package.json."
+              exit 1
+            fi
+          fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
@@ -66,12 +81,29 @@ jobs:
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
           fi
 
+          git fetch origin --tags
+          resolved="$(git rev-parse "refs/tags/$tag^{commit}" 2>/dev/null || echo "$GITHUB_SHA")"
+          if [[ "$resolved" != "$GITHUB_SHA" ]]; then
+            base_sha="$resolved"
+          else
+            base_sha="$GITHUB_SHA"
+          fi
+          if ! git merge-base --is-ancestor "$base_sha" origin/main 2>/dev/null; then
+            echo "O commit da tag $tag nao pertence a main."
+            exit 1
+          fi
+          echo "commit=$resolved" >> "$GITHUB_OUTPUT"
+
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "publish=false" >> "$GITHUB_OUTPUT"
-            echo "A release $tag já existe; nenhuma substituição será realizada."
+            echo "A release $tag ja existe; nenhuma substituicao sera realizada."
           else
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Checkout release commit
+        if: steps.metadata.outputs.publish == 'true' && steps.metadata.outputs.commit != github.sha
+        run: git checkout "${{ steps.metadata.outputs.commit }}"
 
       - name: Install application dependencies
         if: steps.metadata.outputs.publish == 'true'
@@ -119,18 +151,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.metadata.outputs.tag }}
+          RELEASE_COMMIT: ${{ steps.metadata.outputs.commit }}
         shell: bash
         run: |
           set -euo pipefail
-          if existing_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" --jq '.object.sha' 2>/dev/null)"; then
-            if [[ "$existing_sha" != "$GITHUB_SHA" ]]; then
-              echo "A tag $RELEASE_TAG já aponta para outro commit: $existing_sha"
+          existing_ref="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" --jq '.object.sha' 2>/dev/null || true)"
+          if [[ -n "$existing_ref" ]]; then
+            existing_commit="$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}" 2>/dev/null || echo "$existing_ref")"
+            if [[ "$existing_commit" != "$RELEASE_COMMIT" ]]; then
+              echo "A tag $RELEASE_TAG ja aponta para outro commit: $existing_commit"
               exit 1
             fi
           else
             gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
               -f ref="refs/tags/$RELEASE_TAG" \
-              -f sha="$GITHUB_SHA" >/dev/null
+              -f sha="$RELEASE_COMMIT" >/dev/null
           fi
 
       - name: Publish release without replacing existing assets
