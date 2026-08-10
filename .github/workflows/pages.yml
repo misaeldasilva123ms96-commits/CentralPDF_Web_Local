@@ -20,46 +20,67 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-
-      - name: Cache verified browser engines
-        uses: actions/cache@v6
         with:
-          path: |
-            vendor/pdf-lib.min.js
-            vendor/pdfjs
-            vendor/pdfjs-manifest.js
-            vendor/UTIF.js
-            vendor/heic2any.min.js
-            vendor/tesseract
-            vendor/tesseract-core
-            vendor/tessdata
-          key: ${{ runner.os }}-centralpdf-engines-${{ hashFiles('scripts/prepare-offline.ps1') }}
+          persist-credentials: false
 
-      - name: Download and verify browser engines
-        shell: pwsh
-        run: ./scripts/prepare-offline.ps1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install application dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Type check
+        working-directory: app
+        run: npx tsc -b --noEmit
+
+      - name: Run Vitest tests
+        working-directory: app
+        run: npm run test
+
+      - name: Build CentralPDF 2.0
+        working-directory: app
+        run: npm run build
+
+      - name: Check release version synchronization
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./app/package.json').version")"
+          grep -F "const BUILD_VERSION = '$version';" app/src/App.tsx
+          grep -F "const appVersion = \"$version\"" server/main.go
+
+      - name: Install production test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-test.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Run production UI smoke test
+        env:
+          PYTHONPATH: "${{ github.workspace }}/tests"
+        run: python tests/production-ui-2.0.test.py
 
       - name: Assemble static site
         shell: bash
         run: |
           mkdir _site
-          cp index.html manifest.webmanifest sw.js _site/
-          cp -R assets vendor _site/
+          cp -R app/dist/. _site/
           touch _site/.nojekyll
 
       - name: Verify deployment scope
         shell: bash
         run: |
           test -f _site/index.html
-          test -f _site/vendor/offline-status.js
-          test -f _site/vendor/pdfjs/pdf.min.mjs
-          test -f _site/vendor/pdfjs/pdf.worker.min.mjs
-          test -f _site/vendor/pdfjs/LICENSE
-          test -f _site/vendor/pdfjs-manifest.js
-          test -f _site/vendor/tesseract-core/tesseract-core-relaxedsimd-lstm.wasm.js
-          test ! -e _site/CentralPDF_Local_Server.exe
+          test -d _site/assets
+          test -f _site/standard_fonts/LiberationSans-Regular.ttf
+          test -f _site/standard_fonts/LICENSE_LIBERATION
           test ! -e _site/server
           test ! -e _site/tests
+          test ! -e _site/CentralPDF_Local_Server.exe
 
       - uses: actions/configure-pages@v6
 
