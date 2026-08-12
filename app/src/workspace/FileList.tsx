@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, type DragEvent, type ChangeEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type DragEvent, type ChangeEvent } from 'react';
 import { useAppStore } from '../store/app-store';
 import { formatBytes } from './format';
 import type { FileContract, FileInput } from '../core/types';
+import { Icon } from '../ui/Icon';
+import { PdfThumbnail } from './PdfThumbnail';
 
 interface FileListProps {
   contracts: FileContract[];
@@ -9,18 +11,15 @@ interface FileListProps {
   disabled?: boolean;
 }
 
-/**
- * Provides a file drop zone and file list with support for selection, removal, and reordering.
- *
- * @param contracts - File selection contracts that define accepted formats and whether multiple files are allowed.
- * @param generateId - Generates an identifier for each added file.
- */
 export function FileList({ contracts, generateId = defaultId, disabled = false }: FileListProps) {
   const files = useAppStore((state) => state.files);
   const addFiles = useAppStore((state) => state.addFiles);
   const removeFile = useAppStore((state) => state.removeFile);
   const reorderFileTo = useAppStore((state) => state.reorderFileTo);
   const [dragging, setDragging] = useState(false);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [pageCounts, setPageCounts] = useState<Record<string, number>>({});
   const inputRef = useRef<HTMLInputElement>(null);
   const mountedRef = useRef(true);
   const disabledRef = useRef(disabled);
@@ -28,64 +27,39 @@ export function FileList({ contracts, generateId = defaultId, disabled = false }
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
+    return () => { mountedRef.current = false; };
   }, []);
-
-  useEffect(() => {
-    disabledRef.current = disabled;
-  }, [disabled]);
+  useEffect(() => { disabledRef.current = disabled; }, [disabled]);
 
   const multiple = contracts.some((contract) => contract.multiple);
-
   const accept = contracts.flatMap((contract) => contract.accept).join(',');
+  const previewFile = files.find((file) => file.id === previewId);
 
   function enqueueIngest(reader: ArrayLike<File>): void {
     const selected = Array.from(reader);
-
-    if (selected.length === 0 || disabledRef.current || !mountedRef.current) {
-      return;
-    }
-
-    ingestChainRef.current = ingestChainRef.current
-      .catch(() => undefined)
-      .then(async () => {
-        if (!mountedRef.current || disabledRef.current) {
-          return;
+    if (selected.length === 0 || disabledRef.current || !mountedRef.current) return;
+    ingestChainRef.current = ingestChainRef.current.catch(() => undefined).then(async () => {
+      if (!mountedRef.current || disabledRef.current) return;
+      const inputs: FileInput[] = [];
+      for (const file of selected) {
+        try {
+          inputs.push({
+            id: generateId(), name: file.name, size: file.size,
+            mimeType: file.type || 'application/octet-stream',
+            data: await readFileData(file), lastModified: file.lastModified
+          });
+        } catch (error) {
+          console.error(`Não foi possível ler ${file.name}.`, error);
         }
-
-        const inputs: FileInput[] = [];
-        for (const file of selected) {
-          try {
-            inputs.push({
-              id: generateId(),
-              name: file.name,
-              size: file.size,
-              mimeType: file.type || 'application/octet-stream',
-              data: await readFileData(file),
-              lastModified: file.lastModified
-            });
-          } catch {
-            // Um arquivo ilegível é ignorado sem quebrar a seleção restante.
-          }
-        }
-
-        if (!mountedRef.current || disabledRef.current) {
-          return;
-        }
-
-        if (inputs.length > 0) {
-          addFiles(inputs);
-        }
-      });
+      }
+      if (mountedRef.current && !disabledRef.current && inputs.length > 0) addFiles(inputs);
+    });
   }
 
   function onDrop(event: DragEvent): void {
     event.preventDefault();
     setDragging(false);
-    if (disabled) return;
-    enqueueIngest(event.dataTransfer.files);
+    if (!disabled) enqueueIngest(event.dataTransfer.files);
   }
 
   function onChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -93,136 +67,94 @@ export function FileList({ contracts, generateId = defaultId, disabled = false }
     event.target.value = '';
   }
 
-  return (
-    <div className="cp-panel__body">
-      <div
-        className={`cp-dropzone${dragging ? ' is-dragging' : ''}${disabled ? ' is-disabled' : ''}`}
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        aria-label={multiple ? 'Escolha ou arraste seus arquivos' : 'Escolha ou arraste um arquivo'}
-        aria-disabled={disabled}
-        onClick={() => {
-          if (!disabled) inputRef.current?.click();
-        }}
-        onKeyDown={(event) => {
-          if (!disabled && (event.key === 'Enter' || event.key === ' ')) inputRef.current?.click();
-        }}
-        onDragOver={(event) => {
-          if (disabled) return;
-          event.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={onDrop}
-      >
-        <p style={{ margin: 0 }}>
-          <strong>{multiple ? 'Escolha seus arquivos' : 'Escolha um arquivo'}</strong>
-        </p>
-        <p style={{ margin: 0, fontSize: 'var(--cp-font-size-sm)' }}>
-          Arraste para cá ou clique para selecionar
-        </p>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          multiple={multiple}
-          hidden
-          aria-hidden="true"
-          onChange={onChange}
-        />
-      </div>
+  const rememberPages = useCallback((id: string, pages: number) => {
+    setPageCounts((current) => current[id] === pages ? current : { ...current, [id]: pages });
+  }, []);
 
-      {files.length > 0 && (
-        <div className="cp-file-list" style={{ marginTop: 'var(--cp-space-3)' }}>
-          {files.map((file, index) => (
-            <div key={file.id} className="cp-file-item">
-              <div className="cp-file-item__order" aria-hidden="true">
-                {index + 1}
+  const dropzone = (
+    <div
+      className={`cp-dropzone${dragging ? ' is-dragging' : ''}${disabled ? ' is-disabled' : ''}${files.length > 0 ? ' is-compact' : ''}`}
+      role="button" tabIndex={disabled ? -1 : 0}
+      aria-label={multiple ? 'Escolha ou arraste seus arquivos' : 'Escolha ou arraste um arquivo'}
+      aria-disabled={disabled}
+      onClick={() => { if (!disabled) inputRef.current?.click(); }}
+      onKeyDown={(event) => { if (!disabled && (event.key === 'Enter' || event.key === ' ')) inputRef.current?.click(); }}
+      onDragOver={(event) => { if (!disabled) { event.preventDefault(); setDragging(true); } }}
+      onDragLeave={() => setDragging(false)} onDrop={onDrop}
+    >
+      <span className="cp-dropzone__icon"><Icon name={files.length > 0 ? 'add' : 'upload'} size={files.length > 0 ? 22 : 28} /></span>
+      {files.length === 0 ? <><strong>Adicionar arquivos</strong><span>Arraste seus documentos aqui ou selecione no dispositivo</span><span className="cp-dropzone__button">Selecionar arquivos</span></> : <><strong>Adicionar mais</strong><span>ou solte aqui</span></>}
+    </div>
+  );
+
+  return (
+    <div className={files.length === 0 ? 'cp-empty-workspace' : 'cp-files-workspace'}>
+      <input ref={inputRef} type="file" accept={accept} multiple={multiple} hidden aria-hidden="true" onChange={onChange} />
+      {files.length === 0 ? <>
+        <div className="cp-empty-workspace__copy"><h2>Seus documentos, prontos para trabalhar</h2><p>O processamento acontece localmente. Nada é enviado para servidores.</p></div>
+        {dropzone}
+        <div className="cp-empty-workspace__trust"><Icon name="lock" size={16} /> Seguro, privado e sem limites de upload</div>
+      </> : <>
+      <div className="cp-file-list" aria-label="Arquivos selecionados">
+        {files.map((file, index) => (
+          <article
+            key={file.id}
+            className={`cp-file-item${draggedId === file.id ? ' is-dragging' : ''}`}
+            draggable={!disabled && multiple}
+            onDragStart={(event) => { setDraggedId(file.id); event.dataTransfer.effectAllowed = 'move'; }}
+            onDragEnd={() => setDraggedId(null)}
+            onDragOver={(event) => {
+              if (!disabled && draggedId && draggedId !== file.id) {
+                event.preventDefault();
+                reorderFileTo(draggedId, index);
+              }
+            }}
+          >
+            <span className="cp-file-item__order">{index + 1}</span>
+            <button type="button" className="cp-file-item__preview" aria-label={`Visualizar ${file.name}`} onClick={() => setPreviewId(file.id)}>
+              {file.mimeType === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf') ? (
+                <PdfThumbnail data={file.data} name={file.name} onPageCount={(pages) => rememberPages(file.id, pages)} />
+              ) : <span className="cp-file-item__document"><Icon name="file" size={36} />{documentIcon(file.name)}</span>}
+            </button>
+            <div className="cp-file-item__meta">
+              <div className="cp-file-item__name" title={file.name}>{file.name}</div>
+              <div className="cp-file-item__size">
+                {pageCounts[file.id] ? `${pageCounts[file.id]} ${pageCounts[file.id] === 1 ? 'página' : 'páginas'} · ` : ''}{formatBytes(file.size)}
               </div>
-              <span className="cp-file-item__icon" aria-hidden="true">
-                {documentIcon(file.name)}
-              </span>
-              <div className="cp-file-item__meta">
-                <div className="cp-file-item__name" title={file.name}>
-                  {file.name}
-                </div>
-                <div className="cp-file-item__size">{formatBytes(file.size)}</div>
-              </div>
-              {multiple && (
-                <span className="cp-file-item__move">
-                  <button
-                    type="button"
-                    className="cp-btn cp-btn--ghost cp-btn--small"
-                    aria-label={`Mover ${file.name} para cima`}
-                    disabled={disabled || index === 0}
-                    onClick={() => reorderFileTo(file.id, index - 1)}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    className="cp-btn cp-btn--ghost cp-btn--small"
-                    aria-label={`Mover ${file.name} para baixo`}
-                    disabled={disabled || index === files.length - 1}
-                    onClick={() => reorderFileTo(file.id, index + 1)}
-                  >
-                    ↓
-                  </button>
-                </span>
-              )}
-              <button
-                type="button"
-                className="cp-btn cp-btn--ghost cp-btn--small"
-                aria-label={`Remover ${file.name}`}
-                disabled={disabled}
-                onClick={() => removeFile(file.id)}
-              >
-                Remover
-              </button>
             </div>
-          ))}
+            <div className="cp-file-item__actions">
+              <button type="button" className="cp-icon-btn" aria-label={`Visualizar ${file.name}`} title="Visualizar" onClick={() => setPreviewId(file.id)}><Icon name="preview" size={18} /></button>
+              {multiple && <span className="cp-file-item__move">
+                <button type="button" className="cp-icon-btn" aria-label={`Mover ${file.name} para cima`} title="Mover para cima" disabled={disabled || index === 0} onClick={() => reorderFileTo(file.id, index - 1)}><Icon name="arrow-left" size={17} /></button>
+                <button type="button" className="cp-icon-btn" aria-label={`Mover ${file.name} para baixo`} title="Mover para baixo" disabled={disabled || index === files.length - 1} onClick={() => reorderFileTo(file.id, index + 1)}><Icon name="arrow-right" size={17} /></button>
+              </span>}
+              <button type="button" className="cp-icon-btn cp-icon-btn--danger" aria-label={`Remover ${file.name}`} title="Remover" disabled={disabled} onClick={() => removeFile(file.id)}><Icon name="trash" size={17} /></button>
+            </div>
+          </article>
+        ))}
+        <div className="cp-file-add-card">{dropzone}</div>
+      </div>
+      <div className="cp-files-summary"><Icon name="check" size={17} /><strong>{files.length} {files.length === 1 ? 'arquivo adicionado' : 'arquivos adicionados'}</strong><span>Pronto para configurar e processar.</span></div>
+      </>}
+
+      {previewFile && (
+        <div className="cp-preview-dialog" role="dialog" aria-modal="true" aria-label={`Visualização de ${previewFile.name}`} onClick={() => setPreviewId(null)}>
+          <div className="cp-preview-dialog__content" onClick={(event) => event.stopPropagation()}>
+            <div className="cp-preview-dialog__header"><div><strong>{previewFile.name}</strong><span>{formatBytes(previewFile.size)}</span></div><button type="button" className="cp-icon-btn" aria-label="Fechar visualização" onClick={() => setPreviewId(null)}>×</button></div>
+            <PdfThumbnail data={previewFile.data} name={previewFile.name} />
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-/**
- * Generates a unique identifier.
- *
- * @returns A randomly generated UUID
- */
-function defaultId(): string {
-  return crypto.randomUUID();
-}
-
-/**
- * Reads a file's contents as an array buffer.
- *
- * @param file - The file to read
- * @returns The file contents
- */
+function defaultId(): string { return crypto.randomUUID(); }
 function readFileData(file: File): Promise<ArrayBuffer> {
   if (typeof file.arrayBuffer === 'function') return file.arrayBuffer();
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsArrayBuffer(file);
-  });
+  return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result as ArrayBuffer); reader.onerror = () => reject(reader.error); reader.readAsArrayBuffer(file); });
 }
-
-/**
- * Determines the display label for a document based on its file extension.
- *
- * @param name - The document filename
- * @returns `PDF` for PDF files, `IMG` for image files, `OFF` for Office files, the first three characters of other extensions, or `ARQ` when no extension is present.
- */
 function documentIcon(name: string): string {
-  const normalized = (name.split('.').pop() ?? '').toLowerCase();
-  if (normalized === 'pdf') return 'PDF';
-  const imageTypes = new Set(['png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'tif', 'tiff', 'heic']);
-  if (imageTypes.has(normalized)) return 'IMG';
-  if (['docx', 'xlsx', 'pptx', 'doc', 'xls', 'ppt'].includes(normalized)) return 'OFF';
-  return normalized.slice(0, 3).toUpperCase() || 'ARQ';
+  const extension = (name.split('.').pop() ?? '').toUpperCase();
+  return extension.slice(0, 4) || 'ARQ';
 }
