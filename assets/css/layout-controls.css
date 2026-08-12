@@ -48,7 +48,7 @@ body[data-workspace-open="true"] .workspace-layout-actions { display: none; }
   box-shadow: -7px 8px 22px rgba(28,31,52,.12);
   cursor: pointer;
 }
-.settings-panel-restore svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.settings-panel-restore svg { width: 16px; height: 16px; fill: none; stroke: currentcolor; stroke-width: 1.8; }
 body.settings-collapsed[data-workspace-open="true"] .settings-panel-restore { display: inline-flex; }
 
 /* Barra lateral compacta no desktop */
