@@ -15,7 +15,7 @@ assert "$('#editorRotatePageRight')?.addEventListener('click', () => rotateCurre
 assert 'sourceRotation = normalizeAngle(Number(page.rotate || 0))' in editor
 assert 'getPageRenderRotation(page)' in editor
 assert 'pageOrientation({ width: displayWidth, height: displayHeight })' in editor
-assert "centralpdf-v1.2.1-pages-12" in service_worker
+assert "centralpdf-v1.2.1-pages-13" in service_worker
 assert "request.mode === 'navigate'" in service_worker
 assert "url.pathname.endsWith('/index.html')" in service_worker
 assert "url.pathname.endsWith('/assets/js/pdf-editor.js')" in service_worker

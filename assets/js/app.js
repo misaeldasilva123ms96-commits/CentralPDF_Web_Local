@@ -3121,11 +3121,42 @@
         try { pdf.removeProtection(); }
         catch (error) { throw new Error(`A proteção de ${file.name} não pôde ser removida. Use a senha administrativa. ${error?.message || ''}`); }
       }
-      outputs.push({ name: `${baseName(file.name)}_recuperado.pdf`, bytes: await pdf.save() });
+      const recoveredBytes = await pdf.save();
+      await validateRecoveredPdfBytes(recoveredBytes, file.name, password);
+      outputs.push({ name: `${baseName(file.name)}_recuperado.pdf`, bytes: recoveredBytes });
       setProgress(10 + Math.round(((index + 1) / state.files.length) * 80));
     }
     await downloadPdfOutputs(outputs, outputBaseName('PDFs_recuperados'));
     return { message: `Recuperação concluída para ${outputs.length} PDF(s). ${recoveredCount} exigiram reconstrução por varredura.` };
+  }
+
+  async function validateRecoveredPdfBytes(bytes, sourceName, password = '') {
+    const recoveredBytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []);
+    const validationErrors = [];
+    if (window.PDFLib?.PDFDocument?.load) {
+      try {
+        const document = await window.PDFLib.PDFDocument.load(recoveredBytes.slice(), { ignoreEncryption: false, updateMetadata: false });
+        if (document.getPageCount() < 1) throw new Error('o documento reconstruído não possui páginas');
+        return;
+      } catch (error) {
+        validationErrors.push(error?.message || String(error));
+      }
+    }
+    if (window.pdfjsLib?.getDocument) {
+      let task;
+      try {
+        task = window.pdfjsLib.getDocument({ data: recoveredBytes.slice(), password: password || undefined, isEvalSupported: false });
+        const document = await task.promise;
+        if (document.numPages < 1) throw new Error('o documento reconstruído não possui páginas');
+        return;
+      } catch (error) {
+        validationErrors.push(error?.message || String(error));
+      } finally {
+        await task?.destroy?.();
+      }
+    }
+    if (!validationErrors.length) validationErrors.push('nenhum validador de PDF está disponível');
+    throw new Error(`A recuperação de ${sourceName} não produziu um PDF válido. O arquivo não será disponibilizado. ${validationErrors.join(' | ')}`);
   }
 
   async function flattenForms() {

@@ -10,7 +10,7 @@ assert "assets/css/workspace-visual-fixes-1.2.2.css" in links
 css = "\n".join((root / link).read_text(encoding="utf-8") for link in links)
 service_worker = (root / "sw.js").read_text(encoding="utf-8")
 assert "'./assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3'" in service_worker
-assert "centralpdf-v1.2.1-pages-12" in service_worker
+assert "centralpdf-v1.2.1-pages-13" in service_worker
 
 html = f"""<!doctype html><html><head><style>{css}</style></head>
 <body data-theme="dark">
