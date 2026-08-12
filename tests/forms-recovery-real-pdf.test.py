@@ -92,7 +92,8 @@ try:
                 return {
                   ok: true,
                   pages: generated.getPageCount(),
-                  fields: generated.getForm().getFields().map(field => field.getName())
+                  fields: generated.getForm().getFields().map(field => field.getName()),
+                  text: generated.getForm().getTextField('nome_completo').getText()
                 };
               } finally {
                 HTMLAnchorElement.prototype.click = originalClick;
@@ -100,7 +101,12 @@ try:
               }
             }"""
         )
-        assert form_result == {"ok": True, "pages": 1, "fields": ["nome_completo"]}, form_result
+        assert form_result == {
+            "ok": True,
+            "pages": 1,
+            "fields": ["nome_completo"],
+            "text": "Teste Central PDF",
+        }, form_result
 
         repair_result = page.evaluate(
             """async () => {
