@@ -161,6 +161,7 @@
 
     const body = $('#cp101SettingsBody');
     body.appendChild(appearanceSection());
+    body.appendChild(group('Interface', ['layoutSettingsButton']));
     body.appendChild(group('Projetos e sistema', ['foundationProjectsButton', 'foundationQueueButton', 'foundationDiagnosticsButton']));
     body.appendChild(group('Continuidade', ['cp15ResultsBtn', 'cp15FlowsBtn', 'cp15PresetsBtn']));
     body.appendChild(group('Qualidade da versão', ['cp10QualityButton'], 'cp101-settings-slim'));

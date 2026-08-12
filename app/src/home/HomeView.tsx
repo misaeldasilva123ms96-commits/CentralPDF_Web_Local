@@ -2,26 +2,22 @@ import { useMemo } from 'react';
 import type { ToolDefinition } from '../core/types';
 import { useAppStore } from '../store/app-store';
 import { ToolCard } from './ToolCard';
+import { Icon } from '../ui/Icon';
 
 interface HomeViewProps {
   tools: ToolDefinition[];
 }
 
-/**
- * Renders the CentralPDF home page with searchable tools and favorites.
- *
- * @returns The home page content with search results, favorite tools, and all available tools.
- */
 export function HomeView({ tools }: HomeViewProps) {
   const searchQuery = useAppStore((state) => state.searchQuery);
   const setSearchQuery = useAppStore((state) => state.setSearchQuery);
   const favorites = useAppStore((state) => state.favorites);
-
   const query = searchQuery.trim().toLowerCase();
 
   const filtered = useMemo(() => {
-    if (!query) return tools;
-    return tools.filter(
+    const visible = tools.filter((tool) => tool.availability !== 'disabled');
+    if (!query) return visible;
+    return visible.filter(
       (tool) =>
         tool.title.toLowerCase().includes(query) ||
         tool.description.toLowerCase().includes(query) ||
@@ -30,68 +26,64 @@ export function HomeView({ tools }: HomeViewProps) {
   }, [tools, query]);
 
   const favoriteTools = useMemo(
-    () => tools.filter((tool) => favorites.includes(tool.id)),
+    () => tools.filter((tool) => favorites.includes(tool.id) && tool.availability !== 'disabled'),
     [tools, favorites]
   );
 
   return (
     <div className="cp-home">
-      <h1 style={{ margin: 'var(--cp-space-4) 0 var(--cp-space-2)' }}>CentralPDF 2.0</h1>
-      <p className="muted" style={{ marginTop: 0 }}>
-        Processamento local, sem envio de documentos.
-      </p>
+      <section className="cp-home__hero">
+        <div>
+          <h1>Todas as ferramentas de PDF em um só lugar</h1>
+          <p>Organize, converta e proteja seus documentos com processamento local e privado.</p>
+        </div>
+        <label className="cp-home__search-wrap">
+          <Icon name="search" size={19} />
+          <span className="sr-only">Buscar ferramenta</span>
+          <input
+            type="search"
+            className="cp-home__search"
+            placeholder="Buscar uma ferramenta"
+            value={searchQuery}
+            aria-label="Buscar ferramenta"
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </label>
+      </section>
 
-      <label style={{ display: 'block', margin: 'var(--cp-space-6) 0' }}>
-        <span className="muted" style={{ fontSize: 'var(--cp-font-size-sm)', display: 'block', marginBottom: 'var(--cp-space-1)' }}>
-          Buscar ferramenta (Ctrl+K em breve)
-        </span>
-        <input
-          type="search"
-          className="cp-home__search"
-          placeholder="Ex.: juntar, dividir, ocr…"
-          value={searchQuery}
-          aria-label="Buscar ferramenta"
-          onChange={(event) => setSearchQuery(event.target.value)}
-        />
-      </label>
-
-      {query && (
-        <>
-<h2 className="cp-home__section-title">
-            Resultados para “{searchQuery}” ({filtered.length})
-          </h2>
-          {filtered.length === 0 ? (
-            <p className="muted">Nenhuma ferramenta encontrada.</p>
-          ) : (
+      <section className="cp-home__tools" aria-labelledby="tools-title">
+        {!query && favoriteTools.length > 0 && (
+          <div className="cp-home__favorites">
+            <div className="cp-section-heading"><div><h2>Favoritas</h2><p>Suas ferramentas mais usadas.</p></div></div>
             <div className="cp-tool-grid">
-              {filtered.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} />
-              ))}
+              {favoriteTools.map((tool) => <ToolCard key={`favorite-${tool.id}`} tool={tool} />)}
             </div>
-          )}
-        </>
-      )}
-
-      {!query && (
-        <>
-          {favoriteTools.length > 0 && (
-            <>
-              <h2 className="cp-home__section-title">Favoritas</h2>
-              <div className="cp-tool-grid">
-                {favoriteTools.map((tool) => (
-                  <ToolCard key={tool.id} tool={tool} />
-                ))}
-              </div>
-            </>
-          )}
-          <h2 className="cp-home__section-title">Todas as ferramentas</h2>
-          <div className="cp-tool-grid">
-            {filtered.map((tool) => (
-              <ToolCard key={tool.id} tool={tool} />
-            ))}
           </div>
-        </>
-      )}
+        )}
+        <div className="cp-section-heading">
+          <div>
+            <h2 id="tools-title">{query ? `Resultados para “${searchQuery}”` : 'Escolha uma ferramenta'}</h2>
+            <p>{query ? `${filtered.length} resultado(s) encontrado(s)` : 'Comece em poucos segundos. Seus arquivos não saem do dispositivo.'}</p>
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="cp-empty-search">
+            <Icon name="search" size={26} />
+            <h3>Nenhuma ferramenta encontrada</h3>
+            <p>Tente buscar por juntar, converter, texto ou proteger.</p>
+          </div>
+        ) : (
+          <div className="cp-tool-grid">
+            {filtered.map((tool) => <ToolCard key={tool.id} tool={tool} />)}
+          </div>
+        )}
+      </section>
+
+      <aside className="cp-home__privacy">
+        <span><Icon name="lock" size={18} /></span>
+        <div><strong>Privacidade por padrão</strong><p>O processamento acontece no navegador, sem envio dos documentos.</p></div>
+      </aside>
     </div>
   );
 }

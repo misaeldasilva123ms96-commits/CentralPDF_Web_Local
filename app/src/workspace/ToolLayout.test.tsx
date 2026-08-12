@@ -15,7 +15,6 @@ beforeEach(() => {
     activeToolId: null,
     files: [],
     parameters: {},
-    currentStep: 'select',
     task: null
   });
   centralCatalog.clear();
@@ -86,7 +85,6 @@ describe('ToolLayout — ciclo de vida (unmount e cancelamento)', () => {
     await startRun(user);
     await screen.findByRole('button', { name: 'Cancelar' });
     const taskBefore = useAppStore.getState().task;
-    const stepBefore = useAppStore.getState().currentStep;
     expect(taskBefore?.status).toBe('running');
 
     unmount();
@@ -95,7 +93,6 @@ describe('ToolLayout — ciclo de vida (unmount e cancelamento)', () => {
 
     expect(cancelSpy).toHaveBeenCalledTimes(1);
     expect(useAppStore.getState().task).toBe(taskBefore);
-    expect(useAppStore.getState().currentStep).toBe(stepBefore);
   });
 
   it('nenhum callback antigo atualiza o store após a desmontagem', async () => {
@@ -117,15 +114,12 @@ describe('ToolLayout — ciclo de vida (unmount e cancelamento)', () => {
     await screen.findByRole('button', { name: 'Cancelar' });
 
     const taskBefore = useAppStore.getState().task;
-    const stepBefore = useAppStore.getState().currentStep;
-
     unmount();
     delayed.resolve({ ok: true, outputs: [], warnings: [] });
     await new Promise((done) => setTimeout(done, 0));
 
     expect(cancelSpy).toHaveBeenCalledTimes(1);
     expect(useAppStore.getState().task).toBe(taskBefore);
-    expect(useAppStore.getState().currentStep).toBe(stepBefore);
   });
 
   it('voltar ao catálogo e abrir outra ferramenta não apresenta resultado antigo', async () => {
@@ -143,7 +137,6 @@ describe('ToolLayout — ciclo de vida (unmount e cancelamento)', () => {
     await user.click(screen.getByRole('button', { name: 'Extrair texto do PDF' }));
     expect(screen.queryByText('Resultado concluído')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Baixar/ })).not.toBeInTheDocument();
-    expect(useAppStore.getState().currentStep).toBe('select');
     expect(useAppStore.getState().task).toBeNull();
   });
 
@@ -159,5 +152,41 @@ describe('ToolLayout — ciclo de vida (unmount e cancelamento)', () => {
     await user.click(cancel);
     await user.click(cancel);
     expect(cancelSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('recupera a interface quando o motor rejeita antes de criar uma tarefa', async () => {
+    const user = userEvent.setup();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(TaskEngine.prototype, 'run').mockRejectedValueOnce(new Error('motor indisponível'));
+    centralCatalog.register(slowTool(async () => ({ ok: true, outputs: [], warnings: [] })));
+
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: 'Ferramenta de ciclo' }));
+    await describeAsTool(user, 'a.pdf');
+    const action = screen.getByRole('button', { name: 'Ferramenta de ciclo' });
+    await user.click(action);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('motor indisponível');
+    expect(action).not.toBeDisabled();
+    expect(consoleSpy).toHaveBeenCalled();
+  });
+
+  it('pede confirmação antes de descartar arquivos pelo botão voltar', async () => {
+    const user = userEvent.setup();
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    centralCatalog.register(slowTool(async () => ({ ok: true, outputs: [], warnings: [] })));
+
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: 'Ferramenta de ciclo' }));
+    await describeAsTool(user, 'a.pdf');
+    const backButton = document.querySelector<HTMLButtonElement>('.cp-back-button');
+    expect(backButton).not.toBeNull();
+    await user.click(backButton!);
+
+    expect(confirmSpy).toHaveBeenCalledOnce();
+    expect(screen.getByRole('button', { name: 'Ferramenta de ciclo' })).toBeInTheDocument();
+    confirmSpy.mockReturnValue(true);
+    await user.click(backButton!);
+    expect(screen.getByRole('heading', { name: /Todas as ferramentas/ })).toBeInTheDocument();
   });
 });

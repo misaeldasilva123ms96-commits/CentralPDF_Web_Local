@@ -21,7 +21,6 @@ beforeEach(() => {
     activeToolId: null,
     files: [],
     parameters: {},
-    currentStep: 'select',
     task: null
   });
   centralCatalog.clear();
@@ -34,8 +33,7 @@ describe('Acessibilidade (roles ARIA e nomes acessíveis)', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: 'Juntar PDFs' }));
 
-    expect(screen.getByRole('list', { name: 'Etapas do fluxo' })).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Configurações' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Resumo, configurações, validação e ação da ferramenta' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Escolha ou arraste seus arquivos' })).toBeInTheDocument();
 
     const input = document.querySelector<HTMLInputElement>('input[type="file"]');
@@ -79,7 +77,7 @@ describe('Acessibilidade (roles ARIA e nomes acessíveis)', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: 'Juntar PDFs' }));
     await user.click(screen.getByRole('button', { name: /CentralPDF 2.0/ }));
-    expect(screen.queryByTestId('flow-bar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Resumo, configurações, validação e ação da ferramenta' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Todas as ferramentas/ })).toBeInTheDocument();
   });
 });

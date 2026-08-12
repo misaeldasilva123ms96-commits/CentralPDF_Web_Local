@@ -1,11 +1,11 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v1.2.1-pages-8';
+const CACHE_VERSION = 'centralpdf-v1.2.1-pages-13';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
   './', './index.html', './assets/css/styles.css', './assets/css/ux-redesign.css',
-  './assets/css/layout-controls.css', './assets/css/foundation.css', './assets/css/experience-0.15.css',
+  './assets/css/layout-controls.css?v=1.2.1-ui1', './assets/css/foundation.css', './assets/css/experience-0.15.css',
   './assets/css/ocr-0.16.css', './assets/css/professional-0.17.css',
   './assets/css/forms-signatures-0.18.css', './assets/css/conversions-0.19.css',
   './assets/css/intelligence-0.20.css', './assets/css/stable-1.0.css',
@@ -16,14 +16,16 @@ const CORE_ASSETS = [
   './assets/css/modal-fit-1.0.9.css', './assets/css/micro-polish-1.1.0.css',
   './assets/css/quality-logs-1.1.2.css', './assets/css/tool-quality-1.2.0.css',
   './assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3',
+  './assets/css/product-redesign-2.0.css?v=2.0.4',
   './assets/js/engine-loader.js', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
-  './assets/js/organizer-planner.js', './assets/js/pdf-editor.js', './assets/js/ux-enhancements.js',
+  './assets/js/organizer-planner.js', './assets/js/pdf-editor.js', './assets/js/ux-enhancements.js?v=1.2.1-ui1',
   './assets/js/ocr-0.16.js', './assets/js/compare-0.17.js', './assets/js/redaction-0.17.js',
-  './assets/js/forms-signatures-0.18.js', './assets/js/conversions-0.19.js',
-  './assets/js/intelligence-0.20.js', './assets/js/app.js', './assets/js/tool-quality-1.2.0.js?v=1.2.3',
-  './assets/js/layout-controls.js', './assets/js/foundation.js', './assets/js/experience-0.15.js',
-  './assets/js/stable-1.0.js', './assets/js/header-settings-1.0.3.js',
+  './assets/js/forms-signatures-0.18.js?v=0.18.1', './assets/js/conversions-0.19.js',
+  './assets/js/intelligence-0.20.js', './assets/js/app.js?v=1.2.1-ui3', './assets/js/tool-quality-1.2.0.js?v=1.2.3',
+  './assets/js/layout-controls.js?v=1.2.1-ui1', './assets/js/foundation.js', './assets/js/experience-0.15.js',
+  './assets/js/stable-1.0.js', './assets/js/header-settings-1.0.3.js?v=1.2.1-ui1',
+  './assets/js/product-redesign-2.0.js?v=2.0.9',
   './vendor/libpdf-core.mjs', './vendor/jszip.min.js', './vendor/pptxgen.min.js',
   './vendor/pdfjs-manifest.js', './manifest.webmanifest', './assets/icons/icon-192.png',
   './assets/icons/icon-512.png', ...(self.CentralPDFPdfJsAssets || [])

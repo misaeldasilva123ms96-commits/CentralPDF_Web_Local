@@ -1,62 +1,50 @@
 import type { ToolDefinition } from '../core/types';
 import { useAppStore } from '../store/app-store';
+import { Icon, type IconName } from '../ui/Icon';
 
-interface ToolCardProps {
-  tool: ToolDefinition;
-}
+interface ToolCardProps { tool: ToolDefinition; }
 
-const AVAILABILITY_LABEL: Record<ToolDefinition['availability'], string> = {
-  available: 'Disponível',
-  experimental: 'Experimental',
-  planned: 'Em breve',
-  disabled: 'Desabilitada'
+const TOOL_ICONS: Record<string, IconName> = {
+  'merge-pdfs': 'merge',
+  'compress-pdf': 'compress',
+  'extract-text': 'text',
+  'pdf-to-images': 'image',
+  'protect-pdf': 'lock',
+  'ocr-pdf': 'search'
 };
 
-/**
- * Renders a tool card with selection, favorite, availability, and offline controls.
- *
- * @param tool - The tool definition displayed by the card
- * @returns The tool card, or `null` when the tool is disabled
- */
 export function ToolCard({ tool }: ToolCardProps) {
   const selectTool = useAppStore((state) => state.selectTool);
   const favorites = useAppStore((state) => state.favorites);
   const toggleFavorite = useAppStore((state) => state.toggleFavorite);
-  const favorite = favorites.includes(tool.id);
   const planned = tool.availability === 'planned';
+  const favorite = favorites.includes(tool.id);
 
   if (tool.availability === 'disabled') return null;
 
   return (
-    <article className="cp-tool-card">
+    <article className={`cp-tool-card${planned ? ' is-planned' : ''}`}>
       <button
         type="button"
         className={`cp-fav-btn${favorite ? ' is-active' : ''}`}
         aria-label={favorite ? `Remover ${tool.title} dos favoritos` : `Adicionar ${tool.title} aos favoritos`}
         aria-pressed={favorite}
-        onClick={(event) => {
-          event.stopPropagation();
-          toggleFavorite(tool.id);
-        }}
+        onClick={() => toggleFavorite(tool.id)}
       >
         {favorite ? '★' : '☆'}
       </button>
-      <button
-        type="button"
-        className="cp-tool-body"
-        style={{ border: 'none', background: 'transparent', textAlign: 'left', padding: 0, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 'var(--cp-space-2)', flex: 1 }}
-        aria-label={tool.title}
-        onClick={() => selectTool(tool.id)}
-      >
-        <span className="cp-tool-card__title">{tool.title}</span>
-        <span className="cp-tool-card__desc">{tool.description}</span>
-      </button>
-      <div className="cp-tool-card__badges">
-        <span className={`cp-badge${planned ? ' cp-badge--planned' : ''}`}>
-          {AVAILABILITY_LABEL[tool.availability]}
+      <button type="button" className="cp-tool-body" aria-label={tool.title} onClick={() => selectTool(tool.id)}>
+        <span className="cp-tool-card__icon"><Icon name={TOOL_ICONS[tool.id] ?? 'file'} size={24} /></span>
+        <span className="cp-tool-card__content">
+          <span className="cp-tool-card__title">{tool.title}</span>
+          <span className="cp-tool-card__desc">{tool.description.replace(/\s*\(planejado\)\.?$/i, '.')}</span>
         </span>
-        {tool.capabilities.offline && <span className="cp-badge cp-badge--neutral">offline</span>}
-      </div>
+        <span className="cp-tool-card__arrow" aria-hidden="true"><Icon name="arrow-right" size={18} /></span>
+      </button>
+      <span className="cp-tool-card__status">
+        {tool.availability === 'available' ? 'Disponível' : tool.availability === 'experimental' ? 'Experimental' : 'Em breve'}
+        {tool.capabilities.offline && <span className="sr-only">offline</span>}
+      </span>
     </article>
   );
 }

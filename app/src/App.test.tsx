@@ -11,7 +11,6 @@ beforeEach(() => {
     activeToolId: null,
     files: [],
     parameters: {},
-    currentStep: 'select',
     task: null
   });
 });
@@ -41,8 +40,7 @@ describe('App (shell 2.0)', () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole('button', { name: 'Juntar PDFs' }));
-    expect(screen.getByTestId('flow-bar')).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Configurações' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Resumo, configurações, validação e ação da ferramenta' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /CentralPDF 2\.0/ }));
     expect(screen.getByRole('heading', { name: /Todas as ferramentas/ })).toBeInTheDocument();
@@ -53,7 +51,7 @@ describe('App (shell 2.0)', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: 'OCR e PDF pesquisável' }));
     expect(screen.getByText(/Em breve/)).toBeInTheDocument();
-    expect(screen.queryByTestId('flow-bar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Resumo, configurações, validação e ação da ferramenta' })).not.toBeInTheDocument();
   });
 
   it('favoritar uma ferramenta persiste e desenha a seção de favoritas', async () => {
@@ -69,5 +67,19 @@ describe('App (shell 2.0)', () => {
   it('não renderiza nenhuma ferramenta desabilitada no catálogo', () => {
     render(<App />);
     expect(screen.queryByText('Desabilitada')).not.toBeInTheDocument();
+  });
+
+  it('mantém o rótulo e o submenu consistentes ao fechar o menu mobile', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }));
+    const toolsButton = screen.getByRole('button', { name: /Todas as ferramentas/ });
+    await user.click(toolsButton);
+    expect(toolsButton).toHaveAttribute('aria-expanded', 'true');
+
+    await user.click(screen.getByRole('button', { name: 'Fechar menu' }));
+    expect(screen.getByRole('button', { name: 'Abrir menu' })).toHaveAttribute('aria-expanded', 'false');
+    expect(toolsButton).toHaveAttribute('aria-expanded', 'false');
   });
 });

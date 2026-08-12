@@ -7,7 +7,7 @@
   <title>Central PDF & Imagem</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
   <link rel="stylesheet" href="assets/css/ux-redesign.css" />
-  <link rel="stylesheet" href="assets/css/layout-controls.css" />
+  <link rel="stylesheet" href="assets/css/layout-controls.css?v=1.2.1-ui1" />
   <link rel="stylesheet" href="assets/css/foundation.css" />
   <link rel="stylesheet" href="assets/css/experience-0.15.css" />
   <link rel="stylesheet" href="assets/css/ocr-0.16.css" />
@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.4" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
 </head>
@@ -79,12 +80,21 @@
         <span class="brand-mark">P</span>
         <span class="brand-copy"><strong>Central PDF & Imagem</strong><small>Web local 1.2.1</small></span>
       </button>
+      <button id="mobileProductMenuButton" class="cp2-mobile-menu" type="button" aria-expanded="false" aria-controls="primaryProductNav"><span aria-hidden="true">☰</span><span>Menu</span></button>
+      <nav id="primaryProductNav" class="cp2-primary-nav" aria-label="Ferramentas principais">
+        <button class="cp2-nav-tool" data-nav-tool="merge" type="button">Juntar PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="split" type="button">Dividir PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="compress" type="button">Comprimir PDF</button>
+        <button id="converterMenuButton" class="cp2-nav-tool" data-nav-tool="pdfToImage" type="button">Converter PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="organize" type="button">Organizar PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="editPdf" type="button">Editar PDF</button>
+        <input id="allToolsMenuToggle" class="cp2-menu-toggle" type="checkbox" aria-hidden="true" tabindex="-1" />
+        <label id="allToolsMenuButton" class="cp2-nav-menu" for="allToolsMenuToggle" role="button" tabindex="0" aria-controls="allToolsMegaMenu">Todas as ferramentas <small>34</small> <span aria-hidden="true">⌄</span></label>
+        <div id="allToolsMegaMenu" class="cp2-mega-menu" aria-label="Todas as 34 ferramentas"></div>
+      </nav>
       <div class="top-actions">
         <div id="workspaceLayoutActions" class="workspace-layout-actions" aria-label="Controles de layout">
           <button id="sidebarToggleTop" class="layout-icon-button" type="button" aria-label="Alternar barra lateral" title="Alternar barra lateral (F9)"><svg><use href="#i-panel-left"/></svg></button>
-          <button id="focusModeButton" class="layout-icon-button" type="button" aria-label="Ativar modo foco" title="Modo foco (Ctrl + Shift + F)"><svg><use href="#i-focus"/></svg></button>
-          <button id="settingsPanelToggleTop" class="layout-icon-button" type="button" aria-label="Alternar painel de propriedades" title="Alternar painel de propriedades"><svg><use href="#i-panel-right"/></svg></button>
-          <button id="layoutSettingsButton" class="layout-icon-button" type="button" aria-label="Preferências da interface" title="Preferências da interface"><svg><use href="#i-layout"/></svg></button>
         </div>
         <div class="privacy-indicator"><span></span> Processamento no computador</div>
         <button id="helpButton" class="top-button" type="button"><svg><use href="#i-help"/></svg> Ajuda</button>
@@ -294,7 +304,7 @@
           <article><span class="experience-icon"><svg><use href="#i-download"/></svg></span><div><small>Resultado</small><strong id="uxOutput">Novo PDF</strong></div></article>
         </section>
 
-        <details id="toolGuide" class="tool-guide" open>
+        <details id="toolGuide" class="tool-guide">
           <summary><span><svg><use href="#i-info"/></svg> Como usar esta ferramenta</span><small>Orientação contextual</small></summary>
           <div class="tool-guide-body">
             <ol id="toolGuideSteps"></ol>
@@ -424,6 +434,7 @@
           <p class="version-note">O processamento ocorre no navegador. Os arquivos permanecem no navegador. Motores externos podem exigir internet ao abrir.</p>
         </div>
       </aside>
+      <button id="settingsPanelToggleTop" class="settings-panel-restore" type="button" aria-label="Abrir painel de propriedades" title="Abrir painel de propriedades"><svg><use href="#i-chevron-left"/></svg><span>Abrir configurações</span></button>
     </main>
 
     <footer><span>Central PDF & Imagem — Web Local 1.2.1</span><span>Use apenas documentos autorizados pela empresa.</span></footer>
@@ -443,9 +454,12 @@
       <label><span><strong>Mostrar guia contextual</strong><small>Exibe os passos dentro de cada ferramenta.</small></span><input id="showToolGuidePreference" type="checkbox" checked /></label>
       <label><span><strong>Lembrar organização</strong><small>Salva o estado dos painéis e a densidade.</small></span><input id="rememberLayoutPreference" type="checkbox" checked /></label>
     </div>
-    <div class="layout-shortcuts"><strong>Atalhos</strong><span><kbd>F9</kbd> barra lateral</span><span><kbd>Ctrl Shift F</kbd> modo foco</span><span><kbd>Esc</kbd> fechar painel móvel</span></div>
+    <div class="layout-shortcuts"><strong>Atalhos</strong><span><kbd>F9</kbd> barra lateral</span><span><kbd>Esc</kbd> fechar painel móvel</span></div>
     <div class="dialog-actions"><button id="resetLayoutPreferences" class="ghost-button" type="button">Restaurar padrão</button><button id="confirmLayoutSettings" class="primary-button inline-primary" type="button">Aplicar</button></div>
   </dialog>
+  <div id="layoutSettingsSource" hidden>
+    <button id="layoutSettingsButton" class="foundation-top-button" type="button" aria-label="Preferências da interface" title="Preferências da interface"><svg><use href="#i-layout"/></svg><span class="label">Preferências da interface</span></button>
+  </div>
 
   <dialog id="helpDialog">
     <div class="dialog-header"><div><span>Ajuda rápida</span><h2>Como usar a Central PDF</h2></div><button id="closeHelp" type="button" aria-label="Fechar">×</button></div>
@@ -501,19 +515,20 @@
   <script src="assets/js/compression-engine.js"></script>
   <script src="assets/js/organizer-planner.js"></script>
   <script src="assets/js/pdf-editor.js"></script>
-  <script src="assets/js/ux-enhancements.js"></script>
+  <script src="assets/js/ux-enhancements.js?v=1.2.1-ui1"></script>
   <script src="assets/js/ocr-0.16.js"></script>
   <script src="assets/js/compare-0.17.js"></script>
   <script src="assets/js/redaction-0.17.js"></script>
-  <script src="assets/js/forms-signatures-0.18.js"></script>
+  <script src="assets/js/forms-signatures-0.18.js?v=0.18.1"></script>
   <script src="assets/js/conversions-0.19.js"></script>
   <script src="assets/js/intelligence-0.20.js"></script>
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/app.js?v=1.2.1-ui3"></script>
   <script src="assets/js/tool-quality-1.2.0.js?v=1.2.3"></script>
-  <script src="assets/js/layout-controls.js"></script>
+  <script src="assets/js/layout-controls.js?v=1.2.1-ui1"></script>
   <script src="assets/js/foundation.js"></script>
   <script src="assets/js/experience-0.15.js"></script>
   <script src="assets/js/stable-1.0.js"></script>
-  <script src="assets/js/header-settings-1.0.3.js"></script>
+  <script src="assets/js/header-settings-1.0.3.js?v=1.2.1-ui1"></script>
+  <script src="assets/js/product-redesign-2.0.js?v=2.0.9"></script>
 </body>
 </html>

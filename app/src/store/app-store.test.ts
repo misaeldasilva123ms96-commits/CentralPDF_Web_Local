@@ -14,7 +14,6 @@ describe('app-store (arquivos por id)', () => {
       activeToolId: null,
       files: [],
       parameters: {},
-      currentStep: 'select',
       task: null
     });
   });
@@ -52,12 +51,6 @@ describe('app-store (arquivos por id)', () => {
     expect(useAppStore.getState().files.map((file) => file.id)).toEqual(['1', '2', '3']);
   });
 
-  it('reatribui o passo de volta para seleção ao remover quase todos os arquivos', () => {
-    useAppStore.getState().addFiles([makeFile('1', 'a.pdf'), makeFile('2', 'b.pdf')]);
-    useAppStore.getState().removeFile('1');
-    expect(useAppStore.getState().currentStep).toBe('select');
-  });
-
   it('limpa a fila ao trocar de ferramenta', () => {
     useAppStore.getState().addFiles([makeFile('1', 'a.pdf')]);
     useAppStore.getState().setParameter('qualidade', 'alta');
@@ -77,6 +70,5 @@ describe('app-store (arquivos por id)', () => {
     expect(state.files).toHaveLength(0);
     expect(state.parameters).toEqual({});
     expect(state.task).toBeNull();
-    expect(state.currentStep).toBe('select');
   });
 });

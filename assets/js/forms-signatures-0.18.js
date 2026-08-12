@@ -417,9 +417,9 @@
         field = form.createTextField(name);
         if (item.type === 'multiline') field.enableMultiline?.();
         if (item.maxLength > 0) field.setMaxLength?.(item.maxLength);
+        field.addToPage(page, options);
         field.setFontSize?.(item.fontSize || 11);
         if (item.defaultValue) field.setText(item.defaultValue);
-        field.addToPage(page, options);
       }
       if (item.label) field.setAlternateName?.(item.label);
       if (item.required) field.enableRequired?.();
