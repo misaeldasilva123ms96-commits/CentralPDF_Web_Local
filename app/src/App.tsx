@@ -71,9 +71,12 @@ export function App() {
           <button
             type="button"
             className="app-menu-button"
-            aria-label="Abrir menu"
+            aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen((open) => !open)}
+            onClick={() => {
+              setMobileOpen((open) => !open);
+              setToolsOpen(false);
+            }}
           >
             <span /><span /><span />
           </button>

@@ -50,7 +50,6 @@ beforeEach(() => {
     activeToolId: null,
     files: [],
     parameters: {},
-    currentStep: 'select',
     task: null
   });
   pendingReads.length = 0;
@@ -163,6 +162,7 @@ describe('FileList — serialização e ciclo de vida da ingestão', () => {
 
     const files = useAppStore.getState().files;
     expect(files.map((f) => f.name)).toEqual(['bom.pdf']);
+    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível ler: ruim.pdf.');
   });
 
   it('mantém arquivos com o mesmo nome independentes e com IDs únicos', async () => {
@@ -195,5 +195,41 @@ describe('FileList — serialização e ciclo de vida da ingestão', () => {
     await flushAsync();
 
     expect(useAppStore.getState().files.map((f) => f.name)).toEqual(['drop.pdf']);
+  });
+
+  it('impede a rolagem ao ativar a área de upload com Espaço', () => {
+    render(<FileList contracts={[CONTRACT]} />);
+    const dropzone = screen.getByRole('button', { name: 'Escolha ou arraste seus arquivos' });
+    expect(fireEvent.keyDown(dropzone, { key: ' ' })).toBe(false);
+  });
+
+  it('fecha a prévia com Escape e devolve o foco ao botão que a abriu', async () => {
+    const user = userEvent.setup();
+    useAppStore.setState({
+      files: [{ id: 'preview', name: 'arquivo.pdf', size: 12, mimeType: 'application/pdf', data: new ArrayBuffer(12) }]
+    });
+    render(<FileList contracts={[CONTRACT]} />);
+
+    const trigger = screen.getByRole('button', { name: 'Abrir prévia de arquivo.pdf' });
+    await user.click(trigger);
+    expect(screen.getByRole('button', { name: 'Fechar visualização' })).toHaveFocus();
+
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await flushAsync();
+    expect(trigger).toHaveFocus();
+  });
+
+  it('usa a prévia genérica para arquivos sem extensão', async () => {
+    const user = userEvent.setup();
+    useAppStore.setState({
+      files: [{ id: 'generic', name: 'README', size: 12, mimeType: 'text/plain', data: new ArrayBuffer(12) }]
+    });
+    render(<FileList contracts={[CONTRACT]} />);
+
+    expect(screen.getByText('ARQ')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Abrir prévia de README' }));
+    expect(screen.getByRole('dialog')).toHaveTextContent('ARQ');
+    expect(screen.queryByRole('img', { name: /Prévia/ })).not.toBeInTheDocument();
   });
 });

@@ -14,7 +14,6 @@ beforeEach(() => {
     activeToolId: null,
     files: [],
     parameters: {},
-    currentStep: 'select',
     task: null
   });
   centralCatalog.clear();
@@ -110,7 +109,7 @@ describe('Workspace (fluxo da ferramenta)', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: 'OCR e PDF pesquisável' }));
     expect(screen.getByText(/Em breve/)).toBeInTheDocument();
-    expect(screen.queryByTestId('flow-bar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Resumo, configurações, validação e ação da ferramenta' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Processando…' })).not.toBeInTheDocument();
   });
 

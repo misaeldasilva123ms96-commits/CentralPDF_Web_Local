@@ -4,16 +4,24 @@ import { loadPdf } from '../tools/pdf-engine';
 interface PdfThumbnailProps {
   data: ArrayBuffer;
   name: string;
-  onPageCount?: (pages: number) => void;
+  fileId?: string;
+  onPageCount?: (fileId: string, pages: number) => void;
 }
 
-export function PdfThumbnail({ data, name, onPageCount }: PdfThumbnailProps) {
+export function PdfThumbnail({ data, name, fileId, onPageCount }: PdfThumbnailProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const onPageCountRef = useRef(onPageCount);
+  const fileIdRef = useRef(fileId);
   const [failed, setFailed] = useState(false);
+
+  useEffect(() => { onPageCountRef.current = onPageCount; }, [onPageCount]);
+  useEffect(() => { fileIdRef.current = fileId; }, [fileId]);
 
   useEffect(() => {
     let cancelled = false;
     let destroy: (() => Promise<void>) | undefined;
+    let cancelRender: (() => void) | undefined;
+    setFailed(false);
 
     if (import.meta.env.MODE === 'test') {
       setFailed(true);
@@ -25,18 +33,19 @@ export function PdfThumbnail({ data, name, onPageCount }: PdfThumbnailProps) {
         const loaded = await loadPdf(data.slice(0));
         destroy = loaded.destroy;
         if (cancelled) return;
-        onPageCount?.(loaded.document.numPages);
+        if (fileIdRef.current) onPageCountRef.current?.(fileIdRef.current, loaded.document.numPages);
         const page = await loaded.document.getPage(1);
         try {
           const canvas = canvasRef.current;
-          const context = canvas?.getContext('2d');
-          if (!canvas || !context || cancelled) return;
+          if (!canvas || cancelled) return;
           const baseViewport = page.getViewport({ scale: 1 });
           const scale = Math.min(1.35, 260 / Math.max(baseViewport.width, 1));
           const viewport = page.getViewport({ scale });
           canvas.width = Math.max(1, Math.floor(viewport.width));
           canvas.height = Math.max(1, Math.floor(viewport.height));
-          await page.render({ canvas, canvasContext: context, viewport, background: '#ffffff' }).promise;
+          const renderTask = page.render({ canvas, viewport, background: '#ffffff' });
+          cancelRender = () => renderTask.cancel();
+          await renderTask.promise;
         } finally {
           page.cleanup();
         }
@@ -47,13 +56,18 @@ export function PdfThumbnail({ data, name, onPageCount }: PdfThumbnailProps) {
 
     return () => {
       cancelled = true;
+      cancelRender?.();
       if (destroy) void destroy();
     };
-  }, [data, onPageCount]);
+  }, [data]);
 
   return (
     <div className={`cp-pdf-thumbnail${failed ? ' is-fallback' : ''}`}>
-      <canvas ref={canvasRef} aria-label={`Prévia da primeira página de ${name}`} />
+      <canvas
+        ref={canvasRef}
+        role="img"
+        aria-label={failed ? `Prévia indisponível para ${name}` : `Prévia da primeira página de ${name}`}
+      />
       {failed && <span aria-hidden="true">PDF</span>}
     </div>
   );

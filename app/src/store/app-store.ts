@@ -3,22 +3,12 @@ import { persist } from 'zustand/middleware';
 import type { FileInput } from '../core/types';
 import type { TaskRun } from '../core/task-engine';
 
-export type WorkspaceStep =
-  | 'select'
-  | 'preview'
-  | 'configure'
-  | 'validate'
-  | 'process'
-  | 'review'
-  | 'download';
-
 interface AppState {
   searchQuery: string;
   favorites: string[];
   activeToolId: string | null;
   files: FileInput[];
   parameters: Record<string, unknown>;
-  currentStep: WorkspaceStep;
   task: TaskRun | null;
 
   setSearchQuery: (query: string) => void;
@@ -29,7 +19,6 @@ interface AppState {
   removeFile: (fileId: string) => void;
   reorderFileTo: (fileId: string, toIndex: number) => void;
   setParameter: (key: string, value: unknown) => void;
-  setStep: (step: WorkspaceStep) => void;
   setTask: (task: TaskRun | null) => void;
   clearWorkspace: () => void;
 }
@@ -42,7 +31,6 @@ export const useAppStore = create<AppState>()(
       activeToolId: null,
       files: [],
       parameters: {},
-      currentStep: 'select',
       task: null,
 
       setSearchQuery: (query) => set({ searchQuery: query }),
@@ -53,7 +41,7 @@ export const useAppStore = create<AppState>()(
             : [...state.favorites, toolId]
         })),
       selectTool: (toolId) =>
-        set({ activeToolId: toolId, files: [], parameters: {}, task: null, currentStep: 'select' }),
+        set({ activeToolId: toolId, files: [], parameters: {}, task: null }),
       setFiles: (files) => set({ files }),
       addFiles: (files) =>
         set((state) => {
@@ -66,19 +54,10 @@ export const useAppStore = create<AppState>()(
               added = true;
             }
           }
-          return {
-            files: merged,
-            currentStep: added ? (state.files.length === 0 ? 'preview' : state.currentStep) : state.currentStep
-          };
+          return added ? { files: merged } : {};
         }),
       removeFile: (fileId) =>
-        set((state) => {
-          const files = state.files.filter((file) => file.id !== fileId);
-          return {
-            files,
-            currentStep: files.length <= 1 ? 'select' : state.currentStep
-          };
-        }),
+        set((state) => ({ files: state.files.filter((file) => file.id !== fileId) })),
       reorderFileTo: (fileId, toIndex) =>
         set((state) => {
           const files = [...state.files];
@@ -91,9 +70,8 @@ export const useAppStore = create<AppState>()(
         }),
       setParameter: (key, value) =>
         set((state) => ({ parameters: { ...state.parameters, [key]: value } })),
-      setStep: (step) => set({ currentStep: step }),
       setTask: (task) => set({ task }),
-      clearWorkspace: () => set({ files: [], parameters: {}, task: null, currentStep: 'select' })
+      clearWorkspace: () => set({ files: [], parameters: {}, task: null })
     }),
     {
       name: 'centralpdf2-state',

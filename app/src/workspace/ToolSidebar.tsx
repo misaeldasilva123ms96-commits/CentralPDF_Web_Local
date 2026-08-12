@@ -21,24 +21,24 @@ export function ToolSidebar({
   runtimeLabel
 }: ToolSidebarProps) {
   return (
-    <aside className="cp-tool-sidebar" role="region" aria-label="Configurações">
+    <aside className="cp-tool-sidebar" role="region" aria-label="Resumo, configurações, validação e ação da ferramenta">
       <div className="cp-tool-sidebar__header">
         <span className="cp-tool-sidebar__icon"><Icon name="file" size={20} /></span>
-        <div><h1>{title}</h1><p>{description}</p></div>
+        <div><h2>{title}</h2><p>{description}</p></div>
       </div>
       <div className="cp-tool-sidebar__summary">
         <span>Arquivos</span>
         <strong>{fileCount} {fileCount === 1 ? 'arquivo' : 'arquivos'}</strong>
       </div>
       <section className="cp-tool-sidebar__settings">
-        <h2>Configurações</h2>
+        <h3>Configurações</h3>
         {settings}
       </section>
-      {primaryAction && <div className="cp-tool-sidebar__footer">
-          {validation}
-          <span className="cp-tool-sidebar__runtime"><span className="status-dot" /> {runtimeLabel} · processamento local</span>
-          {primaryAction}
-        </div>}
+      <div className="cp-tool-sidebar__footer">
+        {validation}
+        <span className="cp-tool-sidebar__runtime"><span className="status-dot" /> {runtimeLabel} · processamento local</span>
+        {primaryAction}
+      </div>
     </aside>
   );
 }
