@@ -1162,6 +1162,7 @@
   }
 
   async function buildPdfCoverData(file, extension) {
+    await window.CentralPDFEnginesReady;
     if (!window.pdfjsLib) throw new Error('pdfjs indisponível');
     await ensurePdfWorker();
     const bytes = new Uint8Array(await file.arrayBuffer());
@@ -1614,6 +1615,13 @@
       preview.innerHTML = groups.map((pages, index) => `<div class="split-plan-item"><span>${String(index + 1).padStart(2,'0')}</span><div><strong>Páginas ${AdvancedPlanner.formatPages(pages)}</strong><small>${pages.length} página(s)</small></div></div>`).join('');
       processButton.disabled = false;
     } catch (error) { count.textContent = 'Plano incompleto'; preview.innerHTML = `<div class="split-plan-error">${escapeHtml(error.message)}</div>`; processButton.disabled = true; }
+  }
+
+  function updateExtractPanels() {
+    const mode = $('#extractMode')?.value || 'single';
+    document.querySelectorAll('[data-extract-panel]').forEach(panel => {
+      panel.classList.toggle('hidden', panel.dataset.extractPanel !== mode);
+    });
   }
 
   function updateWatermarkPanels() {
