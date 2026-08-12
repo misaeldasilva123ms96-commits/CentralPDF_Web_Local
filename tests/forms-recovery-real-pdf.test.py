@@ -7,16 +7,25 @@ from playwright.sync_api import sync_playwright
 
 
 ROOT = Path(__file__).resolve().parents[1]
+PDF_LIB_BUNDLE = ROOT / "app" / "node_modules" / "pdf-lib" / "dist" / "pdf-lib.min.js"
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.split("?", 1)[0] == "/vendor/offline-status.js":
             payload = (
-                "window.CentralPDFOfflineStatus=Object.freeze({prepared:true,"
-                "pdfLib:true,pdfJs:true,pdfWorker:true,libPdf:true,ocr:true,"
-                "conversions:true});"
+                "window.CentralPDFOfflineStatus=Object.freeze({prepared:false,"
+                "pdfLib:true,pdfJs:false,pdfWorker:false,libPdf:false,ocr:false,"
+                "conversions:false});"
             ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
+        if self.path.split("?", 1)[0] == "/vendor/pdf-lib.min.js":
+            payload = PDF_LIB_BUNDLE.read_bytes()
             self.send_response(200)
             self.send_header("Content-Type", "application/javascript; charset=utf-8")
             self.send_header("Content-Length", str(len(payload)))
@@ -28,6 +37,10 @@ class QuietHandler(SimpleHTTPRequestHandler):
     def log_message(self, _format, *_args):
         pass
 
+
+assert PDF_LIB_BUNDLE.is_file(), (
+    "Motor pdf-lib de teste ausente; execute `npm ci --prefix app --ignore-scripts`."
+)
 
 handler = partial(QuietHandler, directory=str(ROOT))
 server = ThreadingHTTPServer(("127.0.0.1", 0), handler)

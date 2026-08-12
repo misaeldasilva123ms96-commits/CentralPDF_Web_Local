@@ -45,6 +45,9 @@ jobs:
           python -m pip install -r requirements-test.txt
           python -m playwright install --with-deps chromium
 
+      - name: Install browser regression engine
+        run: npm ci --prefix app --ignore-scripts
+
       - name: Check JavaScript syntax
         shell: bash
         run: |
