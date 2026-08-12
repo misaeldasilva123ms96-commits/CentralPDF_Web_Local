@@ -22,6 +22,9 @@ assert {button.get("data-nav-tool") for button in nav.select("[data-nav-tool]")}
 }
 assert soup.select_one("#allToolsMenuButton") is not None
 assert soup.select_one("#allToolsMenuToggle") is not None
+assert soup.select_one("#workspaceLayoutActions #focusModeButton") is None
+assert soup.select_one("#workspaceLayoutActions #layoutSettingsButton") is None
+assert soup.select_one(".workspace > #settingsPanelToggleTop") is not None
 assert soup.select_one("#allToolsMegaMenu") is not None
 
 # Os formulários ricos continuam sendo a fonte de configurações do workspace.
@@ -33,8 +36,10 @@ for setting_id in (
     assert setting_id in app, setting_id
 
 redesign = (root / "assets/js/product-redesign-2.0.js").read_text(encoding="utf-8")
+header_settings = (root / "assets/js/header-settings-1.0.3.js").read_text(encoding="utf-8")
 assert "tool-card[data-tool]" in redesign
 assert "workspaceToolNav" in redesign
 assert "34 ferramentas" in redesign
+assert "group('Interface', ['layoutSettingsButton'])" in header_settings
 
 print("product-redesign-functional-parity-2.0: passed")

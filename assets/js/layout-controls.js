@@ -48,8 +48,7 @@
     $('#sidebarCollapseButton')?.setAttribute('title', sidebarExpanded ? 'Recolher menu (F9)' : 'Expandir menu (F9)');
     $('#sidebarToggleTop')?.classList.toggle('active', !sidebarExpanded && !isMobile());
     $('#sidebarToggleTop')?.setAttribute('aria-pressed', String(!sidebarExpanded && !isMobile()));
-    $('#settingsPanelToggleTop')?.classList.toggle('active', prefs.settingsCollapsed);
-    $('#settingsPanelToggleTop')?.setAttribute('aria-pressed', String(prefs.settingsCollapsed));
+    $('#settingsPanelToggleTop')?.setAttribute('aria-hidden', String(!prefs.settingsCollapsed));
 
     const density = document.querySelector(`input[name="layoutDensity"][value="${prefs.density}"]`);
     if (density) density.checked = true;
@@ -83,9 +82,6 @@
   function toggleFocusMode(force) {
     focusMode = typeof force === 'boolean' ? force : !focusMode;
     body.classList.toggle('focus-mode', focusMode);
-    $('#focusModeButton')?.classList.toggle('active', focusMode);
-    $('#focusModeButton')?.setAttribute('aria-pressed', String(focusMode));
-    $('#focusModeButton')?.setAttribute('aria-label', focusMode ? 'Sair do modo foco' : 'Ativar modo foco');
     if (focusMode) closeMobileSidebar();
   }
 
@@ -134,7 +130,6 @@
     $('#sidebarBackdrop')?.addEventListener('click', closeMobileSidebar);
     $('#settingsPanelToggleTop')?.addEventListener('click', toggleSettingsPanel);
     $('#settingsPanelCloseButton')?.addEventListener('click', toggleSettingsPanel);
-    $('#focusModeButton')?.addEventListener('click', () => toggleFocusMode());
     $('#layoutSettingsButton')?.addEventListener('click', openLayoutSettings);
     $('#closeLayoutSettings')?.addEventListener('click', () => $('#layoutSettingsDialog')?.close());
     $('#confirmLayoutSettings')?.addEventListener('click', applyDialogPreferences);

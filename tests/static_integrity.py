@@ -19,9 +19,12 @@ for name in modules:
     assert re.search(rf'^    {re.escape(name)}: \{{',app,re.M), name
 for fn in ['merge','extract','rotate','watermark','pageNumbers','imagesToPdf','compress','pdfToImage','crop']:
     assert len(re.findall(rf'async function {fn}\(',app)) == 1, fn
-required_layout_ids=['sidebarToggleTop','sidebarCollapseButton','settingsPanelToggleTop','focusModeButton','layoutSettingsButton','layoutSettingsDialog','sidebarBackdrop']
+required_layout_ids=['sidebarToggleTop','sidebarCollapseButton','settingsPanelToggleTop','layoutSettingsButton','layoutSettingsDialog','sidebarBackdrop']
 for item in required_layout_ids:
     assert soup.select_one(f'#{item}') is not None, item
+assert soup.select_one('#focusModeButton') is None
+assert soup.select_one('.workspace > #settingsPanelToggleTop') is not None
+assert soup.select_one('#toolGuide').has_attr('open') is False
 assert (root/'assets/js/layout-controls.js').exists()
 assert (root/'assets/css/layout-controls.css').exists()
 assert (root/'assets/js/stable-1.0.js').exists()

@@ -350,7 +350,6 @@
     $('#settingsEmptyState')?.classList.toggle('hidden', currentStage > 1);
     $('#settingsContent')?.classList.toggle('hidden', currentStage === 1);
     const guide = $('#toolGuide');
-    if (guide && currentStage === 1) guide.open = true;
     if (guide && currentStage > 1) guide.open = false;
   }
 

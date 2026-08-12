@@ -31,17 +31,19 @@ with sync_playwright() as p:
     page.keyboard.press('F9')
     assert not page.locator('body').evaluate("el=>el.classList.contains('sidebar-collapsed')")
 
-    page.locator('#settingsPanelToggleTop').click()
+    page.locator('#settingsPanelCloseButton').click()
     assert page.locator('body').evaluate("el=>el.classList.contains('settings-collapsed')")
+    assert page.locator('#settingsPanelToggleTop').is_visible()
     page.locator('#settingsPanelToggleTop').click()
     assert not page.locator('body').evaluate("el=>el.classList.contains('settings-collapsed')")
+    assert not page.locator('#settingsPanelToggleTop').is_visible()
 
     page.keyboard.press('Control+Shift+F')
     assert page.locator('body').evaluate("el=>el.classList.contains('focus-mode')")
     page.keyboard.press('Control+Shift+F')
     assert not page.locator('body').evaluate("el=>el.classList.contains('focus-mode')")
 
-    page.locator('#layoutSettingsButton').click()
+    page.evaluate("document.querySelector('#layoutSettingsButton').click()")
     assert page.locator('#layoutSettingsDialog').evaluate('el=>el.open')
     page.locator('label:has(input[name="layoutDensity"][value="compact"])').click()
     page.locator('#showToolGuidePreference').uncheck()
