@@ -1,6 +1,6 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v1.2.1-pages-13';
+const CACHE_VERSION = 'centralpdf-v1.2.1-pages-14';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
@@ -16,7 +16,7 @@ const CORE_ASSETS = [
   './assets/css/modal-fit-1.0.9.css', './assets/css/micro-polish-1.1.0.css',
   './assets/css/quality-logs-1.1.2.css', './assets/css/tool-quality-1.2.0.css',
   './assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3',
-  './assets/css/product-redesign-2.0.css?v=2.0.4',
+  './assets/css/product-redesign-2.0.css?v=2.0.5',
   './assets/js/engine-loader.js', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
   './assets/js/organizer-planner.js', './assets/js/pdf-editor.js', './assets/js/ux-enhancements.js?v=1.2.1-ui1',

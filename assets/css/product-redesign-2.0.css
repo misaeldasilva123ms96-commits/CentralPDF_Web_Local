@@ -241,6 +241,26 @@ body[data-workspace-open='true'] .action-dock {
 body.settings-collapsed[data-workspace-open='true'] .workspace { grid-template-columns: minmax(0, 1fr); }
 body.focus-mode[data-workspace-open='true'] .workspace { grid-template-columns: minmax(0, 1fr) !important; }
 
+@media (min-width: 981px) {
+  body[data-workspace-open='true'] .workspace {
+    --cp2-inspector-width: max(318px, 25vw);
+
+    grid-template-columns: minmax(0, 1fr) var(--cp2-inspector-width);
+  }
+  body[data-workspace-open='true'] .settings-panel {
+    position: fixed;
+    z-index: 30;
+    inset: 58px 0 0 auto;
+    width: var(--cp2-inspector-width);
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    align-self: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
 body[data-theme='dark'] .cp2-primary-nav > button,
 body[data-theme='dark'] .cp2-primary-nav > label { color: #d8e1f0; }
 body[data-theme='dark'][data-workspace-open='true'] .settings-heading {
