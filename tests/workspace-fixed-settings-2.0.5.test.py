@@ -68,7 +68,14 @@ with sync_playwright() as playwright:
     page.set_content(html, wait_until="domcontentloaded")
 
     before = panel_metrics(page)
-    page.evaluate("scrollTo(0, 900)")
+    page.evaluate(
+        """() => {
+      const de = document.documentElement;
+      de.style.scrollBehavior = 'auto';
+      scrollTo(0, 900);
+      de.style.scrollBehavior = '';
+    }"""
+    )
     after = panel_metrics(page)
 
     for values in (before, after):
