@@ -214,6 +214,7 @@ body[data-workspace-open='true'] .settings-panel {
   max-height: none;
   align-self: start;
   overflow-y: auto;
+  padding-bottom: 0;
   border: 0;
   border-left: 1px solid var(--cp2-border);
   border-radius: 0;

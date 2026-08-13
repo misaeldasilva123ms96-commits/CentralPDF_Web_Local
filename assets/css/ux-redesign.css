@@ -302,7 +302,7 @@ body[data-workflow-stage="3"] .dropzone em { margin: 0; }
 .ux-disclosure summary, .editor-settings-group summary { margin: 0; padding: 10px 11px; color: #464c61; font-size: 10px; }
 .ux-disclosure[open] summary, .editor-settings-group[open] summary { border-bottom: 1px solid var(--border); background: #fafafd; }
 .ux-disclosure > :not(summary), .editor-settings-group > :not(summary) { margin-left: 10px; margin-right: 10px; }
-.action-dock { position: sticky; bottom: -18px; margin: 14px -17px -18px; padding: 12px 17px 18px; background: linear-gradient(180deg,rgba(251,251,253,.72),#fbfbfd 20%); backdrop-filter: blur(10px); }
+.action-dock { position: sticky; bottom: -18px; margin: 14px -17px -18px; padding: 12px 17px 0; background: linear-gradient(180deg,rgba(251,251,253,.72),#fbfbfd 20%); backdrop-filter: blur(10px); }
 .status-box { border-color: var(--border); background: #fff; font-size: 9.5px; }
 .primary-button { min-height: 44px; border-radius: 10px; background: var(--accent); box-shadow: 0 10px 22px rgba(91,75,255,.20); font-size: 10.5px; }
 .primary-button:hover { background: var(--accent-dark); }
