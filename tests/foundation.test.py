@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 from pathlib import Path
 from PIL import Image
+import os
 import re
 import tempfile
 
@@ -27,7 +28,13 @@ with tempfile.TemporaryDirectory() as temp_dir:
     project_path = temp / 'teste.cpdf'
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'])
+        launch_options = {
+            'headless': True,
+            'args': ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+        }
+        if executable_path := os.environ.get('PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH'):
+            launch_options['executable_path'] = executable_path
+        browser = p.chromium.launch(**launch_options)
         page = browser.new_page(viewport={'width': 1440, 'height': 900}, accept_downloads=True)
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
@@ -63,6 +70,9 @@ with tempfile.TemporaryDirectory() as temp_dir:
         with page.expect_download():
             page.locator('#processButton').click()
         page.wait_for_function("window.CentralPDFFoundation.getTasks().some(t => t.status === 'completed')")
+        page.locator('#completionActions').wait_for(state='visible')
+        page.locator('#continueEditingButton').click()
+        page.wait_for_function("!document.querySelector('.app-shell').hasAttribute('inert')")
         page.locator('#foundationQueueButton').click()
         assert page.locator('.foundation-task.completed').count() >= 1
 
