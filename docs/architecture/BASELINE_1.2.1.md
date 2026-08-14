@@ -20,7 +20,7 @@ Estado congelado do aplicativo antes da fundação 2.0 (ADR-0001).
 | Testes legados | runner node puro + pytest/Playwright (`tests/`) |
 | CI | `ci.yml` (node 22 + python 3.12 + go 1.26.5), `pages.yml`, `release.yml` |
 | Motor local | Go `server/` (go 1.23, stdlib, sem dependências externas) |
-| Service Worker | `sw.js`, cache `centralpdf-v1.2.1-pages-14` |
+| Service Worker | `sw.js`, cache `centralpdf-v1.2.1-pages-18` |
 
 ## Screenshots
 

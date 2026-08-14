@@ -492,6 +492,43 @@
 
   };
 
+  const completionLabels = {
+    organize: ['Continuar organizando', 'Nova organização'],
+    editPdf: ['Continuar editando', 'Nova edição'],
+    merge: ['Continuar juntando', 'Nova junção'],
+    split: ['Continuar dividindo', 'Nova divisão'],
+    extract: ['Continuar extraindo', 'Nova extração'],
+    rotate: ['Continuar girando', 'Nova rotação'],
+    watermark: ['Continuar ajustando', 'Nova marca-d’água'],
+    pageNumbers: ['Continuar numerando', 'Nova numeração'],
+    imagesToPdf: ['Continuar montando', 'Novo PDF de imagens'],
+    imageConvert: ['Continuar convertendo', 'Nova conversão'],
+    compress: ['Continuar comprimindo', 'Nova compressão'],
+    pdfToImage: ['Continuar convertendo', 'Nova conversão em imagens'],
+    crop: ['Continuar recortando', 'Novo recorte'],
+    metadata: ['Continuar limpando', 'Nova limpeza'],
+    normalize: ['Continuar normalizando', 'Nova normalização'],
+    pdfToText: ['Continuar extraindo', 'Nova extração de texto'],
+    ocr: ['Continuar reconhecendo', 'Novo OCR'],
+    compare: ['Continuar comparando', 'Nova comparação'],
+    redact: ['Continuar censurando', 'Nova censura'],
+    formBuilder: ['Continuar criando', 'Novo formulário'],
+    signPdf: ['Continuar assinando', 'Nova assinatura'],
+    pdfToOffice: ['Continuar convertendo', 'Nova conversão para Office'],
+    documentsToPdf: ['Continuar convertendo', 'Nova conversão para PDF'],
+    extractImages: ['Continuar extraindo', 'Nova extração de imagens'],
+    archivePdf: ['Continuar preparando', 'Novo arquivamento'],
+    documentAssistant: ['Continuar analisando', 'Nova análise'],
+    structuredExtraction: ['Continuar extraindo', 'Nova extração estruturada'],
+    documentAudit: ['Continuar auditando', 'Nova auditoria'],
+    classifyRename: ['Continuar classificando', 'Nova classificação'],
+    protect: ['Continuar protegendo', 'Nova proteção'],
+    unlock: ['Continuar desbloqueando', 'Nova remoção de senha'],
+    diagnose: ['Continuar diagnosticando', 'Novo diagnóstico'],
+    repairAdvanced: ['Continuar recuperando', 'Nova recuperação'],
+    flattenForms: ['Continuar fixando', 'Nova fixação']
+  };
+
   const state = {
     tool: 'organize',
     files: [],
@@ -526,7 +563,8 @@
     organizerPreviewObserver: null,
     organizerPreviewPdfDocs: new Map(),
     organizerPreviewQueue: [],
-    organizerPreviewActive: 0
+    organizerPreviewActive: 0,
+    taskCompleted: false
   };
 
   const $ = selector => document.querySelector(selector);
@@ -542,6 +580,12 @@
   const pageGrid = $('#pageGrid');
   const progressTrack = $('#progressTrack');
   const progressBar = $('#progressBar');
+  const completionActions = $('#completionActions');
+  const completionTitle = $('#completionTitle');
+  const completionMessage = $('#completionMessage');
+  const continueEditingButton = $('#continueEditingButton');
+  const clearButton = $('#clearButton');
+  const appShell = $('.app-shell');
   const homeView = $('#homeView');
   const toolWorkspace = $('#toolWorkspace');
   const fileBulkToolbar = $('#fileBulkToolbar');
@@ -556,9 +600,13 @@
   document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => selectTool(button.dataset.tool)));
   $('#backToTools')?.addEventListener('click', showHome);
   $('#homeBrand').addEventListener('click', showHome);
-  $('#clearButton').addEventListener('click', clearAll);
+  let completionReturnFocus = null;
+
+  clearButton.addEventListener('click', clearAll);
+  continueEditingButton.addEventListener('click', continueEditing);
   fileInput.addEventListener('change', event => addFiles([...event.target.files], { source: 'picker' }));
   processButton.addEventListener('click', () => {
+    completionReturnFocus = processButton;
     const runner = () => processCurrentTool();
     if (window.CentralPDFFoundation?.runTask) window.CentralPDFFoundation.runTask(runner);
     else runner();
@@ -598,6 +646,10 @@
     window.CentralPDFUX?.decorateHome();
   }));
   document.addEventListener('keydown', event => {
+    if (state.taskCompleted) {
+      if (event.key === 'Tab') trapCompletionFocus(event);
+      return;
+    }
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       showHome();
@@ -721,6 +773,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.querySelectorAll('.tool').forEach(button => button.classList.toggle('active', button.dataset.tool === tool));
     const config = toolConfig[tool];
+    setCompletionState(false);
     window.CentralPDFUX?.renderTool(tool, config);
     $('#operationTitle').textContent = config.title;
     $('#operationDescription').textContent = config.description;
@@ -802,6 +855,7 @@
   }
 
   function clearAll() {
+    setCompletionState(false);
     state.files = [];
     state.filePreviewCache.clear();
     state.selectedFileKeys.clear();
@@ -831,6 +885,57 @@
       updateSplitPlanPreview();
     }
     notifyFilesChanged('clear');
+  }
+
+  function setCompletionState(completed, message = '') {
+    const wasCompleted = state.taskCompleted;
+    state.taskCompleted = completed;
+    document.body.classList.toggle('completion-open', completed);
+    appShell.toggleAttribute('inert', completed);
+    completionActions.classList.toggle('hidden', !completed);
+    processButton.classList.toggle('hidden', completed);
+    const labels = completionLabels[state.tool] || ['Continuar ajustando', 'Nova tarefa'];
+    continueEditingButton.textContent = labels[0];
+    clearButton.textContent = labels[1];
+    if (completed) {
+      completionReturnFocus ||= processButton;
+      completionTitle.textContent = `Resultado de ${toolConfig[state.tool]?.title || 'tarefa'} pronto`;
+      completionMessage.textContent = message || 'O download foi iniciado. Escolha como deseja continuar.';
+      requestAnimationFrame(() => continueEditingButton.focus({ preventScroll: true }));
+    } else if (wasCompleted) {
+      const returnFocus = completionReturnFocus;
+      completionReturnFocus = null;
+      requestAnimationFrame(() => {
+        const target = returnFocus?.isConnected && !returnFocus.disabled ? returnFocus : dropzone;
+        target.focus({ preventScroll: true });
+      });
+    }
+  }
+
+  function trapCompletionFocus(event) {
+    const focusable = [continueEditingButton, clearButton].filter(button => !button.disabled && !button.classList.contains('hidden'));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (!completionActions.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    } else if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function continueEditing() {
+    setCompletionState(false);
+    updateSteps(2);
+    if (state.tool === 'merge') updateMergePreview();
+    else processButton.disabled = false;
+    setStatus('Os arquivos e ajustes foram mantidos. Continue trabalhando e gere outro resultado quando quiser.', 'success');
   }
 
   function resetOrganizer() {
@@ -2171,6 +2276,7 @@
   }
 
   async function processCurrentTool() {
+    setCompletionState(false);
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
     const professionalTools = new Set(['protect', 'unlock', 'diagnose', 'repairAdvanced', 'flattenForms']);
     if (!professionalTools.has(state.tool) && !window.PDFLib) { const error = new Error('O motor de PDF não carregou. Abra o diagnóstico do sistema e prepare o modo offline.'); setStatus(error.message, 'error'); return { ok: false, error }; }
@@ -2192,6 +2298,7 @@
       setProgress(100);
       updateSteps(3);
       setStatus(result?.message || 'Concluído. O download foi iniciado. Você pode processar novamente ou escolher outra ferramenta.', 'success');
+      setCompletionState(true, result?.message);
       window.CentralPDFToolQuality?.finishRun?.(result || {});
       return { ok: true, result };
     } catch (error) {
@@ -2200,7 +2307,8 @@
       setStatus(readablePdfError(error), 'error');
       return { ok: false, error };
     } finally {
-      if (state.tool === 'merge') updateMergePreview();
+      if (state.taskCompleted) processButton.disabled = true;
+      else if (state.tool === 'merge') updateMergePreview();
       else processButton.disabled = false;
       setTimeout(() => setProgress(null), 700);
     }

@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.5" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.9" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
 </head>
@@ -295,7 +295,6 @@
             <h1 id="operationTitle">Organizar PDF</h1>
             <p id="operationDescription">Arraste as páginas para mudar a ordem, gire ou exclua antes de salvar.</p>
           </div>
-          <button id="clearButton" class="ghost-button reset-button" type="button">Reiniciar tarefa</button>
         </div>
 
         <section class="tool-experience-strip" aria-label="Resumo da ferramenta">
@@ -312,7 +311,7 @@
           </div>
         </details>
 
-        <label class="dropzone" id="dropzone" for="fileInput">
+        <label class="dropzone" id="dropzone" for="fileInput" tabindex="0">
           <input id="fileInput" type="file" accept="application/pdf,.pdf" />
           <span class="drop-icon"><svg><use href="#i-upload"/></svg></span>
           <strong id="dropTitle">Escolha um arquivo PDF</strong>
@@ -440,6 +439,19 @@
     <footer><span>Central PDF & Imagem — Web Local 1.2.1</span><span>Use apenas documentos autorizados pela empresa.</span></footer>
   </div>
 
+  <section id="completionActions" class="completion-actions hidden" role="dialog" aria-modal="true" aria-labelledby="completionTitle" aria-describedby="completionMessage">
+    <div class="completion-dialog">
+      <span class="completion-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="m6.5 12.5 3.5 3.5 7.5-8" /></svg>
+      </span>
+      <div class="completion-copy"><span>Resultado pronto</span><strong id="completionTitle">Tarefa concluída</strong><p id="completionMessage">O download foi iniciado.</p></div>
+      <div class="completion-buttons" role="group" aria-label="Próximos passos">
+        <button id="continueEditingButton" class="small-button" type="button">Continuar editando</button>
+        <button id="clearButton" class="primary-button" type="button">Nova edição</button>
+      </div>
+    </div>
+  </section>
+
   <dialog id="layoutSettingsDialog" class="layout-settings-dialog">
     <div class="dialog-header"><div><span>Interface</span><h2>Preferências de layout</h2></div><button id="closeLayoutSettings" type="button" aria-label="Fechar"><svg><use href="#i-close"/></svg></button></div>
     <p class="layout-dialog-intro">Ajuste o espaço de trabalho. As preferências podem ficar salvas somente neste navegador.</p>
@@ -522,7 +534,7 @@
   <script src="assets/js/forms-signatures-0.18.js?v=0.18.1"></script>
   <script src="assets/js/conversions-0.19.js"></script>
   <script src="assets/js/intelligence-0.20.js"></script>
-  <script src="assets/js/app.js?v=1.2.1-ui3"></script>
+  <script src="assets/js/app.js?v=1.2.1-ui6"></script>
   <script src="assets/js/tool-quality-1.2.0.js?v=1.2.3"></script>
   <script src="assets/js/layout-controls.js?v=1.2.1-ui1"></script>
   <script src="assets/js/foundation.js"></script>
