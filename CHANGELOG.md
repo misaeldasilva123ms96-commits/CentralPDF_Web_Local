@@ -1,3 +1,14 @@
+## Fluxo pós-download e painéis sem sobreposição
+
+- mantém o menu global de configurações acima do inspetor lateral;
+- deixa o título e a descrição do inspetor no fluxo normal de rolagem;
+- oculta a ação de reinício até que a ferramenta conclua o processamento;
+- apresenta, após o download, escolhas para continuar com os mesmos arquivos ou começar uma nova tarefa;
+- usa nomenclatura específica nas 34 ferramentas, como “Continuar juntando” e “Nova junção”;
+- amplia o resultado pós-download em uma janela modal central, responsiva e acessível pelo teclado;
+- impede que o cabeçalho do inspetor encolha e sobreponha avisos após a inclusão de arquivos;
+- renova as URLs de CSS/JavaScript e o cache do aplicativo.
+
 ## Compressão automática com prioridade de qualidade e união A-Z
 
 - recalibra o modo Automático para 96-120 DPI e qualidade JPEG de 60-72%;

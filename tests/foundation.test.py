@@ -52,7 +52,7 @@ with tempfile.TemporaryDirectory() as temp_dir:
 
         # Limpa e restaura o projeto salvo.
         page.locator('[data-close-dialog="foundationProjectsDialog"]').click()
-        page.locator('#clearButton').click()
+        page.evaluate("CentralPDFApp.clearAll()")
         assert page.locator('#fileCount').inner_text().startswith('0 ')
         page.locator('#foundationProjectsButton').click()
         page.locator('#foundationProjectInput').set_input_files(str(project_path))
