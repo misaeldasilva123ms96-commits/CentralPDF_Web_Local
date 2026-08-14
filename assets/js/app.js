@@ -584,6 +584,8 @@
   const completionTitle = $('#completionTitle');
   const completionMessage = $('#completionMessage');
   const continueEditingButton = $('#continueEditingButton');
+  const clearButton = $('#clearButton');
+  const appShell = $('.app-shell');
   const homeView = $('#homeView');
   const toolWorkspace = $('#toolWorkspace');
   const fileBulkToolbar = $('#fileBulkToolbar');
@@ -598,10 +600,13 @@
   document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => selectTool(button.dataset.tool)));
   $('#backToTools')?.addEventListener('click', showHome);
   $('#homeBrand').addEventListener('click', showHome);
-  $('#clearButton').addEventListener('click', clearAll);
+  let completionReturnFocus = null;
+
+  clearButton.addEventListener('click', clearAll);
   continueEditingButton.addEventListener('click', continueEditing);
   fileInput.addEventListener('change', event => addFiles([...event.target.files], { source: 'picker' }));
   processButton.addEventListener('click', () => {
+    completionReturnFocus = processButton;
     const runner = () => processCurrentTool();
     if (window.CentralPDFFoundation?.runTask) window.CentralPDFFoundation.runTask(runner);
     else runner();
@@ -641,6 +646,10 @@
     window.CentralPDFUX?.decorateHome();
   }));
   document.addEventListener('keydown', event => {
+    if (state.taskCompleted) {
+      if (event.key === 'Tab') trapCompletionFocus(event);
+      return;
+    }
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       showHome();
@@ -879,17 +888,45 @@
   }
 
   function setCompletionState(completed, message = '') {
+    const wasCompleted = state.taskCompleted;
     state.taskCompleted = completed;
     document.body.classList.toggle('completion-open', completed);
+    appShell.toggleAttribute('inert', completed);
     completionActions.classList.toggle('hidden', !completed);
     processButton.classList.toggle('hidden', completed);
     const labels = completionLabels[state.tool] || ['Continuar ajustando', 'Nova tarefa'];
     continueEditingButton.textContent = labels[0];
-    $('#clearButton').textContent = labels[1];
+    clearButton.textContent = labels[1];
     if (completed) {
+      completionReturnFocus ||= processButton;
       completionTitle.textContent = `Resultado de ${toolConfig[state.tool]?.title || 'tarefa'} pronto`;
       completionMessage.textContent = message || 'O download foi iniciado. Escolha como deseja continuar.';
       requestAnimationFrame(() => continueEditingButton.focus({ preventScroll: true }));
+    } else if (wasCompleted) {
+      const returnFocus = completionReturnFocus;
+      completionReturnFocus = null;
+      requestAnimationFrame(() => {
+        const target = returnFocus?.isConnected && !returnFocus.disabled ? returnFocus : dropzone;
+        target.focus({ preventScroll: true });
+      });
+    }
+  }
+
+  function trapCompletionFocus(event) {
+    const focusable = [continueEditingButton, clearButton].filter(button => !button.disabled && !button.classList.contains('hidden'));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (!completionActions.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    } else if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
     }
   }
 

@@ -242,6 +242,8 @@ body[data-workspace-open='true'] .action-dock {
   display: grid;
   place-items: center;
   padding: clamp(18px, 4vw, 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: rgba(9, 13, 24, .68);
   backdrop-filter: blur(8px);
 }
@@ -251,6 +253,7 @@ body.completion-open { overflow: hidden; }
   justify-items: center;
   width: min(760px, 100%);
   min-height: min(390px, calc(100vh - 48px));
+  margin-block: auto;
   padding: clamp(30px, 5vw, 52px);
   border: 1px solid #cfcaff;
   border-radius: 24px;

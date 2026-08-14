@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import re
 import tempfile
 
@@ -22,6 +23,7 @@ assert completion.select_one(".completion-dialog") is not None
 assert completion.select_one("#continueEditingButton") is not None
 assert completion.select_one("#clearButton") is not None
 assert soup.select_one(".panel-heading #clearButton") is None
+assert soup.select_one("#dropzone").get("tabindex") == "0"
 
 style_paths = [
     link.get("href", "").split("?", 1)[0]
@@ -80,10 +82,13 @@ runtime_html = runtime_html.replace(
 with tempfile.TemporaryDirectory() as temp_dir, sync_playwright() as playwright:
     image_path = Path(temp_dir) / "teste.png"
     Image.new("RGB", (24, 18), "white").save(image_path)
-    browser = playwright.chromium.launch(
-        headless=True,
-        args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
-    )
+    launch_options = {
+        "headless": True,
+        "args": ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+    }
+    if executable_path := os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH"):
+        launch_options["executable_path"] = executable_path
+    browser = playwright.chromium.launch(**launch_options)
 
     layout_page = browser.new_page(viewport={"width": 1368, "height": 600})
     layout_page.set_content(layout_html, wait_until="domcontentloaded")
@@ -152,7 +157,7 @@ with tempfile.TemporaryDirectory() as temp_dir, sync_playwright() as playwright:
         assert page.locator("#continueEditingButton").inner_text() == labels[0]
         assert page.locator("#clearButton").inner_text() == labels[1]
 
-    page.locator('[data-tool="imageConvert"].tool-card').click()
+    page.evaluate("() => CentralPDFApp.selectTool('imageConvert')")
     assert page.locator("#completionActions").is_hidden()
     assert page.locator("#clearButton").is_hidden()
 
@@ -166,28 +171,45 @@ with tempfile.TemporaryDirectory() as temp_dir, sync_playwright() as playwright:
     assert page.locator("#processButton").is_hidden()
     assert page.locator("#continueEditingButton").is_visible()
     assert page.locator("#clearButton").is_visible()
-    assert page.locator("#continueEditingButton").is_focused()
+    assert page.evaluate("document.activeElement === document.querySelector('#continueEditingButton')")
+    assert page.locator(".app-shell").get_attribute("inert") is not None
     assert page.locator("#continueEditingButton").inner_text() == "Continuar convertendo"
     assert page.locator("#clearButton").inner_text() == "Nova conversão"
 
+    page.keyboard.press("Shift+Tab")
+    assert page.evaluate("document.activeElement === document.querySelector('#clearButton')")
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement === document.querySelector('#continueEditingButton')")
+
     page.locator("#continueEditingButton").click()
     assert page.locator("#completionActions").is_hidden()
+    assert page.locator(".app-shell").get_attribute("inert") is None
     assert page.locator("#processButton").is_visible()
     assert page.locator("#fileCount").inner_text().startswith("1 ")
+    page.wait_for_function("document.activeElement === document.querySelector('#processButton')")
 
     with page.expect_download():
         page.locator("#processButton").click()
     page.locator("#completionActions").wait_for(state="visible")
-    page.locator("#clearButton").click()
-    assert page.locator("#completionActions").is_hidden()
-    assert page.locator("#fileCount").inner_text().startswith("0 ")
 
-    page.set_viewport_size({"width": 390, "height": 700})
-    page.evaluate("() => document.querySelector('#completionActions').classList.remove('hidden')")
+    page.set_viewport_size({"width": 390, "height": 320})
+    overlay = page.locator("#completionActions")
     mobile = page.locator(".completion-dialog").bounding_box()
     assert mobile is not None
     assert mobile["width"] <= 358, mobile
     assert mobile["x"] >= 16, mobile
+    assert overlay.evaluate("element => getComputedStyle(element).overflowY") == "auto"
+    overlay.evaluate("element => { element.scrollTop = element.scrollHeight; }")
+    clear_box = page.locator("#clearButton").bounding_box()
+    assert clear_box is not None
+    assert clear_box["y"] >= 0, clear_box
+    assert clear_box["y"] + clear_box["height"] <= 320, clear_box
+
+    page.locator("#clearButton").click()
+    assert page.locator("#completionActions").is_hidden()
+    assert page.locator(".app-shell").get_attribute("inert") is None
+    assert page.locator("#fileCount").inner_text().startswith("0 ")
+    page.wait_for_function("document.activeElement === document.querySelector('#dropzone')")
     assert not errors, errors
     browser.close()
 

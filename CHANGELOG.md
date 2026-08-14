@@ -6,6 +6,7 @@
 - apresenta, após o download, escolhas para continuar com os mesmos arquivos ou começar uma nova tarefa;
 - usa nomenclatura específica nas 34 ferramentas, como “Continuar juntando” e “Nova junção”;
 - amplia o resultado pós-download em uma janela modal central, responsiva e acessível pelo teclado;
+- mantém a janela rolável em telas baixas e prende o foco às ações até a escolha do próximo passo;
 - impede que o cabeçalho do inspetor encolha e sobreponha avisos após a inclusão de arquivos;
 - renova as URLs de CSS/JavaScript e o cache do aplicativo.
 
