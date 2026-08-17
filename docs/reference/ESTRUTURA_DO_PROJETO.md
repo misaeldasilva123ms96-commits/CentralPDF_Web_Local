@@ -1,6 +1,6 @@
 # Estrutura do projeto
 
-Estrutura atual (v1.2.1 + fundação 2.0 conforme ADR-0001).
+Estrutura atual (v2.0.1 + fundação 2.0 conforme ADR-0001).
 
 ```text
 CentralPDF_Web_Local/

@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]*.[0-9]*.[0-9]*"
   workflow_dispatch:
     inputs:
       tag:
@@ -65,6 +65,17 @@ jobs:
           $version = '${{ env.RELEASE_TAG }}'.Substring(1)
           ./scripts/build-release.ps1 -Version $version -OutputDirectory '${{ runner.temp }}/release'
 
+      - name: Validate release checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          release_dir="${{ runner.temp }}/release"
+          checksum_file="CentralPDF_Web_Local_v$version.sha256"
+          cd "$release_dir"
+          test "$(wc -l < "$checksum_file")" -eq 2
+          sha256sum -c "$checksum_file"
+
       - name: Attest release provenance
         uses: actions/attest@v4
         with:
@@ -86,6 +97,7 @@ jobs:
 
           version="${RELEASE_TAG#v}"
           release_dir="${{ runner.temp }}/release"
+          release_notes="docs/releases/$version.md"
           release_assets=(
             "$release_dir/CentralPDF_Web_Local_v$version.zip"
             "$release_dir/CentralPDF_Local_Server.exe"
@@ -97,10 +109,14 @@ jobs:
               exit 1
             fi
           done
+          if [[ ! -f "$release_notes" ]]; then
+            echo "Notas de release ausentes: $release_notes"
+            exit 1
+          fi
 
           gh release create "$RELEASE_TAG" "${release_assets[@]}" \
             --repo "$GITHUB_REPOSITORY" \
             --verify-tag \
             --fail-on-no-commits \
-            --generate-notes \
+            --notes-file "$release_notes" \
             --title "Central PDF & Imagem ${RELEASE_TAG#v}"

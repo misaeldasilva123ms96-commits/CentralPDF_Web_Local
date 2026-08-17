@@ -1,3 +1,34 @@
+## 2.0.1 — workspace renovado e entrega verificável
+
+### Interface e experiência
+
+- Redesenha a página inicial e o shell compartilhado, com navegação responsiva, busca, categorias, favoritos, indicadores de disponibilidade e privacidade local.
+- Uniformiza tipografia, ícones, cores, espaçamentos, foco visível e comportamento com redução de movimento em desktop e dispositivos móveis.
+
+### Workspace
+
+- Moderniza a entrada de arquivos com miniaturas reais, contagem de páginas, pré-visualização, reordenação por arraste e controles acessíveis.
+- Mantém o painel de configurações fixo no desktop, com rolagem interna e reserva de espaço que evita sobreposição com a área principal.
+- Remove a lacuna inferior do painel lateral e mantém cabeçalhos, avisos e ações no fluxo correto após a inclusão de arquivos.
+- Exibe após o download uma janela central com ações específicas para continuar na ferramenta ou iniciar uma nova tarefa.
+- Mantém a janela de conclusão rolável em telas baixas, prende o foco às ações e o restaura de forma segura ao fechar.
+
+### Ferramentas
+
+- Preserva o catálogo funcional das 34 ferramentas e a distinção entre recursos disponíveis, experimentais e planejados.
+- Restaura pré-visualizações de PDF, configurações de extração e validações reais de formulários e arquivos reparados.
+
+### Segurança e privacidade
+
+- Mantém o processamento local, sem rota de upload de documentos, com servidor limitado a `127.0.0.1` e políticas restritivas de conteúdo e permissões.
+- Preserva motores offline verificados, checksums SHA-256, comparação reproduzível do executável Windows e atestação dos artefatos de release.
+
+### Qualidade e distribuição
+
+- Sincroniza a versão `2.0.1` na interface publicada, frontend React, manifesto, diagnóstico, servidor local, cache e metadados de pacote.
+- Amplia regressões de workspace, formulários, acessibilidade, sincronização de versão, pacote, workflow e histórico de releases.
+- Faz o workflow consumir notas versionadas, validar o manifesto SHA-256 gerado e continuar aceitando tags estáveis futuras sem lógica exclusiva da `2.0.1`.
+
 ## Fluxo pós-download e painéis sem sobreposição
 
 - mantém o menu global de configurações acima do inspetor lateral;

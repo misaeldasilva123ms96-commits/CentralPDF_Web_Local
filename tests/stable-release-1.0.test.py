@@ -30,7 +30,7 @@ with sync_playwright() as p:
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.set_content(html, wait_until='domcontentloaded')
     page.wait_for_timeout(900)
-    assert 'Web local 1.2.1' in page.locator('.brand-copy small').inner_text()
+    assert 'Web local 2.0.1' in page.locator('.brand-copy small').inner_text()
     assert page.locator('.cp10-stable-badge').count()==1
     assert page.locator('.tool-card[data-tool]').count()==34
     assert '34' in page.locator('.hero-stats').inner_text()
@@ -43,10 +43,10 @@ with sync_playwright() as p:
     page.locator('[data-close="cp10Accessibility"]').last.click()
 
     page.keyboard.press('Alt+q')
-    page.wait_for_timeout(100)
     assert page.locator('#cp10Quality').get_attribute('open') is not None
+    page.wait_for_function("document.querySelector('#cp10QualityContent')?.innerText.includes('34')")
     assert '34' in page.locator('#cp10QualityContent').inner_text()
-    assert 'Acessibilidade 1.2.1' in page.locator('#cp10QualityContent').inner_text()
+    assert 'Acessibilidade 2.0.1' in page.locator('#cp10QualityContent').inner_text()
     page.locator('[data-close="cp10Quality"]').click()
 
     first=page.locator('.tool-card:not(.hidden)').first

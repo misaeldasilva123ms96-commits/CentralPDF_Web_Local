@@ -9,7 +9,7 @@ attributes = (root / ".gitattributes").read_text(encoding="utf-8")
 
 for fragment in (
     'tags:',
-    '"v[0-9]+.[0-9]+.[0-9]+"',
+    '"v[0-9]*.[0-9]*.[0-9]*"',
     'workflow_dispatch:',
     'RELEASE_TAG:',
     'ref: ${{ env.RELEASE_TAG }}',
@@ -24,6 +24,7 @@ for fragment in (
     'cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.release.exe',
     './scripts/prepare-offline.ps1',
     './scripts/build-release.ps1',
+    'sha256sum -c "$checksum_file"',
     'gh release create',
     '"$release_dir/CentralPDF_Web_Local_v$version.zip"',
     '"$release_dir/CentralPDF_Local_Server.exe"',
@@ -33,13 +34,16 @@ for fragment in (
     '--repo "$GITHUB_REPOSITORY"',
     '--verify-tag',
     '--fail-on-no-commits',
+    '--notes-file "$release_notes"',
+    'release_notes="docs/releases/$version.md"',
 ):
     assert fragment in workflow, fragment
 
 assert '"${{ runner.temp }}"/release/*' not in workflow
 
 for fragment in (
-    "A saída da release deve ficar fora da árvore do projeto.",
+    "A saída da release não pode ser a raiz do projeto.",
+    "A saída da release não pode ficar dentro de $directory.",
     "O executável não corresponde ao checksums.sha256 versionado.",
     "Os motores offline ainda não foram preparados e verificados.",
     "Compress-Archive",

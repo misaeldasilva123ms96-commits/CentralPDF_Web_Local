@@ -45,7 +45,7 @@ writeFileSync(
   resolve(import.meta.dirname, '../docs/architecture/_CATALOGO_RAW.md'),
   `# Catálogo de ferramentas (gerado)
 
-Gerado por \`scripts/extract-tool-catalog.mjs\` a partir de \`assets/js/app.js\` (toolConfig, v1.2.1).
+Gerado por \`scripts/extract-tool-catalog.mjs\` a partir de \`assets/js/app.js\` (toolConfig, v2.0.1).
 
 | id | título | múltiplo | tipo | aceita | saída | professional | settings chars | n. settings ids |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n` +

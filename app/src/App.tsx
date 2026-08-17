@@ -7,7 +7,7 @@ import { centralCatalog } from './core/catalog';
 import type { ToolDefinition } from './core/types';
 import { Icon } from './ui/Icon';
 
-const BUILD_VERSION = '2.0.0-alpha.1';
+const BUILD_VERSION = '2.0.1';
 
 const PRIMARY_NAV = [
   { label: 'Juntar PDF', toolId: 'merge-pdfs' },

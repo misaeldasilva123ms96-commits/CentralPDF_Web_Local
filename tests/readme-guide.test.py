@@ -16,7 +16,7 @@ required_guidance = [
     "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/",
     "PREPARAR_OFFLINE.bat",
     "ABRIR_CENTRAL_PDF.bat",
-    "CHECKSUMS.sha256",
+    "checksums.sha256",
     "Ctrl+K",
     "Atualizações técnicas avaliadas",
     "Solução de problemas",
