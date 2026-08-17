@@ -46,6 +46,6 @@ assert 'assets/css/tool-quality-1.2.0.css' in index
 assert 'assets/js/tool-quality-1.2.0.js' in index
 assert './assets/css/tool-quality-1.2.0.css' in sw
 assert './assets/js/tool-quality-1.2.0.js?v=1.2.3' in sw
-assert 'Web local 1.2.1' in index
-assert "const VERSION='1.2.1';" in stable
-print('tool-quality-1.2.1: passed')
+assert 'Web local 2.0.1' in index
+assert "const VERSION='2.0.1';" in stable
+print('tool-quality-2.0.1: passed')

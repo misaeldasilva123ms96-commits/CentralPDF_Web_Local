@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '1.2.1';
+  const APP_VERSION = '2.0.1';
   const DB_NAME = 'centralpdf-foundation';
   const DB_VERSION = 1;
   const STORE = 'recovery';

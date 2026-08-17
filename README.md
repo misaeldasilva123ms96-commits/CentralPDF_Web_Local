@@ -1,4 +1,4 @@
-# Central PDF & Imagem 1.2.1
+# Central PDF & Imagem 2.0.1
 
 [![CI](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/ci.yml/badge.svg)](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/ci.yml)
 [![Pages](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/pages.yml/badge.svg)](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/workflows/pages.yml)
@@ -40,7 +40,7 @@ Abra o PowerShell na pasta extraída e execute:
 
 ```powershell
 (Get-FileHash -Algorithm SHA256 .\CentralPDF_Local_Server.exe).Hash.ToLowerInvariant()
-Get-Content .\CHECKSUMS.sha256
+Get-Content .\checksums.sha256
 ```
 
 Os dois valores devem ser iguais. A CI também recompila o servidor e exige igualdade byte a byte com o executável versionado.
@@ -50,6 +50,7 @@ Para conferir também a procedência criptográfica do ZIP ou do executável com
 ```powershell
 gh attestation verify .\CentralPDF_Web_Local_vX.Y.Z.zip --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
 gh attestation verify .\CentralPDF_Local_Server.exe --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
+gh attestation verify .\CentralPDF_Web_Local_vX.Y.Z.sha256 --repo misaeldasilva123ms96-commits/CentralPDF_Web_Local
 ```
 
 Substitua `X.Y.Z` pela versão baixada. A atestação vincula o arquivo ao commit e ao workflow que o produziu; ela não substitui uma futura assinatura Authenticode reconhecida pelo Windows.

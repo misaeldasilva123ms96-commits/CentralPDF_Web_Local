@@ -13,8 +13,15 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 $outputPath = [IO.Path]::GetFullPath($OutputDirectory)
 $projectPath = [IO.Path]::GetFullPath($projectRoot)
 
-if ($outputPath.StartsWith($projectPath, [StringComparison]::OrdinalIgnoreCase)) {
-    throw 'A saída da release deve ficar fora da árvore do projeto.'
+if ($outputPath.TrimEnd([IO.Path]::DirectorySeparatorChar) -eq $projectPath.TrimEnd([IO.Path]::DirectorySeparatorChar)) {
+    throw 'A saída da release não pode ser a raiz do projeto.'
+}
+$protectedDirectories = @('.git', 'app', 'assets', 'docs', 'scripts', 'server', 'vendor')
+foreach ($directory in $protectedDirectories) {
+    $protectedPath = [IO.Path]::GetFullPath((Join-Path $projectPath $directory)).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+    if ($outputPath.StartsWith($protectedPath, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "A saída da release não pode ficar dentro de $directory."
+    }
 }
 if (Test-Path -LiteralPath $outputPath) {
     throw "A pasta de saída já existe: $outputPath"
@@ -23,7 +30,12 @@ if (Test-Path -LiteralPath $outputPath) {
 $versionChecks = @(
     @{ Path = 'README.md'; Pattern = "# Central PDF & Imagem $Version" },
     @{ Path = 'manifest.webmanifest'; Pattern = "Central PDF & Imagem $Version" },
+    @{ Path = 'index.html'; Pattern = "Web local $Version" },
     @{ Path = 'assets/js/stable-1.0.js'; Pattern = "const VERSION='$Version'" },
+    @{ Path = 'app/package.json'; Pattern = "`"version`": `"$Version`"" },
+    @{ Path = 'app/package-lock.json'; Pattern = "`"version`": `"$Version`"" },
+    @{ Path = 'app/src/App.tsx'; Pattern = "const BUILD_VERSION = '$Version'" },
+    @{ Path = 'sw.js'; Pattern = "centralpdf-v$Version-" },
     @{ Path = 'server/main.go'; Pattern = "`"version`":`"$Version`"" }
 )
 foreach ($check in $versionChecks) {

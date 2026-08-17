@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.2.1';
+  const VERSION = '2.0.1';
   const STORAGE_KEY = 'centralpdf-tool-runtime-quality-v1';
   const MAX_RUNS_PER_TOOL = 40;
   const $ = (selector, scope = document) => scope.querySelector(selector);

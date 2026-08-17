@@ -25,7 +25,7 @@ assert 'rasterCompressPdfAdaptive' in app
 assert 'structuralCompressPdfBytes' in app
 assert 'originalBytes.byteLength <= selected.bytes.byteLength' in app
 assert 'RELATÓRIO DE COMPRESSÃO ADAPTATIVA' in app
-assert 'Web local 1.2.1' in index
+assert 'Web local 2.0.1' in index
 
 html = f'<!doctype html><html><head><base href="http://test.local/"></head><body><script>{planner}</script></body></html>'
 with sync_playwright() as p:

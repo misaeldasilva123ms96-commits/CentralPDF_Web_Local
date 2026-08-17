@@ -12,7 +12,11 @@ scripts='\n'.join((root/name).read_text(encoding='utf-8') for name in ['assets/j
 html=html.replace('</body>',f'<script>{scripts}</script></body>')
 
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+    launch_options={'headless':True,'args':['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']}
+    system_chromium=Path('/usr/bin/chromium')
+    if system_chromium.exists():
+        launch_options['executable_path']=str(system_chromium)
+    browser=p.chromium.launch(**launch_options)
     page=browser.new_page(viewport={'width':1400,'height':900})
     errors=[]
     page.on('pageerror',lambda error:errors.append(str(error)))

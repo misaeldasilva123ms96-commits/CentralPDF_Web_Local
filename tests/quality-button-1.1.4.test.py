@@ -29,7 +29,7 @@ with sync_playwright() as p:
     assert 'Última verificação:' in page.locator('#cp10LastCheck').inner_text()
     assert page.locator('#cp10RunCheck').get_attribute('aria-busy') is None
     report = page.evaluate('window.CentralPDFStable.runCheck()')
-    assert report['version'] == '1.2.1'
+    assert report['version'] == '2.0.1'
     assert report['diagnosticModuleVersion'] == '3.0.0'
-    print('quality-button-1.2.1: passed')
+    print('quality-button-2.0.1: passed')
     browser.close()

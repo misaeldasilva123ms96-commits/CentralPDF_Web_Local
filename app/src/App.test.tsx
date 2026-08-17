@@ -21,7 +21,7 @@ describe('App (shell 2.0)', () => {
     expect(screen.getByTestId('app-shell')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /CentralPDF 2\.0/ })).toBeInTheDocument();
     expect(screen.getByText(/Modo local · offline/)).toBeInTheDocument();
-    expect(screen.getByText(/v2\.0\.0-alpha/)).toBeInTheDocument();
+    expect(screen.getByText(/v2\.0\.1/)).toBeInTheDocument();
   });
 
   it('exibe o catálogo oficial na home com as ferramentas disponíveis', () => {
