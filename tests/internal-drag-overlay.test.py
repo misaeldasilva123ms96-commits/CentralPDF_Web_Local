@@ -28,6 +28,7 @@ window.fetch = async () => ({ok:true, text:async()=>''});
 window.pdfjsLib = {
   GlobalWorkerOptions: {},
   getDocument: () => ({ promise: Promise.resolve({
+    numPages: 2,
     getPage: async () => ({
       getViewport: ({scale}) => ({ width: 595*scale, height:842*scale }),
       render: () => ({ promise: Promise.resolve() })
@@ -39,14 +40,14 @@ window.pdfjsLib = {
 '''
 
 scripts = '\n'.join((root / name).read_text(encoding='utf-8') for name in [
-  'assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/layout-controls.js'
+  'assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/pdf-ingest.js','assets/js/app.js','assets/js/layout-controls.js'
 ])
 html = html.replace('</body>', mock + f'<script>{scripts}</script></body>')
 
 DROP_JS = r'''(args) => {
   const target = document.querySelector(args.selector);
   const dt = new DataTransfer();
-  for (const name of args.names) dt.items.add(new File([new Uint8Array([37,80,68,70])], name, {type:'application/pdf', lastModified:Date.now()+Math.random()}));
+  for (const name of args.names) dt.items.add(new File([new Uint8Array([37,80,68,70,45,49,46,55])], name, {type:'application/pdf', lastModified:Date.now()+Math.random()}));
   target.dispatchEvent(new DragEvent('dragenter',{dataTransfer:dt,bubbles:true,cancelable:true}));
   target.dispatchEvent(new DragEvent('dragover',{dataTransfer:dt,bubbles:true,cancelable:true}));
   target.dispatchEvent(new DragEvent('drop',{dataTransfer:dt,bubbles:true,cancelable:true}));
@@ -91,7 +92,7 @@ with sync_playwright() as p:
       const workspace = document.querySelector('#toolWorkspace');
       const overlay = document.querySelector('#workspaceDropOverlay');
       const dt = new DataTransfer();
-      dt.items.add(new File([new Uint8Array([37,80,68,70])], 'C.pdf', {type:'application/pdf'}));
+      dt.items.add(new File([new Uint8Array([37,80,68,70,45,49,46,55])], 'C.pdf', {type:'application/pdf'}));
       workspace.dispatchEvent(new DragEvent('dragenter',{dataTransfer:dt,bubbles:true,cancelable:true}));
       workspace.dispatchEvent(new DragEvent('dragover',{dataTransfer:dt,bubbles:true,cancelable:true}));
       const shown = !overlay.classList.contains('hidden');

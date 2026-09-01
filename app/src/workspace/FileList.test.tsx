@@ -5,6 +5,12 @@ import { useAppStore } from '../store/app-store';
 import { FileList } from './FileList';
 import type { FileContract } from '../core/types';
 
+const { loadPdfMock } = vi.hoisted(() => ({
+  loadPdfMock: vi.fn(async () => ({ document: { numPages: 1 }, destroy: vi.fn(async () => undefined) }))
+}));
+
+vi.mock('../tools/pdf-engine', () => ({ loadPdf: loadPdfMock }));
+
 const CONTRACT: FileContract = {
   kind: 'pdf',
   accept: ['application/pdf', '.pdf'],
@@ -31,10 +37,16 @@ function installReadControl(): void {
   });
 }
 
-function resolveNextRead(bytes = 32): void {
+function resolveNextRead(bytes: number | Uint8Array<ArrayBuffer> = validPdfHeader()): void {
   const handle = pendingReads.shift();
   if (!handle) throw new Error('nenhuma leitura pendente');
-  handle.resolve(new Uint8Array(bytes).buffer);
+  handle.resolve(typeof bytes === 'number' ? validPdfHeader(bytes).buffer : bytes.slice().buffer);
+}
+
+function validPdfHeader(length = 32): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(new ArrayBuffer(Math.max(length, 8)));
+  bytes.set(new TextEncoder().encode('%PDF-1.7'));
+  return bytes;
 }
 
 function rejectNextRead(): void {
@@ -53,6 +65,7 @@ beforeEach(() => {
     task: null
   });
   pendingReads.length = 0;
+  loadPdfMock.mockClear();
   installReadControl();
 });
 
@@ -162,7 +175,7 @@ describe('FileList — serialização e ciclo de vida da ingestão', () => {
 
     const files = useAppStore.getState().files;
     expect(files.map((f) => f.name)).toEqual(['bom.pdf']);
-    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível ler: ruim.pdf.');
+    expect(screen.getByRole('alert')).toHaveTextContent('ruim.pdf: O navegador não conseguiu ler o arquivo selecionado.');
   });
 
   it('mantém arquivos com o mesmo nome independentes e com IDs únicos', async () => {
@@ -184,6 +197,29 @@ describe('FileList — serialização e ciclo de vida da ingestão', () => {
     expect(files[0].id).not.toBe(files[1].id);
   });
 
+  it('permite remover e adicionar novamente o mesmo arquivo', async () => {
+    const user = userEvent.setup();
+    render(<FileList contracts={[CONTRACT]} />);
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]')!;
+
+    await user.upload(input, new File([new Uint8Array(4)], 'retorno.pdf', { type: 'application/pdf' }));
+    await flushAsync();
+    act(() => resolveNextRead());
+    await flushAsync();
+    const firstId = useAppStore.getState().files[0].id;
+
+    await user.click(screen.getByRole('button', { name: 'Remover retorno.pdf' }));
+    expect(useAppStore.getState().files).toHaveLength(0);
+
+    await user.upload(input, new File([new Uint8Array(4)], 'retorno.pdf', { type: 'application/pdf' }));
+    await flushAsync();
+    act(() => resolveNextRead());
+    await flushAsync();
+
+    expect(useAppStore.getState().files).toHaveLength(1);
+    expect(useAppStore.getState().files[0].id).not.toBe(firstId);
+  });
+
   it('aceita a primeira seleção por arrastar e soltar na mesma ordem', async () => {
     const file = new File([new Uint8Array(4)], 'drop.pdf', { type: 'application/pdf' });
     render(<FileList contracts={[CONTRACT]} />);
@@ -195,6 +231,38 @@ describe('FileList — serialização e ciclo de vida da ingestão', () => {
     await flushAsync();
 
     expect(useAppStore.getState().files.map((f) => f.name)).toEqual(['drop.pdf']);
+  });
+
+  it.each(['', 'application/octet-stream'])('aceita PDF real com MIME %s', async (type) => {
+    const user = userEvent.setup({ applyAccept: false });
+    render(<FileList contracts={[CONTRACT]} />);
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]')!;
+
+    await user.upload(input, new File([validPdfHeader().buffer], 'mime-flexivel.pdf', { type }));
+    await flushAsync();
+    act(() => resolveNextRead());
+    await flushAsync();
+
+    expect(useAppStore.getState().files.map((file) => file.name)).toEqual(['mime-flexivel.pdf']);
+  });
+
+  it('mantém os válidos quando um item do lote não contém PDF', async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    render(<FileList contracts={[CONTRACT]} />);
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]')!;
+    await user.upload(input, [
+      new File([new TextEncoder().encode('não é PDF').buffer], 'falso.pdf', { type: 'application/pdf' }),
+      new File([validPdfHeader().buffer], 'valido.pdf', { type: 'application/octet-stream' })
+    ]);
+    await flushAsync();
+
+    act(() => resolveNextRead(new TextEncoder().encode('não é PDF')));
+    await flushAsync();
+    act(() => resolveNextRead());
+    await flushAsync();
+
+    expect(useAppStore.getState().files.map((file) => file.name)).toEqual(['valido.pdf']);
+    expect(screen.getByRole('alert')).toHaveTextContent('falso.pdf: O conteúdo do arquivo não corresponde a um PDF.');
   });
 
   it('impede a rolagem ao ativar a área de upload com Espaço', () => {

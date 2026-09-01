@@ -28,6 +28,7 @@ window.fetch = async () => ({ok:true, text:async()=>''});
 window.pdfjsLib = {
   GlobalWorkerOptions: {},
   getDocument: () => ({ promise: Promise.resolve({
+    numPages: 2,
     getPage: async () => ({
       getViewport: ({scale}) => ({ width: 595*scale, height:842*scale }),
       render: () => ({ promise: Promise.resolve() })
@@ -39,14 +40,18 @@ window.pdfjsLib = {
 '''
 
 scripts = '\n'.join((root / name).read_text(encoding='utf-8') for name in [
-  'assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/layout-controls.js'
+  'assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/pdf-ingest.js','assets/js/app.js','assets/js/layout-controls.js'
 ])
 html = html.replace('</body>', mock + f'<script>{scripts}</script></body>')
 
 DROP_JS = r'''(names) => {
   const target = document.querySelector('#dropzone');
   const dt = new DataTransfer();
-  names.forEach((name,index) => dt.items.add(new File([new Uint8Array(100 + index * 20)], name, {type:'application/pdf', lastModified:1000 + index})));
+  names.forEach((name,index) => {
+    const bytes = new Uint8Array(100 + index * 20);
+    bytes.set([37,80,68,70,45,49,46,55]);
+    dt.items.add(new File([bytes], name, {type:'application/pdf', lastModified:1000 + index}));
+  });
   target.dispatchEvent(new DragEvent('dragenter',{dataTransfer:dt,bubbles:true,cancelable:true}));
   target.dispatchEvent(new DragEvent('dragover',{dataTransfer:dt,bubbles:true,cancelable:true}));
   target.dispatchEvent(new DragEvent('drop',{dataTransfer:dt,bubbles:true,cancelable:true}));

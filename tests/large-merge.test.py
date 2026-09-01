@@ -41,7 +41,7 @@ mock = r'''
 })();
 </script>
 '''
-scripts='\n'.join((root/name).read_text(encoding='utf-8') for name in ['assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/layout-controls.js'])
+scripts='\n'.join((root/name).read_text(encoding='utf-8') for name in ['assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/pdf-ingest.js','assets/js/app.js','assets/js/layout-controls.js'])
 html=html.replace('</body>',mock+f'<script>{scripts}</script></body>')
 
 with sync_playwright() as p:
@@ -53,7 +53,7 @@ with sync_playwright() as p:
     page.locator('.tool-card[data-tool="merge"]').click()
     page.evaluate(r'''() => {
       const dt=new DataTransfer();
-      for(let i=1;i<=12;i++) dt.items.add(new File([new Uint8Array([37,80,68,70])],`Lote_${i}.pdf`,{type:'application/pdf',lastModified:1000+i}));
+      for(let i=1;i<=12;i++) dt.items.add(new File([new Uint8Array([37,80,68,70,45,49,46,55])],`Lote_${i}.pdf`,{type:'application/pdf',lastModified:1000+i}));
       const target=document.querySelector('#dropzone');
       target.dispatchEvent(new DragEvent('dragenter',{dataTransfer:dt,bubbles:true,cancelable:true}));
       target.dispatchEvent(new DragEvent('dragover',{dataTransfer:dt,bubbles:true,cancelable:true}));

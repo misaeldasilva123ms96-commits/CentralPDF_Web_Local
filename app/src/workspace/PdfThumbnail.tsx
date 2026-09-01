@@ -30,7 +30,7 @@ export function PdfThumbnail({ data, name, fileId, onPageCount }: PdfThumbnailPr
 
     void (async () => {
       try {
-        const loaded = await loadPdf(data.slice(0));
+        const loaded = await loadPdf(data);
         destroy = loaded.destroy;
         if (cancelled) return;
         if (fileIdRef.current) onPageCountRef.current?.(fileIdRef.current, loaded.document.numPages);
@@ -49,8 +49,17 @@ export function PdfThumbnail({ data, name, fileId, onPageCount }: PdfThumbnailPr
         } finally {
           page.cleanup();
         }
-      } catch {
-        if (!cancelled) setFailed(true);
+      } catch (error) {
+        if (!cancelled) {
+          setFailed(true);
+          if (import.meta.env.DEV && import.meta.env.MODE !== 'test') {
+            console.warn('[pdf-ingest] thumbnail-failed', {
+              stage: 'thumbnail', engine: 'pdfjs', errorName: error instanceof Error ? error.name : '',
+              errorMessage: error instanceof Error ? error.message : String(error), fileName: name,
+              fileSize: data.byteLength, runtime: 'vite'
+            });
+          }
+        }
       }
     })();
 

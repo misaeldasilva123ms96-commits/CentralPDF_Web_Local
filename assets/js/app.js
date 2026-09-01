@@ -566,6 +566,8 @@
     organizerPreviewActive: 0,
     taskCompleted: false
   };
+  const PDFLIB_INGEST_TOOLS = new Set(['organize', 'editPdf', 'merge', 'split', 'extract', 'rotate', 'watermark', 'pageNumbers', 'compress', 'crop', 'metadata', 'normalize', 'redact', 'formBuilder', 'signPdf', 'archivePdf']);
+  let fileIngestChain = Promise.resolve();
 
   const $ = selector => document.querySelector(selector);
   const fileInput = $('#fileInput');
@@ -963,14 +965,32 @@
     updateOrganizerHistoryButtons();
   }
 
-  async function addFiles(files, options = {}) {
+  function addFiles(files, options = {}) {
+    const queuedFiles = Array.from(files || []);
+    const queuedTool = state.tool;
+    fileIngestChain = fileIngestChain.catch(error => {
+      logPdfIngest('queue-recovered', null, error, 'queue');
+    }).then(() => {
+      if (state.tool !== queuedTool) {
+        logPdfIngest('cancelled', null, new Error('A ferramenta mudou durante a leitura.'), 'queue');
+        return;
+      }
+      return ingestFiles(queuedFiles, { ...options, queuedTool });
+    });
+    return fileIngestChain;
+  }
+
+  async function ingestFiles(files, options = {}) {
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
     const config = toolConfig[state.tool];
-    const nonEmpty = files.filter(file => Number(file?.size || 0) > 0);
-    const emptyCount = files.length - nonEmpty.length;
-    if (emptyCount) window.CentralPDFStable?.addLog?.('aviso', `${emptyCount} arquivo(s) vazio(s) foram ignorados.`, `entrada: ${state.tool}`);
-    const valid = nonEmpty.filter(file => isAccepted(file, config.accept));
-    if (!valid.length) { setStatus(emptyCount ? 'Os arquivos selecionados estão vazios ou não são compatíveis.' : 'Nenhum arquivo compatível foi selecionado.', 'error'); notifyFilesChanged('rejected'); return; }
+    const inspected = await inspectIncomingFiles(files, config);
+    const valid = inspected.valid;
+    const rejected = inspected.rejected;
+    if (!valid.length) {
+      setStatus(rejected.map(item => `${item.file.name}: ${item.message}`).join(' ') || 'Nenhum arquivo compatível foi selecionado.', 'error');
+      notifyFilesChanged('rejected');
+      return;
+    }
     const prospectiveFiles = config.multiple ? [...state.files, ...valid] : valid;
     const qualityIssues = window.CentralPDFToolQuality?.validateFiles?.(state.tool, prospectiveFiles) || [];
     const blockingIssue = qualityIssues.find(item => item.level === 'error' && !/Adicione/i.test(item.message));
@@ -989,7 +1009,7 @@
         await appendPdfFilesToOrganizer(valid, 'import');
       }
       processButton.disabled = !state.organizerPages.length;
-      setStatus(`${valid.length} PDF(s) adicionado(s). As páginas novas foram inseridas no final.`, 'success');
+      setStatus(ingestSummary(`${valid.length} PDF(s) adicionado(s). As páginas novas foram inseridas no final.`, rejected), rejected.length ? 'warning' : 'success');
       notifyFilesChanged(options.source || 'add');
       return;
     }
@@ -1008,7 +1028,7 @@
           await window.PDFVisualEditor?.addPdfPages(valid);
         }
         processButton.disabled = !window.PDFVisualEditor?.hasDocument();
-        setStatus(`${valid.length} PDF(s) adicionado(s) ao editor.`, 'success');
+        setStatus(ingestSummary(`${valid.length} PDF(s) adicionado(s) ao editor.`, rejected), rejected.length ? 'warning' : 'success');
         notifyFilesChanged(options.source || 'add');
       } catch (error) {
         processButton.disabled = true; setStatus(readablePdfError(error), 'error');
@@ -1042,8 +1062,102 @@
     if (['documentAssistant','structuredExtraction','documentAudit','classifyRename'].includes(state.tool)) window.CentralPDFIntelligence?.updatePlan?.(state.tool, state.files);
 
     processButton.disabled = state.tool === 'merge' ? mergePdfSources().length < 2 || !state.organizerPages.length : state.tool === 'compare' ? state.files.length !== 2 : ['redact','formBuilder','signPdf'].includes(state.tool) ? state.files.length !== 1 : state.files.length === 0;
-    setStatus(`${added.length || valid.length} arquivo(s) adicionado(s). Você pode continuar arrastando outros arquivos para esta tela.`, 'success');
+    setStatus(ingestSummary(`${added.length || valid.length} arquivo(s) adicionado(s). Você pode continuar arrastando outros arquivos para esta tela.`, rejected), rejected.length ? 'warning' : 'success');
     notifyFilesChanged(options.source || 'add');
+  }
+
+  async function inspectIncomingFiles(files, config) {
+    const valid = [];
+    const rejected = [];
+    const acceptsPdf = /application\/pdf|\.pdf(?:,|$)/i.test(config.accept || '');
+    for (const file of files) {
+      if (!file || Number(file.size || 0) === 0) {
+        const ingest = window.CentralPDFIngest;
+        const message = ingest?.PdfIngestError
+          ? ingest.describeError(new ingest.PdfIngestError('empty'))
+          : 'O arquivo está vazio.';
+        rejected.push({ file: file || { name: 'Arquivo' }, message, code: 'empty' });
+        continue;
+      }
+      const acceptedNonPdf = isAcceptedNonPdf(file, config.accept);
+      const explicitPdf = String(file.name || '').toLowerCase().endsWith('.pdf') || String(file.type || '').toLowerCase() === 'application/pdf';
+      const inspectAsPdf = acceptsPdf && (explicitPdf || !acceptedNonPdf);
+      if (!inspectAsPdf) {
+        if (acceptedNonPdf) valid.push(file);
+        else rejected.push({ file, message: 'O tipo de arquivo não é compatível com esta ferramenta.', code: 'unsupported' });
+        continue;
+      }
+      try {
+        logPdfIngest('received', file, null, 'received');
+        const result = await window.CentralPDFIngest.inspectPdfFile(file, { parse: parsePdfForIngest });
+        state.filePageCounts.set(getFileCacheKey(file), result.pageCount);
+        valid.push(file);
+        logPdfIngest('metadata-ready', file, null, 'metadata');
+      } catch (error) {
+        const recoverableForTool = (
+          ['unlock', 'diagnose', 'repairAdvanced'].includes(state.tool)
+          && ['encrypted', 'unsupportedEncryption'].includes(error?.code)
+        ) || (
+          ['diagnose', 'repairAdvanced'].includes(state.tool)
+          && error?.code === 'corrupted'
+        );
+        if (recoverableForTool) {
+          valid.push(file);
+          rejected.push({ file, message: `${error.message} O arquivo foi mantido para esta ferramenta.`, code: error.code, warning: true });
+        } else {
+          rejected.push({ file, message: window.CentralPDFIngest?.describeError?.(error) || readablePdfError(error), code: error?.code || 'corrupted' });
+        }
+        logPdfIngest('failed', file, error, error?.stage || 'inspect');
+      }
+    }
+    if (rejected.length) {
+      window.CentralPDFStable?.addLog?.('aviso', `${rejected.length} arquivo(s) não passaram pela inspeção de entrada.`, `entrada: ${state.tool}`);
+    }
+    return { valid, rejected };
+  }
+
+  async function parsePdfForIngest(ownedBytes) {
+    if (PDFLIB_INGEST_TOOLS.has(state.tool)) {
+      if (!window.PDFLib?.PDFDocument) throw Object.assign(new Error('pdf-lib não está disponível.'), { name: 'PDFLibUnavailableError', engine: 'pdf-lib' });
+      try {
+        const document = await window.PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false });
+        return { pageCount: document.getPageCount() };
+      } catch (error) {
+        try { error.engine = 'pdf-lib'; } catch (_) {}
+        throw error;
+      }
+    }
+    await ensurePdfWorker();
+    if (window.pdfjsLib?.getDocument) {
+      const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(ownedBytes) });
+      try {
+        const documentProxy = await loadingTask.promise;
+        return { pageCount: documentProxy.numPages };
+      } finally {
+        await loadingTask.destroy?.();
+      }
+    }
+    if (window.PDFLib?.PDFDocument) {
+      const document = await window.PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false });
+      return { pageCount: document.getPageCount() };
+    }
+    throw Object.assign(new Error('PDF.js e pdf-lib não estão disponíveis.'), { name: 'WorkerError' });
+  }
+
+  function ingestSummary(success, rejected) {
+    if (!rejected.length) return success;
+    const details = rejected.map(item => `${item.file.name}: ${item.message}`).join(' ');
+    return `${success} ${rejected.length} arquivo(s) não carregado(s) ou com aviso. ${details}`;
+  }
+
+  function logPdfIngest(event, file, error, stage) {
+    if (!window.CentralPDFDebugPdfIngest) return;
+    console.debug(`[pdf-ingest] ${event}`, {
+      stage, engine: error?.engine || 'pdfjs', errorName: error?.name || '',
+      errorMessage: error?.technicalMessage || error?.message || '', fileName: file?.name || '',
+      fileSize: Number(file?.size || 0), fileType: file?.type || '', runtime: 'legacy',
+      workerMode: window.CentralPDFGetPdfWorkerStatus?.().mode || ''
+    });
   }
 
   function isAccepted(file, accept) {
@@ -1051,6 +1165,13 @@
     if (accept.includes('image/') && (file.type.startsWith('image/') || /\.(png|jpe?g|webp|bmp|gif)$/i.test(file.name))) return true;
     const ext = '.' + file.name.split('.').pop().toLowerCase();
     return accept.toLowerCase().includes(ext);
+  }
+
+  function isAcceptedNonPdf(file, accept) {
+    const entries = String(accept || '').split(',').map(item => item.trim().toLowerCase()).filter(item => item && item !== 'application/pdf' && item !== '.pdf');
+    const type = String(file.type || '').toLowerCase();
+    const name = String(file.name || '').toLowerCase();
+    return entries.some(entry => entry.endsWith('/*') ? type.startsWith(entry.slice(0, -1)) : entry.startsWith('.') ? name.endsWith(entry) : type === entry);
   }
 
   function renderFiles() {

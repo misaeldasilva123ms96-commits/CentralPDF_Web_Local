@@ -159,6 +159,7 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .action-dock { margin-top: auto; padding-top: 14px; }
 .status-box { border: 1px solid #e1e6ed; background: #f8fafc; color: #667285; border-radius: 9px; padding: 11px; font-size: 10.5px; line-height: 1.45; min-height: 48px; }
 .status-box.processing { color: #765c16; background: #fff9e7; border-color: #efe1ad; }
+.status-box.warning { color: #765c16; background: #fff9e7; border-color: #efe1ad; }
 .status-box.success { color: #256543; background: #eef9f2; border-color: #cee7d7; }
 .status-box.error { color: #9c2938; background: #fff1f2; border-color: #f0c8ce; }
 .progress-track { height: 6px; background: #e9edf3; border-radius: 999px; overflow: hidden; margin-top: 9px; }
