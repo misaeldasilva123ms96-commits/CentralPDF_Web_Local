@@ -71,19 +71,31 @@ try:
               };
               window.addEventListener('unhandledrejection', onUnhandled);
 
-              const loadFixture = async (path, name) => {
-                const response = await fetch(path);
-                if (!response.ok) throw new Error(`fixture ${path}: HTTP ${response.status}`);
-                return new File([await response.arrayBuffer()], name, {type: 'application/pdf'});
+              const buildFixtures = async () => {
+                const source = await PDFLib.PDFDocument.create();
+                source.addPage([420, 595]);
+                const sourceBytes = await source.save();
+                const {PDF} = await import('/vendor/libpdf-core.mjs');
+                const encrypted = await PDF.load(new Uint8Array(sourceBytes));
+                encrypted.setProtection({
+                  userPassword: 'senha-conhecida-do-teste',
+                  algorithm: 'AES-256',
+                  permissions: {print: true, accessibility: true},
+                });
+                return {
+                  corrupted: sourceBytes.slice(0, sourceBytes.length - 32),
+                  encrypted: await encrypted.save(),
+                };
               };
-              const run = async ({path, name, tool, passwordSelector, password}) => {
+              const run = async ({bytes, name, tool, passwordSelector, password}) => {
                 const outputs = [];
                 const listener = event => outputs.push(event.detail.blob);
                 window.addEventListener('centralpdf-result', listener);
                 const originalClick = HTMLAnchorElement.prototype.click;
                 HTMLAnchorElement.prototype.click = function () {};
                 try {
-                  await CentralPDFApp.openFilesInTool([await loadFixture(path, name)], tool);
+                  const source = new File([bytes], name, {type: 'application/pdf'});
+                  await CentralPDFApp.openFilesInTool([source], tool);
                   const fileCount = CentralPDFApp.getFiles().length;
                   const ingestStatus = document.querySelector('#statusBox')?.innerText || '';
                   if (tool === 'diagnose') document.querySelector('#diagnoseJson').checked = false;
@@ -113,28 +125,27 @@ try:
               };
 
               try {
-                const corruptedPath = '/tests/pdf-corpus/cache/generated/truncated.pdf';
-                const encryptedPath = '/tests/pdf-corpus/cache/pdfium/encrypted.pdf';
+                const fixtures = await buildFixtures();
                 return {
                   corruptedDiagnose: await run({
-                    path: corruptedPath, name: 'corrompido.pdf', tool: 'diagnose'
+                    bytes: fixtures.corrupted, name: 'corrompido.pdf', tool: 'diagnose'
                   }),
                   corruptedUnlock: await run({
-                    path: corruptedPath, name: 'corrompido.pdf', tool: 'unlock'
+                    bytes: fixtures.corrupted, name: 'corrompido.pdf', tool: 'unlock'
                   }),
                   encryptedUnlockEmpty: await run({
-                    path: encryptedPath, name: 'criptografado.pdf', tool: 'unlock',
+                    bytes: fixtures.encrypted, name: 'criptografado.pdf', tool: 'unlock',
                     passwordSelector: '#unlockPassword', password: ''
                   }),
                   encryptedUnlockInvalid: await run({
-                    path: encryptedPath, name: 'criptografado.pdf', tool: 'unlock',
+                    bytes: fixtures.encrypted, name: 'criptografado.pdf', tool: 'unlock',
                     passwordSelector: '#unlockPassword', password: 'senha-deliberadamente-incorreta'
                   }),
                   encryptedDiagnose: await run({
-                    path: encryptedPath, name: 'criptografado.pdf', tool: 'diagnose'
+                    bytes: fixtures.encrypted, name: 'criptografado.pdf', tool: 'diagnose'
                   }),
                   encryptedRepair: await run({
-                    path: encryptedPath, name: 'criptografado.pdf', tool: 'repairAdvanced'
+                    bytes: fixtures.encrypted, name: 'criptografado.pdf', tool: 'repairAdvanced'
                   }),
                   unhandled,
                 };
