@@ -60,6 +60,7 @@
 
   async function inspectOwnedPdfBytes(data, metadata, parse) {
     if (!(data instanceof ArrayBuffer) || data.byteLength === 0) throw new PdfIngestError('empty', { stage: 'read' });
+    const size = data.byteLength;
     if (!hasPdfSignature(data)) throw new PdfIngestError('unsupported', { stage: 'signature' });
     if (typeof parse !== 'function') throw new PdfIngestError('worker', { stage: 'engine', engine: 'pdfjs' });
     try {
@@ -70,7 +71,7 @@
         status: 'valid',
         pageCount,
         name: String(metadata?.name || ''),
-        size: data.byteLength,
+        size,
         mimeType: String(metadata?.mimeType ?? metadata?.type ?? '')
       };
     } catch (error) {

@@ -83,6 +83,31 @@ with sync_playwright() as playwright:
     }''')
     page.wait_for_function("CentralPDFApp.getFiles().length === 20")
     assert page.evaluate("CentralPDFApp.getFiles().map(file => file.name)")[-1] == 'seletor.pdf'
+
+    page.evaluate(r'''() => {
+      let releaseEngines;
+      const engineGate = new Promise(resolve => { releaseEngines = resolve; });
+      window.__releaseIngestEngines = releaseEngines;
+      window.__ingestWaitStarted = false;
+      window.CentralPDFEnginesReady = {
+        catch: () => {
+          window.__ingestWaitStarted = true;
+          return engineGate;
+        }
+      };
+      const valid = new Uint8Array([37,80,68,70,45,49,46,55]);
+      const file = new File([valid], 'sessao-antiga.pdf', {type: 'application/pdf'});
+      window.__pendingIngest = CentralPDFApp.openFilesInTool([file], 'merge');
+    }''')
+    page.wait_for_function("window.__ingestWaitStarted === true")
+    page.evaluate(r'''async () => {
+      CentralPDFApp.selectTool('split');
+      window.__releaseIngestEngines();
+      await window.__pendingIngest;
+    }''')
+    assert page.evaluate("CentralPDFApp.getActiveTool()") == 'split'
+    assert page.evaluate("CentralPDFApp.getFiles().length") == 0
+    assert page.locator('#statusBox').inner_text() == 'Adicione um arquivo para continuar.'
     assert not errors, errors
     browser.close()
 

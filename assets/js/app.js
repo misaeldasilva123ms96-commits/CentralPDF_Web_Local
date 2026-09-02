@@ -568,6 +568,7 @@
   };
   const PDFLIB_INGEST_TOOLS = new Set(['organize', 'editPdf', 'merge', 'split', 'extract', 'rotate', 'watermark', 'pageNumbers', 'compress', 'crop', 'metadata', 'normalize', 'redact', 'formBuilder', 'signPdf', 'archivePdf']);
   let fileIngestChain = Promise.resolve();
+  let fileIngestSession = 0;
 
   const $ = selector => document.querySelector(selector);
   const fileInput = $('#fileInput');
@@ -760,6 +761,7 @@
 
   function selectTool(tool) {
     if (!toolConfig[tool]) return;
+    fileIngestSession += 1;
     state.tool = tool;
     document.body.dataset.activeTool = tool;
     state.files = [];
@@ -857,6 +859,7 @@
   }
 
   function clearAll() {
+    fileIngestSession += 1;
     setCompletionState(false);
     state.files = [];
     state.filePreviewCache.clear();
@@ -968,22 +971,33 @@
   function addFiles(files, options = {}) {
     const queuedFiles = Array.from(files || []);
     const queuedTool = state.tool;
+    const queuedSession = fileIngestSession;
     fileIngestChain = fileIngestChain.catch(error => {
       logPdfIngest('queue-recovered', null, error, 'queue');
     }).then(() => {
-      if (state.tool !== queuedTool) {
+      if (state.tool !== queuedTool || fileIngestSession !== queuedSession) {
         logPdfIngest('cancelled', null, new Error('A ferramenta mudou durante a leitura.'), 'queue');
         return;
       }
-      return ingestFiles(queuedFiles, { ...options, queuedTool });
+      return ingestFiles(queuedFiles, { ...options, queuedTool, queuedSession });
     });
     return fileIngestChain;
   }
 
   async function ingestFiles(files, options = {}) {
+    const queuedTool = options.queuedTool || state.tool;
+    const queuedSession = options.queuedSession ?? fileIngestSession;
+    const sessionIsActive = () => state.tool === queuedTool && fileIngestSession === queuedSession;
+    const abortInactiveSession = () => {
+      if (sessionIsActive()) return false;
+      logPdfIngest('cancelled', null, new Error('A ferramenta mudou durante a leitura.'), 'queue');
+      return true;
+    };
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
-    const config = toolConfig[state.tool];
-    const inspected = await inspectIncomingFiles(files, config);
+    if (abortInactiveSession()) return;
+    const config = toolConfig[queuedTool];
+    const inspected = await inspectIncomingFiles(files, config, queuedTool, sessionIsActive);
+    if (!inspected || abortInactiveSession()) return;
     const valid = inspected.valid;
     const rejected = inspected.rejected;
     if (!valid.length) {
@@ -992,21 +1006,26 @@
       return;
     }
     const prospectiveFiles = config.multiple ? [...state.files, ...valid] : valid;
-    const qualityIssues = window.CentralPDFToolQuality?.validateFiles?.(state.tool, prospectiveFiles) || [];
+    const qualityIssues = window.CentralPDFToolQuality?.validateFiles?.(queuedTool, prospectiveFiles) || [];
     const blockingIssue = qualityIssues.find(item => item.level === 'error' && !/Adicione/i.test(item.message));
     if (blockingIssue) { setStatus(blockingIssue.message, 'error'); notifyFilesChanged('rejected'); return; }
 
     // Organizador: o primeiro PDF abre o documento; os demais entram como novas páginas.
-    if (state.tool === 'organize') {
+    if (queuedTool === 'organize') {
       if (!state.files.length) {
         const [base, ...additional] = valid;
         state.files = [base];
         fileInput.value = '';
         renderFiles(); syncOutputName(); updateSteps(2);
         await loadOrganizer(base);
-        if (additional.length) await appendPdfFilesToOrganizer(additional, 'import');
+        if (abortInactiveSession()) return;
+        if (additional.length) {
+          await appendPdfFilesToOrganizer(additional, 'import');
+          if (abortInactiveSession()) return;
+        }
       } else {
         await appendPdfFilesToOrganizer(valid, 'import');
+        if (abortInactiveSession()) return;
       }
       processButton.disabled = !state.organizerPages.length;
       setStatus(ingestSummary(`${valid.length} PDF(s) adicionado(s). As páginas novas foram inseridas no final.`, rejected), rejected.length ? 'warning' : 'success');
@@ -1015,7 +1034,7 @@
     }
 
     // Editor visual: o primeiro PDF abre o editor; os demais são anexados como páginas.
-    if (state.tool === 'editPdf') {
+    if (queuedTool === 'editPdf') {
       try {
         if (!state.files.length) {
           const [base, ...additional] = valid;
@@ -1023,14 +1042,20 @@
           fileInput.value = '';
           renderFiles(); syncOutputName(); updateSteps(2);
           await window.PDFVisualEditor?.loadFile(base);
-          if (additional.length) await window.PDFVisualEditor?.addPdfPages(additional);
+          if (abortInactiveSession()) return;
+          if (additional.length) {
+            await window.PDFVisualEditor?.addPdfPages(additional);
+            if (abortInactiveSession()) return;
+          }
         } else {
           await window.PDFVisualEditor?.addPdfPages(valid);
+          if (abortInactiveSession()) return;
         }
         processButton.disabled = !window.PDFVisualEditor?.hasDocument();
         setStatus(ingestSummary(`${valid.length} PDF(s) adicionado(s) ao editor.`, rejected), rejected.length ? 'warning' : 'success');
         notifyFilesChanged(options.source || 'add');
       } catch (error) {
+        if (abortInactiveSession()) return;
         processButton.disabled = true; setStatus(readablePdfError(error), 'error');
       }
       return;
@@ -1050,27 +1075,36 @@
     renderFiles(); syncOutputName();
     updateSteps(2);
 
-    if (state.tool === 'merge' && added.length) await appendPdfFilesToOrganizer(added, 'merge');
-    if (state.tool === 'split') await loadSplitMetadata(state.files[0]);
-    await loadAdvancedToolMetadata();
-    if (state.tool === 'ocr') await window.CentralPDFOCR?.updatePlan?.(state.files);
-    if (state.tool === 'compare') await window.CentralPDFCompare?.updatePlan?.(state.files);
-    if (state.tool === 'redact') await window.CentralPDFRedaction?.updatePlan?.(state.files);
-    if (state.tool === 'formBuilder') await window.CentralPDFForms?.updatePlan?.(state.files);
-    if (state.tool === 'signPdf') await window.CentralPDFSignatures?.updatePlan?.(state.files);
-    if (['pdfToOffice','documentsToPdf','extractImages','archivePdf'].includes(state.tool)) window.CentralPDFConversions?.updatePlan?.(state.tool, state.files);
-    if (['documentAssistant','structuredExtraction','documentAudit','classifyRename'].includes(state.tool)) window.CentralPDFIntelligence?.updatePlan?.(state.tool, state.files);
+    if (queuedTool === 'merge' && added.length) {
+      await appendPdfFilesToOrganizer(added, 'merge');
+      if (abortInactiveSession()) return;
+    }
+    if (queuedTool === 'split') {
+      await loadSplitMetadata(state.files[0]);
+      if (abortInactiveSession()) return;
+    }
+    const metadataLoaded = await loadAdvancedToolMetadata(queuedTool, sessionIsActive);
+    if (metadataLoaded === false || abortInactiveSession()) return;
+    if (queuedTool === 'ocr') await window.CentralPDFOCR?.updatePlan?.(state.files);
+    if (queuedTool === 'compare') await window.CentralPDFCompare?.updatePlan?.(state.files);
+    if (queuedTool === 'redact') await window.CentralPDFRedaction?.updatePlan?.(state.files);
+    if (queuedTool === 'formBuilder') await window.CentralPDFForms?.updatePlan?.(state.files);
+    if (queuedTool === 'signPdf') await window.CentralPDFSignatures?.updatePlan?.(state.files);
+    if (abortInactiveSession()) return;
+    if (['pdfToOffice','documentsToPdf','extractImages','archivePdf'].includes(queuedTool)) window.CentralPDFConversions?.updatePlan?.(queuedTool, state.files);
+    if (['documentAssistant','structuredExtraction','documentAudit','classifyRename'].includes(queuedTool)) window.CentralPDFIntelligence?.updatePlan?.(queuedTool, state.files);
 
-    processButton.disabled = state.tool === 'merge' ? mergePdfSources().length < 2 || !state.organizerPages.length : state.tool === 'compare' ? state.files.length !== 2 : ['redact','formBuilder','signPdf'].includes(state.tool) ? state.files.length !== 1 : state.files.length === 0;
+    processButton.disabled = queuedTool === 'merge' ? mergePdfSources().length < 2 || !state.organizerPages.length : queuedTool === 'compare' ? state.files.length !== 2 : ['redact','formBuilder','signPdf'].includes(queuedTool) ? state.files.length !== 1 : state.files.length === 0;
     setStatus(ingestSummary(`${added.length || valid.length} arquivo(s) adicionado(s). Você pode continuar arrastando outros arquivos para esta tela.`, rejected), rejected.length ? 'warning' : 'success');
     notifyFilesChanged(options.source || 'add');
   }
 
-  async function inspectIncomingFiles(files, config) {
+  async function inspectIncomingFiles(files, config, queuedTool, sessionIsActive) {
     const valid = [];
     const rejected = [];
     const acceptsPdf = /application\/pdf|\.pdf(?:,|$)/i.test(config.accept || '');
     for (const file of files) {
+      if (!sessionIsActive()) return null;
       if (!file || Number(file.size || 0) === 0) {
         const ingest = window.CentralPDFIngest;
         const message = ingest?.PdfIngestError
@@ -1089,16 +1123,18 @@
       }
       try {
         logPdfIngest('received', file, null, 'received');
-        const result = await window.CentralPDFIngest.inspectPdfFile(file, { parse: parsePdfForIngest });
+        const result = await window.CentralPDFIngest.inspectPdfFile(file, { parse: bytes => parsePdfForIngest(bytes, queuedTool) });
+        if (!sessionIsActive()) return null;
         state.filePageCounts.set(getFileCacheKey(file), result.pageCount);
         valid.push(file);
         logPdfIngest('metadata-ready', file, null, 'metadata');
       } catch (error) {
+        if (!sessionIsActive()) return null;
         const recoverableForTool = (
-          ['unlock', 'diagnose', 'repairAdvanced'].includes(state.tool)
+          ['unlock', 'diagnose', 'repairAdvanced'].includes(queuedTool)
           && ['encrypted', 'unsupportedEncryption'].includes(error?.code)
         ) || (
-          ['diagnose', 'repairAdvanced'].includes(state.tool)
+          ['diagnose', 'repairAdvanced'].includes(queuedTool)
           && error?.code === 'corrupted'
         );
         if (recoverableForTool) {
@@ -1111,13 +1147,13 @@
       }
     }
     if (rejected.length) {
-      window.CentralPDFStable?.addLog?.('aviso', `${rejected.length} arquivo(s) não passaram pela inspeção de entrada.`, `entrada: ${state.tool}`);
+      window.CentralPDFStable?.addLog?.('aviso', `${rejected.length} arquivo(s) não passaram pela inspeção de entrada.`, `entrada: ${queuedTool}`);
     }
     return { valid, rejected };
   }
 
-  async function parsePdfForIngest(ownedBytes) {
-    if (PDFLIB_INGEST_TOOLS.has(state.tool)) {
+  async function parsePdfForIngest(ownedBytes, tool = state.tool) {
+    if (PDFLIB_INGEST_TOOLS.has(tool)) {
       if (!window.PDFLib?.PDFDocument) throw Object.assign(new Error('pdf-lib não está disponível.'), { name: 'PDFLibUnavailableError', engine: 'pdf-lib' });
       try {
         const document = await window.PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false });
@@ -1499,22 +1535,29 @@
     });
   }
 
-  async function loadAdvancedToolMetadata() {
+  async function loadAdvancedToolMetadata(tool = state.tool, sessionIsActive = () => true) {
     if (!window.PDFLib || !state.files.length) { refreshAdvancedPreviews(); return; }
     const pdfTools = new Set(['merge','extract','rotate','watermark','pageNumbers','compress','pdfToImage','crop']);
-    if (!pdfTools.has(state.tool)) return;
+    if (!pdfTools.has(tool)) return;
     for (const file of state.files) {
+      if (!sessionIsActive()) return false;
       const key = getFileCacheKey(file);
       if (state.filePageCounts.has(key)) continue;
       try {
-        const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false, updateMetadata: false });
+        const bytes = await file.arrayBuffer();
+        if (!sessionIsActive()) return false;
+        const doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false, updateMetadata: false });
+        if (!sessionIsActive()) return false;
         state.filePageCounts.set(key, doc.getPageCount());
       } catch (_) {
+        if (!sessionIsActive()) return false;
         state.filePageCounts.set(key, 0);
       }
     }
+    if (!sessionIsActive()) return false;
     state.toolPageCount = state.files[0] ? Number(state.filePageCounts.get(getFileCacheKey(state.files[0])) || 0) : 0;
     refreshAdvancedPreviews();
+    return true;
   }
 
   function refreshAdvancedPreviews() {

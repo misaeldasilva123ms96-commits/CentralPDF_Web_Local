@@ -78,5 +78,15 @@ async function realPdfBytes() {
   });
   assert.equal(largeOwner.byteLength, 50 * 1024 * 1024, 'a ingestão grande deve preservar o buffer proprietário');
 
+  const fileBytes = new Uint8Array(validBytes).slice().buffer;
+  const transferredFile = {
+    name: 'transferido.pdf', type: 'application/pdf', size: fileBytes.byteLength,
+    arrayBuffer: async () => fileBytes
+  };
+  const transferredInspection = await inspectPdfFile(transferredFile, {
+    parse: async bytes => { structuredClone(bytes, { transfer: [bytes] }); return { pageCount: 1 }; }
+  });
+  assert.equal(transferredInspection.size, transferredFile.size, 'o tamanho do arquivo deve sobreviver ao buffer transferido pelo parser');
+
   console.log('pdf-ingest: passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });
