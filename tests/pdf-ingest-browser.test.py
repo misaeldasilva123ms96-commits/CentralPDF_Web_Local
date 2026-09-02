@@ -13,17 +13,33 @@ mock = r'''
 <script>
 window.PDFLib = {
   PDFDocument: {
-    load: async () => ({
-      getPageCount: () => 1,
-      getPageIndices: () => [0],
-      getPage: () => ({ getSize: () => ({ width: 595, height: 842 }), getRotation: () => ({angle: 0}) }),
-      getTitle: () => '', getAuthor: () => '', getSubject: () => '', getKeywords: () => [],
-      getCreator: () => '', getProducer: () => ''
-    })
+    load: async (_bytes, options = {}) => {
+      const gate = window.__helperLoadGate;
+      if (!Object.prototype.hasOwnProperty.call(options, 'updateMetadata') && gate) {
+        window.__helperLoadStarted = true;
+        await gate;
+      }
+      return {
+        getPageCount: () => 1,
+        getPageIndices: () => [0],
+        getPage: () => ({ getSize: () => ({ width: 595, height: 842 }), getRotation: () => ({angle: 0}) }),
+        getTitle: () => '', getAuthor: () => '', getSubject: () => '', getKeywords: () => [],
+        getCreator: () => '', getProducer: () => ''
+      };
+    }
   },
   degrees: value => value,
   StandardFonts: { HelveticaBold: 'HelveticaBold' },
   rgb: () => ({})
+};
+window.__startHelperLoadGate = () => {
+  window.__helperLoadStarted = false;
+  window.__helperLoadGate = new Promise(resolve => {
+    window.__releaseHelperLoad = () => {
+      window.__helperLoadGate = null;
+      resolve();
+    };
+  });
 };
 window.fetch = async () => ({ok: true, text: async () => ''});
 </script>
@@ -108,6 +124,76 @@ with sync_playwright() as playwright:
     assert page.evaluate("CentralPDFApp.getActiveTool()") == 'split'
     assert page.evaluate("CentralPDFApp.getFiles().length") == 0
     assert page.locator('#statusBox').inner_text() == 'Adicione um arquivo para continuar.'
+
+    page.evaluate(r'''async () => {
+      const bytes = new Uint8Array([37,80,68,70,45,49,46,55]);
+      await CentralPDFApp.openFilesInTool([new File([bytes], 'organizador-ativo.pdf', {type: 'application/pdf'})], 'organize');
+    }''')
+    assert page.locator('#pageGrid .page-card').count() == 1
+    assert '1 PDF(s) adicionado(s)' in page.locator('#statusBox').inner_text()
+
+    page.evaluate(r'''async () => {
+      const bytes = new Uint8Array([37,80,68,70,45,49,46,55]);
+      await CentralPDFApp.openFilesInTool([new File([bytes], 'divisao-ativa.pdf', {type: 'application/pdf'})], 'split');
+    }''')
+    assert 'divisao-ativa.pdf' in page.locator('#splitDocumentInfo').inner_text()
+    assert page.locator('#splitPlanCount').inner_text() == '1 arquivo'
+    assert not page.locator('#processButton').is_disabled()
+
+    # A session can also become stale inside the organizer/split helpers, after
+    # inspection has completed but while pdf-lib is still loading the document.
+    page.evaluate(r'''() => {
+      window.__startHelperLoadGate();
+      const file = new File([new Uint8Array([37,80,68,70,45,49,46,55])], 'organizador-antigo.pdf', {type: 'application/pdf'});
+      window.__pendingHelperIngest = CentralPDFApp.openFilesInTool([file], 'organize');
+    }''')
+    page.wait_for_function("window.__helperLoadStarted === true")
+    page.evaluate(r'''async () => {
+      CentralPDFApp.selectTool('split');
+      window.__releaseHelperLoad();
+      await window.__pendingHelperIngest;
+    }''')
+    assert page.evaluate("CentralPDFApp.getActiveTool()") == 'split'
+    assert page.evaluate("CentralPDFApp.getFiles().length") == 0
+    assert page.locator('#pageGrid .page-card').count() == 0
+    assert page.locator('#pageCountLabel').inner_text() == '0 páginas'
+    assert page.locator('#statusBox').inner_text() == 'Adicione um arquivo para continuar.'
+    assert page.locator('#progressTrack').is_hidden()
+
+    page.evaluate(r'''() => {
+      window.__startHelperLoadGate();
+      const file = new File([new Uint8Array([37,80,68,70,45,49,46,55])], 'fonte-antiga.pdf', {type: 'application/pdf'});
+      window.__pendingHelperIngest = CentralPDFApp.openFilesInTool([file], 'merge');
+    }''')
+    page.wait_for_function("window.__helperLoadStarted === true")
+    page.evaluate(r'''async () => {
+      CentralPDFApp.selectTool('split');
+      window.__releaseHelperLoad();
+      await window.__pendingHelperIngest;
+    }''')
+    assert page.evaluate("CentralPDFApp.getActiveTool()") == 'split'
+    assert page.evaluate("CentralPDFApp.getFiles().length") == 0
+    assert page.locator('#pageGrid .page-card').count() == 0
+    assert page.locator('#pageCountLabel').inner_text() == '0 páginas'
+    assert page.locator('#statusBox').inner_text() == 'Adicione um arquivo para continuar.'
+
+    page.evaluate(r'''() => {
+      window.__startHelperLoadGate();
+      const file = new File([new Uint8Array([37,80,68,70,45,49,46,55])], 'divisao-antiga.pdf', {type: 'application/pdf'});
+      window.__pendingHelperIngest = CentralPDFApp.openFilesInTool([file], 'split');
+    }''')
+    page.wait_for_function("window.__helperLoadStarted === true")
+    page.evaluate(r'''async () => {
+      CentralPDFApp.selectTool('organize');
+      CentralPDFApp.selectTool('split');
+      window.__releaseHelperLoad();
+      await window.__pendingHelperIngest;
+    }''')
+    assert page.evaluate("CentralPDFApp.getActiveTool()") == 'split'
+    assert page.evaluate("CentralPDFApp.getFiles().length") == 0
+    assert 'Adicione um PDF' in page.locator('#splitDocumentInfo').inner_text()
+    assert page.locator('#splitPlanCount').inner_text() == '0 arquivos'
+    assert page.locator('#processButton').is_disabled()
     assert not errors, errors
     browser.close()
 

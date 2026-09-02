@@ -770,6 +770,7 @@
     state.toolPageCount = 0;
     state.filePageCounts.clear();
     resetOrganizer();
+    setProgress(null);
     updateOrganizerModeUI();
     window.PDFVisualEditor?.reset();
     homeView.classList.add('hidden');
@@ -870,6 +871,7 @@
     state.toolPageCount = 0;
     state.filePageCounts.clear();
     resetOrganizer();
+    setProgress(null);
     window.PDFVisualEditor?.reset();
     fileInput.value = '';
     dropzone.classList.remove('compact');
@@ -1017,14 +1019,14 @@
         state.files = [base];
         fileInput.value = '';
         renderFiles(); syncOutputName(); updateSteps(2);
-        await loadOrganizer(base);
+        await loadOrganizer(base, sessionIsActive);
         if (abortInactiveSession()) return;
         if (additional.length) {
-          await appendPdfFilesToOrganizer(additional, 'import');
+          await appendPdfFilesToOrganizer(additional, 'import', sessionIsActive);
           if (abortInactiveSession()) return;
         }
       } else {
-        await appendPdfFilesToOrganizer(valid, 'import');
+        await appendPdfFilesToOrganizer(valid, 'import', sessionIsActive);
         if (abortInactiveSession()) return;
       }
       processButton.disabled = !state.organizerPages.length;
@@ -1076,11 +1078,11 @@
     updateSteps(2);
 
     if (queuedTool === 'merge' && added.length) {
-      await appendPdfFilesToOrganizer(added, 'merge');
+      await appendPdfFilesToOrganizer(added, 'merge', sessionIsActive);
       if (abortInactiveSession()) return;
     }
     if (queuedTool === 'split') {
-      await loadSplitMetadata(state.files[0]);
+      await loadSplitMetadata(state.files[0], sessionIsActive);
       if (abortInactiveSession()) return;
     }
     const metadataLoaded = await loadAdvancedToolMetadata(queuedTool, sessionIsActive);
@@ -1933,12 +1935,16 @@
     });
   }
 
-  async function loadSplitMetadata(file) {
-    if (!file || !window.PDFLib) return;
+  async function loadSplitMetadata(file, sessionIsActive = () => true) {
+    if (!sessionIsActive() || !file || !window.PDFLib) return false;
     const info = $('#splitDocumentInfo');
     try {
+      if (!sessionIsActive()) return false;
       if (info) info.innerHTML = '<strong>Documento</strong><p>Lendo a quantidade de páginas...</p>';
-      const document = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false });
+      const bytes = await file.arrayBuffer();
+      if (!sessionIsActive()) return false;
+      const document = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false });
+      if (!sessionIsActive()) return false;
       state.splitPageCount = document.getPageCount();
       const groupsInput = $('#splitCustomGroups');
       if (groupsInput && !groupsInput.value.trim()) {
@@ -1950,11 +1956,14 @@
       }
       if (info) info.innerHTML = `<strong>${escapeHtml(file.name)}</strong><p>${state.splitPageCount} página(s) • ${formatBytes(file.size)}</p>`;
       updateSplitPlanPreview();
+      return true;
     } catch (error) {
+      if (!sessionIsActive()) return false;
       state.splitPageCount = 0;
       state.splitPlan = [];
       if (info) info.innerHTML = `<strong>Não foi possível analisar</strong><p>${escapeHtml(readablePdfError(error))}</p>`;
       updateSplitPlanPreview();
+      return true;
     }
   }
 
@@ -2060,17 +2069,21 @@
     }
   }
 
-  async function appendPdfFilesToOrganizer(files, prefix = 'import') {
-    if (!files.length) return;
+  async function appendPdfFilesToOrganizer(files, prefix = 'import', sessionIsActive = () => true) {
+    if (!sessionIsActive() || !files.length) return false;
     if (!window.PDFLib) throw new Error('O motor de PDF não carregou.');
     const additions = [];
     for (const file of files) {
+      if (!sessionIsActive()) return false;
       const fileKey = getFileCacheKey(file);
       if (prefix === 'merge') {
         const existing = [...state.organizerSources.values()].some(source => source.fileKey === fileKey);
         if (existing) continue;
       }
-      const document = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false });
+      const bytes = await file.arrayBuffer();
+      if (!sessionIsActive()) return false;
+      const document = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false });
+      if (!sessionIsActive()) return false;
       const sourceKey = nextOrganizerSourceKey(prefix);
       const pageSizes = document.getPageIndices().map(index => document.getPage(index).getSize());
       state.organizerSources.set(sourceKey, { kind: 'pdf', file, fileKey, name: file.name, pageCount: document.getPageCount(), pageSizes });
@@ -2080,14 +2093,16 @@
         additions.push({ id: nextOrganizerPageId(), kind: 'pdf', sourceKey, sourceIndex, sourceFileKey: fileKey, sourceFile: file, rotation: 0, origin: file.name, width: size.width, height: size.height });
       });
     }
-    if (!additions.length) return;
+    if (!sessionIsActive() || !additions.length) return false;
     if (state.organizerPages.length) pushOrganizerHistory();
     state.organizerPages.push(...additions);
     state.originalOrganizerPages = snapshotOrganizerPages();
     if (prefix === 'merge' && ($('#mergeSourceSort')?.value || 'nameAsc') === 'nameAsc') applyDefaultMergeNameOrder();
     dropzone.classList.add('compact');
-    await renderOrganizerPreviews();
+    const rendered = await renderOrganizerPreviews(sessionIsActive);
+    if (rendered === false || !sessionIsActive()) return false;
     updateMergePreview();
+    return true;
   }
 
   function mergeSourceKeyForFile(file) {
@@ -2133,23 +2148,32 @@
     organizerSection.classList.toggle('hidden', !['organize', 'merge'].includes(state.tool));
   }
 
-  async function loadOrganizer(file) {
-    if (!file) return;
-    if (!window.PDFLib) { setStatus('O motor de PDF não carregou. Verifique a conexão com a internet.', 'error'); return; }
+  async function loadOrganizer(file, sessionIsActive = () => true) {
+    if (!sessionIsActive() || !file) return false;
+    if (!window.PDFLib) { setStatus('O motor de PDF não carregou. Verifique a conexão com a internet.', 'error'); return false; }
     setStatus('Lendo as páginas do documento...', 'processing');
     setProgress(8);
     try {
       resetOrganizer();
-      const document = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false });
+      const bytes = await file.arrayBuffer();
+      if (!sessionIsActive()) return false;
+      const document = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false });
+      if (!sessionIsActive()) return false;
       const sourceKey = 'main';
       state.organizerSources.set(sourceKey, { kind: 'pdf', file, fileKey: getFileCacheKey(file), name: file.name, pageCount: document.getPageCount(), pageSizes: document.getPageIndices().map(index => document.getPage(index).getSize()) });
       state.organizerPages = document.getPageIndices().map(sourceIndex => { const size = document.getPage(sourceIndex).getSize(); return { id: nextOrganizerPageId(), kind: 'pdf', sourceKey, sourceIndex, sourceFileKey: getFileCacheKey(file), sourceFile: file, rotation: 0, origin: file.name, width: size.width, height: size.height }; });
       state.originalOrganizerPages = snapshotOrganizerPages();
       dropzone.classList.add('compact');
-      await renderOrganizerPreviews();
+      const rendered = await renderOrganizerPreviews(sessionIsActive);
+      if (rendered === false || !sessionIsActive()) return false;
       setStatus(`${state.organizerPages.length} página(s) carregada(s). Você pode editar cada página individualmente ou em lote.`, 'success');
-    } catch (error) { console.error(error); setStatus(readablePdfError(error), 'error'); }
-    finally { setProgress(null); }
+      return true;
+    } catch (error) {
+      if (!sessionIsActive()) return false;
+      console.error(error); setStatus(readablePdfError(error), 'error');
+      return false;
+    }
+    finally { if (sessionIsActive()) setProgress(null); }
   }
 
   async function ensurePdfWorker() {
@@ -2162,7 +2186,8 @@
     state.workerReady = Boolean(options?.workerPort || options?.workerSrc);
   }
 
-  async function renderOrganizerPreviews() {
+  async function renderOrganizerPreviews(sessionIsActive = () => true) {
+    if (!sessionIsActive()) return false;
     if (state.organizerPreviewObserver) state.organizerPreviewObserver.disconnect();
     state.organizerPreviewObserver = null;
     state.organizerPreviewQueue = [];
@@ -2181,40 +2206,66 @@
       setProgress(null);
       setStatus(`${total} páginas carregadas. As miniaturas serão renderizadas conforme você rolar a tela, economizando memória.`, 'success');
       updateOrganizerBulkToolbar();
-      return;
+      return true;
     }
 
     const pdfDocs = new Map();
-    if (window.pdfjsLib) {
-      try {
-        await ensurePdfWorker();
-        const keys = [...new Set(state.organizerPages.filter(page => page.kind === 'pdf').map(page => page.sourceKey))];
-        for (const key of keys) {
-          const source = state.organizerSources.get(key);
-          if (!source?.file) continue;
-          try { pdfDocs.set(key, await window.pdfjsLib.getDocument({ data: new Uint8Array(await source.file.arrayBuffer()) }).promise); }
-          catch (error) { console.warn('Falha ao abrir fonte de miniaturas', source.name, error); }
-        }
-      } catch (error) { console.warn('Miniaturas PDF indisponíveis.', error); }
-    }
-    for (let index = 0; index < total; index++) {
-      const page = state.organizerPages[index];
-      const key = organizerPreviewKey(page);
-      let preview = state.previewCache.get(key);
-      if (!preview) {
+    try {
+      if (window.pdfjsLib) {
         try {
-          if (page.kind === 'pdf' && pdfDocs.get(page.sourceKey)) preview = await renderPdfPagePreview(pdfDocs.get(page.sourceKey), page.sourceIndex);
-          else if (page.kind === 'image') preview = await renderImagePagePreview(state.organizerSources.get(page.sourceKey)?.file);
-          else if (page.kind === 'blank') preview = createBlankPagePreview(page);
-          if (preview) state.previewCache.set(key, preview);
-        } catch (error) { console.warn('Falha ao renderizar página do organizador', error); }
+          await ensurePdfWorker();
+          if (!sessionIsActive()) return false;
+          const keys = [...new Set(state.organizerPages.filter(page => page.kind === 'pdf').map(page => page.sourceKey))];
+          for (const key of keys) {
+            if (!sessionIsActive()) return false;
+            const source = state.organizerSources.get(key);
+            if (!source?.file) continue;
+            try {
+              const bytes = await source.file.arrayBuffer();
+              if (!sessionIsActive()) return false;
+              const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
+              if (!sessionIsActive()) { try { await pdf.destroy(); } catch (_) {} return false; }
+              pdfDocs.set(key, pdf);
+            } catch (error) {
+              if (!sessionIsActive()) return false;
+              console.warn('Falha ao abrir fonte de miniaturas', source.name, error);
+            }
+          }
+        } catch (error) {
+          if (!sessionIsActive()) return false;
+          console.warn('Miniaturas PDF indisponíveis.', error);
+        }
       }
-      createPageCard(index, preview);
-      setProgress(10 + Math.round(((index + 1) / Math.max(1, total)) * 85));
-      if ((index + 1) % 30 === 0) await yieldToBrowser();
+      for (let index = 0; index < total; index++) {
+        if (!sessionIsActive()) return false;
+        const page = state.organizerPages[index];
+        const key = organizerPreviewKey(page);
+        let preview = state.previewCache.get(key);
+        if (!preview) {
+          try {
+            if (page.kind === 'pdf' && pdfDocs.get(page.sourceKey)) preview = await renderPdfPagePreview(pdfDocs.get(page.sourceKey), page.sourceIndex);
+            else if (page.kind === 'image') preview = await renderImagePagePreview(state.organizerSources.get(page.sourceKey)?.file);
+            else if (page.kind === 'blank') preview = createBlankPagePreview(page);
+            if (!sessionIsActive()) return false;
+            if (preview) state.previewCache.set(key, preview);
+          } catch (error) {
+            if (!sessionIsActive()) return false;
+            console.warn('Falha ao renderizar página do organizador', error);
+          }
+        }
+        createPageCard(index, preview);
+        setProgress(10 + Math.round(((index + 1) / Math.max(1, total)) * 85));
+        if ((index + 1) % 30 === 0) {
+          await yieldToBrowser();
+          if (!sessionIsActive()) return false;
+        }
+      }
+    } finally {
+      await Promise.allSettled([...pdfDocs.values()].map(async pdf => { try { await pdf.destroy(); } catch (_) {} }));
     }
-    for (const pdf of pdfDocs.values()) { try { await pdf.destroy(); } catch (_) {} }
+    if (!sessionIsActive()) return false;
     updateOrganizerBulkToolbar();
+    return true;
   }
 
   function setupOrganizerLazyPreviews() {
