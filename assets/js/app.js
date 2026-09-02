@@ -1322,6 +1322,10 @@
   }
 
   function removeFile(index) {
+    fileIngestSession += 1;
+    state.organizerPreviewObserver?.disconnect();
+    state.organizerPreviewQueue = [];
+    state.organizerPreviewActive = 0;
     const file = state.files[index];
     if (state.tool === 'split') { state.splitPageCount = 0; state.splitPlan = []; }
     if (file) state.selectedFileKeys.delete(getFileCacheKey(file));
@@ -1366,6 +1370,10 @@
 
   function removeSelectedFiles() {
     if (!state.selectedFileKeys.size) return;
+    fileIngestSession += 1;
+    state.organizerPreviewObserver?.disconnect();
+    state.organizerPreviewQueue = [];
+    state.organizerPreviewActive = 0;
     const removedFiles = state.files.filter(file => state.selectedFileKeys.has(getFileCacheKey(file)));
     state.files = state.files.filter(file => !state.selectedFileKeys.has(getFileCacheKey(file)));
     if (state.tool === 'merge') removedFiles.forEach(removeMergeFilePages);
@@ -2202,7 +2210,7 @@
         const page = state.organizerPages[index];
         createPageCard(index, state.previewCache.get(organizerPreviewKey(page)), true);
       }
-      setupOrganizerLazyPreviews();
+      setupOrganizerLazyPreviews(sessionIsActive);
       setProgress(null);
       setStatus(`${total} páginas carregadas. As miniaturas serão renderizadas conforme você rolar a tela, economizando memória.`, 'success');
       updateOrganizerBulkToolbar();
@@ -2268,41 +2276,59 @@
     return true;
   }
 
-  function setupOrganizerLazyPreviews() {
+  function setupOrganizerLazyPreviews(sessionIsActive = () => true) {
+    if (!sessionIsActive()) return;
     if (state.organizerPreviewObserver) state.organizerPreviewObserver.disconnect();
-    state.organizerPreviewObserver = new IntersectionObserver(entries => {
+    const observer = new IntersectionObserver(entries => {
+      if (!sessionIsActive()) return;
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
-        state.organizerPreviewObserver.unobserve(entry.target);
-        state.organizerPreviewQueue.push(entry.target);
+        observer.unobserve(entry.target);
+        state.organizerPreviewQueue.push({ card: entry.target, sessionIsActive });
       });
       processOrganizerPreviewQueue();
     }, { root: null, rootMargin: '700px 0px', threshold: 0.01 });
-    pageGrid.querySelectorAll('.page-card[data-preview-pending="true"]').forEach(card => state.organizerPreviewObserver.observe(card));
+    state.organizerPreviewObserver = observer;
+    pageGrid.querySelectorAll('.page-card[data-preview-pending="true"]').forEach(card => observer.observe(card));
   }
 
-  async function ensureOrganizerPreviewPdf(sourceKey) {
+  async function ensureOrganizerPreviewPdf(sourceKey, sessionIsActive = () => true) {
+    if (!sessionIsActive()) return null;
     if (state.organizerPreviewPdfDocs.has(sourceKey)) return state.organizerPreviewPdfDocs.get(sourceKey);
     const source = state.organizerSources.get(sourceKey);
     if (!source?.file || !window.pdfjsLib) return null;
     await ensurePdfWorker();
-    const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await source.file.arrayBuffer()) }).promise;
+    if (!sessionIsActive()) return null;
+    const bytes = await source.file.arrayBuffer();
+    if (!sessionIsActive()) return null;
+    const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
+    if (!sessionIsActive()) {
+      try { await pdf.destroy(); } catch (_) {}
+      return null;
+    }
     state.organizerPreviewPdfDocs.set(sourceKey, pdf);
     return pdf;
   }
 
   function processOrganizerPreviewQueue() {
     while (state.organizerPreviewActive < 2 && state.organizerPreviewQueue.length) {
-      const card = state.organizerPreviewQueue.shift();
-      if (!card?.isConnected) continue;
+      const queued = state.organizerPreviewQueue.shift();
+      const card = queued?.card || queued;
+      const sessionIsActive = queued?.sessionIsActive || (() => card?.isConnected);
+      if (!sessionIsActive() || !card?.isConnected) continue;
       state.organizerPreviewActive += 1;
-      loadOrganizerCardPreview(card)
+      loadOrganizerCardPreview(card, sessionIsActive)
         .catch(error => console.warn('Miniatura sob demanda indisponível.', error))
-        .finally(() => { state.organizerPreviewActive -= 1; processOrganizerPreviewQueue(); });
+        .finally(() => {
+          if (!sessionIsActive()) return;
+          state.organizerPreviewActive = Math.max(0, state.organizerPreviewActive - 1);
+          processOrganizerPreviewQueue();
+        });
     }
   }
 
-  async function loadOrganizerCardPreview(card) {
+  async function loadOrganizerCardPreview(card, sessionIsActive = () => card?.isConnected) {
+    if (!sessionIsActive() || !card?.isConnected) return;
     const pageId = card.dataset.pageId;
     const page = state.organizerPages.find(item => item.id === pageId);
     if (!page) return;
@@ -2310,10 +2336,12 @@
     let preview = state.previewCache.get(key);
     if (!preview) {
       if (page.kind === 'pdf') {
-        const pdf = await ensureOrganizerPreviewPdf(page.sourceKey);
+        const pdf = await ensureOrganizerPreviewPdf(page.sourceKey, sessionIsActive);
+        if (!sessionIsActive() || !card.isConnected) return;
         if (pdf) preview = await renderPdfPagePreview(pdf, page.sourceIndex);
       } else if (page.kind === 'image') preview = await renderImagePagePreview(state.organizerSources.get(page.sourceKey)?.file);
       else preview = createBlankPagePreview(page);
+      if (!sessionIsActive() || !card.isConnected) return;
       if (preview) state.previewCache.set(key, preview);
     }
     if (!preview || !card.isConnected) return;

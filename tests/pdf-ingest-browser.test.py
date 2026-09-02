@@ -19,9 +19,10 @@ window.PDFLib = {
         window.__helperLoadStarted = true;
         await gate;
       }
+      const pageCount = Number(window.__mockPageCount || 1);
       return {
-        getPageCount: () => 1,
-        getPageIndices: () => [0],
+        getPageCount: () => pageCount,
+        getPageIndices: () => Array.from({length: pageCount}, (_, index) => index),
         getPage: () => ({ getSize: () => ({ width: 595, height: 842 }), getRotation: () => ({angle: 0}) }),
         getTitle: () => '', getAuthor: () => '', getSubject: () => '', getKeywords: () => [],
         getCreator: () => '', getProducer: () => ''
@@ -190,6 +191,90 @@ with sync_playwright() as playwright:
       await window.__pendingHelperIngest;
     }''')
     assert page.evaluate("CentralPDFApp.getActiveTool()") == 'split'
+    assert page.evaluate("CentralPDFApp.getFiles().length") == 0
+    assert 'Adicione um PDF' in page.locator('#splitDocumentInfo').inner_text()
+    assert page.locator('#splitPlanCount').inner_text() == '0 arquivos'
+    assert page.locator('#processButton').is_disabled()
+
+    page.evaluate(r'''async () => {
+      window.__mockPageCount = 180;
+      window.__previewObservers = [];
+      window.IntersectionObserver = class {
+        constructor(callback) {
+          this.callback = callback;
+          this.targets = [];
+          window.__previewObservers.push(this);
+        }
+        observe(target) { this.targets.push(target); }
+        unobserve(target) { this.targets = this.targets.filter(item => item !== target); }
+        disconnect() { this.targets = []; }
+      };
+      window.__triggerLatestPreview = () => {
+        const observer = window.__previewObservers.at(-1);
+        const target = observer?.targets[0];
+        if (!target) throw new Error('Nenhuma miniatura pendente.');
+        observer.callback([{isIntersecting: true, target}]);
+      };
+      const bytes = new Uint8Array([37,80,68,70,45,49,46,55,1]);
+      const file = new File([bytes], 'organizador-lento.pdf', {type: 'application/pdf'});
+      const originalArrayBuffer = file.arrayBuffer.bind(file);
+      file.arrayBuffer = async () => {
+        const data = await originalArrayBuffer();
+        if (window.__gateLazyPreview) {
+          window.__lazyPreviewStarted = true;
+          await window.__lazyPreviewGate;
+          window.__lazyPreviewReleased = true;
+        }
+        return data;
+      };
+      await CentralPDFApp.openFilesInTool([file], 'organize');
+      window.__pdfLoads = [];
+      window.__pdfRenders = [];
+      window.pdfjsLib = {
+        GlobalWorkerOptions: {workerSrc: 'mock-worker'},
+        getDocument: ({data}) => {
+          const marker = data[data.length - 1];
+          window.__pdfLoads.push(marker);
+          return {promise: Promise.resolve({
+            getPage: async () => ({
+              getViewport: ({scale}) => ({width: 100 * scale, height: 100 * scale}),
+              render: () => ({promise: Promise.resolve().then(() => window.__pdfRenders.push(marker))}),
+            }),
+            destroy: async () => {},
+          })};
+        },
+      };
+      window.__lazyPreviewStarted = false;
+      window.__lazyPreviewReleased = false;
+      window.__lazyPreviewGate = new Promise(resolve => { window.__releaseLazyPreview = resolve; });
+      window.__gateLazyPreview = true;
+      window.__triggerLatestPreview();
+    }''')
+    page.wait_for_function("window.__lazyPreviewStarted === true")
+    page.evaluate(r'''async () => {
+      window.__gateLazyPreview = false;
+      const bytes = new Uint8Array([37,80,68,70,45,49,46,55,2]);
+      await CentralPDFApp.openFilesInTool([new File([bytes], 'organizador-novo.pdf', {type: 'application/pdf'})], 'organize');
+    }''')
+    page.evaluate("window.__releaseLazyPreview()")
+    page.wait_for_function("window.__lazyPreviewReleased === true")
+    page.evaluate("window.__triggerLatestPreview()")
+    page.wait_for_function("window.__pdfLoads.includes(2)")
+    page.wait_for_function("window.__pdfRenders.length > 0")
+    assert 1 not in page.evaluate("window.__pdfLoads"), page.evaluate("window.__pdfLoads")
+    assert page.evaluate("window.__pdfRenders.at(-1)") == 2
+
+    page.evaluate(r'''() => {
+      window.__startHelperLoadGate();
+      const file = new File([new Uint8Array([37,80,68,70,45,49,46,55])], 'divisao-removida.pdf', {type: 'application/pdf'});
+      window.__pendingHelperIngest = CentralPDFApp.openFilesInTool([file], 'split');
+    }''')
+    page.wait_for_function("window.__helperLoadStarted === true")
+    page.locator('.file-card-remove').click()
+    page.evaluate(r'''async () => {
+      window.__releaseHelperLoad();
+      await window.__pendingHelperIngest;
+    }''')
     assert page.evaluate("CentralPDFApp.getFiles().length") == 0
     assert 'Adicione um PDF' in page.locator('#splitDocumentInfo').inner_text()
     assert page.locator('#splitPlanCount').inner_text() == '0 arquivos'
