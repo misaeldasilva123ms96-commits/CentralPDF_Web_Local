@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PDFDocument } from 'pdf-lib';
@@ -6,6 +6,14 @@ import { useAppStore } from '../store/app-store';
 import { centralCatalog, createDefaultRegistry } from '../core/catalog';
 import { App } from '../App';
 import type { ToolDefinition } from '../core/types';
+
+vi.mock('../tools/pdf-engine', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../tools/pdf-engine')>();
+  return {
+    ...actual,
+    loadPdf: vi.fn(async () => ({ document: { numPages: 1 }, destroy: vi.fn(async () => undefined) }))
+  };
+});
 
 beforeEach(() => {
   useAppStore.setState({
@@ -115,8 +123,8 @@ describe('Workspace (fluxo da ferramenta)', () => {
 
   it('falha total exibe painel de falha sem botão de download', async () => {
     const user = await openTool('Juntar PDFs');
-    await addPdf(user, new File([new Uint8Array([37, 80, 68, 70])], 'r1.pdf', { type: 'application/pdf' }));
-    await addPdf(user, new File([new Uint8Array([37, 80, 68, 70])], 'r2.pdf', { type: 'application/pdf' }));
+    await addPdf(user, new File([new TextEncoder().encode('%PDF-1.7\ninválido')], 'r1.pdf', { type: 'application/pdf' }));
+    await addPdf(user, new File([new TextEncoder().encode('%PDF-1.7\ninválido')], 'r2.pdf', { type: 'application/pdf' }));
     await user.click(screen.getByRole('button', { name: 'Juntar PDFs' }));
 
     expect(await screen.findByRole('alert')).toBeInTheDocument();

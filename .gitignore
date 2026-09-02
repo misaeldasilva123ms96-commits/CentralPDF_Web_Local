@@ -35,3 +35,6 @@ vendor/tessdata/
 app/node_modules/
 app/dist/
 app/coverage/
+
+# Optional, reproducible PDF compatibility corpus (downloaded/generated on demand)
+tests/pdf-corpus/cache/

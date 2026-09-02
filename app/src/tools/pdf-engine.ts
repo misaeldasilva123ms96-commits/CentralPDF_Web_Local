@@ -37,6 +37,11 @@ export interface LoadedPdf {
   destroy: () => Promise<void>;
 }
 
+/** Creates the disposable byte view that a PDF.js loading task may transfer. */
+export function copyPdfBytesForWorker(data: ArrayBuffer): Uint8Array {
+  return new Uint8Array(data.slice(0));
+}
+
 /**
  * Loads a PDF document from binary data.
  *
@@ -46,8 +51,11 @@ export interface LoadedPdf {
 export async function loadPdf(data: ArrayBuffer): Promise<LoadedPdf> {
   const pdfjs = await loadPdfjsModule();
   await ensurePdfjsWorker();
+  // PDF.js may transfer its input buffer to the Worker. The FileInput stored in
+  // Zustand owns `data`, so every loading task receives its own disposable copy.
+  const workerOwnedBytes = copyPdfBytesForWorker(data);
   const task = pdfjs.getDocument({
-    data: new Uint8Array(data),
+    data: workerOwnedBytes,
     standardFontDataUrl: STANDARD_FONT_DATA_URL,
     ...TEST_FETCH_OPTIONS
   });

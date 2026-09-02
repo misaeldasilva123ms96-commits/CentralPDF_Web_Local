@@ -8,6 +8,14 @@ import { centralCatalog, createDefaultRegistry } from '../core/catalog';
 import { TaskEngine } from '../core/task-engine';
 import type { ToolContext, ToolDefinition, ToolResult } from '../core/types';
 
+vi.mock('../tools/pdf-engine', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../tools/pdf-engine')>();
+  return {
+    ...actual,
+    loadPdf: vi.fn(async () => ({ document: { numPages: 1 }, destroy: vi.fn(async () => undefined) }))
+  };
+});
+
 beforeEach(() => {
   useAppStore.setState({
     searchQuery: '',

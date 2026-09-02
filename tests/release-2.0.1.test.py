@@ -36,7 +36,7 @@ assert 'Central PDF & Imagem 2.0.1' in manifest
 assert '"version":"2.0.1"' in server
 assert readme.startswith("# Central PDF & Imagem 2.0.1\n")
 assert changelog.startswith("## 2.0.1 —")
-assert "centralpdf-v2.0.1-pages-19" in service_worker
+assert "centralpdf-v2.0.1-pages-20" in service_worker
 
 # O pacote continua genérico e produz os três nomes oficiais para qualquer SemVer estável.
 assert 'CentralPDF_Web_Local_v$Version' in builder

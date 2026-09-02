@@ -566,6 +566,9 @@
     organizerPreviewActive: 0,
     taskCompleted: false
   };
+  const PDFLIB_INGEST_TOOLS = new Set(['organize', 'editPdf', 'merge', 'split', 'extract', 'rotate', 'watermark', 'pageNumbers', 'compress', 'crop', 'metadata', 'normalize', 'redact', 'formBuilder', 'signPdf', 'archivePdf']);
+  let fileIngestChain = Promise.resolve();
+  let fileIngestSession = 0;
 
   const $ = selector => document.querySelector(selector);
   const fileInput = $('#fileInput');
@@ -758,6 +761,7 @@
 
   function selectTool(tool) {
     if (!toolConfig[tool]) return;
+    fileIngestSession += 1;
     state.tool = tool;
     document.body.dataset.activeTool = tool;
     state.files = [];
@@ -766,6 +770,7 @@
     state.toolPageCount = 0;
     state.filePageCounts.clear();
     resetOrganizer();
+    setProgress(null);
     updateOrganizerModeUI();
     window.PDFVisualEditor?.reset();
     homeView.classList.add('hidden');
@@ -855,6 +860,7 @@
   }
 
   function clearAll() {
+    fileIngestSession += 1;
     setCompletionState(false);
     state.files = [];
     state.filePreviewCache.clear();
@@ -865,6 +871,7 @@
     state.toolPageCount = 0;
     state.filePageCounts.clear();
     resetOrganizer();
+    setProgress(null);
     window.PDFVisualEditor?.reset();
     fileInput.value = '';
     dropzone.classList.remove('compact');
@@ -963,39 +970,73 @@
     updateOrganizerHistoryButtons();
   }
 
-  async function addFiles(files, options = {}) {
+  function addFiles(files, options = {}) {
+    const queuedFiles = Array.from(files || []);
+    const queuedTool = state.tool;
+    const queuedSession = fileIngestSession;
+    fileIngestChain = fileIngestChain.catch(error => {
+      logPdfIngest('queue-recovered', null, error, 'queue');
+    }).then(() => {
+      if (state.tool !== queuedTool || fileIngestSession !== queuedSession) {
+        logPdfIngest('cancelled', null, new Error('A ferramenta mudou durante a leitura.'), 'queue');
+        return;
+      }
+      return ingestFiles(queuedFiles, { ...options, queuedTool, queuedSession });
+    });
+    return fileIngestChain;
+  }
+
+  async function ingestFiles(files, options = {}) {
+    const queuedTool = options.queuedTool || state.tool;
+    const queuedSession = options.queuedSession ?? fileIngestSession;
+    const sessionIsActive = () => state.tool === queuedTool && fileIngestSession === queuedSession;
+    const abortInactiveSession = () => {
+      if (sessionIsActive()) return false;
+      logPdfIngest('cancelled', null, new Error('A ferramenta mudou durante a leitura.'), 'queue');
+      return true;
+    };
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
-    const config = toolConfig[state.tool];
-    const nonEmpty = files.filter(file => Number(file?.size || 0) > 0);
-    const emptyCount = files.length - nonEmpty.length;
-    if (emptyCount) window.CentralPDFStable?.addLog?.('aviso', `${emptyCount} arquivo(s) vazio(s) foram ignorados.`, `entrada: ${state.tool}`);
-    const valid = nonEmpty.filter(file => isAccepted(file, config.accept));
-    if (!valid.length) { setStatus(emptyCount ? 'Os arquivos selecionados estão vazios ou não são compatíveis.' : 'Nenhum arquivo compatível foi selecionado.', 'error'); notifyFilesChanged('rejected'); return; }
+    if (abortInactiveSession()) return;
+    const config = toolConfig[queuedTool];
+    const inspected = await inspectIncomingFiles(files, config, queuedTool, sessionIsActive);
+    if (!inspected || abortInactiveSession()) return;
+    const valid = inspected.valid;
+    const rejected = inspected.rejected;
+    if (!valid.length) {
+      setStatus(rejected.map(item => `${item.file.name}: ${item.message}`).join(' ') || 'Nenhum arquivo compatível foi selecionado.', 'error');
+      notifyFilesChanged('rejected');
+      return;
+    }
     const prospectiveFiles = config.multiple ? [...state.files, ...valid] : valid;
-    const qualityIssues = window.CentralPDFToolQuality?.validateFiles?.(state.tool, prospectiveFiles) || [];
+    const qualityIssues = window.CentralPDFToolQuality?.validateFiles?.(queuedTool, prospectiveFiles) || [];
     const blockingIssue = qualityIssues.find(item => item.level === 'error' && !/Adicione/i.test(item.message));
     if (blockingIssue) { setStatus(blockingIssue.message, 'error'); notifyFilesChanged('rejected'); return; }
 
     // Organizador: o primeiro PDF abre o documento; os demais entram como novas páginas.
-    if (state.tool === 'organize') {
+    if (queuedTool === 'organize') {
       if (!state.files.length) {
         const [base, ...additional] = valid;
         state.files = [base];
         fileInput.value = '';
         renderFiles(); syncOutputName(); updateSteps(2);
-        await loadOrganizer(base);
-        if (additional.length) await appendPdfFilesToOrganizer(additional, 'import');
+        await loadOrganizer(base, sessionIsActive);
+        if (abortInactiveSession()) return;
+        if (additional.length) {
+          await appendPdfFilesToOrganizer(additional, 'import', sessionIsActive);
+          if (abortInactiveSession()) return;
+        }
       } else {
-        await appendPdfFilesToOrganizer(valid, 'import');
+        await appendPdfFilesToOrganizer(valid, 'import', sessionIsActive);
+        if (abortInactiveSession()) return;
       }
       processButton.disabled = !state.organizerPages.length;
-      setStatus(`${valid.length} PDF(s) adicionado(s). As páginas novas foram inseridas no final.`, 'success');
+      setStatus(ingestSummary(`${valid.length} PDF(s) adicionado(s). As páginas novas foram inseridas no final.`, rejected), rejected.length ? 'warning' : 'success');
       notifyFilesChanged(options.source || 'add');
       return;
     }
 
     // Editor visual: o primeiro PDF abre o editor; os demais são anexados como páginas.
-    if (state.tool === 'editPdf') {
+    if (queuedTool === 'editPdf') {
       try {
         if (!state.files.length) {
           const [base, ...additional] = valid;
@@ -1003,14 +1044,20 @@
           fileInput.value = '';
           renderFiles(); syncOutputName(); updateSteps(2);
           await window.PDFVisualEditor?.loadFile(base);
-          if (additional.length) await window.PDFVisualEditor?.addPdfPages(additional);
+          if (abortInactiveSession()) return;
+          if (additional.length) {
+            await window.PDFVisualEditor?.addPdfPages(additional);
+            if (abortInactiveSession()) return;
+          }
         } else {
           await window.PDFVisualEditor?.addPdfPages(valid);
+          if (abortInactiveSession()) return;
         }
         processButton.disabled = !window.PDFVisualEditor?.hasDocument();
-        setStatus(`${valid.length} PDF(s) adicionado(s) ao editor.`, 'success');
+        setStatus(ingestSummary(`${valid.length} PDF(s) adicionado(s) ao editor.`, rejected), rejected.length ? 'warning' : 'success');
         notifyFilesChanged(options.source || 'add');
       } catch (error) {
+        if (abortInactiveSession()) return;
         processButton.disabled = true; setStatus(readablePdfError(error), 'error');
       }
       return;
@@ -1030,20 +1077,125 @@
     renderFiles(); syncOutputName();
     updateSteps(2);
 
-    if (state.tool === 'merge' && added.length) await appendPdfFilesToOrganizer(added, 'merge');
-    if (state.tool === 'split') await loadSplitMetadata(state.files[0]);
-    await loadAdvancedToolMetadata();
-    if (state.tool === 'ocr') await window.CentralPDFOCR?.updatePlan?.(state.files);
-    if (state.tool === 'compare') await window.CentralPDFCompare?.updatePlan?.(state.files);
-    if (state.tool === 'redact') await window.CentralPDFRedaction?.updatePlan?.(state.files);
-    if (state.tool === 'formBuilder') await window.CentralPDFForms?.updatePlan?.(state.files);
-    if (state.tool === 'signPdf') await window.CentralPDFSignatures?.updatePlan?.(state.files);
-    if (['pdfToOffice','documentsToPdf','extractImages','archivePdf'].includes(state.tool)) window.CentralPDFConversions?.updatePlan?.(state.tool, state.files);
-    if (['documentAssistant','structuredExtraction','documentAudit','classifyRename'].includes(state.tool)) window.CentralPDFIntelligence?.updatePlan?.(state.tool, state.files);
+    if (queuedTool === 'merge' && added.length) {
+      await appendPdfFilesToOrganizer(added, 'merge', sessionIsActive);
+      if (abortInactiveSession()) return;
+    }
+    if (queuedTool === 'split') {
+      await loadSplitMetadata(state.files[0], sessionIsActive);
+      if (abortInactiveSession()) return;
+    }
+    const metadataLoaded = await loadAdvancedToolMetadata(queuedTool, sessionIsActive);
+    if (metadataLoaded === false || abortInactiveSession()) return;
+    if (queuedTool === 'ocr') await window.CentralPDFOCR?.updatePlan?.(state.files);
+    if (queuedTool === 'compare') await window.CentralPDFCompare?.updatePlan?.(state.files);
+    if (queuedTool === 'redact') await window.CentralPDFRedaction?.updatePlan?.(state.files);
+    if (queuedTool === 'formBuilder') await window.CentralPDFForms?.updatePlan?.(state.files);
+    if (queuedTool === 'signPdf') await window.CentralPDFSignatures?.updatePlan?.(state.files);
+    if (abortInactiveSession()) return;
+    if (['pdfToOffice','documentsToPdf','extractImages','archivePdf'].includes(queuedTool)) window.CentralPDFConversions?.updatePlan?.(queuedTool, state.files);
+    if (['documentAssistant','structuredExtraction','documentAudit','classifyRename'].includes(queuedTool)) window.CentralPDFIntelligence?.updatePlan?.(queuedTool, state.files);
 
-    processButton.disabled = state.tool === 'merge' ? mergePdfSources().length < 2 || !state.organizerPages.length : state.tool === 'compare' ? state.files.length !== 2 : ['redact','formBuilder','signPdf'].includes(state.tool) ? state.files.length !== 1 : state.files.length === 0;
-    setStatus(`${added.length || valid.length} arquivo(s) adicionado(s). Você pode continuar arrastando outros arquivos para esta tela.`, 'success');
+    processButton.disabled = queuedTool === 'merge' ? mergePdfSources().length < 2 || !state.organizerPages.length : queuedTool === 'compare' ? state.files.length !== 2 : ['redact','formBuilder','signPdf'].includes(queuedTool) ? state.files.length !== 1 : state.files.length === 0;
+    setStatus(ingestSummary(`${added.length || valid.length} arquivo(s) adicionado(s). Você pode continuar arrastando outros arquivos para esta tela.`, rejected), rejected.length ? 'warning' : 'success');
     notifyFilesChanged(options.source || 'add');
+  }
+
+  async function inspectIncomingFiles(files, config, queuedTool, sessionIsActive) {
+    const valid = [];
+    const rejected = [];
+    const acceptsPdf = /application\/pdf|\.pdf(?:,|$)/i.test(config.accept || '');
+    for (const file of files) {
+      if (!sessionIsActive()) return null;
+      if (!file || Number(file.size || 0) === 0) {
+        const ingest = window.CentralPDFIngest;
+        const message = ingest?.PdfIngestError
+          ? ingest.describeError(new ingest.PdfIngestError('empty'))
+          : 'O arquivo está vazio.';
+        rejected.push({ file: file || { name: 'Arquivo' }, message, code: 'empty' });
+        continue;
+      }
+      const acceptedNonPdf = isAcceptedNonPdf(file, config.accept);
+      const explicitPdf = String(file.name || '').toLowerCase().endsWith('.pdf') || String(file.type || '').toLowerCase() === 'application/pdf';
+      const inspectAsPdf = acceptsPdf && (explicitPdf || !acceptedNonPdf);
+      if (!inspectAsPdf) {
+        if (acceptedNonPdf) valid.push(file);
+        else rejected.push({ file, message: 'O tipo de arquivo não é compatível com esta ferramenta.', code: 'unsupported' });
+        continue;
+      }
+      try {
+        logPdfIngest('received', file, null, 'received');
+        const result = await window.CentralPDFIngest.inspectPdfFile(file, { parse: bytes => parsePdfForIngest(bytes, queuedTool) });
+        if (!sessionIsActive()) return null;
+        state.filePageCounts.set(getFileCacheKey(file), result.pageCount);
+        valid.push(file);
+        logPdfIngest('metadata-ready', file, null, 'metadata');
+      } catch (error) {
+        if (!sessionIsActive()) return null;
+        const recoverableForTool = (
+          ['unlock', 'diagnose', 'repairAdvanced'].includes(queuedTool)
+          && ['encrypted', 'unsupportedEncryption'].includes(error?.code)
+        ) || (
+          ['diagnose', 'repairAdvanced'].includes(queuedTool)
+          && error?.code === 'corrupted'
+        );
+        if (recoverableForTool) {
+          valid.push(file);
+          rejected.push({ file, message: `${error.message} O arquivo foi mantido para esta ferramenta.`, code: error.code, warning: true });
+        } else {
+          rejected.push({ file, message: window.CentralPDFIngest?.describeError?.(error) || readablePdfError(error), code: error?.code || 'corrupted' });
+        }
+        logPdfIngest('failed', file, error, error?.stage || 'inspect');
+      }
+    }
+    if (rejected.length) {
+      window.CentralPDFStable?.addLog?.('aviso', `${rejected.length} arquivo(s) não passaram pela inspeção de entrada.`, `entrada: ${queuedTool}`);
+    }
+    return { valid, rejected };
+  }
+
+  async function parsePdfForIngest(ownedBytes, tool = state.tool) {
+    if (PDFLIB_INGEST_TOOLS.has(tool)) {
+      if (!window.PDFLib?.PDFDocument) throw Object.assign(new Error('pdf-lib não está disponível.'), { name: 'PDFLibUnavailableError', engine: 'pdf-lib' });
+      try {
+        const document = await window.PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false });
+        return { pageCount: document.getPageCount() };
+      } catch (error) {
+        try { error.engine = 'pdf-lib'; } catch (_) {}
+        throw error;
+      }
+    }
+    await ensurePdfWorker();
+    if (window.pdfjsLib?.getDocument) {
+      const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(ownedBytes) });
+      try {
+        const documentProxy = await loadingTask.promise;
+        return { pageCount: documentProxy.numPages };
+      } finally {
+        await loadingTask.destroy?.();
+      }
+    }
+    if (window.PDFLib?.PDFDocument) {
+      const document = await window.PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false });
+      return { pageCount: document.getPageCount() };
+    }
+    throw Object.assign(new Error('PDF.js e pdf-lib não estão disponíveis.'), { name: 'WorkerError' });
+  }
+
+  function ingestSummary(success, rejected) {
+    if (!rejected.length) return success;
+    const details = rejected.map(item => `${item.file.name}: ${item.message}`).join(' ');
+    return `${success} ${rejected.length} arquivo(s) não carregado(s) ou com aviso. ${details}`;
+  }
+
+  function logPdfIngest(event, file, error, stage) {
+    if (!window.CentralPDFDebugPdfIngest) return;
+    console.debug(`[pdf-ingest] ${event}`, {
+      stage, engine: error?.engine || 'pdfjs', errorName: error?.name || '',
+      errorMessage: error?.technicalMessage || error?.message || '', fileName: file?.name || '',
+      fileSize: Number(file?.size || 0), fileType: file?.type || '', runtime: 'legacy',
+      workerMode: window.CentralPDFGetPdfWorkerStatus?.().mode || ''
+    });
   }
 
   function isAccepted(file, accept) {
@@ -1051,6 +1203,13 @@
     if (accept.includes('image/') && (file.type.startsWith('image/') || /\.(png|jpe?g|webp|bmp|gif)$/i.test(file.name))) return true;
     const ext = '.' + file.name.split('.').pop().toLowerCase();
     return accept.toLowerCase().includes(ext);
+  }
+
+  function isAcceptedNonPdf(file, accept) {
+    const entries = String(accept || '').split(',').map(item => item.trim().toLowerCase()).filter(item => item && item !== 'application/pdf' && item !== '.pdf');
+    const type = String(file.type || '').toLowerCase();
+    const name = String(file.name || '').toLowerCase();
+    return entries.some(entry => entry.endsWith('/*') ? type.startsWith(entry.slice(0, -1)) : entry.startsWith('.') ? name.endsWith(entry) : type === entry);
   }
 
   function renderFiles() {
@@ -1163,6 +1322,10 @@
   }
 
   function removeFile(index) {
+    fileIngestSession += 1;
+    state.organizerPreviewObserver?.disconnect();
+    state.organizerPreviewQueue = [];
+    state.organizerPreviewActive = 0;
     const file = state.files[index];
     if (state.tool === 'split') { state.splitPageCount = 0; state.splitPlan = []; }
     if (file) state.selectedFileKeys.delete(getFileCacheKey(file));
@@ -1207,6 +1370,10 @@
 
   function removeSelectedFiles() {
     if (!state.selectedFileKeys.size) return;
+    fileIngestSession += 1;
+    state.organizerPreviewObserver?.disconnect();
+    state.organizerPreviewQueue = [];
+    state.organizerPreviewActive = 0;
     const removedFiles = state.files.filter(file => state.selectedFileKeys.has(getFileCacheKey(file)));
     state.files = state.files.filter(file => !state.selectedFileKeys.has(getFileCacheKey(file)));
     if (state.tool === 'merge') removedFiles.forEach(removeMergeFilePages);
@@ -1378,22 +1545,29 @@
     });
   }
 
-  async function loadAdvancedToolMetadata() {
+  async function loadAdvancedToolMetadata(tool = state.tool, sessionIsActive = () => true) {
     if (!window.PDFLib || !state.files.length) { refreshAdvancedPreviews(); return; }
     const pdfTools = new Set(['merge','extract','rotate','watermark','pageNumbers','compress','pdfToImage','crop']);
-    if (!pdfTools.has(state.tool)) return;
+    if (!pdfTools.has(tool)) return;
     for (const file of state.files) {
+      if (!sessionIsActive()) return false;
       const key = getFileCacheKey(file);
       if (state.filePageCounts.has(key)) continue;
       try {
-        const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false, updateMetadata: false });
+        const bytes = await file.arrayBuffer();
+        if (!sessionIsActive()) return false;
+        const doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false, updateMetadata: false });
+        if (!sessionIsActive()) return false;
         state.filePageCounts.set(key, doc.getPageCount());
       } catch (_) {
+        if (!sessionIsActive()) return false;
         state.filePageCounts.set(key, 0);
       }
     }
+    if (!sessionIsActive()) return false;
     state.toolPageCount = state.files[0] ? Number(state.filePageCounts.get(getFileCacheKey(state.files[0])) || 0) : 0;
     refreshAdvancedPreviews();
+    return true;
   }
 
   function refreshAdvancedPreviews() {
@@ -1769,12 +1943,16 @@
     });
   }
 
-  async function loadSplitMetadata(file) {
-    if (!file || !window.PDFLib) return;
+  async function loadSplitMetadata(file, sessionIsActive = () => true) {
+    if (!sessionIsActive() || !file || !window.PDFLib) return false;
     const info = $('#splitDocumentInfo');
     try {
+      if (!sessionIsActive()) return false;
       if (info) info.innerHTML = '<strong>Documento</strong><p>Lendo a quantidade de páginas...</p>';
-      const document = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false });
+      const bytes = await file.arrayBuffer();
+      if (!sessionIsActive()) return false;
+      const document = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false });
+      if (!sessionIsActive()) return false;
       state.splitPageCount = document.getPageCount();
       const groupsInput = $('#splitCustomGroups');
       if (groupsInput && !groupsInput.value.trim()) {
@@ -1786,11 +1964,14 @@
       }
       if (info) info.innerHTML = `<strong>${escapeHtml(file.name)}</strong><p>${state.splitPageCount} página(s) • ${formatBytes(file.size)}</p>`;
       updateSplitPlanPreview();
+      return true;
     } catch (error) {
+      if (!sessionIsActive()) return false;
       state.splitPageCount = 0;
       state.splitPlan = [];
       if (info) info.innerHTML = `<strong>Não foi possível analisar</strong><p>${escapeHtml(readablePdfError(error))}</p>`;
       updateSplitPlanPreview();
+      return true;
     }
   }
 
@@ -1896,17 +2077,21 @@
     }
   }
 
-  async function appendPdfFilesToOrganizer(files, prefix = 'import') {
-    if (!files.length) return;
+  async function appendPdfFilesToOrganizer(files, prefix = 'import', sessionIsActive = () => true) {
+    if (!sessionIsActive() || !files.length) return false;
     if (!window.PDFLib) throw new Error('O motor de PDF não carregou.');
     const additions = [];
     for (const file of files) {
+      if (!sessionIsActive()) return false;
       const fileKey = getFileCacheKey(file);
       if (prefix === 'merge') {
         const existing = [...state.organizerSources.values()].some(source => source.fileKey === fileKey);
         if (existing) continue;
       }
-      const document = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false });
+      const bytes = await file.arrayBuffer();
+      if (!sessionIsActive()) return false;
+      const document = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false });
+      if (!sessionIsActive()) return false;
       const sourceKey = nextOrganizerSourceKey(prefix);
       const pageSizes = document.getPageIndices().map(index => document.getPage(index).getSize());
       state.organizerSources.set(sourceKey, { kind: 'pdf', file, fileKey, name: file.name, pageCount: document.getPageCount(), pageSizes });
@@ -1916,14 +2101,16 @@
         additions.push({ id: nextOrganizerPageId(), kind: 'pdf', sourceKey, sourceIndex, sourceFileKey: fileKey, sourceFile: file, rotation: 0, origin: file.name, width: size.width, height: size.height });
       });
     }
-    if (!additions.length) return;
+    if (!sessionIsActive() || !additions.length) return false;
     if (state.organizerPages.length) pushOrganizerHistory();
     state.organizerPages.push(...additions);
     state.originalOrganizerPages = snapshotOrganizerPages();
     if (prefix === 'merge' && ($('#mergeSourceSort')?.value || 'nameAsc') === 'nameAsc') applyDefaultMergeNameOrder();
     dropzone.classList.add('compact');
-    await renderOrganizerPreviews();
+    const rendered = await renderOrganizerPreviews(sessionIsActive);
+    if (rendered === false || !sessionIsActive()) return false;
     updateMergePreview();
+    return true;
   }
 
   function mergeSourceKeyForFile(file) {
@@ -1969,23 +2156,32 @@
     organizerSection.classList.toggle('hidden', !['organize', 'merge'].includes(state.tool));
   }
 
-  async function loadOrganizer(file) {
-    if (!file) return;
-    if (!window.PDFLib) { setStatus('O motor de PDF não carregou. Verifique a conexão com a internet.', 'error'); return; }
+  async function loadOrganizer(file, sessionIsActive = () => true) {
+    if (!sessionIsActive() || !file) return false;
+    if (!window.PDFLib) { setStatus('O motor de PDF não carregou. Verifique a conexão com a internet.', 'error'); return false; }
     setStatus('Lendo as páginas do documento...', 'processing');
     setProgress(8);
     try {
       resetOrganizer();
-      const document = await PDFLib.PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: false });
+      const bytes = await file.arrayBuffer();
+      if (!sessionIsActive()) return false;
+      const document = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: false });
+      if (!sessionIsActive()) return false;
       const sourceKey = 'main';
       state.organizerSources.set(sourceKey, { kind: 'pdf', file, fileKey: getFileCacheKey(file), name: file.name, pageCount: document.getPageCount(), pageSizes: document.getPageIndices().map(index => document.getPage(index).getSize()) });
       state.organizerPages = document.getPageIndices().map(sourceIndex => { const size = document.getPage(sourceIndex).getSize(); return { id: nextOrganizerPageId(), kind: 'pdf', sourceKey, sourceIndex, sourceFileKey: getFileCacheKey(file), sourceFile: file, rotation: 0, origin: file.name, width: size.width, height: size.height }; });
       state.originalOrganizerPages = snapshotOrganizerPages();
       dropzone.classList.add('compact');
-      await renderOrganizerPreviews();
+      const rendered = await renderOrganizerPreviews(sessionIsActive);
+      if (rendered === false || !sessionIsActive()) return false;
       setStatus(`${state.organizerPages.length} página(s) carregada(s). Você pode editar cada página individualmente ou em lote.`, 'success');
-    } catch (error) { console.error(error); setStatus(readablePdfError(error), 'error'); }
-    finally { setProgress(null); }
+      return true;
+    } catch (error) {
+      if (!sessionIsActive()) return false;
+      console.error(error); setStatus(readablePdfError(error), 'error');
+      return false;
+    }
+    finally { if (sessionIsActive()) setProgress(null); }
   }
 
   async function ensurePdfWorker() {
@@ -1998,7 +2194,8 @@
     state.workerReady = Boolean(options?.workerPort || options?.workerSrc);
   }
 
-  async function renderOrganizerPreviews() {
+  async function renderOrganizerPreviews(sessionIsActive = () => true) {
+    if (!sessionIsActive()) return false;
     if (state.organizerPreviewObserver) state.organizerPreviewObserver.disconnect();
     state.organizerPreviewObserver = null;
     state.organizerPreviewQueue = [];
@@ -2013,81 +2210,125 @@
         const page = state.organizerPages[index];
         createPageCard(index, state.previewCache.get(organizerPreviewKey(page)), true);
       }
-      setupOrganizerLazyPreviews();
+      setupOrganizerLazyPreviews(sessionIsActive);
       setProgress(null);
       setStatus(`${total} páginas carregadas. As miniaturas serão renderizadas conforme você rolar a tela, economizando memória.`, 'success');
       updateOrganizerBulkToolbar();
-      return;
+      return true;
     }
 
     const pdfDocs = new Map();
-    if (window.pdfjsLib) {
-      try {
-        await ensurePdfWorker();
-        const keys = [...new Set(state.organizerPages.filter(page => page.kind === 'pdf').map(page => page.sourceKey))];
-        for (const key of keys) {
-          const source = state.organizerSources.get(key);
-          if (!source?.file) continue;
-          try { pdfDocs.set(key, await window.pdfjsLib.getDocument({ data: new Uint8Array(await source.file.arrayBuffer()) }).promise); }
-          catch (error) { console.warn('Falha ao abrir fonte de miniaturas', source.name, error); }
-        }
-      } catch (error) { console.warn('Miniaturas PDF indisponíveis.', error); }
-    }
-    for (let index = 0; index < total; index++) {
-      const page = state.organizerPages[index];
-      const key = organizerPreviewKey(page);
-      let preview = state.previewCache.get(key);
-      if (!preview) {
+    try {
+      if (window.pdfjsLib) {
         try {
-          if (page.kind === 'pdf' && pdfDocs.get(page.sourceKey)) preview = await renderPdfPagePreview(pdfDocs.get(page.sourceKey), page.sourceIndex);
-          else if (page.kind === 'image') preview = await renderImagePagePreview(state.organizerSources.get(page.sourceKey)?.file);
-          else if (page.kind === 'blank') preview = createBlankPagePreview(page);
-          if (preview) state.previewCache.set(key, preview);
-        } catch (error) { console.warn('Falha ao renderizar página do organizador', error); }
+          await ensurePdfWorker();
+          if (!sessionIsActive()) return false;
+          const keys = [...new Set(state.organizerPages.filter(page => page.kind === 'pdf').map(page => page.sourceKey))];
+          for (const key of keys) {
+            if (!sessionIsActive()) return false;
+            const source = state.organizerSources.get(key);
+            if (!source?.file) continue;
+            try {
+              const bytes = await source.file.arrayBuffer();
+              if (!sessionIsActive()) return false;
+              const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
+              if (!sessionIsActive()) { try { await pdf.destroy(); } catch (_) {} return false; }
+              pdfDocs.set(key, pdf);
+            } catch (error) {
+              if (!sessionIsActive()) return false;
+              console.warn('Falha ao abrir fonte de miniaturas', source.name, error);
+            }
+          }
+        } catch (error) {
+          if (!sessionIsActive()) return false;
+          console.warn('Miniaturas PDF indisponíveis.', error);
+        }
       }
-      createPageCard(index, preview);
-      setProgress(10 + Math.round(((index + 1) / Math.max(1, total)) * 85));
-      if ((index + 1) % 30 === 0) await yieldToBrowser();
+      for (let index = 0; index < total; index++) {
+        if (!sessionIsActive()) return false;
+        const page = state.organizerPages[index];
+        const key = organizerPreviewKey(page);
+        let preview = state.previewCache.get(key);
+        if (!preview) {
+          try {
+            if (page.kind === 'pdf' && pdfDocs.get(page.sourceKey)) preview = await renderPdfPagePreview(pdfDocs.get(page.sourceKey), page.sourceIndex);
+            else if (page.kind === 'image') preview = await renderImagePagePreview(state.organizerSources.get(page.sourceKey)?.file);
+            else if (page.kind === 'blank') preview = createBlankPagePreview(page);
+            if (!sessionIsActive()) return false;
+            if (preview) state.previewCache.set(key, preview);
+          } catch (error) {
+            if (!sessionIsActive()) return false;
+            console.warn('Falha ao renderizar página do organizador', error);
+          }
+        }
+        createPageCard(index, preview);
+        setProgress(10 + Math.round(((index + 1) / Math.max(1, total)) * 85));
+        if ((index + 1) % 30 === 0) {
+          await yieldToBrowser();
+          if (!sessionIsActive()) return false;
+        }
+      }
+    } finally {
+      await Promise.allSettled([...pdfDocs.values()].map(async pdf => { try { await pdf.destroy(); } catch (_) {} }));
     }
-    for (const pdf of pdfDocs.values()) { try { await pdf.destroy(); } catch (_) {} }
+    if (!sessionIsActive()) return false;
     updateOrganizerBulkToolbar();
+    return true;
   }
 
-  function setupOrganizerLazyPreviews() {
+  function setupOrganizerLazyPreviews(sessionIsActive = () => true) {
+    if (!sessionIsActive()) return;
     if (state.organizerPreviewObserver) state.organizerPreviewObserver.disconnect();
-    state.organizerPreviewObserver = new IntersectionObserver(entries => {
+    const observer = new IntersectionObserver(entries => {
+      if (!sessionIsActive()) return;
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
-        state.organizerPreviewObserver.unobserve(entry.target);
-        state.organizerPreviewQueue.push(entry.target);
+        observer.unobserve(entry.target);
+        state.organizerPreviewQueue.push({ card: entry.target, sessionIsActive });
       });
       processOrganizerPreviewQueue();
     }, { root: null, rootMargin: '700px 0px', threshold: 0.01 });
-    pageGrid.querySelectorAll('.page-card[data-preview-pending="true"]').forEach(card => state.organizerPreviewObserver.observe(card));
+    state.organizerPreviewObserver = observer;
+    pageGrid.querySelectorAll('.page-card[data-preview-pending="true"]').forEach(card => observer.observe(card));
   }
 
-  async function ensureOrganizerPreviewPdf(sourceKey) {
+  async function ensureOrganizerPreviewPdf(sourceKey, sessionIsActive = () => true) {
+    if (!sessionIsActive()) return null;
     if (state.organizerPreviewPdfDocs.has(sourceKey)) return state.organizerPreviewPdfDocs.get(sourceKey);
     const source = state.organizerSources.get(sourceKey);
     if (!source?.file || !window.pdfjsLib) return null;
     await ensurePdfWorker();
-    const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await source.file.arrayBuffer()) }).promise;
+    if (!sessionIsActive()) return null;
+    const bytes = await source.file.arrayBuffer();
+    if (!sessionIsActive()) return null;
+    const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
+    if (!sessionIsActive()) {
+      try { await pdf.destroy(); } catch (_) {}
+      return null;
+    }
     state.organizerPreviewPdfDocs.set(sourceKey, pdf);
     return pdf;
   }
 
   function processOrganizerPreviewQueue() {
     while (state.organizerPreviewActive < 2 && state.organizerPreviewQueue.length) {
-      const card = state.organizerPreviewQueue.shift();
-      if (!card?.isConnected) continue;
+      const queued = state.organizerPreviewQueue.shift();
+      const card = queued?.card || queued;
+      const sessionIsActive = queued?.sessionIsActive || (() => card?.isConnected);
+      if (!sessionIsActive() || !card?.isConnected) continue;
       state.organizerPreviewActive += 1;
-      loadOrganizerCardPreview(card)
+      loadOrganizerCardPreview(card, sessionIsActive)
         .catch(error => console.warn('Miniatura sob demanda indisponível.', error))
-        .finally(() => { state.organizerPreviewActive -= 1; processOrganizerPreviewQueue(); });
+        .finally(() => {
+          if (!sessionIsActive()) return;
+          state.organizerPreviewActive = Math.max(0, state.organizerPreviewActive - 1);
+          processOrganizerPreviewQueue();
+        });
     }
   }
 
-  async function loadOrganizerCardPreview(card) {
+  async function loadOrganizerCardPreview(card, sessionIsActive = () => card?.isConnected) {
+    if (!sessionIsActive() || !card?.isConnected) return;
     const pageId = card.dataset.pageId;
     const page = state.organizerPages.find(item => item.id === pageId);
     if (!page) return;
@@ -2095,10 +2336,12 @@
     let preview = state.previewCache.get(key);
     if (!preview) {
       if (page.kind === 'pdf') {
-        const pdf = await ensureOrganizerPreviewPdf(page.sourceKey);
+        const pdf = await ensureOrganizerPreviewPdf(page.sourceKey, sessionIsActive);
+        if (!sessionIsActive() || !card.isConnected) return;
         if (pdf) preview = await renderPdfPagePreview(pdf, page.sourceIndex);
       } else if (page.kind === 'image') preview = await renderImagePagePreview(state.organizerSources.get(page.sourceKey)?.file);
       else preview = createBlankPagePreview(page);
+      if (!sessionIsActive() || !card.isConnected) return;
       if (preview) state.previewCache.set(key, preview);
     }
     if (!preview || !card.isConnected) return;

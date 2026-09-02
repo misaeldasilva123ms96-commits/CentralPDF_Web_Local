@@ -1,10 +1,18 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useAppStore } from '../store/app-store';
 import { centralCatalog, createDefaultRegistry } from '../core/catalog';
 import { App } from '../App';
 import type { ToolDefinition } from '../core/types';
+
+vi.mock('../tools/pdf-engine', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../tools/pdf-engine')>();
+  return {
+    ...actual,
+    loadPdf: vi.fn(async () => ({ document: { numPages: 1 }, destroy: vi.fn(async () => undefined) }))
+  };
+});
 
 async function pdfFile(name: string): Promise<File> {
   const { PDFDocument } = await import('pdf-lib');

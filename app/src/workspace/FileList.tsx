@@ -4,6 +4,8 @@ import { formatBytes } from './format';
 import type { FileContract, FileInput } from '../core/types';
 import { Icon } from '../ui/Icon';
 import { PdfThumbnail } from './PdfThumbnail';
+import { loadPdf } from '../tools/pdf-engine';
+import { describePdfIngestError, inspectPdfBytes, PdfIngestError } from '../core/pdf-ingest';
 
 interface FileListProps {
   contracts: FileContract[];
@@ -14,13 +16,14 @@ interface FileListProps {
 export function FileList({ contracts, generateId = defaultId, disabled = false }: FileListProps) {
   const files = useAppStore((state) => state.files);
   const addFiles = useAppStore((state) => state.addFiles);
+  const setFiles = useAppStore((state) => state.setFiles);
   const removeFile = useAppStore((state) => state.removeFile);
   const reorderFileTo = useAppStore((state) => state.reorderFileTo);
   const [dragging, setDragging] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [pageCounts, setPageCounts] = useState<Record<string, number>>({});
-  const [readErrors, setReadErrors] = useState<string[]>([]);
+  const [ingestErrors, setIngestErrors] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previewTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -74,21 +77,41 @@ export function FileList({ contracts, generateId = defaultId, disabled = false }
       const failures: string[] = [];
       for (const file of selected) {
         try {
-          inputs.push({
-            id: generateId(), name: file.name, size: file.size,
-            mimeType: file.type || 'application/octet-stream',
-            data: await readFileData(file), lastModified: file.lastModified
-          });
+          const data = await readFileData(file);
+          const mimeType = file.type || 'application/octet-stream';
+          const id = generateId();
+          const explicitPdf = file.name.toLowerCase().endsWith('.pdf') || mimeType === 'application/pdf';
+          const inspectAsPdf = contracts.some((contract) => contract.kind === 'pdf')
+            && (explicitPdf || !matchesNonPdfContract(file, contracts));
+          if (inspectAsPdf) {
+            const inspection = await inspectPdfBytes(data, { name: file.name, mimeType }, parsePdfForIngest);
+            if (mountedRef.current && !disabledRef.current) {
+              setPageCounts((current) => ({ ...current, [id]: inspection.pageCount }));
+            }
+          }
+          inputs.push({ id, name: file.name, size: file.size, mimeType, data, lastModified: file.lastModified });
         } catch (error) {
-          failures.push(file.name);
-          console.error(`Não foi possível ler ${file.name}.`, error);
+          const classified = error instanceof PdfIngestError
+            ? error
+            : new PdfIngestError('readFailure', { stage: 'read', cause: error });
+          failures.push(`${file.name}: ${describePdfIngestError(classified)}`);
+          if (import.meta.env.DEV && import.meta.env.MODE !== 'test') {
+            console.error('[pdf-ingest] failed', {
+              stage: classified.stage, engine: classified.engine, errorName: classified.name,
+              errorMessage: classified.technicalMessage, fileName: file.name,
+              fileSize: file.size, fileType: file.type, runtime: 'vite'
+            });
+          }
         }
       }
       if (mountedRef.current && !disabledRef.current) {
         if (failures.length > 0) {
-          setReadErrors((current) => [...new Set([...current, ...failures])]);
+          setIngestErrors((current) => [...new Set([...current, ...failures])]);
         }
-        if (inputs.length > 0) addFiles(inputs);
+        if (inputs.length > 0) {
+          if (multiple) addFiles(inputs);
+          else setFiles([inputs[0]]);
+        }
       }
     });
   }
@@ -142,9 +165,9 @@ export function FileList({ contracts, generateId = defaultId, disabled = false }
   return (
     <div className={files.length === 0 ? 'cp-empty-workspace' : 'cp-files-workspace'}>
       <input ref={inputRef} type="file" accept={accept} multiple={multiple} hidden aria-hidden="true" onChange={onChange} />
-      {readErrors.length > 0 && (
+      {ingestErrors.length > 0 && (
         <div className="cp-ingest-errors" role="alert">
-          Não foi possível ler: {readErrors.join(', ')}.
+          {ingestErrors.join(' ')}
         </div>
       )}
       {files.length === 0 ? <>
@@ -216,6 +239,26 @@ function defaultId(): string { return crypto.randomUUID(); }
 function readFileData(file: File): Promise<ArrayBuffer> {
   if (typeof file.arrayBuffer === 'function') return file.arrayBuffer();
   return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result as ArrayBuffer); reader.onerror = () => reject(reader.error); reader.readAsArrayBuffer(file); });
+}
+
+async function parsePdfForIngest(data: ArrayBuffer): Promise<{ pageCount: number }> {
+  const loaded = await loadPdf(data);
+  try {
+    return { pageCount: loaded.document.numPages };
+  } finally {
+    await loaded.destroy();
+  }
+}
+
+function matchesNonPdfContract(file: File, contracts: FileContract[]): boolean {
+  const type = file.type.toLowerCase();
+  const name = file.name.toLowerCase();
+  return contracts.some((contract) => contract.kind !== 'pdf' && contract.accept.some((accepted) => {
+    const normalized = accepted.toLowerCase();
+    if (normalized.endsWith('/*')) return type.startsWith(normalized.slice(0, -1));
+    if (normalized.startsWith('.')) return name.endsWith(normalized);
+    return type === normalized;
+  }));
 }
 function documentIcon(name: string): string {
   if (!name.includes('.')) return 'ARQ';

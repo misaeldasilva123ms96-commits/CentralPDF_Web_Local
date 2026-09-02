@@ -31,7 +31,7 @@ assert 'centralpdf-files-changed' in app
 assert 'CentralPDFToolQuality?.beginRun' in app
 assert 'CentralPDFToolQuality?.finishRun' in app
 assert 'CentralPDFToolQuality?.failRun' in app
-assert 'arquivo(s) vazio(s) foram ignorados' in app
+assert 'não passaram pela inspeção de entrada' in app
 assert 'validação de saída' in quality
 assert "text!=='%PDF-'" in quality
 assert 'A saída compactada ou Office não possui assinatura ZIP válida.' in quality
