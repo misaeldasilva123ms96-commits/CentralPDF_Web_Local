@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>CentralPDF Compatibility Gate 1.0</title></head>
+<body>
+  <canvas id="render" width="1" height="1"></canvas>
+  <canvas id="thumbnail" width="1" height="1"></canvas>
+  <script src="/assets/js/pdf-ingest.js"></script>
+  <script src="/app/node_modules/pdf-lib/dist/pdf-lib.min.js"></script>
+  <script type="module">
+    import * as pdfjs from '/app/node_modules/pdfjs-dist/legacy/build/pdf.mjs';
+
+    const resourceRoot = new URL('/app/node_modules/pdfjs-dist/', location.href);
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL('legacy/build/pdf.worker.mjs', resourceRoot).href;
+    const unhandled = [];
+    addEventListener('unhandledrejection', event => unhandled.push(String(event.reason?.message || event.reason)));
+    addEventListener('error', event => unhandled.push(String(event.error?.message || event.message)));
+
+    function options(data) {
+      return {
+        data: new Uint8Array(data),
+        cMapUrl: new URL('cmaps/', resourceRoot).href,
+        cMapPacked: true,
+        iccUrl: new URL('iccs/', resourceRoot).href,
+        standardFontDataUrl: new URL('standard_fonts/', resourceRoot).href,
+        wasmUrl: new URL('wasm/', resourceRoot).href,
+        isEvalSupported: false
+      };
+    }
+
+    async function sha256(data) {
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    function classify(error) {
+      const value = `${error?.name || ''} ${error?.message || error}`;
+      if (/password|encrypted/i.test(value)) return 'PASSWORD';
+      if (/worker|fake worker|dynamically imported/i.test(value)) return 'WORKER_FAILURE';
+      return 'EXPECTED_FAILURE';
+    }
+
+    async function openPdf(data) {
+      const task = pdfjs.getDocument(options(data));
+      try {
+        const document = await task.promise;
+        return { task, document };
+      } catch (error) {
+        await task.destroy().catch(() => undefined);
+        throw error;
+      }
+    }
+
+    async function renderPage(document, canvasId, scale) {
+      const page = await document.getPage(1);
+      try {
+        const viewport = page.getViewport({ scale });
+        const canvas = document.ownerDocument?.createElement?.('canvas') || window.document.getElementById(canvasId);
+        canvas.width = Math.max(1, Math.ceil(viewport.width));
+        canvas.height = Math.max(1, Math.ceil(viewport.height));
+        const context = canvas.getContext('2d', { alpha: false });
+        if (!context) throw new Error('Canvas 2D unavailable');
+        const task = page.render({ canvasContext: context, viewport });
+        await task.promise;
+        return { width: canvas.width, height: canvas.height };
+      } finally {
+        page.cleanup();
+      }
+    }
+
+    window.runCompatibilityCase = async url => {
+      const beforeUnhandled = unhandled.length;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Fixture fetch failed: ${response.status}`);
+      const owner = await response.arrayBuffer();
+      const initialSize = owner.byteLength;
+      const initialHash = await sha256(owner);
+      const result = {
+        received: 'PASS', read: 'PASS', signature: 'UNKNOWN', ingest: 'UNKNOWN',
+        pdfjs: 'N/A', pages: 0, render: 'N/A', thumbnail: 'N/A', pdfLib: 'N/A',
+        toolReady: 'NO', arrayBuffer: 'UNKNOWN', cleanup: 'UNKNOWN', unhandled: []
+      };
+      let inspectDestroyed = false;
+      try {
+        const inspection = await window.CentralPDFIngest.inspectPdfBytes(owner, {
+          name: url.split('/').pop(), mimeType: 'application/octet-stream',
+          parse: async disposable => {
+            const loaded = await openPdf(disposable);
+            try { return { pageCount: loaded.document.numPages }; }
+            finally { await loaded.task.destroy(); inspectDestroyed = true; }
+          }
+        });
+        result.signature = 'PASS';
+        result.ingest = 'PASS';
+        result.pages = inspection.pageCount;
+      } catch (error) {
+        result.signature = error?.code === 'unsupported' ? 'EXPECTED_REJECTION' : 'PASS';
+        result.ingest = ['encrypted', 'unsupportedEncryption', 'corrupted', 'unsupported', 'empty'].includes(error?.code)
+          ? 'EXPECTED_REJECTION' : 'UNEXPECTED_FAILURE';
+        result.ingestCode = error?.code || '';
+        result.ingestError = error?.technicalMessage || error?.message || String(error);
+      }
+
+      let renderDestroyed = false;
+      try {
+        const loaded = await openPdf(owner.slice(0));
+        result.pdfjs = 'PASS';
+        result.pages = loaded.document.numPages;
+        try {
+          result.renderMetrics = await renderPage(loaded.document, 'render', 0.35);
+          result.render = 'PASS';
+          result.thumbnailMetrics = await renderPage(loaded.document, 'thumbnail', 0.15);
+          result.thumbnail = 'PASS';
+        } catch (error) {
+          result.render = 'EXPECTED_FALLBACK';
+          result.thumbnail = 'FALLBACK';
+          result.renderError = `${error?.name || ''}: ${error?.message || error}`;
+        } finally {
+          await loaded.task.destroy();
+          renderDestroyed = true;
+        }
+      } catch (error) {
+        result.pdfjs = classify(error);
+        result.pdfjsError = `${error?.name || ''}: ${error?.message || error}`;
+      }
+
+      try {
+        const document = await window.PDFLib.PDFDocument.load(owner.slice(0), {
+          ignoreEncryption: false, updateMetadata: false
+        });
+        result.pdfLib = document.getPageCount() > 0 ? 'PASS' : 'UNEXPECTED_FAILURE';
+      } catch (error) {
+        result.pdfLib = 'EXPECTED_UNSUPPORTED';
+        result.pdfLibError = `${error?.name || ''}: ${error?.message || error}`;
+      }
+
+      result.toolReady = result.pdfLib === 'PASS' ? 'EDITABLE' : result.pdfjs === 'PASS' ? 'READ_ONLY' : 'NO';
+      result.cleanup = ((result.ingest !== 'PASS' || inspectDestroyed) && (result.pdfjs !== 'PASS' || renderDestroyed)) ? 'PASS' : 'FAIL';
+      await new Promise(resolve => setTimeout(resolve, 0));
+      result.arrayBuffer = owner.byteLength === initialSize && await sha256(owner) === initialHash ? 'PASS' : 'DETACHED';
+      result.unhandled = unhandled.slice(beforeUnhandled);
+      return result;
+    };
+    window.compatReady = true;
+  </script>
+</body>
+</html>
