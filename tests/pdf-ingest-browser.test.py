@@ -62,12 +62,17 @@ with sync_playwright() as playwright:
     }''')
 
     page.wait_for_function("CentralPDFApp.getFiles().length === 19")
+    page.wait_for_function(r'''() => {
+      const text = document.querySelector('#statusBox')?.innerText || '';
+      return text.includes('falso.pdf') && text.includes('não corresponde a um PDF');
+    }''')
+    status = page.locator('#statusBox').inner_text()
     loaded_names = page.evaluate("CentralPDFApp.getFiles().map(file => file.name)")
     assert 'mime-vazio.pdf' in loaded_names
     assert 'octet.pdf' in loaded_names
     assert 'falso.pdf' not in loaded_names
-    assert 'falso.pdf' in page.locator('#statusBox').inner_text()
-    assert 'não corresponde a um PDF' in page.locator('#statusBox').inner_text()
+    assert 'falso.pdf' in status
+    assert 'não corresponde a um PDF' in status
 
     page.evaluate(r'''() => {
       const transfer = new DataTransfer();
