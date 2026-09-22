@@ -118,22 +118,18 @@
         </div>`
     },
     split: {
-      title: 'Dividir PDF', description: 'Divida por página, grupos personalizados, partes iguais, quantidade fixa ou pontos de corte.',
-      accept: 'application/pdf,.pdf', multiple: true, typeLabel: 'PDF', button: 'Gerar divisão', outputExt: 'auto', outputLabel: 'PDF ou ZIP', outputBase: 'PDF_dividido',
+      title: 'Dividir PDF', description: 'Veja as páginas, escolha os intervalos e confira cada arquivo antes de dividir.',
+      accept: 'application/pdf,.pdf', multiple: true, typeLabel: 'PDF', button: 'Dividir PDF', outputExt: 'auto', outputLabel: 'PDF ou ZIP', outputBase: 'PDF_dividido',
       settings: `
-        <div class="field"><label for="splitMode">Como deseja dividir?</label>
-          <select id="splitMode">
-            <option value="custom" selected>Intervalos personalizados</option>
-            <option value="equalParts">Dividir em partes iguais</option>
-            <option value="fixedSize">A cada quantidade de páginas</option>
-            <option value="cuts">Cortar depois de páginas específicas</option>
-            <option value="everyPage">Uma página por arquivo</option>
-            <option value="oddEven">Separar páginas pares e ímpares</option>
-          </select>
+        <div class="split-mode-selector" role="group" aria-label="Modo de divisão rápida">
+          <button class="split-mode-choice active" data-split-mode-choice="custom" type="button" aria-pressed="true"><span class="split-mode-icon"><svg aria-hidden="true"><use href="#i-split"/></svg></span><strong>Intervalos</strong><small>Escolha início e fim</small></button>
+          <button class="split-mode-choice" data-split-mode-choice="fixedSize" type="button" aria-pressed="false"><span class="split-mode-icon"><svg aria-hidden="true"><use href="#i-grid"/></svg></span><strong>A cada N</strong><small>Mesmo tamanho</small></button>
+          <button class="split-mode-choice" data-split-mode-choice="everyPage" type="button" aria-pressed="false"><span class="split-mode-icon"><svg aria-hidden="true"><use href="#i-file"/></svg></span><strong>Uma por página</strong><small>Arquivos individuais</small></button>
         </div>
         <div class="split-mode-panel" data-split-panel="custom">
-          <div class="field"><label for="splitCustomGroups">Grupos de páginas</label><textarea id="splitCustomGroups" rows="4" placeholder="Exemplo: 1-2;3-5;6,8-10"></textarea></div>
-          <p class="field-hint">Separe os arquivos com ponto e vírgula. Cada grupo vira um PDF.</p>
+          <div class="split-interval-heading"><div><strong>Intervalos personalizados</strong><span>Cada linha gera um PDF separado.</span></div><button id="splitAddInterval" class="small-button primary-soft" type="button">＋ Adicionar</button></div>
+          <div id="splitIntervalRows" class="split-interval-rows" aria-live="polite"></div>
+          <details class="split-text-mode"><summary>Editar como lista de páginas</summary><div class="field"><label for="splitCustomGroups">Lista avançada</label><textarea id="splitCustomGroups" class="split-source-input" rows="3" placeholder="Exemplo: 1-2;3-5;6,8-10"></textarea></div><p class="field-hint">Use ponto e vírgula para separar os PDFs. A lista permite combinações como 1,3-5.</p></details>
           <label class="toggle-row"><input id="splitIncludeUnmentioned" type="checkbox" /><span>Adicionar páginas não mencionadas em um arquivo extra</span></label>
         </div>
         <div class="split-mode-panel hidden" data-split-panel="equalParts">
@@ -150,6 +146,16 @@
         </div>
         <div class="split-mode-panel hidden" data-split-panel="everyPage"><div class="notice-card"><strong>Uma página por arquivo</strong><p>Cada página será salva em um PDF independente.</p></div></div>
         <div class="split-mode-panel hidden" data-split-panel="oddEven"><div class="notice-card"><strong>Pares e ímpares</strong><p>Será criado um PDF com páginas ímpares e outro com páginas pares.</p></div></div>
+        <details class="split-more-modes"><summary>Outras formas de dividir</summary><div class="field"><label for="splitMode">Modo avançado</label>
+          <select id="splitMode">
+            <option value="custom" selected>Intervalos personalizados</option>
+            <option value="equalParts">Dividir em partes iguais</option>
+            <option value="fixedSize">A cada quantidade de páginas</option>
+            <option value="cuts">Cortar depois de páginas específicas</option>
+            <option value="everyPage">Uma página por arquivo</option>
+            <option value="oddEven">Separar páginas pares e ímpares</option>
+          </select>
+        </div></details>
         <div id="splitDocumentInfo" class="notice-card"><strong>Documento</strong><p>Adicione um PDF para calcular a divisão.</p></div>
         <div class="split-plan-box">
           <div class="split-plan-header"><span>Prévia do resultado</span><strong id="splitPlanCount">0 arquivos</strong></div>
@@ -554,6 +560,8 @@
     libPdfEnginePromise: null,
     splitPageCount: 0,
     splitPlan: [],
+    splitVisualToken: 0,
+    splitPreviewCache: new Map(),
     toolPageCount: 0,
     filePageCounts: new Map(),
     mergeExportRunning: false,
@@ -574,6 +582,7 @@
   const fileInput = $('#fileInput');
   const dropzone = $('#dropzone');
   const fileList = $('#fileList');
+  const splitVisualSection = $('#splitVisualSection');
   const fileCount = $('#fileCount');
   const settingsContent = $('#settingsContent');
   const processButton = $('#processButton');
@@ -767,6 +776,8 @@
     state.files = [];
     state.splitPageCount = 0;
     state.splitPlan = [];
+    state.splitVisualToken += 1;
+    state.splitPreviewCache.clear();
     state.toolPageCount = 0;
     state.filePageCounts.clear();
     resetOrganizer();
@@ -804,13 +815,14 @@
     if (['documentAssistant','structuredExtraction','documentAudit','classifyRename'].includes(tool)) window.CentralPDFIntelligence?.mount?.(tool);
     addMoreFilesButton.classList.toggle('hidden', !(config.multiple || tool === 'organize' || tool === 'editPdf'));
     organizerSection.classList.toggle('hidden', !['organize', 'merge'].includes(tool));
+    splitVisualSection?.classList.toggle('hidden', tool !== 'split');
     updateOrganizerModeUI();
     pdfEditorSection?.classList.toggle('hidden', tool !== 'editPdf');
     window.CentralPDFRedaction?.visible?.(tool === 'redact');
     window.CentralPDFForms?.visible?.(tool === 'formBuilder');
     window.CentralPDFSignatures?.visible?.(tool === 'signPdf');
     if (tool !== 'editPdf') window.PDFVisualEditor?.deactivate();
-    $('#fileSection').classList.toggle('hidden', tool === 'merge');
+    $('#fileSection').classList.toggle('hidden', ['merge', 'split'].includes(tool));
     dropzone.classList.remove('compact');
     renderFiles();
     updateSteps(1);
@@ -868,6 +880,8 @@
     state.outputNameTouched = false;
     state.splitPageCount = 0;
     state.splitPlan = [];
+    state.splitVisualToken += 1;
+    state.splitPreviewCache.clear();
     state.toolPageCount = 0;
     state.filePageCounts.clear();
     resetOrganizer();
@@ -1493,6 +1507,7 @@
       bindSettingChanges(['splitMode','splitCustomGroups','splitIncludeUnmentioned','splitPartCount','splitPagesPerFile','splitCuts'], () => {
         updateSplitPanels(); updateSplitPlanPreview();
       });
+      setupSplitInteractiveControls();
       updateSplitPanels(); updateSplitPlanPreview();
       return;
     }
@@ -1936,10 +1951,99 @@
     $('#cropPagesPanel')?.classList.toggle('hidden', $('#cropScope')?.value !== 'selected');
   }
 
+  function splitIntervalsFromText(text) {
+    const chunks = String(text || '').split(/[;\n]+/).map(value => value.trim()).filter(Boolean);
+    const intervals = chunks.map(chunk => {
+      const simple = chunk.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+      if (simple) return { start: Number(simple[1]), end: Number(simple[2] || simple[1]) };
+      const pages = [...chunk.matchAll(/\d+/g)].map(match => Number(match[0]));
+      return pages.length ? { start: pages[0], end: pages[pages.length - 1] } : null;
+    }).filter(Boolean);
+    return intervals.length ? intervals : [{ start: 1, end: Math.max(1, state.splitPageCount || 1) }];
+  }
+
+  function renderSplitIntervalRows(intervals = splitIntervalsFromText($('#splitCustomGroups')?.value)) {
+    const container = $('#splitIntervalRows');
+    if (!container) return;
+    const maximum = Math.max(1, state.splitPageCount || 9999);
+    container.innerHTML = intervals.map((interval, index) => `
+      <div class="split-interval-row" data-split-interval-row="${index}">
+        <span class="split-interval-number">${index + 1}</span>
+        <label><span>Da página</span><input data-split-start type="number" min="1" max="${maximum}" value="${Math.max(1, interval.start)}" inputmode="numeric" /></label>
+        <span class="split-interval-separator" aria-hidden="true">—</span>
+        <label><span>Até</span><input data-split-end type="number" min="1" max="${maximum}" value="${Math.max(1, interval.end)}" inputmode="numeric" /></label>
+        <button class="split-remove-interval" type="button" aria-label="Remover intervalo ${index + 1}" title="Remover intervalo" ${intervals.length === 1 ? 'disabled' : ''}>×</button>
+      </div>`).join('');
+  }
+
+  function syncSplitTextFromRows() {
+    const source = $('#splitCustomGroups');
+    if (!source) return;
+    const expressions = [...document.querySelectorAll('[data-split-interval-row]')].map(row => {
+      const start = Math.max(1, Number(row.querySelector('[data-split-start]')?.value || 1));
+      const end = Math.max(1, Number(row.querySelector('[data-split-end]')?.value || start));
+      return start === end ? String(start) : `${start}-${end}`;
+    });
+    source.value = expressions.join(';');
+    source.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function setupSplitInteractiveControls() {
+    const rows = $('#splitIntervalRows');
+    const source = $('#splitCustomGroups');
+    renderSplitIntervalRows();
+    document.querySelectorAll('[data-split-mode-choice]').forEach(button => {
+      button.addEventListener('click', () => {
+        const mode = button.dataset.splitModeChoice;
+        const select = $('#splitMode');
+        if (!select || !mode) return;
+        select.value = mode;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+    $('#splitAddInterval')?.addEventListener('click', () => {
+      const intervals = splitIntervalsFromText(source?.value);
+      const previous = intervals[intervals.length - 1];
+      const maximum = Math.max(1, state.splitPageCount || previous.end + 1);
+      const start = Math.min(maximum, previous.end + 1);
+      intervals.push({ start, end: maximum });
+      renderSplitIntervalRows(intervals);
+      syncSplitTextFromRows();
+      rows?.querySelector('[data-split-interval-row]:last-child [data-split-start]')?.focus();
+    });
+    rows?.addEventListener('input', event => {
+      if (event.target.matches('[data-split-start], [data-split-end]')) syncSplitTextFromRows();
+    });
+    rows?.addEventListener('click', event => {
+      const remove = event.target.closest('.split-remove-interval');
+      if (!remove || remove.disabled) return;
+      remove.closest('[data-split-interval-row]')?.remove();
+      [...rows.querySelectorAll('[data-split-interval-row]')].forEach((row, index) => {
+        row.dataset.splitIntervalRow = String(index);
+        row.querySelector('.split-interval-number').textContent = String(index + 1);
+        const button = row.querySelector('.split-remove-interval');
+        button.disabled = rows.querySelectorAll('[data-split-interval-row]').length === 1;
+        button.setAttribute('aria-label', `Remover intervalo ${index + 1}`);
+      });
+      syncSplitTextFromRows();
+    });
+    $('#splitVisualGroups')?.addEventListener('click', event => {
+      const card = event.target.closest('[data-split-visual-group]');
+      if (!card || ($('#splitMode')?.value || 'custom') !== 'custom') return;
+      const input = document.querySelector(`[data-split-interval-row="${card.dataset.splitVisualGroup}"] [data-split-start]`);
+      if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    });
+  }
+
   function updateSplitPanels() {
     const mode = $('#splitMode')?.value || 'custom';
     document.querySelectorAll('[data-split-panel]').forEach(panel => {
       panel.classList.toggle('hidden', panel.dataset.splitPanel !== mode);
+    });
+    document.querySelectorAll('[data-split-mode-choice]').forEach(button => {
+      const active = button.dataset.splitModeChoice === mode;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
     });
   }
 
@@ -1962,6 +2066,7 @@
           groupsInput.value = `1-${midpoint};${midpoint + 1}-${state.splitPageCount}`;
         }
       }
+      renderSplitIntervalRows();
       if (info) info.innerHTML = `<strong>${escapeHtml(file.name)}</strong><p>${state.splitPageCount} página(s) • ${formatBytes(file.size)}</p>`;
       updateSplitPlanPreview();
       return true;
@@ -1991,6 +2096,74 @@
     return window.SplitPlanner.buildSplitPlan(mode, pageCount, currentSplitOptions());
   }
 
+  function splitVisualPage(pageIndex, label) {
+    return `<span class="split-page-thumb" data-split-page-index="${pageIndex}">
+      <span class="split-page-paper"><span class="split-page-loading"></span></span>
+      <strong>${label}</strong>
+    </span>`;
+  }
+
+  function renderSplitVisualPlan(groups, errorMessage = '') {
+    const container = $('#splitVisualGroups');
+    const total = $('#splitVisualFileCount');
+    const title = $('#splitVisualTitle');
+    if (!container || !total || !title) return;
+    const file = state.files[0];
+    total.textContent = String(groups.length || 0);
+    title.textContent = file ? `${file.name} · ${state.splitPageCount} página(s)` : 'Adicione um PDF para começar';
+    state.splitVisualToken += 1;
+    const token = state.splitVisualToken;
+    if (errorMessage) {
+      container.innerHTML = `<div class="split-visual-empty error"><span><svg aria-hidden="true"><use href="#i-info"/></svg></span><strong>Revise os intervalos</strong><p>${escapeHtml(errorMessage)}</p></div>`;
+      return;
+    }
+    if (!groups.length) {
+      container.innerHTML = `<div class="split-visual-empty"><span><svg aria-hidden="true"><use href="#i-split"/></svg></span><strong>Os intervalos aparecerão aqui</strong><p>Selecione um PDF para ver as páginas de cada arquivo antes de dividir.</p></div>`;
+      return;
+    }
+    const visibleGroups = groups.slice(0, 30);
+    container.innerHTML = visibleGroups.map((pages, index) => {
+      const first = pages[0];
+      const last = pages[pages.length - 1];
+      const endpoints = first === last
+        ? splitVisualPage(first, `Página ${first + 1}`)
+        : `${splitVisualPage(first, `Página ${first + 1}`)}<span class="split-page-ellipsis" aria-label="até">•••</span>${splitVisualPage(last, `Página ${last + 1}`)}`;
+      return `<button class="split-visual-group" data-split-visual-group="${index}" type="button">
+        <span class="split-visual-group-heading"><strong>Arquivo ${String(index + 1).padStart(2, '0')}</strong><small>Páginas ${escapeHtml(window.SplitPlanner.formatPages(pages))} · ${pages.length} ${pages.length === 1 ? 'página' : 'páginas'}</small></span>
+        <span class="split-page-pair">${endpoints}</span>
+        <span class="split-edit-hint">Clique para editar</span>
+      </button>`;
+    }).join('') + (groups.length > visibleGroups.length ? `<div class="split-visual-more">Mais ${groups.length - visibleGroups.length} arquivo(s) serão gerados. A lista foi resumida para manter a prévia rápida.</div>` : '');
+    setTimeout(() => populateSplitVisualThumbnails(token, visibleGroups).catch(() => {}), 100);
+  }
+
+  async function populateSplitVisualThumbnails(token, groups) {
+    const file = state.files[0];
+    if (!file || token !== state.splitVisualToken) return;
+    await window.CentralPDFEnginesReady;
+    if (!window.pdfjsLib || token !== state.splitVisualToken) return;
+    await ensurePdfWorker();
+    const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+    try {
+      const pageIndexes = [...new Set(groups.flatMap(pages => pages.length > 1 ? [pages[0], pages[pages.length - 1]] : [pages[0]]))];
+      for (const pageIndex of pageIndexes) {
+        if (token !== state.splitVisualToken) return;
+        const cacheKey = `${getFileCacheKey(file)}:${pageIndex}`;
+        let preview = state.splitPreviewCache.get(cacheKey);
+        if (!preview) {
+          preview = await renderPdfPagePreview(pdf, pageIndex);
+          state.splitPreviewCache.set(cacheKey, preview);
+        }
+        if (token !== state.splitVisualToken) return;
+        document.querySelectorAll(`[data-split-page-index="${pageIndex}"] .split-page-paper`).forEach(paper => {
+          paper.innerHTML = `<img src="${preview}" alt="Miniatura da página ${pageIndex + 1}" />`;
+        });
+      }
+    } finally {
+      try { await pdf.destroy(); } catch (_) {}
+    }
+  }
+
   function updateSplitPlanPreview() {
     const preview = $('#splitPlanPreview');
     const count = $('#splitPlanCount');
@@ -2000,6 +2173,7 @@
       if (state.tool === 'split') processButton.disabled = true;
       count.textContent = '0 arquivos';
       preview.innerHTML = '<div class="split-plan-empty">Adicione um PDF para visualizar o resultado.</div>';
+      renderSplitVisualPlan([]);
       return;
     }
     try {
@@ -2013,11 +2187,13 @@
           <span>${String(item.index + 1).padStart(2, '0')}</span>
           <div><strong>Páginas ${escapeHtml(item.label)}</strong><small>${item.pageCount} ${item.pageCount === 1 ? 'página' : 'páginas'}</small></div>
         </div>`).join('');
+      renderSplitVisualPlan(groups);
     } catch (error) {
       state.splitPlan = [];
       processButton.disabled = true;
       count.textContent = 'Plano inválido';
       preview.innerHTML = `<div class="split-plan-error">${escapeHtml(error.message || String(error))}</div>`;
+      renderSplitVisualPlan([], error.message || String(error));
     }
   }
 

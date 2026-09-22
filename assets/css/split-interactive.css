@@ -1,0 +1,105 @@
+/* Divisor visual interativo — inspirado em fluxos de intervalos com prévia de páginas. */
+body[data-active-tool="split"] #fileSection { display: none !important; }
+
+.split-visual-section {
+  min-height: 520px;
+  padding: 22px;
+  border: 1px solid #e6e8ef;
+  border-radius: 16px;
+  background: #f7f7fb;
+}
+.split-visual-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 14px; }
+.split-visual-toolbar > div:first-child > span { color: #777f91; font-size: 10px; font-weight: 800; letter-spacing: .075em; text-transform: uppercase; }
+.split-visual-toolbar h2 { margin: 5px 0 0; color: #252a36; font-size: 17px; line-height: 1.25; overflow-wrap: anywhere; }
+.split-visual-summary { min-width: 130px; display: flex; align-items: center; gap: 8px; padding: 9px 11px; border: 1px solid #ddd9ff; border-radius: 11px; background: #fff; color: #686f80; }
+.split-visual-summary strong { color: var(--accent); font-size: 21px; line-height: 1; }
+.split-visual-summary span { max-width: 75px; font-size: 9px; font-weight: 750; line-height: 1.25; }
+.split-visual-help { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 16px; padding: 9px 11px; border-radius: 10px; background: #eeecff; color: #5b5684; }
+.split-visual-help svg { width: 16px; height: 16px; flex: 0 0 auto; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.split-visual-help p { margin: 0; font-size: 10px; line-height: 1.45; }
+.split-visual-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 14px; align-items: start; }
+.split-visual-group { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 14px; border: 1px dashed #babdca; border-radius: 13px; background: #fff; color: inherit; text-align: left; cursor: pointer; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.split-visual-group:hover, .split-visual-group:focus-visible { border-color: var(--accent); box-shadow: 0 10px 26px rgba(76,61,170,.11); transform: translateY(-2px); outline: none; }
+.split-visual-group-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.split-visual-group-heading strong { color: #343948; font-size: 11px; }
+.split-visual-group-heading small { color: #7d8494; font-size: 9px; text-align: right; }
+.split-page-pair { min-height: 160px; display: flex; align-items: center; justify-content: center; gap: 11px; }
+.split-page-thumb { min-width: 0; display: grid; justify-items: center; gap: 6px; }
+.split-page-paper { width: 90px; height: 128px; display: grid; place-items: center; overflow: hidden; border: 1px solid #e2e4ea; border-radius: 5px; background: #fff; box-shadow: 0 6px 14px rgba(30,35,55,.11); }
+.split-page-paper img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+.split-page-loading { width: 48%; height: 66%; border-radius: 3px; background: linear-gradient(105deg,#f0f1f5 25%,#fafafa 45%,#f0f1f5 65%); background-size: 220% 100%; animation: splitPageLoading 1.25s linear infinite; }
+@keyframes splitPageLoading { to { background-position: -220% 0; } }
+.split-page-thumb > strong { color: #6d7484; font-size: 9px; font-weight: 750; }
+.split-page-ellipsis { color: #7f8491; font-size: 16px; font-weight: 900; letter-spacing: 1px; }
+.split-edit-hint { align-self: center; color: var(--accent); font-size: 8.5px; font-weight: 800; opacity: 0; transition: opacity .16s ease; }
+.split-visual-group:hover .split-edit-hint, .split-visual-group:focus-visible .split-edit-hint { opacity: 1; }
+.split-visual-empty { grid-column: 1 / -1; min-height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 28px; text-align: center; color: #747b8d; }
+.split-visual-empty > span { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 16px; background: #ece9ff; color: var(--accent); }
+.split-visual-empty svg { width: 25px; height: 25px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.split-visual-empty strong { color: #373c4b; font-size: 14px; }
+.split-visual-empty p { max-width: 360px; margin: 0; font-size: 10.5px; line-height: 1.5; }
+.split-visual-empty.error > span { background: #fff0f2; color: #be3448; }
+.split-visual-more { grid-column: 1 / -1; padding: 12px; border: 1px solid #e1e4ec; border-radius: 10px; background: #fff; color: #70788a; font-size: 10px; text-align: center; }
+
+.split-mode-selector { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; margin-bottom: 15px; }
+.split-mode-choice { min-width: 0; min-height: 82px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 8px 5px; border: 1px solid #e1e4eb; border-radius: 10px; background: #fff; color: #747b8d; cursor: pointer; transition: color .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease; }
+.split-mode-choice:hover { border-color: #c9c4fa; color: #5042cb; }
+.split-mode-choice.active { border-color: var(--accent); background: #f7f5ff; color: var(--accent); box-shadow: 0 0 0 2px rgba(91,67,255,.08); }
+.split-mode-icon { width: 25px; height: 25px; display: grid; place-items: center; }
+.split-mode-icon svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.65; }
+.split-mode-choice strong { font-size: 9.5px; line-height: 1.15; }
+.split-mode-choice small { color: #969cac; font-size: 7.8px; line-height: 1.2; text-align: center; }
+.split-mode-choice.active small { color: #7268b8; }
+.split-interval-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 4px 0 10px; }
+.split-interval-heading > div { min-width: 0; }
+.split-interval-heading strong, .split-interval-heading span { display: block; }
+.split-interval-heading strong { color: #3d4352; font-size: 10.5px; }
+.split-interval-heading span { margin-top: 2px; color: #858d9e; font-size: 8.8px; }
+.split-interval-heading .small-button { flex: 0 0 auto; margin: 0; padding: 7px 8px; }
+.split-interval-rows { display: grid; gap: 7px; margin-bottom: 9px; }
+.split-interval-row { display: grid; grid-template-columns: 23px minmax(0,1fr) 10px minmax(0,1fr) 25px; align-items: end; gap: 5px; padding: 8px 7px; border: 1px solid #e3e6ed; border-radius: 10px; background: #fafbfe; }
+.split-interval-number { align-self: center; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 7px; background: #ece9ff; color: var(--accent); font-size: 9px; font-weight: 850; }
+.split-interval-row label { min-width: 0; display: grid; gap: 4px; }
+.split-interval-row label > span { color: #7b8394; font-size: 7.8px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+.split-interval-row input { width: 100%; min-width: 0; height: 32px; box-sizing: border-box; border: 1px solid #dfe3eb; border-radius: 7px; background: #fff; color: #303646; padding: 5px 7px; font-family: inherit; font-size: 10.5px; font-weight: 700; line-height: 1; }
+.split-interval-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,67,255,.1); outline: none; }
+.split-interval-separator { align-self: center; color: #9aa1af; text-align: center; }
+.split-remove-interval { align-self: center; width: 25px; height: 25px; border: 0; border-radius: 7px; background: transparent; color: #b13b4c; font-size: 17px; cursor: pointer; }
+.split-remove-interval:hover:not(:disabled) { background: #fff0f2; }
+.split-remove-interval:disabled { opacity: .25; cursor: default; }
+.split-text-mode, .split-more-modes { margin: 8px 0 10px; border: 1px solid #e3e6ed; border-radius: 9px; background: #fff; }
+.split-text-mode summary, .split-more-modes summary { padding: 9px 10px; color: #687184; font-size: 9.5px; font-weight: 800; cursor: pointer; }
+.split-text-mode[open] summary, .split-more-modes[open] summary { border-bottom: 1px solid #eceef3; }
+.split-text-mode .field, .split-more-modes .field { margin: 9px 10px; }
+.split-text-mode .field-hint { margin: -3px 10px 10px; }
+
+body[data-theme="dark"] .split-visual-section { border-color: #373b49; background: #22242d; }
+body[data-theme="dark"] .split-visual-toolbar h2, body[data-theme="dark"] .split-visual-group-heading strong, body[data-theme="dark"] .split-visual-empty strong { color: #f2f3f7; }
+body[data-theme="dark"] .split-visual-summary, body[data-theme="dark"] .split-visual-group, body[data-theme="dark"] .split-visual-more { border-color: #404452; background: #2b2e38; }
+body[data-theme="dark"] .split-visual-help { background: #302d50; color: #cac5ff; }
+body[data-theme="dark"] .split-mode-choice, body[data-theme="dark"] .split-text-mode, body[data-theme="dark"] .split-more-modes { border-color: #444856; background: #2c2f39; }
+body[data-theme="dark"] .split-mode-choice.active { border-color: #8f83ff; background: #332f55; color: #bbb3ff; }
+body[data-theme="dark"] .split-interval-row { border-color: #414553; background: #282b34; }
+body[data-theme="dark"] .split-interval-row input { border-color: #4b4f5d; background: #20232b; color: #f2f3f7; }
+body[data-theme="dark"] .split-page-paper { border-color: #464a58; }
+
+@media (max-width: 760px) {
+  .split-visual-section { min-height: 420px; padding: 14px; }
+  .split-visual-toolbar { align-items: flex-start; }
+  .split-visual-summary { min-width: 105px; }
+  .split-visual-groups { grid-template-columns: 1fr; }
+  .split-visual-group { padding: 12px; }
+}
+@media (max-width: 430px) {
+  .split-visual-toolbar { flex-direction: column; }
+  .split-visual-summary { width: 100%; box-sizing: border-box; }
+  .split-mode-selector { grid-template-columns: 1fr; }
+  .split-mode-choice { min-height: 56px; display: grid; grid-template-columns: 31px minmax(0,1fr); grid-template-rows: auto auto; justify-items: start; text-align: left; }
+  .split-mode-icon { grid-row: 1 / 3; }
+  .split-interval-row { grid-template-columns: 22px minmax(0,1fr) 8px minmax(0,1fr) 24px; padding: 7px 5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-visual-group, .split-edit-hint { transition: none; }
+  .split-page-loading { animation: none; }
+}
