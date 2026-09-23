@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
   <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.9" />
+  <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
 </head>
@@ -335,6 +336,30 @@
             <span id="selectedFilesCount" class="selected-files-count">0 selecionados</span>
           </div>
           <div id="fileList" class="file-list"><div class="empty-state">Nenhum arquivo selecionado.</div></div>
+        </section>
+
+        <section id="splitVisualSection" class="split-visual-section hidden" aria-label="Pré-visualização visual da divisão">
+          <div class="split-visual-toolbar">
+            <div>
+              <span>Pré-visualização da divisão</span>
+              <h2 id="splitVisualTitle">Adicione um PDF para começar</h2>
+            </div>
+            <div class="split-visual-summary" aria-live="polite">
+              <strong id="splitVisualFileCount">0</strong>
+              <span>arquivos serão criados</span>
+            </div>
+          </div>
+          <div class="split-visual-help">
+            <svg aria-hidden="true"><use href="#i-info"/></svg>
+            <p>Confira visualmente onde cada arquivo começa e termina. Clique em um intervalo para editar seus números no painel lateral.</p>
+          </div>
+          <div id="splitVisualGroups" class="split-visual-groups">
+            <div class="split-visual-empty">
+              <span><svg aria-hidden="true"><use href="#i-split"/></svg></span>
+              <strong>Os intervalos aparecerão aqui</strong>
+              <p>Selecione um PDF para ver as páginas de cada arquivo antes de dividir.</p>
+            </div>
+          </div>
         </section>
 
         <section id="pdfEditorSection" class="pdf-editor-section hidden" aria-label="Editor visual de conteúdo PDF">
