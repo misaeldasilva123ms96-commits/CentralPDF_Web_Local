@@ -7,7 +7,7 @@
 
   const PDF_HEADER_LIMIT = 1024;
   const messages = Object.freeze({
-    empty: 'O arquivo está vazio.',
+    empty: 'O navegador recebeu um arquivo com 0 bytes. Confira se ele abre no computador e selecione-o novamente. Se estiver no OneDrive ou em outra nuvem, baixe uma cópia local primeiro.',
     readFailure: 'O navegador não conseguiu ler o arquivo selecionado. Tente selecionar o arquivo novamente.',
     unsupported: 'O conteúdo do arquivo não corresponde a um PDF.',
     encrypted: 'Este PDF é protegido por senha. Desbloqueie o documento antes de continuar.',

@@ -27,6 +27,8 @@
     cancellationRequested: false,
     recoveryTimer: null,
     recoverySaving: false,
+    recoveryPending: false,
+    recoveryNotice: '',
     lastRecoveryHash: '',
     recoveryRecord: null,
     serviceWorkerRegistration: null,
@@ -136,6 +138,7 @@
     window.addEventListener('centralpdf-progress', event => updateTaskProgress(Number(event.detail || 0)));
     window.addEventListener('centralpdf-status', event => updateTaskMessage(event.detail?.message || ''));
     window.addEventListener('centralpdf-result', event => attachTaskResult(event.detail));
+    window.addEventListener('centralpdf-files-changed', scheduleRecovery);
   }
 
   function taskTitle() {
@@ -262,7 +265,12 @@
       const item = exported.files[index];
       const extension = item.file.name.includes('.') ? `.${item.file.name.split('.').pop()}` : '';
       const path = `files/${String(index + 1).padStart(4, '0')}_${safeName(item.id)}${extension}`;
-      zip.file(path, item.file);
+      try {
+        // Materialize each source now so a read failure identifies its file.
+        zip.file(path, await item.file.arrayBuffer());
+      } catch (error) {
+        throw new Error(`Não foi possível ler ${item.file.name}. Selecione o arquivo novamente; se estiver na nuvem, baixe uma cópia local primeiro.`, { cause: error });
+      }
       manifest.files.push({ id: item.id, path, name: item.file.name, type: item.file.type, lastModified: item.file.lastModified, size: item.file.size });
     }
     zip.file('project.json', JSON.stringify(manifest, null, 2));
@@ -331,7 +339,8 @@
 
   function recoveryEnabled() { return storageGet('centralpdf-recovery-enabled', '1') !== '0'; }
   function scheduleRecovery() {
-    if (!recoveryEnabled() || foundation.activeTask || foundation.recoverySaving) return;
+    if (!recoveryEnabled() || foundation.activeTask) return;
+    if (foundation.recoverySaving) { foundation.recoveryPending = true; return; }
     clearTimeout(foundation.recoveryTimer);
     foundation.recoveryTimer = setTimeout(saveRecovery, 4200);
   }
@@ -348,11 +357,18 @@
       await idbPut(record);
       foundation.recoveryRecord = record;
       foundation.lastRecoveryHash = hash;
+      if (foundation.recoveryNotice) setProjectStatus('Recuperação automática atualizada com sucesso.', 'success');
+      foundation.recoveryNotice = '';
       renderRecoverySlot();
     } catch (error) {
-      console.warn('Recuperação automática não salva:', error.message || error);
+      const message = String(error.message || error);
+      if (foundation.recoveryNotice !== message) console.warn('Recuperação automática não salva:', message);
+      foundation.recoveryNotice = message;
+      setProjectStatus(`Recuperação automática não atualizada. ${message}${foundation.recoveryRecord ? ' O último salvamento disponível foi preservado.' : ''}`, 'warning');
+      renderRecoverySlot();
     } finally {
       foundation.recoverySaving = false;
+      if (foundation.recoveryPending) { foundation.recoveryPending = false; scheduleRecovery(); }
     }
   }
 
@@ -376,9 +392,10 @@
     const slot = $('#foundationRecoverySlot');
     if (!slot) return;
     const record = foundation.recoveryRecord;
-    if (!record) { slot.innerHTML = ''; return; }
+    const notice = foundation.recoveryNotice ? `<p role="status" class="status-box warning">Recuperação automática não atualizada. ${escapeHtml(foundation.recoveryNotice)}</p>` : '';
+    if (!record) { slot.innerHTML = notice; return; }
     const summary = record.summary || {};
-    slot.innerHTML = `<div class="foundation-recovery-card"><div><strong>Trabalho recuperável de ${escapeHtml(dateTime(record.savedAt))}</strong><p>${escapeHtml(summary.toolTitle || 'Ferramenta')} · ${summary.fileCount || 0} arquivo(s) · ${summary.pageCount || 0} página(s)</p></div><button id="foundationRestoreRecovery" class="foundation-button primary" type="button">Restaurar</button></div>`;
+    slot.innerHTML = notice + `<div class="foundation-recovery-card"><div><strong>Trabalho recuperável de ${escapeHtml(dateTime(record.savedAt))}</strong><p>${escapeHtml(summary.toolTitle || 'Ferramenta')} · ${summary.fileCount || 0} arquivo(s) · ${summary.pageCount || 0} página(s)</p></div><button id="foundationRestoreRecovery" class="foundation-button primary" type="button">Restaurar</button></div>`;
     $('#foundationRestoreRecovery')?.addEventListener('click', restoreRecovery);
   }
 

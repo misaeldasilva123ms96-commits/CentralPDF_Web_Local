@@ -64,15 +64,28 @@
     if ('rotation' in item) element.style.transform = `rotate(${Number(item.rotation || 0)}deg)`;
   }
 
+  function capturePointer(element, event) {
+    if (!element.isConnected) return false;
+    try { element.setPointerCapture?.(event.pointerId); return true; }
+    catch (error) {
+      if (['InvalidStateError', 'NotFoundError'].includes(error.name)) return false;
+      throw error;
+    }
+  }
+
   function bindTransform({ element, item, overlay, onChange, onSelect, allowRotation = false }) {
+    const select = () => {
+      onSelect?.();
+      overlay.querySelectorAll('[data-id]').forEach(node => node.classList.toggle('selected', node === element));
+    };
     element.addEventListener('pointerdown', event => {
       if (event.target.closest('[data-handle], [data-rotate]')) return;
       event.stopPropagation();
       event.preventDefault();
-      onSelect?.();
+      select();
       const start = getPoint(event, overlay);
       const origin = { x: item.x, y: item.y };
-      element.setPointerCapture?.(event.pointerId);
+      if (!capturePointer(element, event)) return;
       const move = moveEvent => {
         const point = getPoint(moveEvent, overlay);
         item.x = clamp(origin.x + point.x - start.x, 0, 1 - item.w);
@@ -81,6 +94,7 @@
         onChange?.();
       };
       const up = () => {
+        window.CentralPDFFoundation?.scheduleRecovery?.();
         element.removeEventListener('pointermove', move);
         element.removeEventListener('pointerup', up);
         element.removeEventListener('pointercancel', up);
@@ -94,11 +108,11 @@
       handle.addEventListener('pointerdown', event => {
         event.stopPropagation();
         event.preventDefault();
-        onSelect?.();
+        select();
         const direction = handle.dataset.handle;
         const start = getPoint(event, overlay);
         const origin = { x: item.x, y: item.y, w: item.w, h: item.h };
-        handle.setPointerCapture?.(event.pointerId);
+        if (!capturePointer(handle, event)) return;
         const move = moveEvent => {
           const point = getPoint(moveEvent, overlay);
           const dx = point.x - start.x, dy = point.y - start.y;
@@ -112,6 +126,7 @@
           onChange?.();
         };
         const up = () => {
+          window.CentralPDFFoundation?.scheduleRecovery?.();
           handle.removeEventListener('pointermove', move);
           handle.removeEventListener('pointerup', up);
           handle.removeEventListener('pointercancel', up);
@@ -126,7 +141,7 @@
       element.querySelector('[data-rotate]')?.addEventListener('pointerdown', event => {
         event.stopPropagation();
         event.preventDefault();
-        onSelect?.();
+        select();
         const rect = overlay.getBoundingClientRect();
         const center = { x: rect.left + (item.x + item.w / 2) * rect.width, y: rect.top + (item.y + item.h / 2) * rect.height };
         const rotate = moveEvent => {
@@ -137,6 +152,7 @@
           onChange?.();
         };
         const stop = () => {
+          window.CentralPDFFoundation?.scheduleRecovery?.();
           window.removeEventListener('pointermove', rotate);
           window.removeEventListener('pointerup', stop);
           window.removeEventListener('pointercancel', stop);
@@ -317,7 +333,7 @@
       element.style.setProperty('--field-bg', `${item.background || '#ffffff'}df`);
       element.style.color = item.textColor || '#111827';
       element.onclick = event => { event.stopPropagation(); formState.selectedId = item.id; syncFormInputs(item); renderFormItems(); updateFormSummary(); };
-      bindTransform({ element, item, overlay, onChange: updateFormSummary, onSelect: () => { formState.selectedId = item.id; syncFormInputs(item); renderFormItems(); } });
+      bindTransform({ element, item, overlay, onChange: updateFormSummary, onSelect: () => { formState.selectedId = item.id; syncFormInputs(item); } });
       overlay.appendChild(element);
     });
     updateFormSummary();
@@ -336,9 +352,8 @@
     let start = null, draft = null;
     overlay.addEventListener('pointerdown', event => {
       if (!formState.placement || event.target !== overlay) { if (event.target === overlay) { formState.selectedId = null; renderFormItems(); } return; }
-      event.preventDefault(); start = getPoint(event, overlay);
+      event.preventDefault(); if (!capturePointer(overlay, event)) return; start = getPoint(event, overlay);
       draft = document.createElement('div'); draft.className = 'cp18-placement-draft'; overlay.appendChild(draft);
-      overlay.setPointerCapture?.(event.pointerId);
     });
     overlay.addEventListener('pointermove', event => {
       if (!start || !draft) return;
@@ -453,7 +468,7 @@
       element.innerHTML = `<img src="${item.dataUrl}" alt="Assinatura"><span>${escapeHtml([item.signerName, item.date].filter(Boolean).join(' • '))}</span>${handlesMarkup(true)}`;
       applyBox(element, item);
       element.onclick = event => { event.stopPropagation(); signatureState.selectedId = item.id; $('#signatureRotation').value = item.rotation || 0; renderSignatureItems(); updateSignatureSummary(); };
-      bindTransform({ element, item, overlay, allowRotation: true, onChange: () => { $('#signatureRotation').value = item.rotation || 0; updateSignatureSummary(); }, onSelect: () => { signatureState.selectedId = item.id; $('#signatureRotation').value = item.rotation || 0; renderSignatureItems(); } });
+      bindTransform({ element, item, overlay, allowRotation: true, onChange: () => { $('#signatureRotation').value = item.rotation || 0; updateSignatureSummary(); }, onSelect: () => { signatureState.selectedId = item.id; $('#signatureRotation').value = item.rotation || 0; } });
       overlay.appendChild(element);
     });
     updateSignatureSummary();
@@ -481,7 +496,7 @@
     const canvas = $('#signaturePad'); if (!canvas || canvas.dataset.bound) return; canvas.dataset.bound = '1';
     const ctx = canvas.getContext('2d'); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     const point = event => { const rect = canvas.getBoundingClientRect(); return { x: (event.clientX - rect.left) * canvas.width / rect.width, y: (event.clientY - rect.top) * canvas.height / rect.height }; };
-    canvas.addEventListener('pointerdown', event => { event.preventDefault(); padState.drawing = true; padState.last = point(event); canvas.setPointerCapture?.(event.pointerId); });
+    canvas.addEventListener('pointerdown', event => { event.preventDefault(); if (!capturePointer(canvas, event)) return; padState.drawing = true; padState.last = point(event); });
     canvas.addEventListener('pointermove', event => { if (!padState.drawing) return; const next = point(event); ctx.strokeStyle = $('#signatureInkColor')?.value || '#111827'; ctx.lineWidth = Number($('#signatureInkWidth')?.value || 3); ctx.beginPath(); ctx.moveTo(padState.last.x, padState.last.y); ctx.lineTo(next.x, next.y); ctx.stroke(); padState.last = next; });
     const stop = () => { padState.drawing = false; padState.last = null; };
     canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
@@ -527,7 +542,7 @@
     let start = null, draft = null;
     overlay.addEventListener('pointerdown', event => {
       if (!signatureState.placement || !signatureAsset || event.target !== overlay) { if (event.target === overlay) { signatureState.selectedId = null; renderSignatureItems(); } return; }
-      event.preventDefault(); start = getPoint(event, overlay); draft = document.createElement('div'); draft.className = 'cp18-placement-draft signature'; overlay.appendChild(draft); overlay.setPointerCapture?.(event.pointerId);
+      event.preventDefault(); if (!capturePointer(overlay, event)) return; start = getPoint(event, overlay); draft = document.createElement('div'); draft.className = 'cp18-placement-draft signature'; overlay.appendChild(draft);
     });
     overlay.addEventListener('pointermove', event => { if (start && draft) applyBox(draft, normalizedBox(start, getPoint(event, overlay), .06, .025)); });
     const finish = event => {

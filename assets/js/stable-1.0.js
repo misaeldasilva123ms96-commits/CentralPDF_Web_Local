@@ -21,6 +21,13 @@
     return {time,firstTime:item?.firstTime||time,kind:String(item?.kind||'erro').slice(0,80),message:String(item?.message||'Erro desconhecido').slice(0,4000),source:String(item?.source||'aplicação').slice(0,1000),count:Math.max(1,Number(item?.count)||1)};
   }
   function errorKey(item){return `${item.kind}|${item.message}|${item.source}`}
+  function logGuidance(item){
+    if(item.kind !== 'aviso') return '';
+    if(/Cannot load system font:/.test(item.message)) return 'Compatibilidade de fonte: confira a aparência das páginas; a fonte original pode ter sido substituída.';
+    if(/Removing parsed object:/.test(item.message)) return 'Compatibilidade do PDF: o leitor descartou um objeto inválido. Confira o documento gerado.';
+    if(/recuperação automática foi ignorada porque os arquivos somam/i.test(item.message)) return 'Limite da recuperação automática: salve o projeto manualmente em Projetos.';
+    return '';
+  }
   function isResolvedLegacyPdfLog(item){
     const message=String(item?.message||'');const source=String(item?.source||'');
     const missingLocal=/vendor\/pdf(?:-lib)?(?:\.worker)?\.min\.js/i.test(source)&&/Falha ao carregar|não foi possível carregar/i.test(message);
@@ -182,7 +189,7 @@
   function renderErrors(){
     const m=$('#cp10ErrorList');if(!m)return;const logs=filteredErrors();const stats=logStats();const summary=$('#cp10LogSummary');if(summary)summary.innerHTML=`<strong>${logs.length}</strong> exibidos · <strong>${stats.unique}</strong> únicos · <strong>${stats.total}</strong> ocorrências`;
     const cap=$('#cp10LogCapacity');if(cap)cap.textContent=`${stats.unique} de ${MAX_ERRORS} registros únicos; eventos repetidos são agrupados.`;
-    m.innerHTML=logs.length?logs.map(x=>`<div class="cp10-error-item"><div class="cp10-error-item-head"><strong>${esc(x.kind)}</strong>${x.count>1?`<b>${x.count}×</b>`:''}<time>${esc(new Date(x.time).toLocaleString('pt-BR'))}</time></div><div>${esc(x.message)}</div><small>${esc(x.source)}</small>${x.firstTime&&x.firstTime!==x.time?`<small>Primeira ocorrência: ${esc(new Date(x.firstTime).toLocaleString('pt-BR'))}</small>`:''}</div>`).join(''):'<div class="cp10-empty">Nenhum log corresponde aos filtros atuais.</div>';
+    m.innerHTML=logs.length?logs.map(x=>`<div class="cp10-error-item"><div class="cp10-error-item-head"><strong>${esc(x.kind)}</strong>${x.count>1?`<b>${x.count}×</b>`:''}<time>${esc(new Date(x.time).toLocaleString('pt-BR'))}</time></div><div>${esc(x.message)}</div><small>${esc(x.source)}</small>${logGuidance(x)?`<p>${esc(logGuidance(x))}</p>`:''}${x.firstTime&&x.firstTime!==x.time?`<small>Primeira ocorrência: ${esc(new Date(x.firstTime).toLocaleString('pt-BR'))}</small>`:''}</div>`).join(''):'<div class="cp10-empty">Nenhum log corresponde aos filtros atuais.</div>';
   }
   function downloadReport(){const report=runCheck();downloadJson(report,`CentralPDF_${DISPLAY_VERSION}_Diagnostico_${new Date().toISOString().slice(0,10)}.json`)}
   function updateVersion(){
