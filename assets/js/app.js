@@ -577,6 +577,7 @@
   const PDFLIB_INGEST_TOOLS = new Set(['organize', 'editPdf', 'merge', 'split', 'extract', 'rotate', 'watermark', 'pageNumbers', 'compress', 'crop', 'metadata', 'normalize', 'redact', 'formBuilder', 'signPdf', 'archivePdf']);
   let fileIngestChain = Promise.resolve();
   let fileIngestSession = 0;
+  let organizerRenderGeneration = 0;
 
   const $ = selector => document.querySelector(selector);
   const fileInput = $('#fileInput');
@@ -960,6 +961,7 @@
   }
 
   function resetOrganizer() {
+    organizerRenderGeneration += 1;
     if (state.organizerPreviewObserver) state.organizerPreviewObserver.disconnect();
     state.organizerPreviewObserver = null;
     state.organizerPreviewQueue = [];
@@ -1012,7 +1014,7 @@
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
     if (abortInactiveSession()) return;
     const config = toolConfig[queuedTool];
-    const inspected = await inspectIncomingFiles(files, config, queuedTool, sessionIsActive);
+    const inspected = await inspectIncomingFiles(files, config, queuedTool, sessionIsActive, options.source);
     if (!inspected || abortInactiveSession()) return;
     const valid = inspected.valid;
     const rejected = inspected.rejected;
@@ -1115,7 +1117,7 @@
     notifyFilesChanged(options.source || 'add');
   }
 
-  async function inspectIncomingFiles(files, config, queuedTool, sessionIsActive) {
+  async function inspectIncomingFiles(files, config, queuedTool, sessionIsActive, source = 'unknown') {
     const valid = [];
     const rejected = [];
     const acceptsPdf = /application\/pdf|\.pdf(?:,|$)/i.test(config.accept || '');
@@ -1164,6 +1166,9 @@
     }
     if (rejected.length) {
       window.CentralPDFStable?.addLog?.('aviso', `${rejected.length} arquivo(s) não passaram pela inspeção de entrada.`, `entrada: ${queuedTool}`);
+      for (const item of rejected) {
+        window.CentralPDFStable?.addLog?.('aviso', `${item.file.name}: ${item.message}`, `entrada: ${queuedTool}; origem: ${source}; bytes: ${Number(item.file.size || 0)}; tipo: ${item.file.type || 'não informado'}; código: ${item.code}`);
+      }
     }
     return { valid, rejected };
   }
@@ -2201,6 +2206,7 @@
   function nextOrganizerSourceKey(prefix = 'source') { return `${prefix}-${++state.organizerSourceSeq}`; }
   function cloneOrganizerPage(page) { return { ...page, id: nextOrganizerPageId() }; }
   function organizerPreviewKey(page) {
+    if (!page) return null;
     if (page.kind === 'pdf') return `pdf:${page.sourceKey}:${page.sourceIndex}`;
     if (page.kind === 'image') return `image:${page.sourceKey}`;
     return `blank:${page.width}x${page.height}`;
@@ -2372,6 +2378,9 @@
 
   async function renderOrganizerPreviews(sessionIsActive = () => true) {
     if (!sessionIsActive()) return false;
+    const generation = ++organizerRenderGeneration;
+    const sessionActive = sessionIsActive;
+    sessionIsActive = () => sessionActive() && generation === organizerRenderGeneration;
     if (state.organizerPreviewObserver) state.organizerPreviewObserver.disconnect();
     state.organizerPreviewObserver = null;
     state.organizerPreviewQueue = [];
@@ -2559,6 +2568,7 @@
 
   function createPageCard(index, preview, allowLazy = false) {
     const pageInfo = state.organizerPages[index];
+    if (!pageInfo) return;
     const selected = state.selectedPageIds.has(pageInfo.id);
     const card = document.createElement('article');
     const previewPending = Boolean(allowLazy && !preview);
@@ -2626,11 +2636,15 @@
   }
 
   function renderPageGridFromCache() {
+    const generation = ++organizerRenderGeneration;
+    setProgress(null);
+    state.organizerPreviewQueue = [];
+    state.organizerPreviewActive = 0;
     if (state.organizerPreviewObserver) state.organizerPreviewObserver.disconnect();
     pageGrid.innerHTML='';
     const lazyMode = state.organizerPages.length >= 180 && 'IntersectionObserver' in window;
     state.organizerPages.forEach((page,index)=>createPageCard(index,state.previewCache.get(organizerPreviewKey(page)),lazyMode));
-    if (lazyMode) setupOrganizerLazyPreviews();
+    if (lazyMode) setupOrganizerLazyPreviews(() => generation === organizerRenderGeneration);
     updateOrganizerPageCount(); updateOrganizerBulkToolbar(); updateOrganizerHistoryButtons();
   }
   function updateOrganizerPageCount() { const total=state.organizerPages.length; $('#pageCountLabel').textContent=`${total} ${total===1?'página':'páginas'}`; }
@@ -4023,6 +4037,7 @@
       fileCount: state.files.length,
       pageCount,
       outputName: $('#outputFileName')?.value || '',
+      fileSignature: state.files.map(getFileCacheKey).join('|'),
       settings: collectSettingsValues(),
       organizerSignature: ['organize','merge'].includes(state.tool) ? state.organizerPages.map(page => `${page.id}:${page.sourceKey}:${page.sourceIndex}:${page.rotation}`).join('|') : '',
       editorSignature: editorSummary.signature || '',
