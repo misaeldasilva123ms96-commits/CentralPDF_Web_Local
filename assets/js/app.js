@@ -635,6 +635,11 @@
     fileList.style.setProperty('--cover-card-width', `${state.coverZoom}px`);
   });
   $('#organizerAddPages').addEventListener('click', () => openOrganizerAddDialog('pdf'));
+  $('#mergePageView').addEventListener('change', () => {
+    state.selectedPageIds.clear();
+    updateOrganizerModeUI();
+    renderPageGridFromCache();
+  });
   $('#organizerAddBlank').addEventListener('click', () => openOrganizerAddDialog('blank'));
   $('#closeOrganizerAdd').addEventListener('click', closeOrganizerAddDialog);
   $('#cancelOrganizerAdd').addEventListener('click', closeOrganizerAddDialog);
@@ -2243,12 +2248,17 @@
   }
 
   function updateOrganizerModeUI() {
+    const covers = mergeCoversOnly();
+    $('#mergeViewControl').classList.toggle('hidden', state.tool !== 'merge');
+    $('#mergeCoverHelp').classList.toggle('hidden', !covers);
+    $('#organizerBulkToolbar').classList.toggle('hidden', covers);
     const title = $('#organizerEditorTitle');
     const help = $('#organizerHelpText');
     if (!title || !help) return;
     if (state.tool === 'merge') {
       title.textContent = 'Organização única da união';
       help.innerHTML = '<strong>Este é o único fluxo da união:</strong> arraste qualquer miniatura para definir a ordem final, inclusive entre PDFs diferentes. Gire, exclua, duplique ou selecione várias páginas. Novos PDFs soltos na tela entram no final.';
+      if (covers) help.textContent = 'Visualizando só as capas. Todas as páginas serão unidas. Ordene os documentos na lista lateral ou volte a “Todas as páginas” para editar.';
       const addButton = $('#organizerAddPages');
       if (addButton) addButton.textContent = '＋ Adicionar PDF, imagem ou página';
     } else {
@@ -2566,9 +2576,14 @@
     return canvas.toDataURL('image/png');
   }
 
+  function mergeCoversOnly() { return state.tool === 'merge' && $('#mergePageView').value === 'covers'; }
+
   function createPageCard(index, preview, allowLazy = false) {
     const pageInfo = state.organizerPages[index];
     if (!pageInfo) return;
+    const covers = mergeCoversOnly();
+    const sourceId = pageInfo.sourceKey || pageInfo.id;
+    if (covers && state.organizerPages.findIndex(page => (page.sourceKey || page.id) === sourceId) !== index) return;
     const selected = state.selectedPageIds.has(pageInfo.id);
     const card = document.createElement('article');
     const previewPending = Boolean(allowLazy && !preview);
@@ -2623,6 +2638,18 @@
       movePage(from,index);
       endInternalDrag();
     });
+    if (covers) {
+      card.draggable = false;
+      card.querySelector('.page-select').remove();
+      card.querySelector('.page-actions').remove();
+      const count = state.organizerPages.filter(page => (page.sourceKey || page.id) === sourceId).length;
+      card.querySelector('.page-caption strong').textContent = pageInfo.origin || 'Página em branco';
+      card.querySelector('.page-caption small').textContent = `${count} ${count === 1 ? 'página incluída' : 'páginas incluídas'} · Capa`;
+      // A cover is a document summary, never a draggable individual page.
+      card.addEventListener('drop', event => {
+        if (!transferHasFiles(event)) { event.preventDefault(); event.stopImmediatePropagation(); }
+      }, true);
+    }
     pageGrid.appendChild(card);
   }
 

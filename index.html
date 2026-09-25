@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.10" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.11" />
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
@@ -419,6 +419,9 @@
           <div class="organizer-toolbar">
             <div><h2 id="organizerEditorTitle">Editor de páginas</h2><span id="pageCountLabel">0 páginas</span></div>
             <div class="toolbar-actions">
+              <label id="mergeViewControl" class="hidden" for="mergePageView">Visualização
+                <select id="mergePageView" aria-describedby="mergeCoverHelp"><option value="pages">Todas as páginas</option><option value="covers">Só capas</option></select>
+              </label>
               <button id="organizerAddPages" class="small-button primary-soft" type="button">＋ Adicionar páginas</button>
               <button id="organizerAddBlank" class="small-button" type="button">Página em branco</button>
               <button id="organizerUndo" class="small-button" type="button" disabled>Desfazer</button>
@@ -438,6 +441,7 @@
           </div>
           <div id="organizerHelpText" class="organizer-help"><strong>Como usar:</strong> clique na caixa de uma ou várias páginas para aplicar ações em lote. Arraste para reordenar. Em cada miniatura você pode visualizar, mover, girar, duplicar, inserir depois ou excluir individualmente.</div>
           <div id="pageGrid" class="page-grid"></div>
+          <p id="mergeCoverHelp" class="help-text hidden">Só a primeira página de cada documento é exibida. Todas as páginas continuam na união. Para ordenar documentos, use a lista lateral; para editar páginas, escolha “Todas as páginas”.</p>
         </section>
       </section>
 
@@ -560,7 +564,7 @@
   <script src="assets/js/forms-signatures-0.18.js?v=0.18.1"></script>
   <script src="assets/js/conversions-0.19.js"></script>
   <script src="assets/js/intelligence-0.20.js"></script>
-  <script src="assets/js/app.js?v=2.0.1-ui7"></script>
+  <script src="assets/js/app.js?v=2.0.1-ui8"></script>
   <script src="assets/js/tool-quality-1.2.0.js?v=1.2.3"></script>
   <script src="assets/js/layout-controls.js?v=2.0.1-ui1"></script>
   <script src="assets/js/foundation.js"></script>
