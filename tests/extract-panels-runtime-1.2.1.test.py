@@ -24,12 +24,12 @@ assert "position: fixed" in css
 assert "inset: 58px 0 0 auto" in css
 assert "width: var(--cp2-inspector-width)" in css
 assert "overscroll-behavior: contain" in css
-assert "product-redesign-2.0.css?v=2.0.10" in index
+assert "product-redesign-2.0.css?v=2.0.11" in index
 assert "assets/js/forms-signatures-0.18.js?v=0.18.1" in index
-assert "assets/js/app.js?v=2.0.1-ui7" in index
+assert "assets/js/app.js?v=2.0.1-ui8" in index
 assert "./assets/js/forms-signatures-0.18.js?v=0.18.1" in service_worker
-assert "./assets/js/app.js?v=2.0.1-ui7" in service_worker
-assert "./assets/css/product-redesign-2.0.css?v=2.0.10" in service_worker
+assert "./assets/js/app.js?v=2.0.1-ui8" in service_worker
+assert "./assets/css/product-redesign-2.0.css?v=2.0.11" in service_worker
 assert "centralpdf-v2.0.1-pages-21" in service_worker
 
 print("extract-panels-runtime-2.0.1: passed")

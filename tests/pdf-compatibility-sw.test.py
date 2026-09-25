@@ -48,7 +48,7 @@ try:
         cached = page.evaluate(
             """async () => {
               const cache = await caches.open('centralpdf-v2.0.1-pages-21-core');
-              const app = await cache.match('/assets/js/app.js?v=2.0.1-ui7');
+              const app = await cache.match('/assets/js/app.js?v=2.0.1-ui8');
               const ingest = await cache.match('/assets/js/pdf-ingest.js?v=2.0.1-ingest1');
               return {app: Boolean(app), ingest: Boolean(ingest)};
             }"""
@@ -58,7 +58,7 @@ try:
         context.set_offline(True)
         offline = page.evaluate(
             """async () => ({
-              app: (await (await fetch('/assets/js/app.js?v=2.0.1-ui7')).text()).includes('fileIngestChain'),
+              app: (await (await fetch('/assets/js/app.js?v=2.0.1-ui8')).text()).includes('fileIngestChain'),
               ingest: (await (await fetch('/assets/js/pdf-ingest.js?v=2.0.1-ingest1')).text()).includes('inspectPdfFile')
             })"""
         )

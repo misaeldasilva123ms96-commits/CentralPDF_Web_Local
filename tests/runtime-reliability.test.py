@@ -85,6 +85,32 @@ try:
         assert 'Central' in page.title()
         assert page.locator('body').inner_text().strip()
 
+        # Covers are only a view: export must preserve every page and its order.
+        page.evaluate("""async () => {
+          const files = [];
+          for (const [name, widths] of [['A.pdf', [401,402]], ['B.pdf', [501,502,503]]]) {
+            const doc = await PDFLib.PDFDocument.create();
+            widths.forEach(width => doc.addPage([width,595]));
+            files.push(new File([await doc.save()], name, {type:'application/pdf'}));
+          }
+          await CentralPDFApp.openFilesInTool(files, 'merge');
+        }""")
+        assert page.locator('#pageGrid .page-card').count() == 5
+        page.locator('#mergePageView').select_option('covers')
+        assert page.locator('#pageGrid .page-card').count() == 2
+        assert page.locator('#pageGrid .page-actions').count() == 0
+        assert '5 páginas' in page.locator('#pageCountLabel').inner_text()
+        page.locator('#mergePageView').select_option('pages')
+        assert page.locator('#pageGrid .page-card').count() == 5
+        page.locator('#mergePageView').select_option('covers')
+        with page.expect_download() as downloaded:
+            page.locator('#processButton').click()
+        output_bytes = list(Path(downloaded.value.path()).read_bytes())
+        assert page.evaluate("""async bytes => {
+          const pdf = await PDFLib.PDFDocument.load(new Uint8Array(bytes));
+          return pdf.getPages().map(page => page.getWidth());
+        }""", output_bytes) == [401,402,501,502,503]
+
         # Real pointer events: selection must not detach the gesture target.
         page.evaluate("""async () => {
           await CentralPDFApp.openFilesInTool([await __makePdf('form.pdf')], 'formBuilder');
