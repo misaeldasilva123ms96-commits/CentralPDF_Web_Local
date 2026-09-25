@@ -16,7 +16,7 @@ const CORE_ASSETS = [
   './assets/css/modal-fit-1.0.9.css', './assets/css/micro-polish-1.1.0.css',
   './assets/css/quality-logs-1.1.2.css', './assets/css/tool-quality-1.2.0.css',
   './assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3',
-  './assets/css/product-redesign-2.0.css?v=2.0.9',
+  './assets/css/product-redesign-2.0.css?v=2.0.10',
   './assets/css/split-interactive.css?v=2.0.1-split1',
   './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=2.0.1-ingest1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',

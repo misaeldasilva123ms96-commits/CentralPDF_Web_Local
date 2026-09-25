@@ -172,8 +172,11 @@ body[data-theme='dark'] {
   width: min(1220px, calc(100% - 40px));
   padding-top: 46px;
 }
-.home-hero { align-items: center; }
-.hero-copy h1 { max-width: 650px; letter-spacing: -.045em; }
+.home-hero { align-items: center; gap: 24px; }
+body[data-theme='dark'] .home-hero { padding: 20px 24px; }
+.hero-copy h1 { max-width: 650px; font-size: clamp(28px, 2.8vw, 38px); line-height: 1.12; letter-spacing: -.035em; }
+.hero-copy p { margin-top: 10px; font-size: 14px; line-height: 1.5; }
+.hero-stats { margin-top: 12px; }
 .search-box { border-radius: 12px; box-shadow: 0 8px 30px rgba(30, 41, 59, .08); }
 .tool-grid { gap: 12px; }
 .tool-card {
@@ -363,12 +366,10 @@ body[data-theme='dark'] .cp2-mega-list button:hover { background: #1a2640; }
   .privacy-indicator { display: none; }
   .cp2-primary-nav > button,
   .cp2-primary-nav > label { padding-inline: 8px; font-size: 11px; }
-  .cp2-nav-tool[data-nav-tool='editPdf'],
-  .cp2-nav-tool[data-nav-tool='organize'] { display: none; }
   .cp2-mega-menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1240px) {
   .topbar { min-height: 58px; padding: 7px 12px; }
   .cp2-mobile-menu {
     display: inline-flex;
@@ -400,6 +401,9 @@ body[data-theme='dark'] .cp2-mega-list button:hover { background: #1a2640; }
   .cp2-nav-tool[data-nav-tool='editPdf'],
   .cp2-nav-tool[data-nav-tool='organize'] { display: inline-flex; flex: 1 1 140px; justify-content: center; }
   .cp2-mega-menu { top: 118px; grid-template-columns: 1fr; width: calc(100vw - 20px); max-height: calc(100vh - 132px); }
+}
+
+@media (max-width: 980px) {
   body[data-workspace-open='true'] .workspace { display: block; min-height: calc(100vh - 58px); }
   body[data-workspace-open='true'] .main-panel { padding: 18px 14px 120px; }
   body[data-workspace-open='true'] .settings-panel {
@@ -426,7 +430,9 @@ body[data-theme='dark'] .cp2-mega-list button:hover { background: #1a2640; }
   .top-actions .cp10-top-button,
   #helpButton { display: none !important; }
   .home-view { width: min(100% - 24px, 620px); padding-top: 28px; }
-  .hero-copy h1 { font-size: clamp(32px, 11vw, 46px); }
+  .home-hero { gap: 16px; }
+  body[data-theme='dark'] .home-hero { padding: 18px; }
+  .hero-copy h1 { font-size: clamp(26px, 7.5vw, 32px); }
   .guidance-strip { display: none; }
   .home-toolbar { margin-top: 24px; }
   .cp2-mega-menu { padding: 14px; }
