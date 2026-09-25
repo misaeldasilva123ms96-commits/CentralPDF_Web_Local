@@ -100,7 +100,11 @@ try:
         page.mouse.up()
         assert page.evaluate('CentralPDFForms.getFields()[0].x') > .18
         handle = page.locator('#formBuilderOverlay [data-handle="se"]')
+        # Dragging can move the resize handle below the viewport. Mouse
+        # coordinates do not auto-scroll like locator actions do.
+        handle.hover()
         box = handle.bounding_box()
+        assert handle.evaluate("el => { const r = el.getBoundingClientRect(); return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el; }")
         page.mouse.move(box['x']+box['width']/2, box['y']+box['height']/2)
         page.mouse.down()
         page.mouse.move(box['x']+35, box['y']+25, steps=4)
