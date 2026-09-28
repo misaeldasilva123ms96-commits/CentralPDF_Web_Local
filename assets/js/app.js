@@ -1019,6 +1019,32 @@
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
     if (abortInactiveSession()) return;
     const config = toolConfig[queuedTool];
+    if (queuedTool === 'editPdf') {
+      const images = files.filter(file => !/\.pdf$/i.test(file.name) && /^(image\/(png|jpeg|webp))$/i.test(file.type));
+      if (images.length) {
+        const pdfs = files.filter(file => !images.includes(file));
+        if (pdfs.length) await ingestFiles(pdfs, options);
+        if (abortInactiveSession()) return;
+        if (!window.PDFVisualEditor?.hasDocument()) {
+          setStatus('Abra um PDF no editor antes de adicionar a imagem da assinatura.', 'warning');
+          return;
+        }
+        let added = 0;
+        const failures = [];
+        for (const file of images) {
+          if (abortInactiveSession()) return;
+          try {
+            if (!file.size) throw new Error('O navegador recebeu uma imagem com 0 bytes. Selecione uma cópia local válida.');
+            await window.PDFVisualEditor.addImages([file], sessionIsActive);
+            if (abortInactiveSession()) return;
+            added++;
+          } catch (error) { failures.push(`${file.name}: ${error.message}`); }
+        }
+        setStatus(`${added} imagem(ns) adicionada(s) à página atual. ${failures.join(' ')}`, failures.length ? 'warning' : 'success');
+        notifyFilesChanged(options.source || 'add');
+        return;
+      }
+    }
     const inspected = await inspectIncomingFiles(files, config, queuedTool, sessionIsActive, options.source);
     if (!inspected || abortInactiveSession()) return;
     const valid = inspected.valid;
@@ -1696,7 +1722,9 @@
       if (entry) { ordered.push(entry); byFileKey.delete(entry[1].fileKey); }
     });
     byFileKey.forEach(entry => ordered.push(entry));
-    return ordered;
+    const positions = new Map();
+    state.organizerPages.forEach((page, index) => { if (!positions.has(page.sourceKey)) positions.set(page.sourceKey, index); });
+    return ordered.sort((a, b) => (positions.get(a[0]) ?? Infinity) - (positions.get(b[0]) ?? Infinity));
   }
 
   function mergeSourcePageCount(sourceKey) {
@@ -2251,14 +2279,14 @@
     const covers = mergeCoversOnly();
     $('#mergeViewControl').classList.toggle('hidden', state.tool !== 'merge');
     $('#mergeCoverHelp').classList.toggle('hidden', !covers);
-    $('#organizerBulkToolbar').classList.toggle('hidden', covers);
+    $('#organizerBulkToolbar').classList.remove('hidden');
     const title = $('#organizerEditorTitle');
     const help = $('#organizerHelpText');
     if (!title || !help) return;
     if (state.tool === 'merge') {
       title.textContent = 'Organização única da união';
       help.innerHTML = '<strong>Este é o único fluxo da união:</strong> arraste qualquer miniatura para definir a ordem final, inclusive entre PDFs diferentes. Gire, exclua, duplique ou selecione várias páginas. Novos PDFs soltos na tela entram no final.';
-      if (covers) help.textContent = 'Visualizando só as capas. Todas as páginas serão unidas. Ordene os documentos na lista lateral ou volte a “Todas as páginas” para editar.';
+      if (covers) help.textContent = 'Cada capa representa um documento inteiro. Arraste, selecione, gire, duplique ou exclua documentos: a ação será aplicada a todas as suas páginas. A união inclui todas as páginas restantes.';
       const addButton = $('#organizerAddPages');
       if (addButton) addButton.textContent = '＋ Adicionar PDF, imagem ou página';
     } else {
@@ -2577,13 +2605,45 @@
   }
 
   function mergeCoversOnly() { return state.tool === 'merge' && $('#mergePageView').value === 'covers'; }
+  function coverKey(page) { return page.coverGroupId || page.sourceKey || page.id; }
+  function coverIndexes(index) {
+    const key = coverKey(state.organizerPages[index]);
+    return state.organizerPages.flatMap((page, i) => coverKey(page) === key ? [i] : []);
+  }
+  function selectCover(index, checked) {
+    coverIndexes(index).forEach(i => state.selectedPageIds[checked ? 'add' : 'delete'](state.organizerPages[i].id));
+    renderPageGridFromCache();
+  }
+  function coverAction(index, action, value) {
+    const indexes = coverIndexes(index);
+    if (action === 'insert') {
+      const at = Math.max(...indexes) + 1;
+      state.organizerInsertIndex = at; openOrganizerAddDialog('pdf', at); return;
+    }
+    state.selectedPageIds.clear();
+    indexes.forEach(i => state.selectedPageIds.add(state.organizerPages[i].id));
+    if (action === 'rotate') rotateSelectedPages(value);
+    if (action === 'duplicate') duplicateSelectedPages();
+    if (action === 'delete') deleteSelectedPages();
+  }
+  function moveCover(from, to) {
+    if (!state.organizerPages[from] || !state.organizerPages[to]) return;
+    const keys = [...new Set(state.organizerPages.map(coverKey))];
+    const source = keys.indexOf(coverKey(state.organizerPages[from]));
+    const target = keys.indexOf(coverKey(state.organizerPages[to]));
+    if (source === target) return;
+    pushOrganizerHistory();
+    keys.splice(target, 0, keys.splice(source, 1)[0]);
+    state.organizerPages = keys.flatMap(key => state.organizerPages.filter(page => coverKey(page) === key));
+    renderPageGridFromCache(); updateMergePreview();
+  }
 
   function createPageCard(index, preview, allowLazy = false) {
     const pageInfo = state.organizerPages[index];
     if (!pageInfo) return;
     const covers = mergeCoversOnly();
-    const sourceId = pageInfo.sourceKey || pageInfo.id;
-    if (covers && state.organizerPages.findIndex(page => (page.sourceKey || page.id) === sourceId) !== index) return;
+    const sourceId = coverKey(pageInfo);
+    if (covers && state.organizerPages.findIndex(page => coverKey(page) === sourceId) !== index) return;
     const selected = state.selectedPageIds.has(pageInfo.id);
     const card = document.createElement('article');
     const previewPending = Boolean(allowLazy && !preview);
@@ -2639,15 +2699,41 @@
       endInternalDrag();
     });
     if (covers) {
-      card.draggable = false;
-      card.querySelector('.page-select').remove();
-      card.querySelector('.page-actions').remove();
-      const count = state.organizerPages.filter(page => (page.sourceKey || page.id) === sourceId).length;
+      const indexes = coverIndexes(index);
+      const count = indexes.length;
       card.querySelector('.page-caption strong').textContent = pageInfo.origin || 'Página em branco';
       card.querySelector('.page-caption small').textContent = `${count} ${count === 1 ? 'página incluída' : 'páginas incluídas'} · Capa`;
-      // A cover is a document summary, never a draggable individual page.
+      card.querySelector('.page-select').title = 'Selecionar todas as páginas do documento';
+      card.querySelector('.page-select input').addEventListener('change', event => {
+        event.stopImmediatePropagation(); selectCover(index, event.target.checked);
+      }, true);
+      const keys = [...new Set(state.organizerPages.map(coverKey))];
+      const position = keys.indexOf(sourceId);
+      for (const [selector, action, value, title] of [
+        ['.left','rotate',270,'Girar todas as páginas para a esquerda'],
+        ['.right','rotate',90,'Girar todas as páginas para a direita'],
+        ['.duplicate','duplicate',0,'Duplicar documento inteiro'],
+        ['.delete','delete',0,'Excluir documento inteiro'],
+        ['.insert','insert',0,'Inserir páginas após este documento'],
+      ]) {
+        const button = card.querySelector(selector); button.title = title;
+        button.addEventListener('click', event => { event.stopImmediatePropagation(); coverAction(index, action, value); }, true);
+      }
+      for (const [selector, offset] of [['.move-left',-1],['.move-right',1]]) {
+        const button = card.querySelector(selector);
+        button.disabled = !keys[position + offset];
+        button.title = offset < 0 ? 'Mover documento para a esquerda' : 'Mover documento para a direita';
+        button.addEventListener('click', event => {
+          event.stopImmediatePropagation();
+          moveCover(index, state.organizerPages.findIndex(page => coverKey(page) === keys[position + offset]));
+        }, true);
+      }
       card.addEventListener('drop', event => {
-        if (!transferHasFiles(event)) { event.preventDefault(); event.stopImmediatePropagation(); }
+        if (transferHasFiles(event)) return;
+        event.preventDefault(); event.stopImmediatePropagation();
+        const from = state.dragPageIndex;
+        if (Number.isInteger(from)) moveCover(from, index);
+        endInternalDrag();
       }, true);
     }
     pageGrid.appendChild(card);
@@ -2673,6 +2759,7 @@
     state.organizerPages.forEach((page,index)=>createPageCard(index,state.previewCache.get(organizerPreviewKey(page)),lazyMode));
     if (lazyMode) setupOrganizerLazyPreviews(() => generation === organizerRenderGeneration);
     updateOrganizerPageCount(); updateOrganizerBulkToolbar(); updateOrganizerHistoryButtons();
+    if (state.tool === 'merge') updateMergePreview();
   }
   function updateOrganizerPageCount() { const total=state.organizerPages.length; $('#pageCountLabel').textContent=`${total} ${total===1?'página':'páginas'}`; }
   function selectedOrganizerIndexes() { return state.organizerPages.map((page,index)=>state.selectedPageIds.has(page.id)?index:-1).filter(index=>index>=0); }
@@ -2689,7 +2776,20 @@
   function duplicatePage(index) { const page=state.organizerPages[index]; if(!page)return; pushOrganizerHistory(); state.organizerPages.splice(index+1,0,cloneOrganizerPage(page)); renderPageGridFromCache(); setStatus('Página duplicada.'); }
   function deletePage(index) { if(state.organizerPages.length<=1){setStatus('O PDF precisa manter pelo menos uma página.','error');return;} pushOrganizerHistory(); const [removed]=state.organizerPages.splice(index,1); state.selectedPageIds.delete(removed.id); renderPageGridFromCache(); setStatus('Página removida da versão final. O original continua intacto.'); }
   function rotateSelectedPages(angle) { const indexes=selectedOrganizerIndexes(); if(!indexes.length)return; pushOrganizerHistory(); indexes.forEach(index=>state.organizerPages[index].rotation=(state.organizerPages[index].rotation+angle)%360); renderPageGridFromCache(); setStatus(`${indexes.length} página(s) girada(s).`); }
-  function duplicateSelectedPages() { const indexes=selectedOrganizerIndexes(); if(!indexes.length)return; pushOrganizerHistory(); state.organizerPages=OrganizerPlanner.duplicateIndexes(state.organizerPages,indexes,page=>cloneOrganizerPage(page)); state.selectedPageIds.clear(); renderPageGridFromCache(); setStatus(`${indexes.length} página(s) duplicada(s).`); }
+  function duplicateSelectedPages() {
+    const indexes=selectedOrganizerIndexes(); if(!indexes.length)return;
+    pushOrganizerHistory();
+    if (mergeCoversOnly()) {
+      const keys = [...new Set(indexes.map(index => coverKey(state.organizerPages[index])))];
+      for (const key of keys) {
+        const pages = state.organizerPages.filter(page => coverKey(page) === key);
+        const groupId = nextOrganizerSourceKey('copy');
+        const last = state.organizerPages.lastIndexOf(pages[pages.length - 1]);
+        state.organizerPages.splice(last + 1, 0, ...pages.map(page => ({...cloneOrganizerPage(page), coverGroupId: groupId})));
+      }
+    } else state.organizerPages=OrganizerPlanner.duplicateIndexes(state.organizerPages,indexes,page=>cloneOrganizerPage(page));
+    state.selectedPageIds.clear(); renderPageGridFromCache(); updateMergePreview(); setStatus(`${indexes.length} página(s) duplicada(s).`);
+  }
   function deleteSelectedPages() { const indexes=selectedOrganizerIndexes(); if(!indexes.length)return; if(state.organizerPages.length-indexes.length<1){setStatus('O PDF precisa manter pelo menos uma página.','error');return;} pushOrganizerHistory(); state.organizerPages=OrganizerPlanner.deleteIndexes(state.organizerPages,indexes); state.selectedPageIds.clear(); renderPageGridFromCache(); setStatus(`${indexes.length} página(s) removida(s).`); }
   function moveSelectedPagesToEdge(edge) { const indexes=selectedOrganizerIndexes(); if(!indexes.length)return; pushOrganizerHistory(); state.organizerPages=OrganizerPlanner.moveIndexesToEdge(state.organizerPages,indexes,edge); renderPageGridFromCache(); setStatus(`Páginas selecionadas movidas para o ${edge==='start'?'início':'fim'}.`); }
 

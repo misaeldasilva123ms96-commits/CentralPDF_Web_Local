@@ -1064,12 +1064,13 @@
     checkpoint(); page.crop=null; state.tempCrop=null; updateEditorPointerRouting(); renderCurrentPage(); renderThumbnails();
   }
 
-  async function addImages(files) {
+  async function addImages(files, sessionIsActive = () => true) {
     const valid=files.filter(file=>file.type.startsWith('image/')); if(!valid.length)return;
     const page=currentPage(); if(!page)return;
     checkpoint();
     for(const file of valid){
       const dataUrl=await imageFileToPngDataUrl(file); const dimensions=await imageDimensions(dataUrl);
+      if (!sessionIsActive() || !state.pages.includes(page)) return;
       const maxW=Math.min(page.width*.55,dimensions.width); const ratio=dimensions.height/dimensions.width;
       const width=Math.max(40,maxW), height=Math.max(30,width*ratio);
       const object={id:nextObjectId(),type:'image',x:(page.width-width)/2,y:(page.height-height)/2,width,height,rotation:0,lockAspect:true,aspectRatio:dimensions.width/Math.max(1,dimensions.height),dataUrl,mime:'image/png'};
@@ -1310,6 +1311,6 @@
     };
   }
 
-  window.PDFVisualEditor = { init, activate, deactivate, reset, loadFile, addPdfPages, exportPdf, exportProjectState, restoreProjectState, getProjectSummary, hasDocument:()=>state.pages.length>0, __test:{ normalizedRect, wrapText, hexRgb, resolveStandardFont, normalizeAngle, rotatePoint, rotateVector, rotatedPdfPlacement, clampObjectInsidePage, getPageRenderRotation, pageOrientation, rotateVisualPoint, rotateVisualRect, rotatePageGeometry, visualPointToPdf, visualRectToPdfBox, getExportRotation, isEncryptedPdfError, isRenderCancellation } };
+  window.PDFVisualEditor = { init, activate, deactivate, reset, loadFile, addPdfPages, addImages, exportPdf, exportProjectState, restoreProjectState, getProjectSummary, hasDocument:()=>state.pages.length>0, __test:{ normalizedRect, wrapText, hexRgb, resolveStandardFont, normalizeAngle, rotatePoint, rotateVector, rotatedPdfPlacement, clampObjectInsidePage, getPageRenderRotation, pageOrientation, rotateVisualPoint, rotateVisualRect, rotatePageGeometry, visualPointToPdf, visualRectToPdfBox, getExportRotation, isEncryptedPdfError, isRenderCancellation } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
