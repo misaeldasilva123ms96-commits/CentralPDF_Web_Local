@@ -98,7 +98,7 @@ try:
         assert page.locator('#pageGrid .page-card').count() == 5
         page.locator('#mergePageView').select_option('covers')
         assert page.locator('#pageGrid .page-card').count() == 2
-        assert page.locator('#pageGrid .page-actions').count() == 0
+        assert page.locator('#pageGrid .page-actions').count() == 2
         assert '5 páginas' in page.locator('#pageCountLabel').inner_text()
         page.locator('#mergePageView').select_option('pages')
         assert page.locator('#pageGrid .page-card').count() == 5
@@ -110,6 +110,33 @@ try:
           const pdf = await PDFLib.PDFDocument.load(new Uint8Array(bytes));
           return pdf.getPages().map(page => page.getWidth());
         }""", output_bytes) == [401,402,501,502,503]
+
+        page.locator('#continueEditingButton').click()
+        page.locator('#pageGrid .page-card').first.drag_to(page.locator('#pageGrid .page-card').nth(1))
+        assert page.locator('#pageGrid .page-caption strong').all_text_contents() == ['B.pdf', 'A.pdf']
+        page.locator('#organizerUndo').click()
+        page.locator('#pageGrid .move-right').first.click()
+        assert page.locator('#pageGrid .page-caption strong').all_text_contents() == ['B.pdf', 'A.pdf']
+        page.locator('#pageGrid .right').first.click()
+        page.locator('#pageGrid .duplicate').first.click()
+        assert page.locator('#pageGrid .page-card').count() == 3
+        assert '8 páginas' in page.locator('#pageCountLabel').inner_text()
+        page.locator('#pageGrid .delete').nth(1).click()
+        assert page.locator('#pageGrid .page-card').count() == 2
+        assert '5 páginas' in page.locator('#pageCountLabel').inner_text()
+        page.locator('#organizerUndo').click()
+        assert page.locator('#pageGrid .page-card').count() == 3
+        page.locator('#organizerRedo').click()
+        page.locator('#pageGrid .page-select input').nth(1).check()
+        assert '2 selecionadas' in page.locator('#selectedPagesCount').inner_text()
+        page.locator('#moveSelectedStart').click()
+        with page.expect_download() as downloaded:
+            page.locator('#processButton').click()
+        output_bytes = list(Path(downloaded.value.path()).read_bytes())
+        assert page.evaluate("""async bytes => {
+          const pdf = await PDFLib.PDFDocument.load(new Uint8Array(bytes));
+          return pdf.getPages().map(page => [page.getWidth(), page.getRotation().angle]);
+        }""", output_bytes) == [[401,0],[402,0],[501,90],[502,90],[503,90]]
 
         # Real pointer events: selection must not detach the gesture target.
         page.evaluate("""async () => {
@@ -153,6 +180,18 @@ try:
         assert page.evaluate('CentralPDFSignatures.getItems()[0].x') > .18
         # A synthetic/inactive pointer must not create an uncaught exception.
         signature.dispatch_event('pointerdown', {'pointerId':999,'clientX':0,'clientY':0})
+
+        # Dropped signatures become image objects, not rejected PDF inputs.
+        page.evaluate("""async () => {
+          await CentralPDFApp.openFilesInTool([await __makePdf('editor.pdf')], 'editPdf');
+          const canvas = document.createElement('canvas'); canvas.width=100; canvas.height=30;
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+          const transfer = new DataTransfer();
+          transfer.items.add(new File([blob], 'assinatura.jpg', {type:'image/jpeg'}));
+          document.querySelector('#editorStage').dispatchEvent(new DragEvent('drop', {bubbles:true, cancelable:true, dataTransfer:transfer}));
+        }""")
+        page.wait_for_function('PDFVisualEditor.getProjectSummary().objectCount === 1')
+        assert not page.evaluate("CentralPDFStable.getErrors().some(x => x.message.includes('assinatura.jpg') && x.message.includes('não corresponde'))")
 
         # Pause rendering, mutate the page list, then release the old task.
         page.evaluate("""async () => {
