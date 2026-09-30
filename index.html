@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.14" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.15" />
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
@@ -373,6 +373,7 @@
           </div>
           <div class="pdf-editor-toolbar">
             <div class="editor-tool-group" aria-label="Ferramentas de edição">
+              <button id="editorOriginalText" class="editor-tool" type="button" title="Localizar e substituir textos existentes no PDF"><svg><use href="#i-text"/></svg><span>Texto original</span></button>
               <button class="editor-tool active" data-editor-tool="select" type="button" title="Selecionar e mover"><svg><use href="#i-select"/></svg><span>Selecionar</span></button>
               <button id="editorAddText" class="editor-tool" data-editor-tool="text" type="button" title="Adicionar texto"><svg><use href="#i-text"/></svg><span>Texto</span></button>
               <button class="editor-tool" data-editor-tool="brush" type="button" title="Pincel"><svg><use href="#i-brush"/></svg><span>Pincel</span></button>
@@ -384,6 +385,7 @@
               <button id="editorAddImage" class="editor-action" type="button">＋ Imagem</button>
               <button id="editorAddPdf" class="editor-action" type="button">＋ Páginas de PDF</button>
               <button id="editorAddBlank" class="editor-action" type="button">＋ Página em branco</button>
+              <label id="editorStampControl">Carimbo <select id="editorStampPreset" aria-label="Tipo de carimbo"><option value="CONFERIDO">Conferido</option><option value="REVISADO">Revisado</option><option value="RASCUNHO">Rascunho</option><option value="APROVADO">Aprovado</option></select><button id="editorAddStamp" class="editor-action" type="button">＋ Inserir</button></label>
             </div>
           </div>
           <div class="pdf-editor-subtoolbar">
@@ -564,6 +566,7 @@
   <script src="assets/js/advanced-planner.js"></script>
   <script src="assets/js/compression-engine.js"></script>
   <script src="assets/js/organizer-planner.js"></script>
+  <script src="assets/js/pdf-native-text.js"></script>
   <script src="assets/js/pdf-editor.js"></script>
   <script src="assets/js/ux-enhancements.js?v=2.0.1-ui2"></script>
   <script src="assets/js/ocr-0.16.js"></script>

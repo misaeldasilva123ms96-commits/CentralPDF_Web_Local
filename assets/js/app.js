@@ -18,7 +18,21 @@
       description: 'Edite visualmente cada página com textos formatados, imagens, pincel, marcador, cobertura de áreas e recorte.',
       accept: 'application/pdf,.pdf', multiple: false, typeLabel: 'PDF', button: 'Salvar PDF editado', outputExt: 'pdf', outputBase: 'PDF_editado',
       settings: `
-        <div class="notice-card"><strong>Edite sua cópia</strong><p>Adicione textos, imagens e anotações. O texto original do PDF não é alterado por estas ferramentas.</p></div>
+        <div class="notice-card"><strong>Edite sua cópia</strong><p>Use o modo Avançado para substituir textos originais compatíveis. As alterações são salvas em uma nova cópia do PDF.</p></div>
+        <details id="editorNativePanel" class="editor-settings-group" open>
+          <summary>Editar texto original</summary>
+          <p class="help-text">Escolha um trecho da página e substitua seu conteúdo mantendo a fonte e o estilo. PDFs digitalizados precisam de OCR; algumas fontes e estruturas ainda não são compatíveis.</p>
+          <button id="editorReadOriginal" class="small-button" type="button">Localizar textos da página</button>
+          <p id="editorNativeStatus" class="help-text" role="status" aria-live="polite"></p>
+          <div class="field"><label for="editorNativeSearch">Buscar no texto original</label><input id="editorNativeSearch" type="search" placeholder="Nome, valor, descrição…" /></div>
+          <div id="editorNativeList" class="editor-objects-list" aria-label="Trechos originais"></div>
+          <div id="editorNativeEdit" hidden>
+            <label for="editorNativeValue">Novo conteúdo do trecho</label>
+            <textarea id="editorNativeValue" rows="3" maxlength="10000"></textarea>
+            <div class="editor-native-actions"><button id="editorNativeApply" class="small-button" type="button">Aplicar substituição</button><button id="editorNativeRestore" class="small-button" type="button">Restaurar trecho</button></div>
+            <p class="help-text">O texto anterior é substituído no PDF, sem cobertura. Confira se o novo texto cabe no espaço disponível.</p>
+          </div>
+        </details>
         <details id="editorObjectsPanel" class="editor-settings-group" open><summary>Objetos adicionados nesta página</summary><div id="editorObjectsList" class="editor-objects-list"></div></details>
         <div id="editorSelectionPanel" class="editor-selection-panel inactive">
           <div class="editor-selection-heading"><span>Objeto selecionado</span><strong id="editorSelectedType">Nenhum objeto selecionado</strong></div>
