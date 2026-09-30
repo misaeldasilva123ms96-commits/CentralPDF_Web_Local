@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.12" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.13" />
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
@@ -363,6 +363,14 @@
         </section>
 
         <section id="pdfEditorSection" class="pdf-editor-section hidden" aria-label="Editor visual de conteúdo PDF">
+          <div class="editor-mode-bar">
+            <div class="editor-mode-switch" role="group" aria-label="Modo de edição">
+              <button type="button" data-editor-mode="simple" aria-pressed="true">Simples</button>
+              <button type="button" data-editor-mode="advanced" aria-pressed="false">Avançado</button>
+            </div>
+            <p id="editorModeDescription">Texto, imagens e anotações com os controles essenciais.</p>
+            <button id="editorTogglePages" class="small-button" type="button" aria-expanded="true" aria-controls="editorPageSidebar">Ocultar páginas</button>
+          </div>
           <div class="pdf-editor-toolbar">
             <div class="editor-tool-group" aria-label="Ferramentas de edição">
               <button class="editor-tool active" data-editor-tool="select" type="button" title="Selecionar e mover"><svg><use href="#i-select"/></svg><span>Selecionar</span></button>
@@ -394,7 +402,7 @@
             </div>
           </div>
           <div class="pdf-editor-layout">
-            <aside class="editor-page-sidebar">
+            <aside id="editorPageSidebar" class="editor-page-sidebar">
               <div class="editor-page-sidebar-head"><strong>Páginas</strong><span id="editorPageIndicator">0 / 0</span></div>
               <div id="editorThumbnailList" class="editor-thumbnail-list"><div class="editor-thumb-empty">Nenhuma página</div></div>
             </aside>
@@ -557,14 +565,14 @@
   <script src="assets/js/compression-engine.js"></script>
   <script src="assets/js/organizer-planner.js"></script>
   <script src="assets/js/pdf-editor.js"></script>
-  <script src="assets/js/ux-enhancements.js?v=2.0.1-ui1"></script>
+  <script src="assets/js/ux-enhancements.js?v=2.0.1-ui2"></script>
   <script src="assets/js/ocr-0.16.js"></script>
   <script src="assets/js/compare-0.17.js"></script>
   <script src="assets/js/redaction-0.17.js"></script>
   <script src="assets/js/forms-signatures-0.18.js?v=0.18.1"></script>
   <script src="assets/js/conversions-0.19.js"></script>
   <script src="assets/js/intelligence-0.20.js"></script>
-  <script src="assets/js/app.js?v=2.0.1-ui9"></script>
+  <script src="assets/js/app.js?v=2.0.1-ui10"></script>
   <script src="assets/js/tool-quality-1.2.0.js?v=1.2.3"></script>
   <script src="assets/js/layout-controls.js?v=2.0.1-ui1"></script>
   <script src="assets/js/foundation.js"></script>

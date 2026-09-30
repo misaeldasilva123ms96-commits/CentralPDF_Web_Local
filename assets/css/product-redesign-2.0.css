@@ -388,7 +388,7 @@ body[data-theme='dark'] .cp2-mega-list button:hover { background: #1a2640; }
   .cp2-mega-menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 1240px) {
+@media (max-width: 1480px) {
   .topbar { min-height: 58px; padding: 7px 12px; }
   .cp2-mobile-menu {
     display: inline-flex;
@@ -460,4 +460,35 @@ body[data-theme='dark'] .cp2-mega-list button:hover { background: #1a2640; }
 @media (prefers-reduced-motion: reduce) {
   .cp2-primary-nav > button,
   .tool-card { transition: none; }
+}
+/* Editor: shared document, progressively disclosed precision controls. */
+.editor-mode-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px; border-bottom: 1px solid var(--border); }
+.editor-mode-switch { display: inline-flex; padding: 3px; gap: 3px; border: 1px solid var(--border); border-radius: 12px; }
+.editor-mode-switch button { border: 0; border-radius: 9px; padding: 9px 16px; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+.editor-mode-switch button[aria-pressed="true"] { background: #5145cd; color: #fff; }
+.editor-mode-bar p { flex: 1; min-width: 180px; margin: 0; font-size: 12px; line-height: 1.5; }
+.editor-mode-switch button:focus-visible, .editor-object-list-item:focus-visible { outline: 3px solid #8c80ff; outline-offset: 2px; }
+body .pdf-editor-section.editor-pages-collapsed .pdf-editor-layout { grid-template-columns: minmax(0, 1fr); }
+.editor-pages-collapsed .editor-page-sidebar { display: none; }
+body[data-pdf-editor-mode="simple"] #editorObjectSizePanel,
+body[data-pdf-editor-mode="simple"] #editorObjectsPanel,
+body[data-pdf-editor-mode="simple"] #editorAddPdf,
+body[data-pdf-editor-mode="simple"] #editorAddBlank,
+body[data-pdf-editor-mode="simple"] #editorMovePageUp,
+body[data-pdf-editor-mode="simple"] #editorMovePageDown,
+body[data-pdf-editor-mode="simple"] #editorDuplicatePage,
+body[data-pdf-editor-mode="simple"] [data-editor-tool="cover"] { display: none !important; }
+.editor-settings-group[hidden] { display: none !important; }
+.editor-objects-list { display: grid; gap: 5px; max-height: 220px; overflow-y: auto; padding-block: 8px; }
+.editor-object-list-item { display: block; width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: inherit; cursor: pointer; }
+.editor-object-list-item[aria-pressed="true"] { border-color: #8c80ff; background: #7664ff22; }
+@media (max-width: 640px) {
+  .topbar { gap: 8px; }
+  .brand-button { flex: 1 1 auto; min-width: 0; }
+  .brand-copy { min-width: 0; }
+  .brand-copy strong { display: block; overflow: hidden; text-overflow: ellipsis; }
+  .top-actions, .cp2-mobile-menu { flex-shrink: 0; }
+  .editor-mode-bar { gap: 8px; }
+  .editor-mode-bar p { order: 3; flex-basis: 100%; }
+  .editor-mode-bar > .small-button { margin-left: auto; }
 }

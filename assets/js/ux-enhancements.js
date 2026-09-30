@@ -11,7 +11,7 @@
       dropSubtitle: 'Arraste um PDF ou clique para abrir o editor de páginas.', badges: ['1 arquivo', 'Visual', 'Páginas']
     },
     editPdf: {
-      category: 'Editar', complexity: 'Editor avançado', input: '1 PDF', capability: 'Texto, imagem e desenho', output: 'PDF editado',
+      category: 'Editar', complexity: 'Simples e avançado', input: '1 PDF', capability: 'Texto, imagem e desenho', output: 'PDF editado',
       steps: ['Adicione o PDF e escolha uma página na faixa de miniaturas.', 'Selecione Texto, Imagem, Pincel, Marcador, Cobrir ou Recortar.', 'Ajuste o objeto no painel lateral e exporte a nova cópia.'],
       tip: 'Clique no objeto para editar suas propriedades. Use Ctrl + Z para desfazer a última ação.',
       attention: 'A ferramenta Cobrir oculta visualmente, mas não elimina o conteúdo interno. Não use como redação segura de dados sensíveis.',

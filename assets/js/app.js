@@ -18,7 +18,8 @@
       description: 'Edite visualmente cada página com textos formatados, imagens, pincel, marcador, cobertura de áreas e recorte.',
       accept: 'application/pdf,.pdf', multiple: false, typeLabel: 'PDF', button: 'Salvar PDF editado', outputExt: 'pdf', outputBase: 'PDF_editado',
       settings: `
-        <div class="notice-card"><strong>Editor visual não destrutivo</strong><p>Adicione conteúdo sobre o PDF e gere uma nova cópia. Para trocar um texto existente, cubra a área e escreva o novo texto por cima.</p></div>
+        <div class="notice-card"><strong>Edite sua cópia</strong><p>Adicione textos, imagens e anotações. O texto original do PDF não é alterado por estas ferramentas.</p></div>
+        <details id="editorObjectsPanel" class="editor-settings-group" open><summary>Objetos adicionados nesta página</summary><div id="editorObjectsList" class="editor-objects-list"></div></details>
         <div id="editorSelectionPanel" class="editor-selection-panel inactive">
           <div class="editor-selection-heading"><span>Objeto selecionado</span><strong id="editorSelectedType">Nenhum objeto selecionado</strong></div>
           <div id="editorTextControlsPanel">
@@ -72,16 +73,16 @@
           </div>
           <button id="editorDeleteObject" class="small-button danger full-width" type="button" disabled>Excluir objeto selecionado</button>
         </div>
-        <details class="editor-settings-group" open><summary>Pincel e marcador</summary>
+        <details id="editorDrawingSettings" class="editor-settings-group" open><summary>Pincel e marcador</summary>
           <div class="field-row"><div class="field"><label for="editorBrushColor">Cor do pincel</label><input id="editorBrushColor" type="color" value="#1f2937" /></div><div class="field"><label for="editorBrushWidth">Espessura</label><input id="editorBrushWidth" type="number" min="1" max="40" value="3" /></div></div>
           <div class="field-row"><div class="field"><label for="editorHighlightColor">Cor do marcador</label><input id="editorHighlightColor" type="color" value="#fff176" /></div><div class="field"><label for="editorHighlightWidth">Espessura</label><input id="editorHighlightWidth" type="number" min="4" max="80" value="16" /></div></div>
           <button id="editorClearDrawings" class="small-button full-width" type="button">Limpar desenhos da página atual</button>
         </details>
-        <details class="editor-settings-group"><summary>Cobrir ou substituir conteúdo</summary>
+        <details id="editorCoverSettings" class="editor-settings-group"><summary>Cobertura visual</summary>
           <div class="field-row"><div class="field"><label for="editorCoverColor">Cor da cobertura</label><input id="editorCoverColor" type="color" value="#ffffff" /></div><div class="field"><label for="editorCoverOpacity">Opacidade (%)</label><input id="editorCoverOpacity" type="number" min="5" max="100" value="100" /></div></div>
           <div class="notice-card warning"><strong>Não é redação segura</strong><p>A cobertura apenas oculta visualmente. O conteúdo interno original pode continuar existindo no PDF.</p></div>
         </details>
-        <details class="editor-settings-group"><summary>Recorte da página</summary>
+        <details id="editorCropSettings" class="editor-settings-group"><summary>Recorte da página</summary>
           <p class="help-text">Escolha a ferramenta Recortar, arraste sobre a página e confirme abaixo.</p>
           <div class="field-row"><button id="editorApplyCrop" class="small-button primary-soft" type="button">Aplicar recorte</button><button id="editorResetCrop" class="small-button" type="button">Remover recorte</button></div>
         </details>

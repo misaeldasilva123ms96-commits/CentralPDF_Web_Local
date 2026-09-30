@@ -20,6 +20,7 @@
     objectSeq: 0,
     pageSeq: 0,
     activeTool: 'select',
+    mode: 'simple',
     selectedObjectId: null,
     zoom: 100,
     scale: 1,
@@ -67,6 +68,15 @@
 
   function bindStaticUi() {
     ensurePageRotationControls();
+    document.querySelectorAll('[data-editor-mode]').forEach(button => {
+      button.addEventListener('click', () => setMode(button.dataset.editorMode));
+    });
+    $('#editorTogglePages')?.addEventListener('click', () => {
+      const collapsed = $('#pdfEditorSection').classList.toggle('editor-pages-collapsed');
+      $('#editorTogglePages').setAttribute('aria-expanded', String(!collapsed));
+      $('#editorTogglePages').textContent = collapsed ? 'Mostrar páginas' : 'Ocultar páginas';
+      renderCurrentPage();
+    });
     document.querySelectorAll('[data-editor-tool]').forEach(button => {
       button.addEventListener('click', () => setTool(button.dataset.editorTool));
     });
@@ -161,7 +171,46 @@
   function activate() {
     init();
     bindSettings();
+    setMode(state.mode);
     renderCurrentPage();
+  }
+
+  function setMode(mode) {
+    state.mode = mode === 'advanced' ? 'advanced' : 'simple';
+    document.body.dataset.pdfEditorMode = state.mode;
+    document.querySelectorAll('[data-editor-mode]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.editorMode === state.mode));
+    });
+    const description = $('#editorModeDescription');
+    if (description) description.textContent = state.mode === 'simple'
+      ? 'Texto, imagens e anotações com os controles essenciais.'
+      : 'Posição, tamanho, alinhamento, camadas e controles de páginas.';
+    if (state.mode === 'simple' && state.activeTool === 'cover') setTool('select');
+    updateInspector();
+  }
+
+  function renderObjectList() {
+    const list = $('#editorObjectsList');
+    if (!list) return;
+    list.innerHTML = '';
+    const objects = currentPage()?.objects.filter(object => ['text', 'image', 'cover'].includes(object.type)) || [];
+    if (!objects.length) {
+      const empty = document.createElement('p');
+      empty.className = 'help-text';
+      empty.textContent = 'Os textos, imagens e coberturas adicionados aparecerão aqui.';
+      list.appendChild(empty);
+      return;
+    }
+    [...objects].reverse().forEach(object => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'editor-object-list-item';
+      button.textContent = object.type === 'text' ? `Texto: ${object.text || 'Sem texto'}` : objectLabel(object);
+      button.title = button.textContent;
+      button.setAttribute('aria-pressed', String(object.id === state.selectedObjectId));
+      button.addEventListener('click', () => { setTool('select'); selectObject(object.id); });
+      list.appendChild(button);
+    });
   }
 
   function deactivate() {
@@ -907,6 +956,18 @@
   function updateInspector() {
     const object = selectedObject();
     const panel = $('#editorSelectionPanel'); if (!panel) return;
+    renderObjectList();
+    const contexts = {
+      editorDrawingSettings: ['brush', 'highlight'].includes(state.activeTool),
+      editorCoverSettings: state.activeTool === 'cover' || object?.type === 'cover',
+      editorCropSettings: state.activeTool === 'crop'
+    };
+    Object.entries(contexts).forEach(([id, active]) => {
+      const group = $(`#${id}`);
+      if (!group) return;
+      group.hidden = state.mode === 'simple' && !active;
+      if (active) group.open = true;
+    });
     panel.classList.toggle('inactive', !object);
     $('#editorSelectedType').textContent = object ? objectLabel(object) : 'Nenhum objeto selecionado';
     const sizePanel = $('#editorObjectSizePanel');
