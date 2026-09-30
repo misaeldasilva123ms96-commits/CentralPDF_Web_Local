@@ -40,15 +40,15 @@ try:
         page.wait_for_function(
             """async () => {
               const keys = await caches.keys();
-              return keys.includes('centralpdf-v2.0.1-pages-21-core')
+              return keys.includes('centralpdf-v2.0.1-pages-22-core')
                 && !keys.includes('centralpdf-v2.0.1-pages-19-core');
             }""",
             timeout=60_000,
         )
         cached = page.evaluate(
             """async () => {
-              const cache = await caches.open('centralpdf-v2.0.1-pages-21-core');
-              const app = await cache.match('/assets/js/app.js?v=2.0.1-ui9');
+              const cache = await caches.open('centralpdf-v2.0.1-pages-22-core');
+              const app = await cache.match('/assets/js/app.js?v=2.0.1-ui10');
               const ingest = await cache.match('/assets/js/pdf-ingest.js?v=2.0.1-ingest1');
               return {app: Boolean(app), ingest: Boolean(ingest)};
             }"""
@@ -58,7 +58,7 @@ try:
         context.set_offline(True)
         offline = page.evaluate(
             """async () => ({
-              app: (await (await fetch('/assets/js/app.js?v=2.0.1-ui9')).text()).includes('fileIngestChain'),
+              app: (await (await fetch('/assets/js/app.js?v=2.0.1-ui10')).text()).includes('fileIngestChain'),
               ingest: (await (await fetch('/assets/js/pdf-ingest.js?v=2.0.1-ingest1')).text()).includes('inspectPdfFile')
             })"""
         )

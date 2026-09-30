@@ -5,7 +5,7 @@ Gerado por `scripts/extract-tool-catalog.mjs` a partir de `assets/js/app.js` (to
 | id | título | múltiplo | tipo | aceita | saída | professional | settings chars | n. settings ids |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | organize | Organizar PDF | não | PDF | `application/pdf,.pdf` | pdf | - | 461 | 1 |
-| editPdf | Editar PDF | não | PDF | `application/pdf,.pdf` | pdf | - | 8053 | 42 |
+| editPdf | Editar PDF | não | PDF | `application/pdf,.pdf` | pdf | - | 8272 | 47 |
 | merge | Juntar PDFs | sim | PDF | `application/pdf,.pdf` | pdf | - | 2259 | 7 |
 | split | Dividir PDF | sim | PDF | `application/pdf,.pdf` | auto | - | 4644 | 12 |
 | extract | Extrair ou remover páginas | sim | PDF | `application/pdf,.pdf` | auto | - | 1852 | 9 |
