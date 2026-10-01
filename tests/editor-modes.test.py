@@ -15,7 +15,7 @@ html = re.sub(r'<link[^>]+rel="manifest"[^>]*>', '', html)
 scripts = ['app/node_modules/pdf-lib/dist/pdf-lib.min.js',
            'assets/js/pdf-ingest.js',
            'assets/js/split-planner.js', 'assets/js/advanced-planner.js',
-           'assets/js/organizer-planner.js', 'assets/js/pdf-editor.js',
+           'assets/js/pdf-native-text.js', 'assets/js/organizer-planner.js', 'assets/js/pdf-editor.js',
            'assets/js/ux-enhancements.js', 'assets/js/app.js',
            'assets/js/layout-controls.js', 'assets/js/foundation.js', 'assets/js/experience-0.15.js',
            'assets/js/stable-1.0.js', 'assets/js/header-settings-1.0.3.js',

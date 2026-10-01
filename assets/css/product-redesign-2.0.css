@@ -474,6 +474,9 @@ body[data-theme='dark'] .cp2-mega-list button:hover { background: #1a2640; }
 body .pdf-editor-section.editor-pages-collapsed .pdf-editor-layout { grid-template-columns: minmax(0, 1fr); }
 .editor-pages-collapsed .editor-page-sidebar { display: none; }
 body[data-pdf-editor-mode="simple"] #editorObjectSizePanel,
+body[data-pdf-editor-mode="simple"] #editorNativePanel,
+body[data-pdf-editor-mode="simple"] #editorOriginalText,
+body[data-pdf-editor-mode="simple"] #editorStampControl,
 body[data-pdf-editor-mode="simple"] #editorObjectsPanel,
 body[data-pdf-editor-mode="simple"] #editorAddPdf,
 body[data-pdf-editor-mode="simple"] #editorAddBlank,
@@ -495,3 +498,12 @@ body[data-pdf-editor-mode="simple"] [data-editor-tool="cover"] { display: none !
   .editor-mode-bar p { order: 3; flex-basis: 100%; }
   .editor-mode-bar > .small-button { margin-left: auto; }
 }
+
+#editorNativePanel { border: 1px solid #7664ff66; border-radius: 12px; padding: 12px; }
+#editorNativePanel summary { font-weight: 750; cursor: pointer; }
+#editorNativeEdit textarea { width: 100%; box-sizing: border-box; margin-block: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 9px; background: transparent; color: inherit; font: inherit; font-size: 14px; line-height: 1.5; }
+#editorNativeEdit label { font-size: 12px; font-weight: 700; }
+.editor-native-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#editorStampControl { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; }
+#editorStampPreset { max-width: 130px; padding: 7px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface, #fff); color: inherit; }
+#editorOriginalText { border-color: #8c80ff; }

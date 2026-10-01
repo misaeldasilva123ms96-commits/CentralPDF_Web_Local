@@ -35,6 +35,8 @@
     currentRenderGeneration: 0,
     thumbnailRenderGeneration: 0,
     activeRenderTask: null,
+    nativeSelection: null,
+    nativeRequest: 0,
   };
 
   const $ = selector => document.querySelector(selector);
@@ -81,6 +83,18 @@
       button.addEventListener('click', () => setTool(button.dataset.editorTool));
     });
     $('#editorAddText')?.addEventListener('click', () => setTool('text'));
+    $('#editorOriginalText')?.addEventListener('click', () => {
+      const panel=$('#editorNativePanel'); if(!panel) return;
+      panel.open=true;panel.scrollIntoView({block:'nearest'});readOriginalText();
+    });
+    $('#editorAddStamp')?.addEventListener('click', () => {
+      const page=currentPage();if(!page)return;
+      checkpoint();
+      const object={id:nextObjectId(),type:'text',x:Math.max(0,(page.width-220)/2),y:Math.max(0,(page.height-48)/2),width:220,height:48,rotation:0,
+        text:$('#editorStampPreset')?.value || 'CONFERIDO',fontFamily:'Helvetica',fontSize:26,color:'#b42334',opacity:0.9,bold:true,italic:false,align:'center'};
+      clampObjectInsidePage(object,page);page.objects.push(object);state.selectedObjectId=object.id;setTool('select');
+      setEditorStatus('Carimbo inserido. Arraste, gire ou ajuste o texto nos controles do objeto.','success');
+    });
     $('#editorAddImage')?.addEventListener('click', () => $('#editorImageInput')?.click());
     $('#editorImageInput')?.addEventListener('change', event => addImages([...event.target.files]));
     $('#editorAddPdf')?.addEventListener('click', () => $('#editorPdfInput')?.click());
@@ -171,6 +185,7 @@
   function activate() {
     init();
     bindSettings();
+    bindNativeUi();
     setMode(state.mode);
     renderCurrentPage();
   }
@@ -184,9 +199,95 @@
     const description = $('#editorModeDescription');
     if (description) description.textContent = state.mode === 'simple'
       ? 'Texto, imagens e anotações com os controles essenciais.'
-      : 'Posição, tamanho, alinhamento, camadas e controles de páginas.';
+      : 'Texto original, posição, tamanho, alinhamento, camadas e controles de páginas.';
     if (state.mode === 'simple' && state.activeTool === 'cover') setTool('select');
     updateInspector();
+  }
+
+  async function nativeAnalysis(model) {
+    const source=state.sources.get(model?.sourceId);
+    if(!source?.pdfLibDoc || !window.PDFNativeText) throw new Error('Esta página não permite editar texto original. Carregue um PDF sem restrições.');
+    source.nativeAnalyses ||= new Map();
+    if(!source.nativeAnalyses.has(model.sourceIndex)) {
+      source.nativeAnalyses.set(model.sourceIndex,(async()=>window.PDFNativeText.inspect(source.pdfLibDoc.getPage(model.sourceIndex),await source.rendered.getPage(model.sourceIndex+1),window.PDFLib,window.pdfjsLib))());
+    }
+    return source.nativeAnalyses.get(model.sourceIndex);
+  }
+
+  function bindNativeUi() {
+    const button=$('#editorReadOriginal'); if(!button || button.dataset.bound) return;
+    button.dataset.bound='true';
+    button.addEventListener('click',()=>readOriginalText());
+    $('#editorNativeSearch')?.addEventListener('input',()=>readOriginalText());
+    $('#editorNativeApply')?.addEventListener('click',()=>applyNativeEdit(false));
+    $('#editorNativeRestore')?.addEventListener('click',()=>applyNativeEdit(true));
+  }
+
+  function clearNativePanel() {
+    state.nativeRequest++;
+    state.nativeSelection=null;
+    if($('#editorNativeList')) $('#editorNativeList').innerHTML='';
+    if($('#editorNativeEdit')) $('#editorNativeEdit').hidden=true;
+    if($('#editorNativeStatus')) $('#editorNativeStatus').textContent='Localize os textos da página para começar.';
+  }
+
+  async function readOriginalText(selectedId=null) {
+    const model=currentPage(); const request=++state.nativeRequest;
+    const list=$('#editorNativeList'), status=$('#editorNativeStatus');
+    if(!list || !status) return;
+    list.innerHTML=''; $('#editorNativeEdit').hidden=true;
+    state.nativeSelection=null; status.textContent='Analisando texto e fontes da página…';
+    try {
+      const analysis=await nativeAnalysis(model);
+      if(request!==state.nativeRequest || currentPage()!==model) return;
+      const query=($('#editorNativeSearch')?.value || '').toLocaleLowerCase('pt-BR');
+      const runs=analysis.runs.filter(run=>(model.nativeEdits?.[run.id] ?? run.text).toLocaleLowerCase('pt-BR').includes(query));
+      status.textContent=analysis.runs.length ? `${runs.length} trecho(s) encontrado(s). Escolha um para editar.` : 'Nenhum texto editável nesta página. Se ela for uma digitalização, use OCR primeiro.';
+      for(const run of runs) {
+        const button=document.createElement('button');button.type='button';button.className='editor-object-list-item';
+        const value=model.nativeEdits?.[run.id] ?? run.text;
+        button.textContent=value || '(Trecho removido)';button.title=value;button.setAttribute('aria-pressed','false');
+        button.addEventListener('click',()=>{
+          state.nativeSelection={pageId:model.id,runId:run.id};
+          list.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+          $('#editorNativeValue').value=model.nativeEdits?.[run.id] ?? run.text;
+          $('#editorNativeEdit').hidden=false;
+          $('#editorNativeValue').focus();
+        });list.appendChild(button);
+        if(run.id===selectedId) button.click();
+      }
+    } catch(error) {if(request===state.nativeRequest) status.textContent=error.message;}
+  }
+
+  async function applyNativeEdit(restore) {
+    const model=currentPage(), selection=state.nativeSelection;
+    if(!selection || selection.pageId!==model?.id) return;
+    const value=$('#editorNativeValue').value;
+    try {
+      const analysis=await nativeAnalysis(model);
+      if(currentPage()!==model || state.nativeSelection!==selection) return;
+      const run=analysis.runs.find(item=>item.id===selection.runId);
+      const text=restore?run.text:value;
+      window.PDFNativeText.replacement(analysis,run,text); // Validate before creating history or edits.
+      if(text===(model.nativeEdits?.[run.id] ?? run.text)) return;
+      checkpoint();model.nativeEdits ||= {};
+      if(text===run.text) delete model.nativeEdits[run.id]; else model.nativeEdits[run.id]=text;
+      await renderCurrentPage();
+      await readOriginalText(run.id);
+      updateHistoryButtons();renderThumbnails();
+      setEditorStatus('Texto original substituído. Confira a prévia e salve o PDF editado.', 'success');
+    } catch(error) {$('#editorNativeStatus').textContent=error.message;}
+  }
+
+  async function nativePreview(model) {
+    if(!Object.keys(model.nativeEdits || {}).length) return null;
+    const source=state.sources.get(model.sourceId), analysis=await nativeAnalysis(model);
+    const doc=await window.PDFLib.PDFDocument.create();
+    const [page]=await doc.copyPages(source.pdfLibDoc,[model.sourceIndex]);doc.addPage(page);
+    window.PDFNativeText.apply(page,analysis,model.nativeEdits,window.PDFLib);
+    const task=window.pdfjsLib.getDocument({data:await doc.save()});
+    try {return {task,page:await (await task.promise).getPage(1)};}
+    catch(error) {await task.destroy();throw error;}
   }
 
   function renderObjectList() {
@@ -495,18 +596,22 @@
     const generation = ++state.currentRenderGeneration;
     cancelActivePageRender();
     const page = currentPage();
+    clearNativePanel();
     if (!page) { renderEmpty(); return; }
     const stage = $('#editorStage');
     stage.classList.remove('empty');
     stage.classList.toggle('crop-adjusting', Boolean(state.tempCrop));
     let renderedPage = null;
+    let editedPreview = null;
     let displayWidth = page.width;
     let displayHeight = page.height;
     const renderRotation = getPageRenderRotation(page);
     if (page.kind === 'pdf') {
       const source = state.sources.get(page.sourceId);
-      renderedPage = await source.rendered.getPage(page.sourceIndex + 1);
-      if (generation !== state.currentRenderGeneration) return;
+      try {editedPreview=await nativePreview(page);}
+      catch(error) {setEditorStatus(`Não foi possível atualizar a prévia: ${error.message}`, 'error');return;}
+      renderedPage = editedPreview?.page || await source.rendered.getPage(page.sourceIndex + 1);
+      if (generation !== state.currentRenderGeneration) {await editedPreview?.task.destroy();return;}
       const baseViewport = renderedPage.getViewport({ scale: 1, rotation: renderRotation });
       displayWidth = baseViewport.width;
       displayHeight = baseViewport.height;
@@ -536,6 +641,7 @@
         throw error;
       } finally {
         if (state.activeRenderTask === task) state.activeRenderTask = null;
+        await editedPreview?.task.destroy();
       }
       if (generation !== state.currentRenderGeneration) return;
     }
@@ -1188,15 +1294,19 @@
       const page=state.pages[index]; const button=document.createElement('button'); button.type='button'; button.className=`editor-thumbnail${index===state.activeIndex?' active':''}`;
       const canvas=document.createElement('canvas'); canvas.width=108; canvas.height=144; const ctx=canvas.getContext('2d',{alpha:false}); ctx.fillStyle='#fff';ctx.fillRect(0,0,108,144);
       if(page.kind==='pdf'){
+        let preview=null;
         try{
-          const source=state.sources.get(page.sourceId);const renderedPage=await source.rendered.getPage(page.sourceIndex+1);const rotation=getPageRenderRotation(page);const base=renderedPage.getViewport({scale:1,rotation});const scale=Math.min(100/base.width,132/base.height);const viewport=renderedPage.getViewport({scale,rotation});const temp=await renderPdfPageToCanvas(renderedPage,viewport);
+          preview=await nativePreview(page);
+          const source=state.sources.get(page.sourceId);const renderedPage=preview?.page || await source.rendered.getPage(page.sourceIndex+1);const rotation=getPageRenderRotation(page);const base=renderedPage.getViewport({scale:1,rotation});const scale=Math.min(100/base.width,132/base.height);const viewport=renderedPage.getViewport({scale,rotation});const temp=await renderPdfPageToCanvas(renderedPage,viewport);
           if(generation!==state.thumbnailRenderGeneration)return;
           ctx.drawImage(temp,(108-temp.width)/2,(144-temp.height)/2);temp.width=1;temp.height=1;
         }catch(error){if(!isRenderCancellation(error))drawBlankThumb(ctx,'PDF');}
+        finally{await preview?.task.destroy();}
       }else drawBlankThumb(ctx,'Em branco');
       if(generation!==state.thumbnailRenderGeneration)return;
       button.appendChild(canvas); const span=document.createElement('span');span.textContent=`Página ${index+1} · ${pageOrientation(page)}`;button.appendChild(span);
-      if(page.objects.length){const badge=document.createElement('small');badge.textContent=`${page.objects.length} edição(ões)`;button.appendChild(badge);}
+      const edits=page.objects.length+Object.keys(page.nativeEdits || {}).length;
+      if(edits){const badge=document.createElement('small');badge.textContent=`${edits} edição(ões)`;button.appendChild(badge);}
       button.addEventListener('click',()=>{state.activeIndex=index;state.selectedObjectId=null;renderThumbnails();renderCurrentPage();updateInspector();});
       list.appendChild(button);
     }
@@ -1252,7 +1362,9 @@
       let source=null; let rasterized=false;
       if(model.kind==='pdf'){
         source=state.sources.get(model.sourceId);
-        if(source?.pdfLibDoc){const [copied]=await output.copyPages(source.pdfLibDoc,[model.sourceIndex]);page=copied;output.addPage(page);}
+        if(source?.pdfLibDoc){const [copied]=await output.copyPages(source.pdfLibDoc,[model.sourceIndex]);page=copied;output.addPage(page);
+          if(Object.keys(model.nativeEdits || {}).length) window.PDFNativeText.apply(page,await nativeAnalysis(model),model.nativeEdits,window.PDFLib);
+        }
         else{page=await createRasterizedPdfPage(output,source,model);rasterized=true;}
       }else page=output.addPage([model.width,model.height]);
       const exportRotation=rasterized?0:getExportRotation(model,page);
@@ -1279,7 +1391,7 @@
       const progress=10+Math.round(((index+1)/state.pages.length)*80);window.dispatchEvent(new CustomEvent('central-editor-progress',{detail:progress}));
     }
     const compatiblePages=state.pages.filter(model=>model.kind==='pdf'&&state.sources.get(model.sourceId)?.compatibilityMode==='raster').length;
-    return {bytes:await output.save({useObjectStreams:true}),message:`PDF editado com ${state.pages.length} página(s) e ${state.pages.reduce((sum,p)=>sum+p.objects.length,0)} objeto(s) adicionados.${compatiblePages?` ${compatiblePages} página(s) restrita(s) foram achatadas para preservar a aparência.`:''}`};
+    return {bytes:await output.save({useObjectStreams:true}),message:`PDF editado com ${state.pages.length} página(s) e ${state.pages.reduce((sum,p)=>sum+p.objects.length,0)} objeto(s) adicionados e ${state.pages.reduce((sum,p)=>sum+Object.keys(p.nativeEdits || {}).length,0)} trecho(s) originais substituídos.${compatiblePages?` ${compatiblePages} página(s) restrita(s) foram achatadas para preservar a aparência.`:''}`};
   }
 
   function rotatedPdfPlacement(object,modelOrHeight,pdfPage){
@@ -1368,7 +1480,7 @@
     return {
       pageCount: state.pages.length,
       objectCount,
-      signature: `${state.pages.length}:${objectCount}:${state.activeIndex}:${state.pages.map(page => `${page.id}-${page.rotation}-${page.objects.length}`).join('|')}`
+      signature: `${state.pages.length}:${objectCount}:${state.activeIndex}:${state.pages.map(page => `${page.id}-${page.rotation}-${page.objects.length}-${JSON.stringify(page.nativeEdits || {})}`).join('|')}`
     };
   }
 
