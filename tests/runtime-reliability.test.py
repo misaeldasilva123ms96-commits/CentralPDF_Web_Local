@@ -95,11 +95,11 @@ try:
           }
           await CentralPDFApp.openFilesInTool(files, 'merge');
         }""")
-        assert page.locator('#pageGrid .page-card').count() == 5
+        assert page.locator('#mergePageView').input_value() == 'covers'
         page.locator('#mergePageView').select_option('covers')
         assert page.locator('#pageGrid .page-card').count() == 2
         assert page.locator('#pageGrid .page-actions').count() == 2
-        assert '5 páginas' in page.locator('#pageCountLabel').inner_text()
+        assert '2 capas' in page.locator('#pageCountLabel').inner_text()
         page.locator('#mergePageView').select_option('pages')
         assert page.locator('#pageGrid .page-card').count() == 5
         page.locator('#mergePageView').select_option('covers')
@@ -120,15 +120,15 @@ try:
         page.locator('#pageGrid .right').first.click()
         page.locator('#pageGrid .duplicate').first.click()
         assert page.locator('#pageGrid .page-card').count() == 3
-        assert '8 páginas' in page.locator('#pageCountLabel').inner_text()
+        assert '3 capas' in page.locator('#pageCountLabel').inner_text()
         page.locator('#pageGrid .delete').nth(1).click()
         assert page.locator('#pageGrid .page-card').count() == 2
-        assert '5 páginas' in page.locator('#pageCountLabel').inner_text()
+        assert '2 capas' in page.locator('#pageCountLabel').inner_text()
         page.locator('#organizerUndo').click()
         assert page.locator('#pageGrid .page-card').count() == 3
         page.locator('#organizerRedo').click()
         page.locator('#pageGrid .page-select input').nth(1).check()
-        assert '2 selecionadas' in page.locator('#selectedPagesCount').inner_text()
+        assert '1 capa selecionada' in page.locator('#selectedPagesCount').inner_text()
         page.locator('#moveSelectedStart').click()
         with page.expect_download() as downloaded:
             page.locator('#processButton').click()

@@ -67,6 +67,7 @@ with sync_playwright() as p:
     assert page.locator('#fileSection').is_hidden()
     assert page.locator('#mergeComposerMode').count() == 0
     assert page.locator('#mergeRulesPanel').count() == 0
+    page.locator('#mergePageView').select_option('pages')
     assert page.locator('#pageGrid .page-card').count() == 4
 
     # Nova soltura sobre uma miniatura deve adicionar sem criar uma segunda galeria.
