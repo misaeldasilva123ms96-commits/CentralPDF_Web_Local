@@ -110,7 +110,7 @@
         <div id="mergeLargeBatchNotice" class="notice-card hidden"><strong>Modo para lote grande ativado</strong><p id="mergeLargeBatchText">A exportação será feita em etapas para reduzir o uso de memória.</p></div>
         <label class="toggle-row"><input id="mergePreserveMetadata" type="checkbox" checked /><span>Preservar os metadados do primeiro PDF</span></label>
         <div class="merge-source-summary">
-          <div class="split-plan-header"><span>Documentos da união</span><strong id="mergePlanCount">0 páginas</strong></div>
+          <div class="split-plan-header"><span>Documentos da união</span><strong id="mergePlanCount">0 capas</strong></div>
           <div class="merge-source-toolbar">
             <label for="mergeSourceSort"><span>Ordenar documentos</span><select id="mergeSourceSort">
               <option value="nameAsc" selected>Nome: A → Z</option>
@@ -793,6 +793,7 @@
     if (!toolConfig[tool]) return;
     fileIngestSession += 1;
     state.tool = tool;
+    if(tool==='merge') $('#mergePageView').value='covers';
     document.body.dataset.activeTool = tool;
     state.files = [];
     state.splitPageCount = 0;
@@ -1001,7 +1002,7 @@
     state.dragMergeSourceKey = null;
     state.previewCache.clear();
     pageGrid.innerHTML = '';
-    $('#pageCountLabel').textContent = '0 páginas';
+    updateOrganizerPageCount();
     updateOrganizerBulkToolbar();
     updateOrganizerHistoryButtons();
   }
@@ -1890,7 +1891,9 @@
     const noticeText = $('#mergeLargeBatchText');
     if (notice) notice.classList.toggle('hidden', !largeBatch);
     if (noticeText && largeBatch) noticeText.textContent = `${total} páginas e ${formatBytes(totalBytes)} serão processados em etapas. Mantenha esta aba aberta até o download começar.`;
-    count.textContent = `${total} ${total === 1 ? 'página' : 'páginas'}`;
+    const coverCount=new Set(state.organizerPages.map(coverKey)).size;
+    count.textContent = mergeCoversOnly()?`${coverCount} ${coverCount===1?'capa':'capas'}`:`${total} ${total === 1 ? 'página' : 'páginas'}`;
+    count.title=`${total} ${total===1?'página incluída':'páginas incluídas'} no PDF final`;
     if (!sources.length) {
       preview.innerHTML = '<div class="split-plan-empty">Adicione pelo menos dois PDFs. As páginas aparecerão diretamente no organizador central.</div>';
       processButton.disabled = true;
@@ -2724,6 +2727,9 @@
       }, true);
       const keys = [...new Set(state.organizerPages.map(coverKey))];
       const position = keys.indexOf(sourceId);
+      card.querySelector('.page-position').textContent=String(position+1);
+      card.querySelector('.page-position').title=`Visualizar capa ${position+1}`;
+      const placeholder=card.querySelector('.page-placeholder strong');if(placeholder)placeholder.textContent=String(position+1);
       for (const [selector, action, value, title] of [
         ['.left','rotate',270,'Girar todas as páginas para a esquerda'],
         ['.right','rotate',90,'Girar todas as páginas para a direita'],
@@ -2756,7 +2762,7 @@
 
   function openOrganizerPagePreview(page,index,preview) {
     if (!preview) return;
-    $('#organizerPreviewTitle').textContent = `Página ${index + 1}`;
+    $('#organizerPreviewTitle').textContent = mergeCoversOnly()?`Capa ${[...new Set(state.organizerPages.map(coverKey))].indexOf(coverKey(page))+1}`:`Página ${index + 1}`;
     const image=$('#organizerPreviewImage'); image.src=preview; image.style.transform=`rotate(${page.rotation}deg)`;
     const source = page.kind === 'pdf' ? `${page.origin || 'PDF'} — página original ${page.sourceIndex + 1}` : page.kind === 'image' ? page.origin || 'Imagem importada' : 'Página em branco';
     $('#organizerPreviewDetails').innerHTML=`<span>${page.kind.toUpperCase()}</span><strong>${escapeHtml(source)}</strong><small>Rotação aplicada: ${page.rotation}°</small>`;
@@ -2776,11 +2782,11 @@
     updateOrganizerPageCount(); updateOrganizerBulkToolbar(); updateOrganizerHistoryButtons();
     if (state.tool === 'merge') updateMergePreview();
   }
-  function updateOrganizerPageCount() { const total=state.organizerPages.length; $('#pageCountLabel').textContent=`${total} ${total===1?'página':'páginas'}`; }
+  function updateOrganizerPageCount() { const covers=mergeCoversOnly(); const total=covers?new Set(state.organizerPages.map(coverKey)).size:state.organizerPages.length; $('#pageCountLabel').textContent=`${total} ${covers?(total===1?'capa':'capas'):(total===1?'página':'páginas')}`; }
   function selectedOrganizerIndexes() { return state.organizerPages.map((page,index)=>state.selectedPageIds.has(page.id)?index:-1).filter(index=>index>=0); }
   function updateOrganizerBulkToolbar() {
-    const count=state.selectedPageIds.size; const total=state.organizerPages.length;
-    const label=$('#selectedPagesCount'); if(label) label.textContent=`${count} ${count===1?'selecionada':'selecionadas'}`;
+    const covers=mergeCoversOnly(); const count=covers?new Set(state.organizerPages.filter(page=>state.selectedPageIds.has(page.id)).map(coverKey)).size:state.selectedPageIds.size; const total=covers?new Set(state.organizerPages.map(coverKey)).size:state.organizerPages.length;
+    const label=$('#selectedPagesCount'); if(label) label.textContent=`${count} ${covers?(count===1?'capa selecionada':'capas selecionadas'):(count===1?'selecionada':'selecionadas')}`;
     const select=$('#selectAllPages'); if(select) select.textContent=count===total && total?'Limpar seleção':'Selecionar todas';
     ['rotateSelectedLeft','rotateSelectedRight','duplicateSelectedPages','moveSelectedStart','moveSelectedEnd','deleteSelectedPages'].forEach(id=>{ const button=$(`#${id}`); if(button) button.disabled=count===0; });
   }

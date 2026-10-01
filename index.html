@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.15" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.16" />
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
@@ -414,6 +414,7 @@
                 <div id="editorStage" class="editor-stage empty">
                   <canvas id="editorBaseCanvas"></canvas>
                   <div id="editorObjectLayer" class="editor-object-layer"></div>
+                  <div id="editorNativeLayer" class="editor-native-layer" aria-label="Textos originais editáveis" hidden></div>
                   <canvas id="editorInteractionCanvas" class="editor-interaction-canvas"></canvas>
                   <div id="editorCropBadge" class="editor-crop-badge hidden"></div>
                 </div>
@@ -430,7 +431,7 @@
             <div><h2 id="organizerEditorTitle">Editor de páginas</h2><span id="pageCountLabel">0 páginas</span></div>
             <div class="toolbar-actions">
               <label id="mergeViewControl" class="hidden" for="mergePageView">Visualização
-                <select id="mergePageView" aria-describedby="mergeCoverHelp"><option value="pages">Todas as páginas</option><option value="covers">Só capas</option></select>
+                <select id="mergePageView" aria-describedby="mergeCoverHelp"><option value="covers" selected>Só capas</option><option value="pages">Todas as páginas</option></select>
               </label>
               <button id="organizerAddPages" class="small-button primary-soft" type="button">＋ Adicionar páginas</button>
               <button id="organizerAddBlank" class="small-button" type="button">Página em branco</button>

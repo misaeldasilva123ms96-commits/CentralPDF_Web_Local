@@ -37,6 +37,7 @@
     activeRenderTask: null,
     nativeSelection: null,
     nativeRequest: 0,
+    nativeTargetGeneration: 0,
   };
 
   const $ = selector => document.querySelector(selector);
@@ -85,7 +86,7 @@
     $('#editorAddText')?.addEventListener('click', () => setTool('text'));
     $('#editorOriginalText')?.addEventListener('click', () => {
       const panel=$('#editorNativePanel'); if(!panel) return;
-      panel.open=true;panel.scrollIntoView({block:'nearest'});readOriginalText();
+      panel.open=true;setTool('native');readOriginalText();
     });
     $('#editorAddStamp')?.addEventListener('click', () => {
       const page=currentPage();if(!page)return;
@@ -200,7 +201,7 @@
     if (description) description.textContent = state.mode === 'simple'
       ? 'Texto, imagens e anotações com os controles essenciais.'
       : 'Texto original, posição, tamanho, alinhamento, camadas e controles de páginas.';
-    if (state.mode === 'simple' && state.activeTool === 'cover') setTool('select');
+    if (state.mode === 'simple' && ['cover','native'].includes(state.activeTool)) setTool('select');
     updateInspector();
   }
 
@@ -231,6 +232,44 @@
     if($('#editorNativeStatus')) $('#editorNativeStatus').textContent='Localize os textos da página para começar.';
   }
 
+  function selectNativeRun(model,runId) {
+    if(currentPage()!==model)return;
+    state.nativeSelection={pageId:model.id,runId};
+    const panel=$('#editorNativePanel');if(panel)panel.open=true;
+    $('#editorNativeSearch').value='';
+    readOriginalText(runId);
+  }
+
+  async function renderNativeTargets() {
+    const layer=$('#editorNativeLayer');if(!layer)return;
+    const generation=++state.nativeTargetGeneration, model=currentPage();
+    layer.innerHTML='';layer.hidden=state.activeTool!=='native'||!model;
+    $('#editorOriginalText')?.setAttribute('aria-pressed',String(!layer.hidden));
+    if(layer.hidden)return;
+    try {
+      const analysis=await nativeAnalysis(model);
+      if(generation!==state.nativeTargetGeneration || currentPage()!==model || state.activeTool!=='native')return;
+      const source=state.sources.get(model.sourceId);
+      const pdfPage=await source.rendered.getPage(model.sourceIndex+1);
+      if(generation!==state.nativeTargetGeneration || currentPage()!==model)return;
+      const viewport=pdfPage.getViewport({scale:state.scale,rotation:getPageRenderRotation(model)});
+      for(const run of analysis.runs) {
+        const corners=run.geometry?.map(([x,y])=>viewport.convertToViewportPoint(x,y));
+        if(!corners?.flat().every(Number.isFinite))continue;
+        const xs=corners.map(p=>p[0]),ys=corners.map(p=>p[1]);
+        const x=Math.max(0,Math.min(...xs)),y=Math.max(0,Math.min(...ys)),width=Math.min(viewport.width,Math.max(...xs))-x,height=Math.min(viewport.height,Math.max(...ys))-y;
+        if(width<1 || height<1)continue;
+        const button=document.createElement('button');button.type='button';button.className='editor-native-target';button.dataset.runId=run.id;
+        button.style.left=`${x}px`;button.style.top=`${y}px`;button.style.width=`${Math.max(10,width)}px`;button.style.height=`${Math.max(10,height)}px`;
+        const text=model.nativeEdits?.[run.id] ?? run.text;
+        button.setAttribute('aria-label',`Editar texto original: ${text || 'Trecho removido'}`);button.title=text||'Trecho removido';
+        button.setAttribute('aria-pressed',String(state.nativeSelection?.runId===run.id));
+        button.addEventListener('click',event=>{event.stopPropagation();selectNativeRun(model,run.id);});layer.appendChild(button);
+      }
+      setEditorStatus(analysis.runs.length?'Clique em um trecho destacado para editar seu texto original.':'Nenhum texto editável nesta página. Use OCR se ela for uma digitalização.');
+    } catch(error) {if(generation===state.nativeTargetGeneration)setEditorStatus(error.message,'error');}
+  }
+
   async function readOriginalText(selectedId=null) {
     const model=currentPage(); const request=++state.nativeRequest;
     const list=$('#editorNativeList'), status=$('#editorNativeStatus');
@@ -249,9 +288,11 @@
         button.textContent=value || '(Trecho removido)';button.title=value;button.setAttribute('aria-pressed','false');
         button.addEventListener('click',()=>{
           state.nativeSelection={pageId:model.id,runId:run.id};
+          $('#editorNativeLayer')?.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item.dataset.runId===run.id)));
           list.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
           $('#editorNativeValue').value=model.nativeEdits?.[run.id] ?? run.text;
           $('#editorNativeEdit').hidden=false;
+          $('#editorNativeEdit').scrollIntoView({block:'nearest'});
           $('#editorNativeValue').focus();
         });list.appendChild(button);
         if(run.id===selectedId) button.click();
@@ -315,12 +356,18 @@
   }
 
   function deactivate() {
+    state.nativeTargetGeneration++;
+    clearNativePanel();
+    if($('#editorNativeLayer'))$('#editorNativeLayer').hidden=true;
     state.pendingGesture = null;
     state.currentRenderGeneration += 1;
     cancelActivePageRender();
   }
 
   function reset() {
+    state.nativeTargetGeneration++;
+    clearNativePanel();
+    if($('#editorNativeLayer')){$('#editorNativeLayer').innerHTML='';$('#editorNativeLayer').hidden=true;}
     state.currentRenderGeneration += 1;
     state.thumbnailRenderGeneration += 1;
     cancelActivePageRender();
@@ -569,7 +616,7 @@
     if (tool !== 'crop') state.tempCrop = null;
     document.querySelectorAll('[data-editor-tool]').forEach(button => button.classList.toggle('active', button.dataset.editorTool === tool));
     const labels = {
-      select: 'Selecionar e mover objetos', text: 'Clique na página para adicionar texto', brush: 'Desenhe livremente com o pincel',
+      native: 'Clique no texto destacado para editar o conteúdo original', select: 'Selecionar e mover objetos', text: 'Clique na página para adicionar texto', brush: 'Desenhe livremente com o pincel',
       highlight: 'Marque trechos com transparência', cover: 'Arraste para cobrir uma área visualmente', crop: 'Arraste para escolher a área visível da página'
     };
     $('#editorToolHint').textContent = labels[tool] || '';
@@ -597,6 +644,8 @@
     cancelActivePageRender();
     const page = currentPage();
     clearNativePanel();
+    state.nativeTargetGeneration++;
+    if($('#editorNativeLayer')){$('#editorNativeLayer').innerHTML='';$('#editorNativeLayer').hidden=true;}
     if (!page) { renderEmpty(); return; }
     const stage = $('#editorStage');
     stage.classList.remove('empty');
@@ -675,13 +724,14 @@
     $('#editorPageIndicator').textContent = `${state.activeIndex + 1} / ${state.pages.length}`;
     $('#editorCurrentPageInfo').textContent = `Página ${state.activeIndex + 1} • ${Math.round(displayWidth)} × ${Math.round(displayHeight)} pt • ${pageOrientation({ width: displayWidth, height: displayHeight })}${page.crop ? ' • recortada' : ''}`;
     updatePageControls();
+    renderNativeTargets();
   }
 
   function updateEditorPointerRouting() {
     const cropAdjustMode = state.activeTool === 'crop' && Boolean(state.tempCrop);
     const objectMode = state.activeTool === 'select' || cropAdjustMode;
     const interaction = $('#editorInteractionCanvas');
-    if (interaction) interaction.style.pointerEvents = objectMode ? 'none' : 'auto';
+    if (interaction) interaction.style.pointerEvents = objectMode || state.activeTool==='native' ? 'none' : 'auto';
     const layer = $('#editorObjectLayer');
     if (layer) layer.style.pointerEvents = objectMode ? 'auto' : 'none';
   }

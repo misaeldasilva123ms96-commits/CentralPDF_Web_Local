@@ -69,7 +69,12 @@ try:
         page.locator('#editorOriginalText').click()
         page.wait_for_selector('#editorNativeList button')
         assert page.locator('#editorNativeList button').count() == 2
-        page.locator('#editorNativeList button').first.click()
+        page.wait_for_selector('#editorNativeLayer button')
+        target=page.locator('#editorNativeLayer button').first.bounding_box()
+        stage=page.locator('#editorStage').bounding_box()
+        assert abs(target['x']-stage['x']-30*1.45)<3
+        assert page.locator('#editorNativeLayer button').count()==2
+        page.locator('#editorNativeLayer button').first.click()
         page.locator('#editorNativeValue').fill('Documento revisado')
         page.locator('#editorNativeApply').click()
         page.wait_for_function("Object.values(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).includes('Documento revisado')")
@@ -114,6 +119,13 @@ try:
         assert any(x['text']=='REVISADO' for x in exported()[1])
         page.locator('#editorRotatePageRight').click()
         assert any(x['text']=='REVISADO' for x in exported()[1])
+        page.locator('#editorOriginalText').click()
+        page.wait_for_selector('#editorNativeLayer button')
+        page.locator('#editorNativeLayer button').first.click()
+        assert page.locator('#editorNativeValue').input_value()=='Documento original'
+        page.locator('[data-editor-mode="simple"]').click()
+        assert page.locator('#editorNativeLayer').is_hidden()
+        page.locator('[data-editor-mode="advanced"]').click()
         # Adjacent text operators must retain the text cursor, including TJ spacing,
         # escaped literal strings and a zero-length replacement (real deletion).
         page.evaluate('''async () => {
@@ -138,6 +150,44 @@ try:
           const next=after.find(x=>x.str.replaceAll(' ','')==='Next');
           if(!next || Math.abs(next.transform[4]-expected)>0.01) throw Error('Following text moved: '+JSON.stringify({next,expected,before,after}));
           await out.destroy();await task.destroy();
+        }''')
+        page.evaluate('''async () => {
+          const {PDFDocument,PDFName,StandardFonts}=PDFLib;
+          const doc=await PDFDocument.create(),p=doc.addPage();
+          const font=await doc.embedFont(StandardFonts.Helvetica);await font.embed();const dict=doc.context.lookup(font.ref);
+          dict.set(PDFName.of('FirstChar'),doc.context.obj(65));
+          dict.set(PDFName.of('LastChar'),doc.context.obj(68));
+          dict.set(PDFName.of('Widths'),doc.context.obj(['A','B','C','D'].map(c=>font.widthOfTextAtSize(c,1000))));
+          const cmap='begincmap 1 begincodespacerange <00> <FF> endcodespacerange 1 beginbfchar <41> <0041> endbfchar 1 beginbfrange <42> <44> [<0042> <0043> <0044>] endbfrange endcmap';
+          dict.set(PDFName.of('ToUnicode'),doc.context.register(doc.context.flateStream(cmap)));
+          p.node.set(PDFName.of('Resources'),doc.context.obj({Font:{F1:font.ref}}));
+          p.node.set(PDFName.of('Contents'),doc.context.register(doc.context.flateStream(`BT /F1 14 Tf 17 TL 1 0 0 1 30 700 Tm (AA) Tj (BB) ' 3 2 (CC) " ET`)));
+          const bytes=await doc.save(),original=await PDFDocument.load(bytes);
+          const task=pdfjsLib.getDocument({data:bytes.slice()}),pdf=await task.promise;
+          const analysis=await PDFNativeText.inspect(original.getPage(0),await pdf.getPage(1),PDFLib,pdfjsLib);
+          if(analysis.runs.length!==3)throw Error('Quote operators missing');
+          if(analysis.runs[1].geometry[0][1]!==683-14*.22)throw Error('Incorrect next-line geometry');
+          // D is declared in the font but is not used anywhere on this page.
+          const edits=Object.fromEntries(analysis.runs.map(r=>[r.id,'DD']));
+          PDFNativeText.apply(original.getPage(0),analysis,edits,PDFLib);
+          const outTask=pdfjsLib.getDocument({data:await original.save()}),out=await outTask.promise;
+          const items=(await (await out.getPage(1)).getTextContent()).items.filter(x=>x.str.trim());
+          if(items.length!==3 || items.some(x=>x.str.replaceAll(' ','')!=='DD'))throw Error('Declared font glyphs not replaced: '+JSON.stringify(items));
+          if(items.map(x=>x.transform[5]).join(',')!=='700,683,666')throw Error('Quote line positioning changed');
+          await task.destroy();await outTask.destroy();
+          // CID Identity-H: a declared glyph outside the page text is also usable.
+          const cid=await PDFDocument.create(),cp=cid.addPage();
+          const unicode=cid.context.register(cid.context.flateStream('begincmap 1 begincodespacerange <0000> <FFFF> endcodespacerange 1 beginbfrange <0001> <0003> <0041> endbfrange endcmap'));
+          const descendant=cid.context.obj({Type:'Font',Subtype:'CIDFontType2',BaseFont:'Helvetica',CIDSystemInfo:{Registry:PDFLib.PDFString.of('Adobe'),Ordering:PDFLib.PDFString.of('Identity'),Supplement:0},W:[1,[667,667,722]]});
+          const cf=cid.context.register(cid.context.obj({Type:'Font',Subtype:'Type0',BaseFont:'Helvetica',Encoding:'Identity-H',DescendantFonts:[cid.context.register(descendant)],ToUnicode:unicode}));
+          cp.node.set(PDFName.of('Resources'),cid.context.obj({Font:{F1:cf}}));
+          cp.node.set(PDFName.of('Contents'),cid.context.register(cid.context.flateStream('BT /F1 14 Tf 1 0 0 1 30 700 Tm <0001> Tj ET')));
+          const cb=await cid.save(),cdoc=await PDFDocument.load(cb),ct=pdfjsLib.getDocument({data:cb.slice()}),cr=await ct.promise;
+          const ca=await PDFNativeText.inspect(cdoc.getPage(0),await cr.getPage(1),PDFLib,pdfjsLib);
+          PDFNativeText.apply(cdoc.getPage(0),ca,{[ca.runs[0].id]:'C'},PDFLib);
+          const cot=pdfjsLib.getDocument({data:await cdoc.save()}),cor=await cot.promise;
+          if((await (await cor.getPage(1)).getTextContent()).items.map(x=>x.str).join('')!=='C')throw Error('CID glyph replacement failed');
+          await ct.destroy();await cot.destroy();
         }''')
         for width, height in [(1440,1000),(390,844)]:
             page.set_viewport_size({'width':width,'height':height})

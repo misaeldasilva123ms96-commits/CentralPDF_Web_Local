@@ -2,6 +2,51 @@
 (() => {
   'use strict';
   const fail = message => { throw new Error(message); };
+  const identity=()=>[1,0,0,1,0,0];
+  const multiply=(a,b)=>[a[0]*b[0]+a[2]*b[1],a[1]*b[0]+a[3]*b[1],a[0]*b[2]+a[2]*b[3],a[1]*b[2]+a[3]*b[3],a[0]*b[4]+a[2]*b[5]+a[4],a[1]*b[4]+a[3]*b[5]+a[5]];
+  const point=(m,x,y)=>[m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5]];
+
+  function extendFontMap(dict,font,lib) {
+    const cmap=dict.lookupMaybe(lib.PDFName.of('ToUnicode'),lib.PDFRawStream);
+    if(!cmap) return;
+    const data=lib.decodePDFRawStream(cmap).decode();if(data.length>2*1024*1024)return;
+    let source='';for(let i=0;i<data.length;i+=8192)source+=String.fromCharCode(...data.subarray(i,i+8192));
+    const widths=new Map();
+    if(font.byteWidth===1) {
+      const first=dict.lookupMaybe(lib.PDFName.of('FirstChar'),lib.PDFNumber)?.asNumber();
+      const values=dict.lookupMaybe(lib.PDFName.of('Widths'),lib.PDFArray);
+      if(Number.isInteger(first)&&values)for(let i=0;i<values.size();i++)widths.set(first+i,values.lookup(i,lib.PDFNumber).asNumber());
+    } else {
+      const descendant=dict.lookupMaybe(lib.PDFName.of('DescendantFonts'),lib.PDFArray)?.lookup(0,lib.PDFDict);
+      const values=descendant?.lookupMaybe(lib.PDFName.of('W'),lib.PDFArray);
+      if(values)for(let i=0;i<values.size();) {
+        const first=values.lookup(i++,lib.PDFNumber).asNumber(), next=values.lookup(i++);
+        if(next instanceof lib.PDFArray) {for(let j=0;j<next.size();j++)widths.set(first+j,next.lookup(j,lib.PDFNumber).asNumber());}
+        else {const last=next.asNumber(),width=values.lookup(i++,lib.PDFNumber).asNumber();if(last-first>65536)return;for(let code=first;code<=last;code++)widths.set(code,width);}
+      }
+    }
+    const add=(codeHex,unicodeHex)=>{
+      if(codeHex.length!==font.byteWidth*2 || unicodeHex.length%4 || unicodeHex.length>32)return;
+      const code=parseInt(codeHex,16),width=widths.get(code);if(!Number.isFinite(width)||width<=0)return;
+      let unicode='';for(let i=0;i<unicodeHex.length;i+=4)unicode+=String.fromCharCode(parseInt(unicodeHex.slice(i,i+4),16));
+      if(!unicode || /[\u0000-\u001f\ufffd]/.test(unicode) || font.map.has(unicode))return;
+      font.map.set(unicode,{code,width});
+    };
+    for(const block of source.matchAll(/beginbfchar([\s\S]*?)endbfchar/g)) {
+      for(const pair of block[1].matchAll(/<([\da-f]+)>\s*<([\da-f]+)>/gi))add(pair[1],pair[2]);
+    }
+    for(const block of source.matchAll(/beginbfrange([\s\S]*?)endbfrange/g)) {
+      for(const range of block[1].matchAll(/<([\da-f]+)>\s*<([\da-f]+)>\s*(<([\da-f]+)>|\[([^\]]*)\])/gi)) {
+        const first=parseInt(range[1],16),last=parseInt(range[2],16);if(last-first>65536)continue;
+        const entries=range[5]?[...range[5].matchAll(/<([\da-f]+)>/gi)].map(m=>m[1]):null;
+        if(!entries && range[4].length!==4)continue;
+        for(let code=first;code<=last;code++) {
+          const unicode=entries?entries[code-first]:(parseInt(range[4],16)+code-first).toString(16).padStart(4,'0');
+          if(unicode)add(code.toString(16).padStart(range[1].length,'0'),unicode);
+        }
+      }
+    }
+  }
   // A bounded PDF content tokenizer. Inline images are intentionally unsupported.
   function tokenize(source) {
     const tokens = []; let i = 0;
@@ -68,12 +113,22 @@
     const content=streams(page,lib); const fonts=new Map(); const runs=[];
     const operatorList=await renderedPage.getOperatorList();
     const shows=operatorList.fnArray.flatMap((op,i)=>op===pdfjs.OPS.showText ? [operatorList.argsArray[i][0]] : []);
-    let fontName=null,size=0,charSpace=0,wordSpace=0; const stack=[];
+    let fontName=null,size=0,charSpace=0,wordSpace=0,leading=0,hScale=1,rise=0,ctm=identity(),tm=identity(),line=identity(); const stack=[];
+    const moveLine=(x,y)=>{line=multiply(line,[1,0,0,1,x,y]);tm=[...line];};
     content.forEach((text,streamIndex)=>{
       for(const operation of operations(text)) {
         const a=operation.args;
-        if(operation.op==='q') stack.push({fontName,size,charSpace,wordSpace});
-        if(operation.op==='Q') { const prev=stack.pop(); if(prev) ({fontName,size,charSpace,wordSpace}=prev); }
+        if(operation.op==='q') stack.push({fontName,size,charSpace,wordSpace,leading,hScale,rise,ctm:[...ctm]});
+        if(operation.op==='Q') { const prev=stack.pop(); if(prev) ({fontName,size,charSpace,wordSpace,leading,hScale,rise,ctm}=prev); }
+        const numbers=a.map(t=>Number(t.value));
+        if(operation.op==='cm')ctm=multiply(ctm,numbers);
+        if(operation.op==='BT'){tm=identity();line=identity();}
+        if(operation.op==='Tm'){tm=[...numbers];line=[...numbers];}
+        if(operation.op==='Td'||operation.op==='TD'){if(operation.op==='TD')leading=-numbers[1];moveLine(numbers[0],numbers[1]);}
+        if(operation.op==='TL')leading=numbers[0];
+        if(operation.op==='Tz')hScale=numbers[0]/100;
+        if(operation.op==='Ts')rise=numbers[0];
+        if(operation.op==='T*')moveLine(0,-leading);
         if(operation.op==='Tf') {fontName=a[0]?.value?.slice(1);size=Number(a[1]?.value);}
         if(operation.op==='Tc') charSpace=Number(a[0]?.value);
         if(operation.op==='Tw') wordSpace=Number(a[0]?.value);
@@ -82,8 +137,9 @@
           if(graphics?.has(lib.PDFName.of('Font'))) fail('Esta página define fontes por um estado gráfico ainda não compatível.');
         }
         if(operation.op==='Tr' && Number(a[0]?.value)>=4) fail('Esta página usa texto como máscara de recorte; a edição original ainda não é compatível.');
-        if(["'",'"'].includes(operation.op)) fail('Esta página usa texto com posicionamento ainda não compatível.');
-        if(!['Tj','TJ'].includes(operation.op)) continue;
+        if(operation.op==='"'){wordSpace=numbers[0];charSpace=numbers[1];}
+        if(["'",'"'].includes(operation.op))moveLine(0,-leading);
+        if(!['Tj','TJ',"'",'"'].includes(operation.op)) continue;
         if(!fontName || !size || !Number.isFinite(charSpace+wordSpace)) fail('Fonte original não identificada.');
         const dict=page.node.Resources()?.lookup(lib.PDFName.of('Font'),lib.PDFDict)?.lookup(lib.PDFName.of(fontName),lib.PDFDict);
         if(!dict) fail('Fonte original não encontrada.');
@@ -103,12 +159,19 @@
         if(Object.values(lib.StandardFonts).includes(base) && !dict.has(lib.PDFName.of('ToUnicode')) && (!encoding || encoding==='/WinAnsiEncoding') && !dict.has(lib.PDFName.of('Widths'))) {
           font.standard=lib.StandardFontEmbedder.for(base);
         }
-        runs.push({...operation,id:`${streamIndex}:${operation.start}`,streamIndex,fontName,size,charSpace,wordSpace,
+        const adjustments=operation.op==='TJ'?a.filter(t=>t.value && /^[+\-\d.]+$/.test(t.value)).reduce((sum,t)=>sum+Number(t.value),0):0;
+        const advance=glyphs.reduce((sum,g)=>sum+g.width*size/1000+charSpace+(byteWidth===1&&g.originalCharCode===32?wordSpace:0),0)-adjustments*size/1000;
+        const matrix=multiply(ctm,tm);
+        const geometry=[[0,rise-size*.22],[advance*hScale,rise-size*.22],[advance*hScale,rise+size*.85],[0,rise+size*.85]].map(([x,y])=>point(matrix,x,y));
+        runs.push({...operation,id:`${streamIndex}:${operation.start}`,streamIndex,fontName,size,charSpace,wordSpace,geometry,
           text:glyphs.map(g=>g.unicode).join(''),codes,glyphs,
-          adjustments:a.filter(t=>t.value && /^[+\-\d.]+$/.test(t.value)).reduce((sum,t)=>sum+Number(t.value),0)});
+          adjustments});
+        tm=multiply(tm,[1,0,0,1,advance*hScale,0]);
+        font.dict=dict;
       }
     });
     if(runs.length!==shows.length) fail('Há textos em objetos compostos nesta página; a edição original ainda não é compatível.');
+    for(const font of fonts.values()) {try {extendFontMap(font.dict,font,lib);}catch(_){/* Keep the verified glyphs if an optional font map cannot be read. */}}
     return {content,fonts,runs};
   }
   function replacement(analysis,run,text) {
@@ -131,8 +194,9 @@
     // Retain the original text cursor position for the following operators.
     const adjustment=Number(delta.toFixed(6));
     // PDF.js text extraction adds Tc to a numeric-only TJ; neutralize it locally.
-    if(!next.length) return `0 Tc [${adjustment}] TJ ${run.charSpace} Tc`;
-    return `[<${hex}> ${adjustment}] TJ`;
+    const prefix=run.op==='"'?`${run.wordSpace} Tw ${run.charSpace} Tc T* `:run.op==="'"?'T* ':'';
+    if(!next.length) return `${prefix}0 Tc [${adjustment}] TJ ${run.charSpace} Tc`;
+    return `${prefix}[<${hex}> ${adjustment}] TJ`;
   }
   function apply(page,analysis,edits,lib) {
     const content=[...analysis.content];

@@ -59,6 +59,7 @@ with sync_playwright() as p:
       target.dispatchEvent(new DragEvent('dragover',{dataTransfer:dt,bubbles:true,cancelable:true}));
       target.dispatchEvent(new DragEvent('drop',{dataTransfer:dt,bubbles:true,cancelable:true}));
     }''')
+    page.locator('#mergePageView').select_option('pages')
     page.wait_for_function("document.querySelectorAll('#pageGrid .page-card').length === 600",timeout=30000)
     assert page.locator('#mergeLargeBatchNotice').is_visible()
     assert '600' in page.locator('#mergePlanCount').inner_text()

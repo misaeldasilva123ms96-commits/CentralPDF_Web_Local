@@ -63,6 +63,7 @@ with sync_playwright() as p:
     page.locator('.tool-card[data-tool="merge"]').click()
     page.evaluate(DROP_JS, {'selector':'#dropzone','names':['A.pdf','B.pdf']})
     page.wait_for_timeout(500)
+    page.locator('#mergePageView').select_option('pages')
     assert page.locator('#pageGrid .page-card').count() == 4
 
     result = page.evaluate(r'''() => {

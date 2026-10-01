@@ -507,3 +507,9 @@ body[data-pdf-editor-mode="simple"] [data-editor-tool="cover"] { display: none !
 #editorStampControl { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; }
 #editorStampPreset { max-width: 130px; padding: 7px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface, #fff); color: inherit; }
 #editorOriginalText { border-color: #8c80ff; }
+.editor-native-layer { position: absolute; inset: 0; z-index: 12; pointer-events: none; }
+.editor-native-layer[hidden] { display: none; }
+.editor-native-target { position: absolute; box-sizing: border-box; padding: 0; border: 1px solid #6152e0; border-radius: 2px; background: #7664ff12; pointer-events: auto; cursor: text; }
+.editor-native-target:hover, .editor-native-target[aria-pressed="true"] { background: #7664ff33; outline: 2px solid #6152e0; }
+.editor-native-target:focus-visible { outline: 3px solid #ed9b21; }
+#editorOriginalText[aria-pressed="true"] { color: white; background: #5145cd; }
