@@ -79,6 +79,20 @@ try:
         page.locator('#editorNativeApply').click()
         page.wait_for_function("Object.values(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).includes('Documento revisado')")
         page.wait_for_function("document.querySelector('#editorNativeEdit').hidden === false")
+        snapshot=page.evaluate('JSON.stringify(PDFVisualEditor.exportProjectState().pages)')
+        page.locator('#editorCompare').click()
+        page.wait_for_function("document.querySelector('#editorCompareStatus').textContent.startsWith('Página 1:')")
+        assert page.locator('#editorCompareChanges del').inner_text()=='Documento original'
+        assert page.locator('#editorCompareChanges ins').inner_text()=='Documento revisado'
+        assert page.evaluate("document.querySelector('#editorCompareOriginal').toDataURL() !== document.querySelector('#editorCompareResult').toDataURL()")
+        page.keyboard.press('Control+z')
+        assert page.evaluate('JSON.stringify(PDFVisualEditor.exportProjectState().pages)')==snapshot
+        for width in [1440,390]:
+            page.set_viewport_size({'width':width,'height':1000})
+            assert page.evaluate("document.querySelector('#editorCompareDialog').scrollWidth <= document.querySelector('#editorCompareDialog').clientWidth + 1")
+        page.keyboard.press('Escape')
+        assert not page.locator('#editorCompareDialog').is_visible()
+        page.set_viewport_size({'width':1440,'height':1000})
         def exported():
             return page.evaluate('''async () => {
               const {bytes}=await PDFVisualEditor.exportPdf();
@@ -188,6 +202,33 @@ try:
           const cot=pdfjsLib.getDocument({data:await cdoc.save()}),cor=await cot.promise;
           if((await (await cor.getPage(1)).getTextContent()).items.map(x=>x.str).join('')!=='C')throw Error('CID glyph replacement failed');
           await ct.destroy();await cot.destroy();
+        }''')
+        page.evaluate('''async () => {
+          const {PDFDocument,PDFName,StandardFonts}=PDFLib;
+          async function fixture(properties) {
+            const doc=await PDFDocument.create(),p=doc.addPage(),font=await doc.embedFont(StandardFonts.Helvetica);
+            p.node.set(PDFName.of('Resources'),doc.context.obj({Font:{F1:font.ref},Properties:{P1:{ActualText:PDFLib.PDFString.of('Old')}}}));
+            p.node.set(PDFName.of('Contents'),doc.context.register(doc.context.flateStream(`/Span ${properties} BDC BT /F1 14 Tf 1 0 0 1 30 700 Tm (Original) Tj ET EMC`)));
+            const bytes=await doc.save(),loaded=await PDFDocument.load(bytes),task=pdfjsLib.getDocument({data:bytes.slice()}),pdf=await task.promise;
+            return {loaded,task,page:await pdf.getPage(1)};
+          }
+          // Nested metadata, strings containing operators, arrays and booleans must
+          // remain operands, not become text operations or inline-image markers.
+          const f=await fixture('<< /MCID 0 /Lang (pt-BR) /Meta << /Visible true /Values [null false (BI Tj >>)] >> >>');
+          const analysis=await PDFNativeText.inspect(f.loaded.getPage(0),f.page,PDFLib,pdfjsLib);
+          if(analysis.runs.length!==1 || analysis.runs[0].text!=='Original')throw Error('Tagged text not recognized');
+          PDFNativeText.apply(f.loaded.getPage(0),analysis,{[analysis.runs[0].id]:'Revisado'},PDFLib);
+          const output=pdfjsLib.getDocument({data:await f.loaded.save()}),pdf=await output.promise;
+          const items=(await (await pdf.getPage(1)).getTextContent()).items;
+          if(items.map(x=>x.str).join('')!=='Revisado')throw Error('Tagged export mismatch');
+          if(Math.abs(items[0].transform[4]-30)>.01 || Math.abs(items[0].transform[5]-700)>.01)throw Error('Tagged position changed');
+          await output.destroy();await f.task.destroy();
+          for(const properties of ['<< /ActualText (Old) >>','<< /Actual#54ext (Old) >>','/P1']) {
+            const f=await fixture(properties);let rejected=false;
+            try {await PDFNativeText.inspect(f.loaded.getPage(0),f.page,PDFLib,pdfjsLib);}
+            catch(e){rejected=e.message.includes('ActualText');}
+            await f.task.destroy();if(!rejected)throw Error('Stale ActualText must be rejected');
+          }
         }''')
         for width, height in [(1440,1000),(390,844)]:
             page.set_viewport_size({'width':width,'height':height})
