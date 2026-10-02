@@ -84,6 +84,8 @@
       button.addEventListener('click', () => setTool(button.dataset.editorTool));
     });
     $('#editorAddText')?.addEventListener('click', () => setTool('text'));
+    $('#editorCompare')?.addEventListener('click', compareCurrentPage);
+    $('#editorCompareClose')?.addEventListener('click', () => $('#editorCompareDialog').close());
     $('#editorOriginalText')?.addEventListener('click', () => {
       const panel=$('#editorNativePanel'); if(!panel) return;
       panel.open=true;setTool('native');readOriginalText();
@@ -127,6 +129,8 @@
     });
 
     document.addEventListener('keydown', event => {
+      if($('#editorCompareDialog')?.open)return;
+      if(event.target.closest?.('input, textarea, select, [contenteditable="true"]'))return;
       const visible = !$('#pdfEditorSection')?.classList.contains('hidden');
       if (!visible) return;
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
@@ -266,7 +270,7 @@
         button.setAttribute('aria-pressed',String(state.nativeSelection?.runId===run.id));
         button.addEventListener('click',event=>{event.stopPropagation();selectNativeRun(model,run.id);});layer.appendChild(button);
       }
-      setEditorStatus(analysis.runs.length?'Clique em um trecho destacado para editar seu texto original.':'Nenhum texto editável nesta página. Use OCR se ela for uma digitalização.');
+      setEditorStatus(analysis.runs.length?'Clique em um trecho destacado para editar seu texto original.':'Nenhum texto editável nesta página. Em digitalizações, OCR cria texto pesquisável, mas não altera as letras da imagem.');
     } catch(error) {if(generation===state.nativeTargetGeneration)setEditorStatus(error.message,'error');}
   }
 
@@ -281,7 +285,7 @@
       if(request!==state.nativeRequest || currentPage()!==model) return;
       const query=($('#editorNativeSearch')?.value || '').toLocaleLowerCase('pt-BR');
       const runs=analysis.runs.filter(run=>(model.nativeEdits?.[run.id] ?? run.text).toLocaleLowerCase('pt-BR').includes(query));
-      status.textContent=analysis.runs.length ? `${runs.length} trecho(s) encontrado(s). Escolha um para editar.` : 'Nenhum texto editável nesta página. Se ela for uma digitalização, use OCR primeiro.';
+      status.textContent=analysis.runs.length ? `${runs.length} trecho(s) encontrado(s). Escolha um para editar.` : 'Nenhum texto editável nesta página. Em digitalizações, OCR cria texto pesquisável, mas não altera as letras da imagem.';
       for(const run of runs) {
         const button=document.createElement('button');button.type='button';button.className='editor-object-list-item';
         const value=model.nativeEdits?.[run.id] ?? run.text;
@@ -1402,13 +1406,55 @@
     return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y };
   }
 
-  async function exportPdf() {
+  async function compareCurrentPage() {
+    const current=currentPage(),dialog=$('#editorCompareDialog');
+    if(!current || !dialog || dialog.open || $('#editorCompare').disabled)return;
+    const model=deepClone(current),pageNumber=state.activeIndex+1;
+    $('#editorCompare').disabled=true;
+    const status=$('#editorCompareStatus'),list=$('#editorCompareChanges');
+    status.textContent='Preparando o PDF de conferência…';list.replaceChildren();
+    const canvases=[$('#editorCompareOriginal'),$('#editorCompareResult')];
+    canvases.forEach(canvas=>{canvas.width=0;canvas.height=0;});
+    dialog.showModal();
+    let task;
+    try {
+      // Same exporter used by Save, limited to this page. Includes added objects,
+      // native edits, rotation and crop without downloading or changing history.
+      const exported=await exportPdf({pages:[model],silent:true});
+      task=window.pdfjsLib.getDocument({data:exported.bytes});
+      const result=await task.promise;
+      const original=model.kind==='pdf'?await state.sources.get(model.sourceId).rendered.getPage(model.sourceIndex+1):null;
+      for(const [index,page] of [original,await result.getPage(1)].entries()) {
+        const canvas=canvases[index];
+        if(!page){canvas.width=480;canvas.height=Math.round(480*model.height/model.width);const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);continue;}
+        const base=page.getViewport({scale:1}),viewport=page.getViewport({scale:Math.min(1100/base.width,1500/base.height)});
+        canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+        await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+      }
+      const edits=Object.entries(model.nativeEdits || {});
+      if(edits.length) {
+        const analysis=await nativeAnalysis(model);
+        for(const [id,value] of edits) {
+          const run=analysis.runs.find(r=>r.id===id);if(!run)continue;
+          const item=document.createElement('li');
+          const before=document.createElement('del'),after=document.createElement('ins');
+          before.textContent=run.text;after.textContent=value || '(removido)';
+          item.append(before,document.createTextNode(' → '),after);list.append(item);
+        }
+      }
+      status.textContent=`Página ${pageNumber}: ${edits.length} trecho(s) substituído(s), ${model.objects.length} objeto(s) adicionado(s). Confira cortes, sobreposições e acentos antes de salvar.`;
+    } catch(error) {status.textContent=`Não foi possível gerar a conferência: ${error.message}`;}
+    finally {await task?.destroy();$('#editorCompare').disabled=false;}
+  }
+
+  async function exportPdf(options={}) {
     if(!state.pages.length)throw new Error('Carregue um PDF no editor.');
+    const pages=options.pages || state.pages;
     const {PDFDocument,StandardFonts,rgb,degrees}=window.PDFLib;
     const output=await PDFDocument.create();
     const fonts=new Map(); const images=new Map();
-    for(let index=0;index<state.pages.length;index++){
-      const model=state.pages[index]; let page;
+    for(let index=0;index<pages.length;index++){
+      const model=pages[index]; let page;
       let source=null; let rasterized=false;
       if(model.kind==='pdf'){
         source=state.sources.get(model.sourceId);
@@ -1438,7 +1484,7 @@
           const color=hexRgb(object.color);for(let p=1;p<object.points.length;p++){const a=visualPointToPdf(object.points[p-1],exportRotation,pageSize.width,pageSize.height),b=visualPointToPdf(object.points[p],exportRotation,pageSize.width,pageSize.height);page.drawLine({start:a,end:b,thickness:object.width,color:rgb(color.r,color.g,color.b),opacity:object.opacity??1});}
         }
       }
-      const progress=10+Math.round(((index+1)/state.pages.length)*80);window.dispatchEvent(new CustomEvent('central-editor-progress',{detail:progress}));
+      const progress=10+Math.round(((index+1)/pages.length)*80);if(!options.silent)window.dispatchEvent(new CustomEvent('central-editor-progress',{detail:progress}));
     }
     const compatiblePages=state.pages.filter(model=>model.kind==='pdf'&&state.sources.get(model.sourceId)?.compatibilityMode==='raster').length;
     return {bytes:await output.save({useObjectStreams:true}),message:`PDF editado com ${state.pages.length} página(s) e ${state.pages.reduce((sum,p)=>sum+p.objects.length,0)} objeto(s) adicionados e ${state.pages.reduce((sum,p)=>sum+Object.keys(p.nativeEdits || {}).length,0)} trecho(s) originais substituídos.${compatiblePages?` ${compatiblePages} página(s) restrita(s) foram achatadas para preservar a aparência.`:''}`};

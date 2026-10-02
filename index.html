@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.16" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.17" />
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
@@ -374,6 +374,7 @@
           <div class="pdf-editor-toolbar">
             <div class="editor-tool-group" aria-label="Ferramentas de edição">
               <button id="editorOriginalText" class="editor-tool" type="button" title="Localizar e substituir textos existentes no PDF"><svg><use href="#i-text"/></svg><span>Texto original</span></button>
+              <button id="editorCompare" class="editor-tool" type="button">Original e resultado</button>
               <button class="editor-tool active" data-editor-tool="select" type="button" title="Selecionar e mover"><svg><use href="#i-select"/></svg><span>Selecionar</span></button>
               <button id="editorAddText" class="editor-tool" data-editor-tool="text" type="button" title="Adicionar texto"><svg><use href="#i-text"/></svg><span>Texto</span></button>
               <button class="editor-tool" data-editor-tool="brush" type="button" title="Pincel"><svg><use href="#i-brush"/></svg><span>Pincel</span></button>
@@ -424,6 +425,15 @@
           </div>
           <input id="editorImageInput" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple hidden />
           <input id="editorPdfInput" type="file" accept="application/pdf,.pdf" multiple hidden />
+          <dialog id="editorCompareDialog" aria-labelledby="editorCompareTitle">
+            <div class="editor-compare-heading"><h2 id="editorCompareTitle">Conferir página</h2><button id="editorCompareClose" class="small-button" type="button">Fechar</button></div>
+            <p id="editorCompareStatus" role="status"></p>
+            <div class="editor-compare-grid">
+              <figure><figcaption>Original</figcaption><canvas id="editorCompareOriginal" aria-label="Página original"></canvas></figure>
+              <figure><figcaption>Resultado ao salvar</figcaption><canvas id="editorCompareResult" aria-label="Página editada exportada"></canvas></figure>
+            </div>
+            <ul id="editorCompareChanges" aria-label="Trechos originais alterados"></ul>
+          </dialog>
         </section>
 
         <section id="organizerSection" class="organizer-section hidden" aria-label="Editor visual de páginas">

@@ -75,27 +75,33 @@
         let hex = source.slice(i,end).replace(/\s/g,''); if (!/^[0-9a-f]*$/i.test(hex)) fail('Texto hexadecimal inválido.');
         if (hex.length % 2) hex += '0';
         tokens.push({start,end:end+1,bytes:hex.match(/../g)?.map(v=>parseInt(v,16)) || []}); i=end+1;
+      } else if ((c === '<' && source[i] === '<') || (c === '>' && source[i] === '>')) {
+        i++; tokens.push({start,end:i,value:c+c});
       } else if ('[]'.includes(c)) tokens.push({start,end:i,value:c});
       else {
         while (i < source.length && !/[\s\0()[\]<>/%]/.test(source[i])) i++;
-        // Dictionaries and inline images require a different grammar; refuse safely.
+        // A solitary dictionary delimiter is invalid.
         if (i === start+1 && '<>'.includes(c)) fail('Esta página usa uma estrutura ainda não compatível com a edição original.');
-        tokens.push({start,end:i,value:source.slice(start,i)});
+        const value=source.slice(start,i);
+        tokens.push({start,end:i,value:c==='/'?value.replace(/#([\da-f]{2})/gi,(_,hex)=>String.fromCharCode(parseInt(hex,16))):value});
       }
       if (tokens.length > 250000) fail('Página muito complexa para editar o texto original.');
     }
     return tokens;
   }
   function operations(source) {
-    const result=[]; let args=[]; let depth=0;
+    const result=[]; let args=[]; const containers=[];
     for (const token of tokenize(source)) {
-      if (token.value === 'BI') fail('Página com imagem inline: edição original indisponível.');
-      if (token.value === '[') depth++;
-      if (token.value === ']') depth--;
-      if (!depth && token.value && !['[',']'].includes(token.value) && !token.value.startsWith('/') && !/^[+\-\d.]+$/.test(token.value)) {
+      if (!containers.length && token.value === 'BI') fail('Página com imagem inline: edição original indisponível.');
+      if (token.value === '[' || token.value === '<<') containers.push(token.value);
+      if (token.value === ']' || token.value === '>>') {
+        if(containers.pop() !== (token.value === ']' ? '[' : '<<')) fail('Estrutura de conteúdo PDF inválida.');
+      }
+      if (!containers.length && token.value && !['[',']','<<','>>','true','false','null'].includes(token.value) && !token.value.startsWith('/') && !/^[+\-\d.]+$/.test(token.value)) {
         result.push({op:token.value,args,start:args[0]?.start ?? token.start,end:token.end}); args=[];
       } else args.push(token);
     }
+    if(containers.length) fail('Estrutura de conteúdo PDF incompleta.');
     return result;
   }
   function streams(page, lib) {
@@ -118,6 +124,12 @@
     content.forEach((text,streamIndex)=>{
       for(const operation of operations(text)) {
         const a=operation.args;
+        // ActualText overrides extracted text independently of the visible glyphs.
+        // Do not leave stale accessibility text behind after a replacement.
+        if(operation.op==='BDC' || operation.op==='DP') {
+          const named=a[1]?.value?.startsWith('/') ? page.node.Resources()?.lookupMaybe(lib.PDFName.of('Properties'),lib.PDFDict)?.lookupMaybe(lib.PDFName.of(a[1].value.slice(1)),lib.PDFDict) : null;
+          if(a.some(t=>t.value==='/ActualText') || named?.has(lib.PDFName.of('ActualText'))) fail('Esta página usa ActualText (texto alternativo de acessibilidade). A edição original ainda não pode atualizar esse conteúdo com segurança.');
+        }
         if(operation.op==='q') stack.push({fontName,size,charSpace,wordSpace,leading,hScale,rise,ctm:[...ctm]});
         if(operation.op==='Q') { const prev=stack.pop(); if(prev) ({fontName,size,charSpace,wordSpace,leading,hScale,rise,ctm}=prev); }
         const numbers=a.map(t=>Number(t.value));
