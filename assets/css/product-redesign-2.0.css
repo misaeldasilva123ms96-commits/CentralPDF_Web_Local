@@ -527,3 +527,10 @@ body[data-pdf-editor-mode="simple"] [data-editor-tool="cover"] { display: none !
 #editorCompareChanges ins { text-decoration: none; background: #d1fae5; color: #064e3b; }
 #editorCompareChanges del { background: #fee2e2; color: #7f1d1d; }
 @media (max-width: 650px) { .editor-compare-grid { grid-template-columns: 1fr; } #editorCompareDialog { padding: 12px; } }
+
+/* Keep the original-text editor anchored to its selected PDF text. */
+#editorStage > #editorNativeEdit { position: absolute; z-index: 30; box-sizing: border-box; padding: 10px; border: 2px solid #edb426; border-radius: 10px; background: var(--panel, #151e2d); color: var(--text, #e8edf7); box-shadow: 0 6px 24px #0005; pointer-events: auto; }
+#editorStage > #editorNativeEdit[hidden] { display: none; }
+#editorNativeEdit textarea { min-height: 56px; max-height: 100px; resize: vertical; }
+#editorNativeFeedback { margin: 4px 0 8px; }
+#editorNativeFeedback.error { color: #f06b65; }

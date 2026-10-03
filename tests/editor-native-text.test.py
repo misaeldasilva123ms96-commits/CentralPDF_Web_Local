@@ -75,6 +75,20 @@ try:
         assert abs(target['x']-stage['x']-30*1.45)<3
         assert page.locator('#editorNativeLayer button').count()==2
         page.locator('#editorNativeLayer button').first.click()
+        floating=page.locator('#editorNativeEdit').bounding_box()
+        assert abs(floating['x']-target['x'])<10, (floating,target)
+        assert floating['y']>=target['y']+target['height']
+        assert page.evaluate("document.querySelector('#editorNativeEdit').parentElement.id==='editorStage'")
+        before_preview=page.locator('#editorBaseCanvas').evaluate('(canvas)=>canvas.toDataURL()')
+        page.locator('#editorNativeValue').fill('Prévia durante digitação')
+        page.wait_for_function("document.querySelector('#editorBaseCanvas').toDataURL() !== " + repr(before_preview))
+        assert not page.evaluate('Object.keys(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).length')
+        assert page.locator('#editorNativeValue').input_value()=='Prévia durante digitação'
+        assert page.locator('#editorNativeValue').evaluate('(input)=>document.activeElement===input')
+        # Switching targets must discard the temporary preview without changing the PDF.
+        page.locator('#editorNativeList button').nth(1).click()
+        page.wait_for_function("document.querySelector('#editorBaseCanvas').toDataURL() === " + repr(before_preview))
+        page.locator('#editorNativeList button').first.click()
         page.locator('#editorNativeValue').fill('Documento revisado')
         page.locator('#editorNativeApply').click()
         page.wait_for_function("Object.values(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).includes('Documento revisado')")
@@ -124,6 +138,7 @@ try:
         page.locator('#editorNativeValue').fill('Texto 漢')
         page.locator('#editorNativeApply').click()
         page.wait_for_function("document.querySelector('#editorNativeStatus').textContent.includes('não contém')")
+        assert 'não contém' in page.locator('#editorNativeFeedback').inner_text()
         assert any(x['text']=='Cópia alterada' for x in exported()[1])
         page.locator('#editorNativeRestore').click()
         page.wait_for_function("Object.keys(PDFVisualEditor.exportProjectState().pages[1].nativeEdits || {}).length===0")

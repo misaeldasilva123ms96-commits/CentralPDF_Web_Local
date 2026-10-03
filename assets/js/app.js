@@ -26,9 +26,10 @@
           <p id="editorNativeStatus" class="help-text" role="status" aria-live="polite"></p>
           <div class="field"><label for="editorNativeSearch">Buscar no texto original</label><input id="editorNativeSearch" type="search" placeholder="Nome, valor, descrição…" /></div>
           <div id="editorNativeList" class="editor-objects-list" aria-label="Trechos originais"></div>
-          <div id="editorNativeEdit" hidden>
+          <div id="editorNativeEdit" role="region" aria-label="Editar trecho selecionado" hidden>
             <label for="editorNativeValue">Novo conteúdo do trecho</label>
-            <textarea id="editorNativeValue" rows="3" maxlength="10000"></textarea>
+            <textarea id="editorNativeValue" rows="2" maxlength="10000"></textarea>
+            <p id="editorNativeFeedback" class="help-text" role="status" aria-live="polite"></p>
             <div class="editor-native-actions"><button id="editorNativeApply" class="small-button" type="button">Aplicar substituição</button><button id="editorNativeRestore" class="small-button" type="button">Restaurar trecho</button></div>
             <p class="help-text">O texto anterior é substituído no PDF, sem cobertura. Confira se o novo texto cabe no espaço disponível.</p>
           </div>

@@ -36,6 +36,8 @@
     thumbnailRenderGeneration: 0,
     activeRenderTask: null,
     nativeSelection: null,
+    nativeDraft: null,
+    nativePreviewTimer: null,
     nativeRequest: 0,
     nativeTargetGeneration: 0,
   };
@@ -226,10 +228,52 @@
     $('#editorNativeSearch')?.addEventListener('input',()=>readOriginalText());
     $('#editorNativeApply')?.addEventListener('click',()=>applyNativeEdit(false));
     $('#editorNativeRestore')?.addEventListener('click',()=>applyNativeEdit(true));
+    $('#editorNativeValue')?.addEventListener('input',()=>{
+      clearTimeout(state.nativePreviewTimer);
+      const selection=state.nativeSelection, value=$('#editorNativeValue').value;
+      state.nativeDraft=selection?{...selection,value}:null;
+      state.nativePreviewTimer=setTimeout(()=>previewNativeEdit(selection,value),180);
+    });
+    $('#editorNativeEdit')?.addEventListener('pointerdown',event=>event.stopPropagation());
+    $('#editorNativeEdit')?.addEventListener('click',event=>event.stopPropagation());
+  }
+
+  function nativeFeedback(message,error=false) {
+    const status=$('#editorNativeFeedback');
+    if(status){status.textContent=message;status.classList.toggle('error',error);}
+    if(error && $('#editorNativeStatus')) $('#editorNativeStatus').textContent=message;
+  }
+
+  function positionNativeEditor() {
+    const editor=$('#editorNativeEdit'),stage=$('#editorStage');
+    if(!editor || editor.hidden || !stage)return;
+    const target=Array.from($('#editorNativeLayer')?.children || []).find(item=>item.dataset.runId===state.nativeSelection?.runId);
+    if(!target)return;
+    if(editor.parentElement!==stage)stage.appendChild(editor);
+    const width=Math.min(320,stage.clientWidth-12);
+    editor.style.width=`${width}px`;
+    const x=parseFloat(target.style.left),y=parseFloat(target.style.top),h=parseFloat(target.style.height);
+    editor.style.left=`${clamp(x,6,Math.max(6,stage.clientWidth-width-6))}px`;
+    const below=y+h+8;
+    editor.style.top=`${clamp(below+editor.offsetHeight<=stage.clientHeight?below:y-editor.offsetHeight-8,6,Math.max(6,stage.clientHeight-editor.offsetHeight-6))}px`;
+  }
+
+  async function previewNativeEdit(selection,value) {
+    const model=currentPage();
+    if(!selection || selection!==state.nativeSelection || selection.pageId!==model?.id)return;
+    try {
+      const analysis=await nativeAnalysis(model),run=analysis.runs.find(item=>item.id===selection.runId);
+      if(selection!==state.nativeSelection || value!==$('#editorNativeValue').value)return;
+      window.PDFNativeText.replacement(analysis,run,value);
+      nativeFeedback('Prévia atualizada. Clique em Aplicar substituição para confirmar.');
+      await renderCurrentPage({preserveNative:true,draft:{...selection,value}});
+    } catch(error) {if(selection===state.nativeSelection)nativeFeedback(error.message,true);}
   }
 
   function clearNativePanel() {
     state.nativeRequest++;
+    clearTimeout(state.nativePreviewTimer);
+    state.nativeDraft=null;
     state.nativeSelection=null;
     if($('#editorNativeList')) $('#editorNativeList').innerHTML='';
     if($('#editorNativeEdit')) $('#editorNativeEdit').hidden=true;
@@ -270,6 +314,7 @@
         button.setAttribute('aria-pressed',String(state.nativeSelection?.runId===run.id));
         button.addEventListener('click',event=>{event.stopPropagation();selectNativeRun(model,run.id);});layer.appendChild(button);
       }
+      positionNativeEditor();
       setEditorStatus(analysis.runs.length?'Clique em um trecho destacado para editar seu texto original.':'Nenhum texto editável nesta página. Em digitalizações, OCR cria texto pesquisável, mas não altera as letras da imagem.');
     } catch(error) {if(generation===state.nativeTargetGeneration)setEditorStatus(error.message,'error');}
   }
@@ -278,9 +323,12 @@
     const model=currentPage(); const request=++state.nativeRequest;
     const list=$('#editorNativeList'), status=$('#editorNativeStatus');
     if(!list || !status) return;
+    const hadDraft=Boolean(state.nativeDraft);
+    clearTimeout(state.nativePreviewTimer);state.nativeDraft=null;
     list.innerHTML=''; $('#editorNativeEdit').hidden=true;
     state.nativeSelection=null; status.textContent='Analisando texto e fontes da página…';
     try {
+      if(hadDraft)await renderCurrentPage({preserveNative:true});
       const analysis=await nativeAnalysis(model);
       if(request!==state.nativeRequest || currentPage()!==model) return;
       const query=($('#editorNativeSearch')?.value || '').toLocaleLowerCase('pt-BR');
@@ -291,13 +339,18 @@
         const value=model.nativeEdits?.[run.id] ?? run.text;
         button.textContent=value || '(Trecho removido)';button.title=value;button.setAttribute('aria-pressed','false');
         button.addEventListener('click',()=>{
+          const discardPreview=Boolean(state.nativeDraft);
           state.nativeSelection={pageId:model.id,runId:run.id};
           $('#editorNativeLayer')?.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item.dataset.runId===run.id)));
           list.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+          clearTimeout(state.nativePreviewTimer);state.nativeDraft=null;
           $('#editorNativeValue').value=model.nativeEdits?.[run.id] ?? run.text;
+          nativeFeedback('A prévia acompanha a digitação. Aplique para confirmar.');
           $('#editorNativeEdit').hidden=false;
-          $('#editorNativeEdit').scrollIntoView({block:'nearest'});
+          positionNativeEditor();
+          $('#editorNativeEdit').scrollIntoView({block:'nearest',inline:'nearest'});
           $('#editorNativeValue').focus();
+          if(discardPreview)renderCurrentPage({preserveNative:true});
         });list.appendChild(button);
         if(run.id===selectedId) button.click();
       }
@@ -307,6 +360,7 @@
   async function applyNativeEdit(restore) {
     const model=currentPage(), selection=state.nativeSelection;
     if(!selection || selection.pageId!==model?.id) return;
+    clearTimeout(state.nativePreviewTimer);
     const value=$('#editorNativeValue').value;
     try {
       const analysis=await nativeAnalysis(model);
@@ -314,22 +368,34 @@
       const run=analysis.runs.find(item=>item.id===selection.runId);
       const text=restore?run.text:value;
       window.PDFNativeText.replacement(analysis,run,text); // Validate before creating history or edits.
-      if(text===(model.nativeEdits?.[run.id] ?? run.text)) return;
+      if(text===(model.nativeEdits?.[run.id] ?? run.text)) {
+        state.nativeDraft=null;$('#editorNativeValue').value=text;
+        await renderCurrentPage({preserveNative:true});
+        nativeFeedback(restore?'Trecho original restaurado.':'Este conteúdo já está aplicado.');return;
+      }
       checkpoint();model.nativeEdits ||= {};
       if(text===run.text) delete model.nativeEdits[run.id]; else model.nativeEdits[run.id]=text;
-      await renderCurrentPage();
-      await readOriginalText(run.id);
+      state.nativeDraft=null;
+      if(restore)$('#editorNativeValue').value=run.text;
+      await renderCurrentPage({preserveNative:true});
+      const list=$('#editorNativeList');
+      list?.querySelectorAll('button').forEach(button=>{
+        if(button.getAttribute('aria-pressed')==='true')button.textContent=text || '(Trecho removido)';
+      });
+      nativeFeedback(restore?'Trecho original restaurado.':'Substituição aplicada. Salve o PDF editado.');
       updateHistoryButtons();renderThumbnails();
       setEditorStatus('Texto original substituído. Confira a prévia e salve o PDF editado.', 'success');
-    } catch(error) {$('#editorNativeStatus').textContent=error.message;}
+    } catch(error) {nativeFeedback(error.message,true);}
   }
 
-  async function nativePreview(model) {
-    if(!Object.keys(model.nativeEdits || {}).length) return null;
+  async function nativePreview(model,draft=null) {
+    const edits={...model.nativeEdits};
+    if(draft?.pageId===model.id)edits[draft.runId]=draft.value;
+    if(!Object.keys(edits).length) return null;
     const source=state.sources.get(model.sourceId), analysis=await nativeAnalysis(model);
     const doc=await window.PDFLib.PDFDocument.create();
     const [page]=await doc.copyPages(source.pdfLibDoc,[model.sourceIndex]);doc.addPage(page);
-    window.PDFNativeText.apply(page,analysis,model.nativeEdits,window.PDFLib);
+    window.PDFNativeText.apply(page,analysis,edits,window.PDFLib);
     const task=window.pdfjsLib.getDocument({data:await doc.save()});
     try {return {task,page:await (await task.promise).getPage(1)};}
     catch(error) {await task.destroy();throw error;}
@@ -643,11 +709,11 @@
     updatePageControls();
   }
 
-  async function renderCurrentPage() {
+  async function renderCurrentPage(options={}) {
     const generation = ++state.currentRenderGeneration;
     cancelActivePageRender();
     const page = currentPage();
-    clearNativePanel();
+    if(!options.preserveNative)clearNativePanel();
     state.nativeTargetGeneration++;
     if($('#editorNativeLayer')){$('#editorNativeLayer').innerHTML='';$('#editorNativeLayer').hidden=true;}
     if (!page) { renderEmpty(); return; }
@@ -661,8 +727,8 @@
     const renderRotation = getPageRenderRotation(page);
     if (page.kind === 'pdf') {
       const source = state.sources.get(page.sourceId);
-      try {editedPreview=await nativePreview(page);}
-      catch(error) {setEditorStatus(`Não foi possível atualizar a prévia: ${error.message}`, 'error');return;}
+      try {editedPreview=await nativePreview(page,options.draft);}
+      catch(error) {setEditorStatus(`Não foi possível atualizar a prévia: ${error.message}`, 'error');if(options.draft)throw error;return;}
       renderedPage = editedPreview?.page || await source.rendered.getPage(page.sourceIndex + 1);
       if (generation !== state.currentRenderGeneration) {await editedPreview?.task.destroy();return;}
       const baseViewport = renderedPage.getViewport({ scale: 1, rotation: renderRotation });
@@ -728,7 +794,7 @@
     $('#editorPageIndicator').textContent = `${state.activeIndex + 1} / ${state.pages.length}`;
     $('#editorCurrentPageInfo').textContent = `Página ${state.activeIndex + 1} • ${Math.round(displayWidth)} × ${Math.round(displayHeight)} pt • ${pageOrientation({ width: displayWidth, height: displayHeight })}${page.crop ? ' • recortada' : ''}`;
     updatePageControls();
-    renderNativeTargets();
+    await renderNativeTargets();
   }
 
   function updateEditorPointerRouting() {
