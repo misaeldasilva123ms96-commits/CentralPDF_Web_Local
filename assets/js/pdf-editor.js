@@ -263,9 +263,10 @@
       const prepared=window.PDFNativeText.plan(analysis,run,value,window.PDFLib);
       await renderCurrentPage({preserveNative:true,draft:{...selection,value}});
       if(state.nativeSelection!==selection || $('#editorNativeValue').value!==value)return;
-      $('#editorNativeFeedback').textContent=prepared.fallback?'Prévia com Helvetica: a fonte original não aceita os novos caracteres. Aplique para confirmar.':'Prévia atualizada. Aplique a substituição para confirmar.';
+      const message=prepared.fallback?'Prévia com Helvetica: a fonte original não aceita os novos caracteres. Aplique para confirmar.':'Prévia atualizada. Aplique a substituição para confirmar.';
+      $('#editorNativeFeedback').textContent=message;$('#editorNativeStatus').textContent=message;
     } catch(error) {
-      if(state.nativeSelection===selection)$('#editorNativeFeedback').textContent=error.message;
+      if(state.nativeSelection===selection){$('#editorNativeFeedback').textContent=error.message;$('#editorNativeStatus').textContent=error.message;}
     }
   }
 
