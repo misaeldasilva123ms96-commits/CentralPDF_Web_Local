@@ -36,6 +36,8 @@
     thumbnailRenderGeneration: 0,
     activeRenderTask: null,
     nativeSelection: null,
+    nativeDraft: null,
+    nativePreviewTimer: null,
     nativeRequest: 0,
     nativeTargetGeneration: 0,
   };
@@ -229,12 +231,42 @@
       popover.dataset.bound='true';
       $('#editorNativeApply').addEventListener('click',()=>applyNativeEdit(false));
       $('#editorNativeRestore').addEventListener('click',()=>applyNativeEdit(true));
-      $('#editorNativeClose').addEventListener('click',()=>{popover.hidden=true;});
-      $('#editorNativeValue').addEventListener('input',()=>{$('#editorNativeFeedback').textContent='Alteração ainda não aplicada.';});
+      $('#editorNativeClose').addEventListener('click',closeNativeEditor);
+      $('#editorNativeValue').addEventListener('input',()=>{
+        clearTimeout(state.nativePreviewTimer);
+        const selection=state.nativeSelection,value=$('#editorNativeValue').value;
+        state.nativeDraft=selection?{...selection,value}:null;
+        $('#editorNativeFeedback').textContent='Preparando prévia. Alteração ainda não aplicada.';
+        state.nativePreviewTimer=setTimeout(()=>previewNativeEdit(selection,value),180);
+      });
       popover.addEventListener('keydown',event=>{
-        if(event.key==='Escape'){event.preventDefault();event.stopPropagation();popover.hidden=true;}
+        if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeNativeEditor();}
         if(event.key==='Enter' && (event.ctrlKey||event.metaKey)){event.preventDefault();event.stopPropagation();applyNativeEdit(false);}
       });
+    }
+  }
+
+  function closeNativeEditor() {
+    clearTimeout(state.nativePreviewTimer);
+    const hadDraft=Boolean(state.nativeDraft);
+    state.nativeDraft=null;state.nativeSelection=null;
+    $('#editorNativeEdit').hidden=true;
+    if(hadDraft)renderCurrentPage({preserveNative:true});
+  }
+
+  async function previewNativeEdit(selection,value) {
+    const model=currentPage();
+    if(!selection || state.nativeSelection!==selection || selection.pageId!==model?.id)return;
+    try {
+      const analysis=await nativeAnalysis(model),run=analysis.runs.find(item=>item.id===selection.runId);
+      if(state.nativeSelection!==selection || $('#editorNativeValue').value!==value)return;
+      const prepared=window.PDFNativeText.plan(analysis,run,value,window.PDFLib);
+      await renderCurrentPage({preserveNative:true,draft:{...selection,value}});
+      if(state.nativeSelection!==selection || $('#editorNativeValue').value!==value)return;
+      const message=prepared.fallback?'Prévia com Helvetica: a fonte original não aceita os novos caracteres. Aplique para confirmar.':'Prévia atualizada. Aplique a substituição para confirmar.';
+      $('#editorNativeFeedback').textContent=message;$('#editorNativeStatus').textContent=message;
+    } catch(error) {
+      if(state.nativeSelection===selection){$('#editorNativeFeedback').textContent=error.message;$('#editorNativeStatus').textContent=error.message;}
     }
   }
 
@@ -258,6 +290,7 @@
 
   function clearNativePanel() {
     state.nativeRequest++;
+    clearTimeout(state.nativePreviewTimer);state.nativeDraft=null;
     state.nativeSelection=null;
     if($('#editorNativeList')) $('#editorNativeList').innerHTML='';
     if($('#editorNativeEdit')) $('#editorNativeEdit').hidden=true;
@@ -306,9 +339,12 @@
     const model=currentPage(); const request=++state.nativeRequest;
     const list=$('#editorNativeList'), status=$('#editorNativeStatus');
     if(!list || !status) return;
+    const hadDraft=Boolean(state.nativeDraft);
+    clearTimeout(state.nativePreviewTimer);state.nativeDraft=null;
     list.innerHTML=''; $('#editorNativeEdit').hidden=true;
     state.nativeSelection=null; status.textContent='Analisando texto e fontes da página…';
     try {
+      if(hadDraft)await renderCurrentPage({preserveNative:true});
       const analysis=await nativeAnalysis(model);
       if(request!==state.nativeRequest || currentPage()!==model) return;
       const query=($('#editorNativeSearch')?.value || '').toLocaleLowerCase('pt-BR');
@@ -319,6 +355,10 @@
         const value=model.nativeEdits?.[run.id] ?? run.text;
         button.textContent=value || '(Trecho removido)';button.title=value;button.setAttribute('aria-pressed','false');
         const choose=async()=>{
+          const hadDraft=Boolean(state.nativeDraft);
+          clearTimeout(state.nativePreviewTimer);state.nativeDraft=null;
+          if(hadDraft)await renderCurrentPage({preserveNative:true});
+          if(currentPage()!==model || request!==state.nativeRequest)return;
           $('#editorNativeLayer')?.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item.dataset.runId===run.id)));
           list.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
           await openNativeEditor(model,run);
@@ -333,6 +373,7 @@
     if(state.nativeApplying)return;
     const model=currentPage(), selection=state.nativeSelection;
     if(!selection || selection.pageId!==model?.id) return;
+    clearTimeout(state.nativePreviewTimer);
     const value=$('#editorNativeValue').value;
     state.nativeApplying=true;
     $('#editorNativeApply').disabled=true;$('#editorNativeRestore').disabled=true;
@@ -342,7 +383,10 @@
       const run=analysis.runs.find(item=>item.id===selection.runId);
       const text=restore?run.text:value;
       const prepared=window.PDFNativeText.plan(analysis,run,text,window.PDFLib); // Validate before creating history or edits.
-      if(text===(model.nativeEdits?.[run.id] ?? run.text)) return;
+      if(text===(model.nativeEdits?.[run.id] ?? run.text)) {
+        state.nativeDraft=null;
+        await renderCurrentPage();await readOriginalText(run.id);return;
+      }
       checkpoint();model.nativeEdits ||= {};
       if(text===run.text) delete model.nativeEdits[run.id]; else model.nativeEdits[run.id]=text;
       await renderCurrentPage();
@@ -354,12 +398,14 @@
     finally {state.nativeApplying=false;$('#editorNativeApply').disabled=false;$('#editorNativeRestore').disabled=false;}
   }
 
-  async function nativePreview(model) {
-    if(!Object.keys(model.nativeEdits || {}).length) return null;
+  async function nativePreview(model,draft=null) {
+    const edits={...model.nativeEdits};
+    if(draft?.pageId===model.id)edits[draft.runId]=draft.value;
+    if(!Object.keys(edits).length) return null;
     const source=state.sources.get(model.sourceId), analysis=await nativeAnalysis(model);
     const doc=await window.PDFLib.PDFDocument.create();
     const [page]=await doc.copyPages(source.pdfLibDoc,[model.sourceIndex]);doc.addPage(page);
-    window.PDFNativeText.apply(page,analysis,model.nativeEdits,window.PDFLib);
+    window.PDFNativeText.apply(page,analysis,edits,window.PDFLib);
     const task=window.pdfjsLib.getDocument({data:await doc.save()});
     try {return {task,page:await (await task.promise).getPage(1)};}
     catch(error) {await task.destroy();throw error;}
@@ -674,11 +720,11 @@
     updatePageControls();
   }
 
-  async function renderCurrentPage() {
+  async function renderCurrentPage(options={}) {
     const generation = ++state.currentRenderGeneration;
     cancelActivePageRender();
     const page = currentPage();
-    clearNativePanel();
+    if(!options.preserveNative)clearNativePanel();
     state.nativeTargetGeneration++;
     if($('#editorNativeLayer')){$('#editorNativeLayer').innerHTML='';$('#editorNativeLayer').hidden=true;}
     if (!page) { renderEmpty(); return; }
@@ -692,8 +738,8 @@
     const renderRotation = getPageRenderRotation(page);
     if (page.kind === 'pdf') {
       const source = state.sources.get(page.sourceId);
-      try {editedPreview=await nativePreview(page);}
-      catch(error) {setEditorStatus(`Não foi possível atualizar a prévia: ${error.message}`, 'error');return;}
+      try {editedPreview=await nativePreview(page,options.draft);}
+      catch(error) {setEditorStatus(`Não foi possível atualizar a prévia: ${error.message}`, 'error');if(options.draft)throw error;return;}
       renderedPage = editedPreview?.page || await source.rendered.getPage(page.sourceIndex + 1);
       if (generation !== state.currentRenderGeneration) {await editedPreview?.task.destroy();return;}
       const baseViewport = renderedPage.getViewport({ scale: 1, rotation: renderRotation });
@@ -759,7 +805,7 @@
     $('#editorPageIndicator').textContent = `${state.activeIndex + 1} / ${state.pages.length}`;
     $('#editorCurrentPageInfo').textContent = `Página ${state.activeIndex + 1} • ${Math.round(displayWidth)} × ${Math.round(displayHeight)} pt • ${pageOrientation({ width: displayWidth, height: displayHeight })}${page.crop ? ' • recortada' : ''}`;
     updatePageControls();
-    renderNativeTargets();
+    await renderNativeTargets();
   }
 
   function updateEditorPointerRouting() {

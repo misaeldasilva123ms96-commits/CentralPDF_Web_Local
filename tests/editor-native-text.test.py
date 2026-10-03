@@ -80,6 +80,20 @@ try:
         selected=page.locator('#editorNativeLayer button').first.bounding_box()
         assert abs(popover['y']-selected['y']) < 3, (popover,selected)
         assert page.locator('#editorStage #editorNativeValue').count()==1
+        before_preview=page.locator('#editorBaseCanvas').evaluate('(canvas)=>canvas.toDataURL()')
+        page.locator('#editorNativeValue').fill('Prévia durante digitação')
+        page.wait_for_function("document.querySelector('#editorNativeFeedback').textContent.startsWith('Prévia atualizada')")
+        assert page.locator('#editorBaseCanvas').evaluate('(canvas)=>canvas.toDataURL()')!=before_preview
+        assert not page.evaluate('Object.keys(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).length')
+        assert page.locator('#editorNativeValue').evaluate('(input)=>document.activeElement===input')
+        page.locator('#editorNativeValue').press('Escape')
+        page.wait_for_function("document.querySelector('#editorBaseCanvas').toDataURL() === " + repr(before_preview))
+        page.locator('#editorNativeList button').first.click()
+        page.locator('#editorNativeValue').fill('Prévia descartável')
+        page.wait_for_function("document.querySelector('#editorNativeFeedback').textContent.startsWith('Prévia atualizada')")
+        page.locator('#editorNativeList button').nth(1).click()
+        page.wait_for_function("document.querySelector('#editorBaseCanvas').toDataURL() === " + repr(before_preview))
+        page.locator('#editorNativeList button').first.click()
         page.locator('#editorNativeValue').fill('Documento revisado')
         page.locator('#editorNativeApply').click()
         page.wait_for_function("Object.values(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).includes('Documento revisado')")
@@ -130,10 +144,14 @@ try:
         page.locator('#editorNativeApply').click()
         page.wait_for_function("document.querySelector('#editorNativeStatus').textContent.includes('não contém')")
         assert 'não contém' in page.locator('#editorNativeFeedback').inner_text()
+        page.locator('#editorNativeValue').fill('Cópia alterada')
+        page.wait_for_function("document.querySelector('#editorNativeFeedback').textContent.startsWith('Prévia atualizada')")
+        assert page.locator('#editorNativeStatus').inner_text()==page.locator('#editorNativeFeedback').inner_text()
         assert any(x['text']=='Cópia alterada' for x in exported()[1])
         page.locator('#editorNativeRestore').click()
         page.wait_for_function("Object.keys(PDFVisualEditor.exportProjectState().pages[1].nativeEdits || {}).length===0")
         assert any(x['text']=='Documento original' for x in exported()[1])
+        assert 'não contém' not in page.locator('#editorNativeStatus').inner_text()
         page.locator('#editorStampPreset').select_option('REVISADO')
         page.locator('#editorAddStamp').click()
         assert any(x['text']=='REVISADO' for x in exported()[1])
@@ -256,6 +274,8 @@ try:
         page.wait_for_selector('#editorNativeLayer button')
         page.locator('#editorNativeLayer button').first.click()
         page.locator('#editorNativeValue').fill('ybyf ação')
+        page.wait_for_function("document.querySelector('#editorNativeFeedback').textContent.startsWith('Prévia com Helvetica')")
+        assert any(x['text']=='AAA' for x in exported()[0])
         page.locator('#editorNativeValue').press('Control+Enter')
         page.wait_for_function("document.querySelector('#editorNativeFeedback').textContent.includes('substituído com Helvetica')")
         result=exported()
@@ -269,6 +289,12 @@ try:
         for width, height in [(1440,1000),(390,844)]:
             page.set_viewport_size({'width':width,'height':height})
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+        # The floating controls live in the persistent stage, independently of
+        # settingsContent regeneration when users leave and return to the tool.
+        for _ in range(3):
+            page.evaluate("CentralPDFApp.selectTool('merge'); CentralPDFApp.selectTool('editPdf')")
+            for element_id in ['editorNativeEdit','editorNativeValue','editorNativeApply','editorNativeRestore']:
+                assert page.locator('#'+element_id).count()==1, element_id
         assert not errors, errors
         browser.close()
         print('editor-native-text: real replacement, position, undo/redo, independent duplicates, encoding rejection and restoration passed')

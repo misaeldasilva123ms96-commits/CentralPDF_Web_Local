@@ -2,7 +2,7 @@
 
 1. Abra um PDF em **Editar PDF** e escolha **Avançado**.
 2. Clique em **Texto original** na barra. A página destaca os trechos editáveis: clique diretamente no texto para abrir o campo sobre o trecho selecionado. O painel também lista os trechos; use a busca para localizar um nome, valor ou descrição.
-3. Escolha um trecho, altere o conteúdo e clique em **Aplicar substituição** (ou Ctrl+Enter). Os avisos aparecem junto ao campo. Esc ou × fecha o campo para conferir a página. Confira se o texto cabe no espaço disponível.
+3. Escolha um trecho, altere o conteúdo e clique em **Aplicar substituição** (ou Ctrl+Enter). A página mostra uma prévia enquanto você digita, usando a mesma política de fontes do arquivo exportado. A prévia só é confirmada ao aplicar; fechar o campo ou escolher outro trecho descarta a digitação não aplicada. Os avisos aparecem junto ao campo. Esc ou × fecha o campo para conferir a página. Confira se o texto cabe no espaço disponível.
 4. Use **Restaurar trecho**, **Desfazer** ou **Refazer** quando necessário. Finalize em **Salvar PDF editado**.
 
 **Original e resultado** mostra a página de origem ao lado da página processada pelo mesmo exportador de Salvar, incluindo textos adicionados, imagens, recorte e rotação. A lista abaixo destaca as substituições de texto original. No celular, as duas páginas ficam uma abaixo da outra. A conferência não altera o histórico nem baixa arquivos. Textos maiores não são reorganizados automaticamente: confira possíveis sobreposições.
