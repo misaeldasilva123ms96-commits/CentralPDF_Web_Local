@@ -369,6 +369,15 @@
     } catch(error) {if(request===state.nativeRequest) status.textContent=error.message;}
   }
 
+  async function finishNativeEdit(model,runId,restore) {
+    if(currentPage()!==model)return;
+    await readOriginalText(restore?runId:null);
+    if(restore || currentPage()!==model)return;
+    const target=Array.from($('#editorNativeLayer')?.querySelectorAll('button') || [])
+      .find(button=>button.dataset.runId===runId);
+    (target || $('#editorNativeList button') || $('#editorReadOriginal'))?.focus({preventScroll:true});
+  }
+
   async function applyNativeEdit(restore) {
     if(state.nativeApplying)return;
     const model=currentPage(), selection=state.nativeSelection;
@@ -385,12 +394,12 @@
       const prepared=window.PDFNativeText.plan(analysis,run,text,window.PDFLib); // Validate before creating history or edits.
       if(text===(model.nativeEdits?.[run.id] ?? run.text)) {
         state.nativeDraft=null;
-        await renderCurrentPage();await readOriginalText(restore?run.id:null);return;
+        await renderCurrentPage();await finishNativeEdit(model,run.id,restore);return;
       }
       checkpoint();model.nativeEdits ||= {};
       if(text===run.text) delete model.nativeEdits[run.id]; else model.nativeEdits[run.id]=text;
       await renderCurrentPage();
-      await readOriginalText(restore?run.id:null);
+      await finishNativeEdit(model,run.id,restore);
       updateHistoryButtons();renderThumbnails();
       const message=prepared.fallback?'Texto substituído com Helvetica porque a fonte original não permite os novos caracteres. Confira a aparência e salve.':'Texto original substituído. Confira a prévia e salve o PDF editado.';
       $('#editorNativeFeedback').textContent=message;setEditorStatus(message, 'success');

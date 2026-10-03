@@ -98,6 +98,7 @@ try:
         page.locator('#editorNativeApply').click()
         page.wait_for_function("Object.values(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).includes('Documento revisado')")
         page.wait_for_function("document.querySelector('#editorNativeEdit').hidden === true")
+        page.wait_for_function("document.activeElement === document.querySelector('#editorNativeLayer button')")
         page.locator('#editorNativeLayer button').nth(1).click()
         page.wait_for_selector('#editorNativeEdit:not([hidden])')
         assert page.locator('#editorNativeValue').input_value()=='Vizinho preservado'
@@ -286,12 +287,14 @@ try:
         page.locator('#editorNativeValue').press('Control+Enter')
         page.wait_for_function("document.querySelector('#editorNativeFeedback').textContent.includes('substituído com Helvetica')")
         assert page.locator('#editorNativeEdit').is_hidden()
-        page.locator('#editorNativeList button').first.click()
+        page.wait_for_function("document.activeElement === document.querySelector('#editorNativeLayer button')")
+        page.keyboard.press('Enter')
         page.wait_for_selector('#editorNativeEdit:not([hidden])')
-        # Applying unchanged text must close the editor too.
-        page.locator('#editorNativeApply').click()
+        # Applying unchanged text must close the editor and return keyboard focus too.
+        page.locator('#editorNativeValue').press('Control+Enter')
         page.wait_for_function("document.querySelector('#editorNativeEdit').hidden === true")
-        page.locator('#editorNativeList button').first.click()
+        page.wait_for_function("document.activeElement === document.querySelector('#editorNativeLayer button')")
+        page.keyboard.press('Enter')
         page.wait_for_selector('#editorNativeEdit:not([hidden])')
         result=exported()
         assert any(x['text']=='ybyf ação' for x in result[0]),result
