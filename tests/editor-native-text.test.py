@@ -75,6 +75,11 @@ try:
         assert abs(target['x']-stage['x']-30*1.45)<3
         assert page.locator('#editorNativeLayer button').count()==2
         page.locator('#editorNativeLayer button').first.click()
+        page.wait_for_selector('#editorNativeEdit:not([hidden])')
+        popover=page.locator('#editorNativeEdit').bounding_box()
+        selected=page.locator('#editorNativeLayer button').first.bounding_box()
+        assert abs(popover['y']-selected['y']) < 3, (popover,selected)
+        assert page.locator('#editorStage #editorNativeValue').count()==1
         page.locator('#editorNativeValue').fill('Documento revisado')
         page.locator('#editorNativeApply').click()
         page.wait_for_function("Object.values(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).includes('Documento revisado')")
@@ -124,6 +129,7 @@ try:
         page.locator('#editorNativeValue').fill('Texto 漢')
         page.locator('#editorNativeApply').click()
         page.wait_for_function("document.querySelector('#editorNativeStatus').textContent.includes('não contém')")
+        assert 'não contém' in page.locator('#editorNativeFeedback').inner_text()
         assert any(x['text']=='Cópia alterada' for x in exported()[1])
         page.locator('#editorNativeRestore').click()
         page.wait_for_function("Object.keys(PDFVisualEditor.exportProjectState().pages[1].nativeEdits || {}).length===0")
@@ -230,6 +236,36 @@ try:
             await f.task.destroy();if(!rejected)throw Error('Stale ActualText must be rejected');
           }
         }''')
+        # An embedded/custom font map may only expose the glyphs already present.
+        # New Latin characters must still replace the source text with a declared
+        # fallback font, preserving the following operator and page independence.
+        page.evaluate('''async () => {
+          const {PDFDocument,PDFName,StandardFonts}=PDFLib;
+          const doc=await PDFDocument.create(),p=doc.addPage([420,595]);
+          const font=await doc.embedFont(StandardFonts.Helvetica);await font.embed();
+          const dict=doc.context.lookup(font.ref);
+          dict.set(PDFName.of('FirstChar'),doc.context.obj(65));dict.set(PDFName.of('LastChar'),doc.context.obj(65));
+          dict.set(PDFName.of('Widths'),doc.context.obj([667]));
+          dict.set(PDFName.of('ToUnicode'),doc.context.register(doc.context.flateStream('begincmap 1 begincodespacerange <00> <FF> endcodespacerange 1 beginbfchar <41> <0041> endbfchar endcmap')));
+          p.node.set(PDFName.of('Resources'),doc.context.obj({Font:{F1:font.ref}}));
+          p.node.set(PDFName.of('Contents'),doc.context.register(doc.context.flateStream('BT /F1 14 Tf 1 0 0 1 30 540 Tm [(AAA) -5000] TJ (A) Tj ET')));
+          await CentralPDFApp.openFilesInTool([new File([await doc.save()], 'fonte-limitada.pdf',{type:'application/pdf'})],'editPdf');
+        }''')
+        page.locator('[data-editor-mode="advanced"]').click()
+        page.locator('#editorOriginalText').click()
+        page.wait_for_selector('#editorNativeLayer button')
+        page.locator('#editorNativeLayer button').first.click()
+        page.locator('#editorNativeValue').fill('ybyf ação')
+        page.locator('#editorNativeValue').press('Control+Enter')
+        page.wait_for_function("document.querySelector('#editorNativeFeedback').textContent.includes('substituído com Helvetica')")
+        result=exported()
+        assert any(x['text']=='ybyf ação' for x in result[0]),result
+        assert not any(x['text']=='AAA' for x in result[0]),result
+        neighbor=next(x for x in result[0] if x['text']=='A')
+        assert abs(neighbor['transform'][4]-128.014)<.01 and neighbor['transform'][5]==540,neighbor
+        page.locator('#editorNativeRestore').click()
+        page.wait_for_function("Object.keys(PDFVisualEditor.exportProjectState().pages[0].nativeEdits || {}).length===0")
+        assert any(x['text']=='AAA' for x in exported()[0])
         for width, height in [(1440,1000),(390,844)]:
             page.set_viewport_size({'width':width,'height':height})
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')

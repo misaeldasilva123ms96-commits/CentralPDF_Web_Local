@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.17" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.18" />
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
@@ -416,6 +416,13 @@
                   <canvas id="editorBaseCanvas"></canvas>
                   <div id="editorObjectLayer" class="editor-object-layer"></div>
                   <div id="editorNativeLayer" class="editor-native-layer" aria-label="Textos originais editáveis" hidden></div>
+                  <div id="editorNativeEdit" class="editor-native-popover" role="group" aria-label="Editar trecho selecionado" hidden>
+                    <div class="editor-native-heading"><label for="editorNativeValue">Editar texto selecionado</label><button id="editorNativeClose" class="small-button" type="button" aria-label="Fechar edição do trecho">×</button></div>
+                    <textarea id="editorNativeValue" rows="2" maxlength="10000" spellcheck="false"></textarea>
+                    <p id="editorNativeFeedback" role="status" aria-live="polite"></p>
+                    <div class="editor-native-actions"><button id="editorNativeApply" class="small-button" type="button">Aplicar substituição</button><button id="editorNativeRestore" class="small-button" type="button">Restaurar trecho</button></div>
+                    <small>Ctrl+Enter aplica. Esc fecha. Se faltar um caractere na fonte original, será usada Helvetica.</small>
+                  </div>
                   <canvas id="editorInteractionCanvas" class="editor-interaction-canvas"></canvas>
                   <div id="editorCropBadge" class="editor-crop-badge hidden"></div>
                 </div>
