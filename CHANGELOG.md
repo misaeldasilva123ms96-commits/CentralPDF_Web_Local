@@ -1,5 +1,11 @@
 ## 2.0.1 — workspace renovado e entrega verificável
 
+### Editor PDF — fechamento após aplicar
+
+- Fecha o campo automaticamente após uma substituição bem-sucedida, inclusive quando o conteúdo já está aplicado.
+- Mantém o campo aberto quando a substituição falha, exibindo o aviso para correção.
+- Renova o cache do aplicativo.
+
 ### Editor PDF — prévia durante a edição de texto original
 
 - Atualiza a página durante a digitação, mantendo o foco no campo sobre o trecho selecionado.
