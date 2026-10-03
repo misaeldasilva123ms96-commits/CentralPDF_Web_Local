@@ -1,7 +1,7 @@
 /* Native text replacements: rewrite text operators, never paint over original text. */
 (() => {
   'use strict';
-  const fail = message => { throw new Error(message); };
+  const fail = (message,code) => { const error=new Error(message);error.code=code;throw error; };
   const identity=()=>[1,0,0,1,0,0];
   const multiply=(a,b)=>[a[0]*b[0]+a[2]*b[1],a[1]*b[0]+a[3]*b[1],a[0]*b[2]+a[2]*b[3],a[1]*b[2]+a[3]*b[3],a[0]*b[4]+a[2]*b[5]+a[4],a[1]*b[4]+a[3]*b[5]+a[5]];
   const point=(m,x,y)=>[m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5]];
@@ -186,21 +186,21 @@
     for(const font of fonts.values()) {try {extendFontMap(font.dict,font,lib);}catch(_){/* Keep the verified glyphs if an optional font map cannot be read. */}}
     return {content,fonts,runs};
   }
-  function replacement(analysis,run,text) {
+  function replacement(analysis,run,text,substitute=null) {
     if(/[\r\n]/.test(text)) fail('Edite um trecho por vez, sem quebras de linha.');
     if(text.length>10000) fail('O trecho ultrapassa o limite de 10.000 caracteres.');
-    const font=analysis.fonts.get(run.fontName); let next=[];
+    const originalFont=analysis.fonts.get(run.fontName),font=substitute || originalFont; let next=[];
     if(font.standard) {
       try {next=Array.from(font.standard.encodeText(text).asBytes()).map((code,i)=>({code,width:font.standard.widthOfTextAtSize(Array.from(text)[i],1000)}));}
-      catch (_) {fail('A fonte original não contém um dos caracteres digitados. Use Adicionar texto com outra fonte.');}
+      catch (_) {fail('A fonte não contém um dos caracteres digitados. Tente outro caractere.', 'missingGlyph');}
     } else {
       // Prefer longest Unicode mapping (ligatures may map to several characters).
       const keys=[...font.map.keys()].sort((a,b)=>b.length-a.length);
-      for(let i=0;i<text.length;) {const key=keys.find(k=>text.startsWith(k,i));if(!key) fail(`A fonte incorporada não contém o caractere “${Array.from(text.slice(i))[0]}”. Use Adicionar texto com outra fonte.`);next.push(font.map.get(key));i+=key.length;}
+      for(let i=0;i<text.length;) {const key=keys.find(k=>text.startsWith(k,i));if(!key) fail(`O mapa da fonte original não contém o caractere “${Array.from(text.slice(i))[0]}”.`, 'missingGlyph');next.push(font.map.get(key));i+=key.length;}
     }
-    const advance=gs=>gs.reduce((sum,g)=>sum+g.width+run.charSpace*1000/run.size+(font.byteWidth===1 && g.code===32?run.wordSpace*1000/run.size:0),0);
+    const advance=(gs,byteWidth)=>gs.reduce((sum,g)=>sum+g.width+run.charSpace*1000/run.size+(byteWidth===1 && g.code===32?run.wordSpace*1000/run.size:0),0);
     const original=run.glyphs.map(g=>({code:g.originalCharCode,width:g.width}));
-    const delta=advance(next)-advance(original)+run.adjustments;
+    const delta=advance(next,font.byteWidth)-advance(original,originalFont.byteWidth)+run.adjustments;
     if(!Number.isFinite(delta)) fail('Métricas de fonte inválidas.');
     const hex=next.map(g=>g.code.toString(16).padStart(font.byteWidth*2,'0')).join('');
     // Retain the original text cursor position for the following operators.
@@ -210,15 +210,33 @@
     if(!next.length) return `${prefix}0 Tc [${adjustment}] TJ ${run.charSpace} Tc`;
     return `${prefix}[<${hex}> ${adjustment}] TJ`;
   }
+  function plan(analysis,run,text,lib) {
+    try {return {operator:replacement(analysis,run,text),fallback:false};}
+    catch(error) {
+      if(error.code!=='missingGlyph')throw error;
+      const font={byteWidth:1,standard:lib.StandardFontEmbedder.for(lib.StandardFonts.Helvetica)};
+      return {operator:replacement(analysis,run,text,font),fallback:true};
+    }
+  }
   function apply(page,analysis,edits,lib) {
     const content=[...analysis.content];
+    let fallbackName;
     for(const run of [...analysis.runs].reverse()) {
       if(!Object.prototype.hasOwnProperty.call(edits,run.id)) continue;
       const src=content[run.streamIndex];
-      content[run.streamIndex]=src.slice(0,run.start)+replacement(analysis,run,edits[run.id])+src.slice(run.end);
+      const prepared=plan(analysis,run,edits[run.id],lib);
+      let operator=prepared.operator;
+      if(prepared.fallback) {
+        if(!fallbackName) {
+          const font=page.doc.embedStandardFont(lib.StandardFonts.Helvetica);
+          fallbackName=page.node.newFontDictionary('CPReplacement',font.ref).toString();
+        }
+        operator=`${fallbackName} ${run.size} Tf ${operator} ${lib.PDFName.of(run.fontName)} ${run.size} Tf`;
+      }
+      content[run.streamIndex]=src.slice(0,run.start)+operator+src.slice(run.end);
     }
     // New streams prevent changes leaking into duplicated pages with shared Contents refs.
     page.node.set(lib.PDFName.of('Contents'),page.doc.context.obj(content.map(text=>page.doc.context.register(page.doc.context.flateStream(Uint8Array.from(text,c=>c.charCodeAt(0)))))));
   }
-  window.PDFNativeText={inspect,replacement,apply};
+  window.PDFNativeText={inspect,replacement,plan,apply};
 })();

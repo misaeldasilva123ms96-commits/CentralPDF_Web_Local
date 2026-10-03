@@ -528,9 +528,10 @@ body[data-pdf-editor-mode="simple"] [data-editor-tool="cover"] { display: none !
 #editorCompareChanges del { background: #fee2e2; color: #7f1d1d; }
 @media (max-width: 650px) { .editor-compare-grid { grid-template-columns: 1fr; } #editorCompareDialog { padding: 12px; } }
 
-/* Keep the original-text editor anchored to its selected PDF text. */
-#editorStage > #editorNativeEdit { position: absolute; z-index: 30; box-sizing: border-box; padding: 10px; border: 2px solid #edb426; border-radius: 10px; background: var(--panel, #151e2d); color: var(--text, #e8edf7); box-shadow: 0 6px 24px #0005; pointer-events: auto; }
-#editorStage > #editorNativeEdit[hidden] { display: none; }
-#editorNativeEdit textarea { min-height: 56px; max-height: 100px; resize: vertical; }
-#editorNativeFeedback { margin: 4px 0 8px; }
-#editorNativeFeedback.error { color: #f06b65; }
+.editor-native-popover { position: absolute; z-index: 25; box-sizing: border-box; padding: 10px; border: 2px solid #8575ff; border-radius: 10px; background: #fff; color: #172033; box-shadow: 0 8px 28px #0004; text-align: left; }
+.editor-native-popover[hidden] { display: none; }
+.editor-native-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 700; font-size: 12px; }
+.editor-native-popover textarea { display: block; box-sizing: border-box; width: 100%; min-height: 56px; margin-top: 6px; padding: 6px; resize: vertical; background: #fff; color: #172033; border: 1px solid #8793aa; border-radius: 6px; }
+#editorNativeFeedback { margin: 6px 0; font-size: 12px; overflow-wrap: anywhere; }
+.editor-native-popover small { display: block; margin-top: 8px; font-size: 11px; }
+.editor-native-popover .small-button { background: #f1f0ff; color: #302781; border-color: #b7afff; }

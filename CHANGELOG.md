@@ -1,5 +1,12 @@
 ## 2.0.1 — workspace renovado e entrega verificável
 
+### Editor PDF — prévia durante a edição de texto original
+
+- Atualiza a página durante a digitação, mantendo o foco no campo sobre o trecho selecionado.
+- Usa na prévia a mesma fonte alternativa da substituição confirmada quando a fonte original não aceita os novos caracteres.
+- Descarta a prévia não confirmada ao fechar o campo ou escolher outro trecho; preserva aplicação, restauração e histórico.
+- Renova o cache do aplicativo para entregar a alteração.
+
 ### Interface e experiência
 
 - Redesenha a página inicial e o shell compartilhado, com navegação responsiva, busca, categorias, favoritos, indicadores de disponibilidade e privacidade local.
