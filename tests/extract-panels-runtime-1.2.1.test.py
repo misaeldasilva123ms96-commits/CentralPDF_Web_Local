@@ -30,6 +30,6 @@ assert "assets/js/app.js?v=2.0.1-ui10" in index
 assert "./assets/js/forms-signatures-0.18.js?v=0.18.1" in service_worker
 assert "./assets/js/app.js?v=2.0.1-ui10" in service_worker
 assert "./assets/css/product-redesign-2.0.css?v=2.0.18" in service_worker
-assert "centralpdf-v2.0.1-pages-28" in service_worker
+assert "centralpdf-v2.0.1-pages-29" in service_worker
 
 print("extract-panels-runtime-2.0.1: passed")
