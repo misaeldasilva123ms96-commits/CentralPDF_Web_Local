@@ -1378,8 +1378,9 @@
     for(const file of valid){
       const dataUrl=await imageFileToPngDataUrl(file); const dimensions=await imageDimensions(dataUrl);
       if (!sessionIsActive() || !state.pages.includes(page)) return;
-      const maxW=Math.min(page.width*.55,dimensions.width); const ratio=dimensions.height/dimensions.width;
-      const width=Math.max(40,maxW), height=Math.max(30,width*ratio);
+      // Start at a compact signature size; resize handles remain unrestricted.
+      const scale=Math.min(1,180/dimensions.width,90/dimensions.height,page.width*.3/dimensions.width,page.height*.15/dimensions.height);
+      const width=dimensions.width*scale, height=dimensions.height*scale;
       const object={id:nextObjectId(),type:'image',x:(page.width-width)/2,y:(page.height-height)/2,width,height,rotation:0,lockAspect:true,aspectRatio:dimensions.width/Math.max(1,dimensions.height),dataUrl,mime:'image/png'};
       clampObjectInsidePage(object,page); page.objects.push(object); state.selectedObjectId=object.id;
     }
