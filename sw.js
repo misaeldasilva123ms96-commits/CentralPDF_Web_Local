@@ -1,6 +1,6 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v2.0.1-pages-30';
+const CACHE_VERSION = 'centralpdf-v2.0.1-pages-31';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
@@ -20,10 +20,10 @@ const CORE_ASSETS = [
   './assets/css/split-interactive.css?v=2.0.1-split1',
   './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=2.0.1-ingest1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
-  './assets/js/pdf-native-text.js', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js', './assets/js/ux-enhancements.js?v=2.0.1-ui2',
-  './assets/js/ocr-0.16.js', './assets/js/compare-0.17.js', './assets/js/redaction-0.17.js',
-  './assets/js/forms-signatures-0.18.js?v=0.18.1', './assets/js/conversions-0.19.js',
-  './assets/js/intelligence-0.20.js', './assets/js/app.js?v=2.0.1-ui10', './assets/js/tool-quality-1.2.0.js?v=1.2.3',
+  './assets/js/pdf-native-text.js?v=2.0.1-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js', './assets/js/ux-enhancements.js?v=2.0.1-ui2',
+  './assets/js/ocr-0.16.js?v=2.0.1-names1', './assets/js/compare-0.17.js?v=2.0.1-names1', './assets/js/redaction-0.17.js?v=2.0.1-names1',
+  './assets/js/forms-signatures-0.18.js?v=0.18.2', './assets/js/conversions-0.19.js?v=2.0.1-names1',
+  './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/app.js?v=2.0.1-ui11', './assets/js/tool-quality-1.2.0.js?v=1.2.3',
   './assets/js/layout-controls.js?v=2.0.1-ui1', './assets/js/foundation.js', './assets/js/experience-0.15.js',
   './assets/js/stable-1.0.js', './assets/js/header-settings-1.0.3.js?v=2.0.1-ui1',
   './assets/js/product-redesign-2.0.js?v=2.0.9',
@@ -36,13 +36,27 @@ self.addEventListener('install', event => event.waitUntil(
   caches.open(CORE_CACHE).then(cache => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
 ));
 
-self.addEventListener('activate', event => event.waitUntil(
-  caches.keys()
-    .then(keys => Promise.all(keys
-      .filter(key => key.startsWith('centralpdf-') && ![CORE_CACHE, RUNTIME_CACHE].includes(key))
-      .map(key => caches.delete(key))))
-    .then(() => self.clients.claim())
-));
+self.addEventListener('activate', event => event.waitUntil((async () => {
+  const runtime = await caches.open(RUNTIME_CACHE);
+  const obsolete = (await caches.keys()).filter(key =>
+    key.startsWith('centralpdf-') && ![CORE_CACHE, RUNTIME_CACHE].includes(key));
+  for (const key of obsolete) {
+    if (key.endsWith('-runtime')) {
+      const old = await caches.open(key);
+      for (const request of await old.keys()) {
+        // Versioned external engines prepared for PDF/OCR remain valid across
+        // app releases. Never migrate stale same-origin application scripts.
+        if (new URL(request.url).origin === self.location.origin) continue;
+        if (await runtime.match(request)) continue;
+        const response = await old.match(request);
+        if (response) await runtime.put(request, response);
+      }
+    }
+    // Delete only after copying succeeds, including opaque CDN responses.
+    await caches.delete(key);
+  }
+  await self.clients.claim();
+})()));
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
@@ -57,15 +71,26 @@ self.addEventListener('fetch', event => {
   if (url.origin === self.location.origin) {
     const networkFirst = request.mode === 'navigate'
       || url.pathname.endsWith('/index.html')
-      || url.pathname.endsWith('/assets/js/pdf-editor.js');
+      || url.pathname.endsWith('/assets/js/pdf-editor.js')
+      || (url.pathname.includes('/assets/js/') && url.pathname.endsWith('.js'));
 
     if (networkFirst) {
-      event.respondWith(fetch(request, { cache: 'no-store' }).then(response => {
-        if (response && response.ok) {
-          caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
+      event.respondWith((async () => {
+        const runtime = await caches.open(RUNTIME_CACHE);
+        let response;
+        try {
+          response = await fetch(request, { cache: 'no-store' });
+          if (response && response.ok) {
+            await runtime.put(request, response.clone());
+            return response;
+          }
+        } catch (_) {
+          // Network failures use the same fallback as HTTP 404/5xx responses.
         }
-        return response;
-      }).catch(() => caches.match(request)));
+        // Prefer the latest fetched script over its install-time core copy.
+        const cached = (await runtime.match(request)) || (await caches.match(request));
+        return cached || response || Response.error();
+      })());
       return;
     }
 
