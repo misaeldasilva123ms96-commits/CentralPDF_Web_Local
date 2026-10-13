@@ -11,11 +11,11 @@ A substituição reescreve os operadores de texto da página. Mantém a fonte qu
 
 ## Compatibilidade
 
-- Textos horizontais em operadores `Tj`, `TJ`, `'` e `"`, com fontes simples ou CID `Identity-H`, após conferir os códigos dos caracteres com o PDF.js.
+- Textos horizontais em operadores `Tj`, `TJ`, `'` e `"`, com fontes simples ou CID `Identity-H` ou CMaps incorporadas horizontais de identidade completas de um ou dois bytes, após conferir os códigos dos caracteres com o PDF.js.
 - Fontes padrão com codificação reconhecida permitem os caracteres de sua codificação. Fontes incorporadas permitem os caracteres identificados na página e aqueles declarados no mapa Unicode da fonte com larguras explícitas compatíveis. Quando o mapa original não permite os novos caracteres, somente o trecho substituído usa Helvetica; o editor informa a mudança. Caracteres também ausentes em Helvetica continuam rejeitados antes da alteração. A fonte e a posição dos textos seguintes são preservadas.
 - A edição funciona por trecho, sem recomposição automática de parágrafos. Um PDF pode dividir uma frase em vários trechos.
 - Conteúdo marcado (`BDC`/`EMC`) com dicionários de metadados, como identificadores de acessibilidade, é aceito. Páginas com `ActualText` ainda são recusadas com uma mensagem específica, pois esse texto alternativo também precisaria ser atualizado.
-- Digitalizações não permitem editar as letras da imagem por esta ferramenta; OCR pode criar uma camada pesquisável, mas não transforma automaticamente essas letras em texto visual editável. Form XObjects com texto, fontes verticais/Type3, imagens inline, máscaras de texto e determinadas estruturas ou codificações são recusadas explicitamente. PDFs abertos no modo de compatibilidade raster não permitem esta operação.
+- Digitalizações não permitem editar as letras da imagem por esta ferramenta; OCR pode criar uma camada pesquisável, mas não transforma automaticamente essas letras em texto visual editável. Textos dentro de Form XObjects ficam preservados e não são selecionáveis; os textos da página continuam editáveis. Fontes verticais/Type3, imagens inline, máscaras de texto e determinadas estruturas ou codificações são recusadas explicitamente. PDFs abertos no modo de compatibilidade raster não permitem esta operação.
 - Esta é uma ferramenta de edição, não de sanitização confidencial: metadados, anotações, campos e outros conteúdos do documento não são removidos por ela.
 
 O Avançado também oferece carimbos **Conferido**, **Revisado**, **Rascunho** e **Aprovado** como objetos de texto ajustáveis. Eles podem ser movidos, girados, duplicados e formatados nos controles existentes.

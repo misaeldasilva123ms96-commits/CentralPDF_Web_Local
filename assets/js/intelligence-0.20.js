@@ -62,7 +62,7 @@
     return compact.split(/(?<=[.!?;:])\s+|\n+/).map(normalize).filter(item => item.length >= 24);
   }
   function baseName(name) {
-    return String(name || 'documento').replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}._-]+/gu, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').slice(0, 90) || 'documento';
+    return String(name || 'documento').replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').slice(0, 90) || 'documento';
   }
   function formatBytes(bytes) {
     if (!bytes) return '0 B';
@@ -263,7 +263,7 @@
     const firstDate=patterns.dates[0]||'';const iso=dateIsoFromBr(firstDate);const dateToken=iso||new Date().toISOString().slice(0,10);
     const tokens={tipo:classification.type.toUpperCase(),cnpj:(patterns.cnpjs[0]||'SEM_CNPJ').replace(/\D/g,''),data:dateToken,numero:patterns.invoiceNumbers[0]||patterns.contractCodes[0]||'SEM_NUMERO',original:baseName(document.fileName)};
     let name=(settings.template||'{tipo}_{data}_{numero}').replace(/\{(tipo|cnpj|data|numero|original)\}/g,(_,key)=>tokens[key]);
-    name=name.replace(/[^\p{L}\p{N}._-]+/gu,'_').replace(/_+/g,'_').replace(/^_|_$/g,'').slice(0,settings.maxLength||100)||baseName(document.fileName);
+    name=name.replace(/[\\/:*?"<>|\u0000-\u001f]+/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'').slice(0,settings.maxLength||100)||baseName(document.fileName);
     return `${name}.pdf`;
   }
 

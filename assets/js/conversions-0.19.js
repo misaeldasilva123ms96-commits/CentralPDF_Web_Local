@@ -15,12 +15,12 @@
   function escapeXml(value) {
     return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
   }
-  function baseName(name) { return String(name || 'arquivo').replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}._-]+/gu, '_'); }
+  function baseName(name) { return String(name || 'arquivo').replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_'); }
   function ext(name) { return (String(name).split('.').pop() || '').toLowerCase(); }
   function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
   function formatBytes(bytes) { if (!bytes) return '0 B'; const u=['B','KB','MB','GB']; const i=Math.min(Math.floor(Math.log(bytes)/Math.log(1024)),u.length-1); return `${(bytes/1024**i).toFixed(i?1:0)} ${u[i]}`; }
   function safeSheetName(name, index) { const raw=(name||`Planilha ${index+1}`).replace(/[\\/?*\[\]:]/g,' ').trim()||`Planilha ${index+1}`; return raw.slice(0,31); }
-  function normalizeOutputName(name, fallback) { return (String(name||fallback).trim().replace(/\.[^.]+$/,'').replace(/[^\p{L}\p{N}._-]+/gu,'_')||fallback); }
+  function normalizeOutputName(name, fallback) { return (String(name||fallback).trim().replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|\u0000-\u001f]+/g,'_')||fallback); }
 
   function parsePages(text, count) {
     const raw=String(text||'all').trim().toLowerCase();

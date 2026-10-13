@@ -4024,7 +4024,7 @@
     window.dispatchEvent(new CustomEvent('centralpdf-result', { detail: resultDetail }));
     if (url) setTimeout(() => URL.revokeObjectURL(url), 2500);
   }
-  function baseName(name) { return name.replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}._-]+/gu, '_'); }
+  function baseName(name) { return name.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_'); }
   function formatBytes(bytes) { if (!bytes) return '0 B'; const units = ['B', 'KB', 'MB', 'GB']; const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1); return `${(bytes / 1024 ** index).toFixed(index ? 1 : 0)} ${units[index]}`; }
   function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char])); }
   function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }

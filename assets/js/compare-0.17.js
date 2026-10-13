@@ -54,6 +54,6 @@
     const summary={version:'1.0',createdAt:new Date().toISOString(),original:files[0].name,revised:files[1].name,settings:s,pages:rows};zip.file('relatorio.html',reportHtml(files[0].name,files[1].name,rows));zip.file('relatorio.json',JSON.stringify(summary,null,2));zip.file('LEIA-ME.txt','Abra relatorio.html para visualizar a comparação. O relatório é local e não envia os documentos.');
     const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},m=>progress?.(92+Math.round(m.percent*.08)));state.last=summary;for(const d of docs)await d.destroy();return{outputs:[{blob,filename:`${base(files[0].name)}_versus_${base(files[1].name)}_comparacao.zip`}],message:`Comparação concluída: ${rows.filter(r=>r.changed).length} de ${rows.length} página(s) com diferenças.`};
   }
-  function base(n){return n.replace(/\.[^.]+$/,'').replace(/[^\p{L}\p{N}._-]+/gu,'_').slice(0,70)}
+  function base(n){return n.replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|\u0000-\u001f]+/g,'_').slice(0,70)}
   window.CentralPDFCompare={mount,updatePlan,process,getLast:()=>state.last};
 })();

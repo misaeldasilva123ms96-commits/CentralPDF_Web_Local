@@ -63,7 +63,7 @@ try:
           const doc = await PDFLib.PDFDocument.create();
           const first=doc.addPage([420, 595]); first.drawText('Documento original', {x: 30, y: 540, size: 18}); first.drawText('Vizinho preservado', {x: 30, y: 490, size: 14});
           doc.addPage([420, 595]);
-          await CentralPDFApp.openFilesInTool([new File([await doc.save()], 'modos.pdf', {type: 'application/pdf'})], 'editPdf');
+          await CentralPDFApp.openFilesInTool([new File([await doc.save()], 'NF 36  medição.pdf', {type: 'application/pdf'})], 'editPdf');
         }''')
         page.locator('[data-editor-mode="advanced"]').click()
         page.locator('#editorOriginalText').click()
@@ -117,6 +117,10 @@ try:
         page.keyboard.press('Escape')
         assert not page.locator('#editorCompareDialog').is_visible()
         page.set_viewport_size({'width':1440,'height':1000})
+        with page.expect_download() as download_info:
+            page.locator('#processButton').click()
+        assert download_info.value.suggested_filename == 'NF 36  medição_editado.pdf'
+        page.locator('#continueEditingButton').click()
         def exported():
             return page.evaluate('''async () => {
               const {bytes}=await PDFVisualEditor.exportPdf();
@@ -234,6 +238,26 @@ try:
           const cot=pdfjsLib.getDocument({data:await cdoc.save()}),cor=await cot.promise;
           if((await (await cor.getPage(1)).getTextContent()).items.map(x=>x.str).join('')!=='C')throw Error('CID glyph replacement failed');
           await ct.destroy();await cot.destroy();
+          // PDFTron-style one-byte CID CMap, with a separate Form watermark.
+          const encoding=cid.context.register(cid.context.flateStream('/WMode 0 def 1 begincodespacerange <00> <FF> endcodespacerange 1 begincidrange <00> <ff> 0 endcidrange'));
+          cid.context.lookup(cf).set(PDFName.of('Encoding'),encoding);
+          cid.context.lookup(cf).set(PDFName.of('ToUnicode'),cid.context.register(cid.context.flateStream('1 beginbfrange <01> <03> <0041> endbfrange')));
+          const form=cid.context.register(cid.context.flateStream('BT /F1 10 Tf 1 0 0 1 20 20 Tm <02> Tj ET',{Type:'XObject',Subtype:'Form',BBox:[0,0,100,100],Resources:{Font:{F1:cf}}}));
+          cp.node.set(PDFName.of('Resources'),cid.context.obj({Font:{F1:cf},XObject:{Mark:form}}));
+          cp.node.set(PDFName.of('Contents'),cid.context.register(cid.context.flateStream('/Mark Do BT /F1 14 Tf 1 0 0 1 30 700 Tm <01> Tj <02> Tj ET /Mark Do')));
+          const oneBytes=await cid.save(),oneDoc=await PDFDocument.load(oneBytes);
+          const oneTask=pdfjsLib.getDocument({data:oneBytes.slice()}),onePdf=await oneTask.promise;
+          const oneAnalysis=await PDFNativeText.inspect(oneDoc.getPage(0),await onePdf.getPage(1),PDFLib,pdfjsLib);
+          if(oneAnalysis.runs.length!==2 || oneAnalysis.runs[0].text!=='A')throw Error('Form glyphs mixed with page text');
+          if(PDFNativeText.plan(oneAnalysis,oneAnalysis.runs[0],'C',PDFLib).fallback)throw Error('Declared CID width ignored');
+          PDFNativeText.apply(oneDoc.getPage(0),oneAnalysis,{[oneAnalysis.runs[0].id]:'C'},PDFLib);
+          const oneOutTask=pdfjsLib.getDocument({data:await oneDoc.save()}),oneOut=await oneOutTask.promise;
+          const oneItems=(await (await oneOut.getPage(1)).getTextContent()).items.filter(i=>i.str.trim());
+          if(oneItems.map(i=>i.str).join('')!=='BCBB')throw Error('CID edit or Form preservation failed: '+JSON.stringify(oneItems));
+          const beforeItems=(await (await onePdf.getPage(1)).getTextContent()).items.filter(i=>i.str.trim());
+          if(oneItems[2].transform[4]!==beforeItems[2].transform[4])throw Error('Neighbor moved');
+          await oneTask.destroy();await oneOutTask.destroy();
+
         }''')
         page.evaluate('''async () => {
           const {PDFDocument,PDFName,StandardFonts}=PDFLib;

@@ -187,7 +187,7 @@
 
   function isPdf(file) { return file?.type === 'application/pdf' || /\.pdf$/i.test(file?.name || ''); }
   function isImage(file) { return file?.type?.startsWith('image/') || /\.(png|jpe?g|webp|bmp)$/i.test(file?.name || ''); }
-  function fileBase(name) { return String(name || 'documento').replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}._-]+/gu, '_'); }
+  function fileBase(name) { return String(name || 'documento').replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_'); }
 
   function selectedIndexes(scope, text, count) {
     if (scope === 'all') return Array.from({ length: count }, (_, index) => index);

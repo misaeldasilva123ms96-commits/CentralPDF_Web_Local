@@ -7,7 +7,7 @@
   const waitFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const safeName = value => String(value || 'campo').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '') || 'campo';
-  const baseName = value => String(value || 'documento').replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}._-]+/gu, '_');
+  const baseName = value => String(value || 'documento').replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_');
 
   function parsePages(expression, total) {
     const value = String(expression || '').trim().toLowerCase();

@@ -6,13 +6,32 @@
   const multiply=(a,b)=>[a[0]*b[0]+a[2]*b[1],a[1]*b[0]+a[3]*b[1],a[0]*b[2]+a[2]*b[3],a[1]*b[2]+a[3]*b[3],a[0]*b[4]+a[2]*b[5]+a[4],a[1]*b[4]+a[3]*b[5]+a[5]];
   const point=(m,x,y)=>[m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5]];
 
+  // Accept only complete, fixed-width horizontal identity CMaps. Other embedded
+  // mappings remain unsupported rather than guessing character codes or widths.
+  function cidByteWidth(dict,lib) {
+    const encoding=dict.lookup(lib.PDFName.of('Encoding'));
+    if(encoding?.toString()==='/Identity-H')return 2;
+    if(!(encoding instanceof lib.PDFRawStream))return null;
+    const bytes=lib.decodePDFRawStream(encoding).decode();
+    if(bytes.length>65536)return null;
+    let source=String.fromCharCode(...bytes).replace(/%[^\r\n]*/g,'');
+    if(/\busecmap\b|begincidchar|beginnotdef|\/UseCMap/.test(source) || encoding.dict.has(lib.PDFName.of('UseCMap')))return null;
+    if(/\/WMode\s+(?!0\b)/.test(source) || encoding.dict.lookupMaybe(lib.PDFName.of('WMode'),lib.PDFNumber)?.asNumber())return null;
+    const spaces=[...source.matchAll(/begincodespacerange\s*<([\da-f]+)>\s*<([\da-f]+)>\s*endcodespacerange/gi)];
+    const ranges=[...source.matchAll(/begincidrange\s*<([\da-f]+)>\s*<([\da-f]+)>\s+0\s*endcidrange/gi)];
+    if(spaces.length!==1 || ranges.length!==1 || (source.match(/begincodespacerange/g)||[]).length!==1 || (source.match(/begincidrange/g)||[]).length!==1)return null;
+    const [,first,last]=spaces[0], [,rangeFirst,rangeLast]=ranges[0];
+    if(!['00','0000'].includes(first) || last.toLowerCase()!=='f'.repeat(first.length) || rangeFirst!==first || rangeLast.toLowerCase()!==last.toLowerCase())return null;
+    return first.length/2;
+  }
+
   function extendFontMap(dict,font,lib) {
     const cmap=dict.lookupMaybe(lib.PDFName.of('ToUnicode'),lib.PDFRawStream);
     if(!cmap) return;
     const data=lib.decodePDFRawStream(cmap).decode();if(data.length>2*1024*1024)return;
     let source='';for(let i=0;i<data.length;i+=8192)source+=String.fromCharCode(...data.subarray(i,i+8192));
     const widths=new Map();
-    if(font.byteWidth===1) {
+    if(!font.composite) {
       const first=dict.lookupMaybe(lib.PDFName.of('FirstChar'),lib.PDFNumber)?.asNumber();
       const values=dict.lookupMaybe(lib.PDFName.of('Widths'),lib.PDFArray);
       if(Number.isInteger(first)&&values)for(let i=0;i<values.size();i++)widths.set(first+i,values.lookup(i,lib.PDFNumber).asNumber());
@@ -118,7 +137,14 @@
   async function inspect(page, renderedPage, lib, pdfjs) {
     const content=streams(page,lib); const fonts=new Map(); const runs=[];
     const operatorList=await renderedPage.getOperatorList();
-    const shows=operatorList.fnArray.flatMap((op,i)=>op===pdfjs.OPS.showText ? [operatorList.argsArray[i][0]] : []);
+    // Form XObjects have their own resources and streams. Leave them untouched
+    // and exclude their glyphs so page operators stay aligned with PDF.js.
+    const shows=[];let formDepth=0;
+    operatorList.fnArray.forEach((op,i)=>{
+      if(op===pdfjs.OPS.paintFormXObjectBegin)formDepth++;
+      else if(op===pdfjs.OPS.paintFormXObjectEnd)formDepth--;
+      else if(op===pdfjs.OPS.showText && !formDepth)shows.push(operatorList.argsArray[i][0]);
+    });
     let fontName=null,size=0,charSpace=0,wordSpace=0,leading=0,hScale=1,rise=0,ctm=identity(),tm=identity(),line=identity(); const stack=[];
     const moveLine=(x,y)=>{line=multiply(line,[1,0,0,1,x,y]);tm=[...line];};
     content.forEach((text,streamIndex)=>{
@@ -157,13 +183,13 @@
         if(!dict) fail('Fonte original não encontrada.');
         const subtype=dict.get(lib.PDFName.of('Subtype'))?.toString();
         const encoding=dict.get(lib.PDFName.of('Encoding'))?.toString();
-        if(subtype==='/Type3' || (subtype==='/Type0' && encoding!=='/Identity-H')) fail('A codificação desta fonte ainda não permite edição original.');
-        const byteWidth=subtype==='/Type0'?2:1;
+        const byteWidth=subtype==='/Type0'?cidByteWidth(dict,lib):1;
+        if(subtype==='/Type3' || !byteWidth) fail('A codificação desta fonte ainda não permite edição original.');
         const glyphs=(shows[runs.length] || []).filter(g=>typeof g==='object' && g);
         const raw=a.filter(t=>t.bytes).flatMap(t=>t.bytes);
         const codes=[]; for(let i=0;i<raw.length;i+=byteWidth) codes.push(byteWidth===2 ? raw[i]*256+raw[i+1] : raw[i]);
         if(codes.length!==glyphs.length || codes.some((code,i)=>code!==glyphs[i].originalCharCode)) fail('O texto desta página está em uma estrutura composta ainda não editável.');
-        if(!fonts.has(fontName)) fonts.set(fontName,{map:new Map(),byteWidth});
+        if(!fonts.has(fontName)) fonts.set(fontName,{map:new Map(),byteWidth,composite:subtype==='/Type0'});
         const font=fonts.get(fontName);
         glyphs.forEach(g=>{if(g.unicode && Number.isFinite(g.width)) font.map.set(g.unicode,{code:g.originalCharCode,width:g.width});});
         const base=dict.get(lib.PDFName.of('BaseFont'))?.toString().slice(1);
