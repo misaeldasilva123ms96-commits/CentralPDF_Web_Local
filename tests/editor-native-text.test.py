@@ -337,6 +337,24 @@ try:
             page.evaluate("CentralPDFApp.selectTool('merge'); CentralPDFApp.selectTool('editPdf')")
             for element_id in ['editorNativeEdit','editorNativeValue','editorNativeApply','editorNativeRestore']:
                 assert page.locator('#'+element_id).count()==1, element_id
+        # Reproduce the custom output-name field shown in the reported merge UI.
+        page.set_viewport_size({'width':1440,'height':1000})
+        page.evaluate("""async () => {
+          const doc=await PDFLib.PDFDocument.create();doc.addPage();
+          const bytes=await doc.save();
+          await CentralPDFApp.openFilesInTool([
+            new File([bytes],'Primeiro documento.pdf',{type:'application/pdf'}),
+            new File([bytes],'Segundo documento.pdf',{type:'application/pdf'})
+          ],'merge');
+        }""")
+        page.locator('#outputFileName').fill('E-mail de comprovação')
+        with page.expect_download() as merged_download:
+            page.locator('#processButton').click()
+        assert merged_download.value.suggested_filename == 'E-mail de comprovação.pdf'
+        saved_path=merged_download.value.path()
+        with open(saved_path,'rb') as merged_file:
+            merged_bytes=list(merged_file.read())
+        assert page.evaluate("async bytes => (await PDFLib.PDFDocument.load(new Uint8Array(bytes))).getPageCount()",merged_bytes)==2
         assert not errors, errors
         browser.close()
         print('editor-native-text: real replacement, position, undo/redo, independent duplicates, encoding rejection and restoration passed')
