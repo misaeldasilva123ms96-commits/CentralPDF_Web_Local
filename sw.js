@@ -36,13 +36,27 @@ self.addEventListener('install', event => event.waitUntil(
   caches.open(CORE_CACHE).then(cache => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
 ));
 
-self.addEventListener('activate', event => event.waitUntil(
-  caches.keys()
-    .then(keys => Promise.all(keys
-      .filter(key => key.startsWith('centralpdf-') && ![CORE_CACHE, RUNTIME_CACHE].includes(key))
-      .map(key => caches.delete(key))))
-    .then(() => self.clients.claim())
-));
+self.addEventListener('activate', event => event.waitUntil((async () => {
+  const runtime = await caches.open(RUNTIME_CACHE);
+  const obsolete = (await caches.keys()).filter(key =>
+    key.startsWith('centralpdf-') && ![CORE_CACHE, RUNTIME_CACHE].includes(key));
+  for (const key of obsolete) {
+    if (key.endsWith('-runtime')) {
+      const old = await caches.open(key);
+      for (const request of await old.keys()) {
+        // Versioned external engines prepared for PDF/OCR remain valid across
+        // app releases. Never migrate stale same-origin application scripts.
+        if (new URL(request.url).origin === self.location.origin) continue;
+        if (await runtime.match(request)) continue;
+        const response = await old.match(request);
+        if (response) await runtime.put(request, response);
+      }
+    }
+    // Delete only after copying succeeds, including opaque CDN responses.
+    await caches.delete(key);
+  }
+  await self.clients.claim();
+})()));
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
@@ -63,14 +77,19 @@ self.addEventListener('fetch', event => {
     if (networkFirst) {
       event.respondWith((async () => {
         const runtime = await caches.open(RUNTIME_CACHE);
+        let response;
         try {
-          const response = await fetch(request, { cache: 'no-store' });
-          if (response && response.ok) await runtime.put(request, response.clone());
-          return response;
+          response = await fetch(request, { cache: 'no-store' });
+          if (response && response.ok) {
+            await runtime.put(request, response.clone());
+            return response;
+          }
         } catch (_) {
-          // Prefer the latest fetched script over its install-time core copy.
-          return (await runtime.match(request)) || (await caches.match(request));
+          // Network failures use the same fallback as HTTP 404/5xx responses.
         }
+        // Prefer the latest fetched script over its install-time core copy.
+        const cached = (await runtime.match(request)) || (await caches.match(request));
+        return cached || response || Response.error();
       })());
       return;
     }
