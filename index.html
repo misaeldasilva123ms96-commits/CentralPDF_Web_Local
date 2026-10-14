@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
+  <link rel="stylesheet" href="assets/css/workspace-modernization.css?v=2.0.1-ux1" />
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true">
@@ -124,6 +125,7 @@
         <div><span>3</span><strong>Exporte</strong><small>Baixe uma nova cópia do documento</small></div>
       </section>
 
+        <div class="home-import-entry"><button id="homeImportButton" class="small-button primary-soft" type="button">＋ Abrir arquivos</button><span>Ou arraste documentos para esta página e escolha uma ferramenta.</span><input id="homeImportInput" type="file" accept=".pdf,image/*,.txt,.docx,.pptx,.xlsx" multiple hidden /></div>
       <div class="home-toolbar">
         <div class="category-tabs" role="tablist" aria-label="Categorias">
           <button class="category-tab active" data-category="all" type="button">Todas</button>
@@ -369,6 +371,7 @@
               <button type="button" data-editor-mode="advanced" aria-pressed="false">Avançado</button>
             </div>
             <p id="editorModeDescription">Texto, imagens e anotações com os controles essenciais.</p>
+            <button id="editorShowProperties" class="small-button editor-mobile-control" type="button">Propriedades</button>
             <button id="editorTogglePages" class="small-button" type="button" aria-expanded="true" aria-controls="editorPageSidebar">Ocultar páginas</button>
           </div>
           <div class="pdf-editor-toolbar">
@@ -389,12 +392,14 @@
               <label id="editorStampControl">Carimbo <select id="editorStampPreset" aria-label="Tipo de carimbo"><option value="CONFERIDO">Conferido</option><option value="REVISADO">Revisado</option><option value="RASCUNHO">Rascunho</option><option value="APROVADO">Aprovado</option></select><button id="editorAddStamp" class="editor-action" type="button">＋ Inserir</button></label>
             </div>
           </div>
+          <p class="editor-signature-help">Imagens de assinatura são marcas visuais; não criam assinatura digital com certificado.</p>
           <div class="pdf-editor-subtoolbar">
             <div class="editor-page-actions">
               <button id="editorMovePageUp" class="small-button" type="button">← Página</button>
               <button id="editorMovePageDown" class="small-button" type="button">Página →</button>
               <button id="editorRotatePageLeft" class="small-button" type="button" title="Girar a página 90° para a esquerda">↶ Girar página</button>
               <button id="editorRotatePageRight" class="small-button" type="button" title="Girar a página 90° para a direita">↷ Girar página</button>
+              <button id="editorReplacePage" class="small-button" type="button">Substituir página</button>
               <button id="editorDuplicatePage" class="small-button" type="button">Duplicar página</button>
               <button id="editorDeletePage" class="small-button danger" type="button">Remover página</button>
             </div>
@@ -407,6 +412,7 @@
           <div class="pdf-editor-layout">
             <aside id="editorPageSidebar" class="editor-page-sidebar">
               <div class="editor-page-sidebar-head"><strong>Páginas</strong><span id="editorPageIndicator">0 / 0</span></div>
+              <div class="editor-page-bulk" aria-label="Ações em várias páginas"><button id="editorSelectPages" class="small-button" type="button">Selecionar todas</button><button id="editorRotateSelected" class="small-button" type="button" disabled>Girar selecionadas</button><button id="editorDeleteSelected" class="small-button danger" type="button" disabled>Excluir selecionadas</button><span id="editorSelectionCount" role="status">0 selecionadas</span></div>
               <div id="editorThumbnailList" class="editor-thumbnail-list"><div class="editor-thumb-empty">Nenhuma página</div></div>
             </aside>
             <div class="editor-work-area">
@@ -432,6 +438,15 @@
           </div>
           <input id="editorImageInput" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple hidden />
           <input id="editorPdfInput" type="file" accept="application/pdf,.pdf" multiple hidden />
+          <dialog id="editorReplaceDialog" aria-labelledby="editorReplaceTitle">
+            <div class="import-heading"><h2 id="editorReplaceTitle">Substituir página</h2><button id="editorReplaceClose" class="small-button" type="button">Fechar</button></div>
+            <p>Escolha um PDF, PNG ou JPEG. A prévia não altera o documento até confirmar; Desfazer restaura a página anterior.</p>
+            <div class="field"><label for="editorReplacementInput">Arquivo da página nova</label><input id="editorReplacementInput" type="file" accept="application/pdf,.pdf,image/png,image/jpeg,.png,.jpg,.jpeg" /></div>
+            <div id="editorReplacementPageField" class="field" hidden><label for="editorReplacementPage">Página do PDF de origem</label><input id="editorReplacementPage" type="number" min="1" value="1" /></div>
+            <p id="editorReplacementStatus" role="status" aria-live="polite">Escolha um arquivo para visualizar.</p>
+            <canvas id="editorReplacementPreview" width="0" height="0" aria-label="Prévia da página substituta"></canvas>
+            <div class="editor-replacement-actions"><button id="editorReplacementApply" class="small-button primary-soft" type="button" disabled>Confirmar substituição</button></div>
+          </dialog>
           <dialog id="editorCompareDialog" aria-labelledby="editorCompareTitle">
             <div class="editor-compare-heading"><h2 id="editorCompareTitle">Conferir página</h2><button id="editorCompareClose" class="small-button" type="button">Fechar</button></div>
             <p id="editorCompareStatus" role="status"></p>
@@ -485,7 +500,7 @@
         <div id="settingsContent"></div>
         <div class="action-dock">
           <div class="status-box" id="statusBox" role="status">Adicione um arquivo para continuar.</div>
-          <div class="progress-track hidden" id="progressTrack"><div id="progressBar"></div></div>
+          <div class="progress-track hidden" id="progressTrack" role="progressbar" aria-label="Progresso da operação" aria-valuemin="0" aria-valuemax="100"><div id="progressBar"></div></div><p id="progressCaption" class="help-text hidden" role="status" aria-live="polite"></p><button id="cancelProcessing" class="small-button danger hidden" type="button">Cancelar operação</button>
           <button id="processButton" class="primary-button" type="button" disabled>Salvar PDF organizado</button>
           <p class="version-note">O processamento ocorre no navegador. Os arquivos permanecem no navegador. Motores externos podem exigir internet ao abrir.</p>
         </div>
@@ -585,7 +600,7 @@
   <script src="assets/js/compression-engine.js"></script>
   <script src="assets/js/organizer-planner.js"></script>
   <script src="assets/js/pdf-native-text.js?v=2.0.1-cid1"></script>
-  <script src="assets/js/pdf-editor.js"></script>
+  <script src="assets/js/pdf-editor.js?v=2.0.1-editor1"></script>
   <script src="assets/js/ux-enhancements.js?v=2.0.1-ui2"></script>
   <script src="assets/js/ocr-0.16.js?v=2.0.1-names1"></script>
   <script src="assets/js/compare-0.17.js?v=2.0.1-names1"></script>
@@ -593,13 +608,14 @@
   <script src="assets/js/forms-signatures-0.18.js?v=0.18.2"></script>
   <script src="assets/js/conversions-0.19.js?v=2.0.1-names1"></script>
   <script src="assets/js/intelligence-0.20.js?v=2.0.1-names1"></script>
-  <script src="assets/js/app.js?v=2.0.1-ui11"></script>
+  <script src="assets/js/app.js?v=2.0.1-ui12"></script>
   <script src="assets/js/tool-quality-1.2.0.js?v=1.2.3"></script>
   <script src="assets/js/layout-controls.js?v=2.0.1-ui1"></script>
-  <script src="assets/js/foundation.js"></script>
+  <script src="assets/js/foundation.js?v=2.0.1-ux1"></script>
   <script src="assets/js/experience-0.15.js"></script>
   <script src="assets/js/stable-1.0.js"></script>
   <script src="assets/js/header-settings-1.0.3.js?v=2.0.1-ui1"></script>
   <script src="assets/js/product-redesign-2.0.js?v=2.0.9"></script>
+  <script src="assets/js/workspace-modernization.js?v=2.0.1-ux1"></script>
 </body>
 </html>

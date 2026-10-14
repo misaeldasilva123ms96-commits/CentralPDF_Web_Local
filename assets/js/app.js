@@ -18,7 +18,7 @@
       description: 'Edite visualmente cada página com textos formatados, imagens, pincel, marcador, cobertura de áreas e recorte.',
       accept: 'application/pdf,.pdf', multiple: false, typeLabel: 'PDF', button: 'Salvar PDF editado', outputExt: 'pdf', outputBase: 'PDF_editado',
       settings: `
-        <div class="notice-card"><strong>Edite sua cópia</strong><p>Use o modo Avançado para substituir textos originais compatíveis. As alterações são salvas em uma nova cópia do PDF.</p></div>
+        <button id="editorReturnToPage" class="small-button editor-mobile-control" type="button">Voltar à página</button><div class="notice-card"><strong>Edite sua cópia</strong><p>Use o modo Avançado para substituir textos originais compatíveis. As alterações são salvas em uma nova cópia do PDF.</p></div>
         <details id="editorNativePanel" class="editor-settings-group" open>
           <summary>Editar texto original</summary>
           <p class="help-text">Clique no texto destacado para editar ali mesmo. Se a fonte original não permitir os novos caracteres, o trecho usará Helvetica. Letras que fazem parte de uma imagem não são editáveis aqui.</p>
@@ -581,6 +581,7 @@
     organizerPreviewPdfDocs: new Map(),
     organizerPreviewQueue: [],
     organizerPreviewActive: 0,
+    processing: false,
     taskCompleted: false
   };
   const PDFLIB_INGEST_TOOLS = new Set(['organize', 'editPdf', 'merge', 'split', 'extract', 'rotate', 'watermark', 'pageNumbers', 'compress', 'crop', 'metadata', 'normalize', 'redact', 'formBuilder', 'signPdf', 'archivePdf']);
@@ -625,6 +626,7 @@
   let completionReturnFocus = null;
 
   clearButton.addEventListener('click', clearAll);
+  $('#cancelProcessing')?.addEventListener('click', () => window.CentralPDFFoundation?.cancelActiveTask());
   continueEditingButton.addEventListener('click', continueEditing);
   fileInput.addEventListener('change', event => addFiles([...event.target.files], { source: 'picker' }));
   processButton.addEventListener('click', () => {
@@ -725,6 +727,7 @@
   }
 
   function showExternalDropState() {
+    const help=workspaceDropOverlay?.querySelector('small');if(help)help.textContent=`${toolConfig[state.tool]?.typeLabel || 'Arquivos compatíveis'} · Os arquivos existentes serão mantidos.`;
     workspaceDropOverlay?.classList.remove('hidden');
     toolWorkspace.classList.add('external-file-dragging');
   }
@@ -784,6 +787,7 @@
   }
 
   function selectTool(tool) {
+    if (state.processing) { setStatus('Aguarde a operação terminar ou cancele antes de trocar de ferramenta.', 'warning'); return; }
     if (!toolConfig[tool]) return;
     fileIngestSession += 1;
     state.tool = tool;
@@ -849,6 +853,7 @@
   }
 
   function showHome() {
+    if (state.processing) { setStatus('Aguarde a operação terminar ou cancele para voltar ao início.', 'warning'); return; }
     toolWorkspace.classList.add('hidden');
     homeView.classList.remove('hidden');
     clearAll();
@@ -888,6 +893,7 @@
   }
 
   function clearAll() {
+    if (state.processing) { setStatus('Cancele a operação antes de remover os arquivos.', 'warning'); return; }
     fileIngestSession += 1;
     setCompletionState(false);
     state.files = [];
@@ -1002,6 +1008,7 @@
   }
 
   function addFiles(files, options = {}) {
+    if (state.processing) { setStatus('Aguarde o processamento terminar antes de adicionar arquivos.', 'warning'); return Promise.resolve(); }
     const queuedFiles = Array.from(files || []);
     const queuedTool = state.tool;
     const queuedSession = fileIngestSession;
@@ -1062,6 +1069,10 @@
     if (!valid.length) {
       setStatus(rejected.map(item => `${item.file.name}: ${item.message}`).join(' ') || 'Nenhum arquivo compatível foi selecionado.', 'error');
       notifyFilesChanged('rejected');
+      return;
+    }
+    if (!config.multiple && !['organize','editPdf'].includes(queuedTool) && state.files.length) {
+      setStatus('Esta ferramenta aceita um arquivo por vez. O documento atual foi mantido. Remova-o ou use Nova operação para escolher outro.', 'warning');
       return;
     }
     const prospectiveFiles = config.multiple ? [...state.files, ...valid] : valid;
@@ -2392,7 +2403,7 @@
     if (!sessionIsActive() || !file) return false;
     if (!window.PDFLib) { setStatus('O motor de PDF não carregou. Verifique a conexão com a internet.', 'error'); return false; }
     setStatus('Lendo as páginas do documento...', 'processing');
-    setProgress(8);
+    setProgress(undefined);
     try {
       resetOrganizer();
       const bytes = await file.arrayBuffer();
@@ -2851,6 +2862,15 @@
   }
 
   async function processCurrentTool() {
+    if (state.processing) return { ok: false, error: new Error('Já existe uma operação em andamento.') };
+    state.processing = true;
+    $('#cancelProcessing')?.classList.remove('hidden');
+    $('#pdfEditorSection')?.setAttribute('inert','');$('#organizerSection')?.setAttribute('inert','');fileInput.disabled=true;
+    try { return await executeCurrentTool(); }
+    finally { state.processing = false; $('#cancelProcessing')?.classList.add('hidden');$('#pdfEditorSection')?.removeAttribute('inert');$('#organizerSection')?.removeAttribute('inert');fileInput.disabled=false; }
+  }
+
+  async function executeCurrentTool() {
     setCompletionState(false);
     if (window.CentralPDFEnginesReady) await window.CentralPDFEnginesReady.catch(() => null);
     const professionalTools = new Set(['protect', 'unlock', 'diagnose', 'repairAdvanced', 'flattenForms']);
@@ -2864,7 +2884,7 @@
     }
     processButton.disabled = true;
     setStatus('Processando. Não feche esta janela...', 'processing');
-    setProgress(8);
+    setProgress(undefined);
     try {
       const handlers = getToolHandlers();
       const handler = handlers[state.tool];
@@ -2885,7 +2905,7 @@
       if (state.taskCompleted) processButton.disabled = true;
       else if (state.tool === 'merge') updateMergePreview();
       else processButton.disabled = false;
-      setTimeout(() => setProgress(null), 700);
+      setTimeout(() => { if(!state.processing)setProgress(null); }, 700);
     }
   }
 
@@ -3996,18 +4016,29 @@
 
   function setProgress(value) {
     if (window.CentralPDFFoundation?.isCancellationRequested?.() && value !== null) throw new Error('Operação cancelada pelo usuário.');
+    const caption = $('#progressCaption');
     if (value === null) {
-      progressTrack.classList.add('hidden'); progressBar.style.width = '0%';
-      window.dispatchEvent(new CustomEvent('centralpdf-progress', { detail: 0 }));
+      progressTrack.classList.add('hidden'); progressTrack.classList.remove('indeterminate'); progressBar.style.width = '0%';
+      progressTrack.removeAttribute('aria-valuenow'); caption?.classList.add('hidden');
+      return;
+    }
+    progressTrack.classList.remove('hidden'); caption?.classList.remove('hidden');
+    if (caption) caption.textContent = `${toolConfig[state.tool]?.title || 'Processando'} · ${state.files.length} arquivo(s) · ${statusBox.textContent}`;
+    const measurable = Number.isFinite(value);
+    progressTrack.classList.toggle('indeterminate', !measurable);
+    if (!measurable) {
+      progressTrack.removeAttribute('aria-valuenow'); progressBar.style.width = '35%';
+      window.dispatchEvent(new CustomEvent('centralpdf-progress', { detail: null }));
       return;
     }
     const normalized = clamp(value, 0, 100);
-    progressTrack.classList.remove('hidden'); progressBar.style.width = `${normalized}%`;
+    progressBar.style.width = `${normalized}%`; progressTrack.setAttribute('aria-valuenow', String(normalized));
     window.dispatchEvent(new CustomEvent('centralpdf-progress', { detail: normalized }));
   }
 
   function downloadBytes(bytes, filename, type) { downloadBlob(new Blob([bytes], { type }), filename); }
   function downloadBlob(blob, filename) {
+    if (window.CentralPDFFoundation?.isCancellationRequested?.()) throw new Error('Operação cancelada pelo usuário. Nenhum novo arquivo foi baixado.');
     const held = Boolean(window.CentralPDFExperience?.shouldHoldResult?.());
     let url = '';
     if (!held) {
@@ -4189,7 +4220,11 @@
   }
 
   window.CentralPDFApp = {
-    processCurrentTool, exportProjectState, importProjectState,
+    processCurrentTool, addFiles, exportProjectState, importProjectState,
+    reportProcessingStage: (message, completed, total) => {
+      setStatus(message, 'processing');
+      setProgress(Number.isFinite(completed) && total > 0 ? Math.round(completed / total * 100) : undefined);
+    },
     getActiveTool: () => state.tool,
     getFiles: () => Array.from(state.files),
     getActiveToolTitle: () => toolConfig[state.tool]?.title || state.tool,
