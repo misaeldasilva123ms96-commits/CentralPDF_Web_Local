@@ -135,10 +135,11 @@
     document.addEventListener('click', event => {
       if (event.target.closest('.page-action,.icon-button,.small-button,.remove-button,.file-card-remove,.merge-source-remove')) scheduleRecovery();
     }, true);
-    window.addEventListener('centralpdf-progress', event => updateTaskProgress(Number(event.detail || 0)));
+    window.addEventListener('centralpdf-progress', event => updateTaskProgress(event.detail === null ? null : Number(event.detail || 0)));
     window.addEventListener('centralpdf-status', event => updateTaskMessage(event.detail?.message || ''));
     window.addEventListener('centralpdf-result', event => attachTaskResult(event.detail));
     window.addEventListener('centralpdf-files-changed', scheduleRecovery);
+    window.addEventListener('centralpdf-editor-changed', scheduleRecovery);
   }
 
   function taskTitle() {
@@ -156,7 +157,7 @@
       title: taskTitle(),
       tool: window.CentralPDFApp?.getActiveTool?.() || '',
       status: 'running',
-      progress: 0,
+      progress: null,
       message: 'Preparando tarefa...',
       startedAt: Date.now(),
       finishedAt: null,
@@ -207,7 +208,7 @@
   function isCancellationRequested() { return foundation.cancellationRequested; }
   function updateTaskProgress(progress) {
     if (!foundation.activeTask) return;
-    foundation.activeTask.progress = Math.max(0, Math.min(100, progress));
+    foundation.activeTask.progress = progress === null ? null : Math.max(0, Math.min(100, progress));
     renderQueue();
   }
   function updateTaskMessage(message) {
@@ -241,7 +242,7 @@
     list.innerHTML = `<div class="foundation-list">${foundation.tasks.map(task => {
       const icon = task.status === 'completed' ? '✓' : task.status === 'failed' ? '!' : task.status === 'cancelled' ? '×' : '…';
       const time = task.finishedAt ? `${dateTime(task.startedAt)} · ${Math.max(1, Math.round((task.finishedAt-task.startedAt)/1000))} s` : dateTime(task.startedAt);
-      return `<div class="foundation-list-row foundation-task ${task.status}"><span class="icon">${icon}</span><div><strong>${escapeHtml(task.title)}</strong><small>${escapeHtml(task.message)} · ${escapeHtml(time)}</small>${task.status === 'running' ? `<div class="foundation-progress"><div style="width:${task.progress}%"></div></div>` : ''}${task.result ? `<small>Resultado: ${escapeHtml(task.result.filename)} · ${formatBytes(task.result.size)}</small>` : ''}</div><span class="foundation-status-pill ${task.status === 'completed' ? 'ok' : task.status === 'failed' ? 'error' : task.status === 'running' ? 'warn' : ''}">${task.status === 'running' ? `${Math.round(task.progress)}%` : task.status === 'completed' ? 'Concluída' : task.status === 'failed' ? 'Falhou' : 'Cancelada'}</span></div>`;
+      return `<div class="foundation-list-row foundation-task ${task.status}"><span class="icon">${icon}</span><div><strong>${escapeHtml(task.title)}</strong><small>${escapeHtml(task.message)} · ${escapeHtml(time)}</small>${task.status === 'running' ? `<div class="foundation-progress"><div class="${task.progress === null ? 'indeterminate' : ''}" style="width:${task.progress === null ? 35 : task.progress}%"></div></div>` : ''}${task.result ? `<small>Resultado: ${escapeHtml(task.result.filename)} · ${formatBytes(task.result.size)}</small>` : ''}</div><span class="foundation-status-pill ${task.status === 'completed' ? 'ok' : task.status === 'failed' ? 'error' : task.status === 'running' ? 'warn' : ''}">${task.status === 'running' ? task.progress === null ? 'Em andamento' : `${Math.round(task.progress)}%` : task.status === 'completed' ? 'Concluída' : task.status === 'failed' ? 'Falhou' : 'Cancelada'}</span></div>`;
     }).join('')}</div>`;
   }
 
