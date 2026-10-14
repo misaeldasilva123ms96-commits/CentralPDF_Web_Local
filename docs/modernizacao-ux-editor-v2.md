@@ -66,6 +66,8 @@ find tests -maxdepth 1 -name '*.test.py' -print0 | sort -z | xargs -0 -n1 python
 python tests/static_integrity.py
 find assets/js -maxdepth 1 -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
 node --check sw.js
+node scripts/extract-tool-catalog.mjs
+git diff --exit-code -- docs/architecture/_CATALOGO_RAW.md
 npm --prefix app test -- --reporter=dot
 npm --prefix app run typecheck
 npm --prefix app run build
@@ -73,7 +75,7 @@ sha256sum -c checksums.sha256
 git diff --check
 ```
 
-Resultados finais: **82 suítes legadas/integração passaram**, **240 testes Vitest passaram**, `typecheck`, `build`, validação de sintaxe, integridade do executável e `git diff --check` passaram. O build manteve o aviso existente sobre chunks maiores que 500 kB. As evidências estão também registradas na descrição do PR Draft. A integração nova verifica upload global, formatos, nomes com acentos/espaços, PDF inválido, capas versus exportação completa, documento de 80 páginas, seleção em lote, histórico, arraste/teclado, substituição PDF/imagem, posicionamento real da imagem exportada, cancelamento, bloqueio de duplicação e edição nativa após recarga offline. A suíte existente cobre CID, fontes incorporadas, restrições, orientação, imagens, nomes de downloads, ingestão, recuperação, cache e as demais ferramentas.
+Resultados finais: **82 suítes legadas/integração passaram**, **240 testes Vitest passaram**, `typecheck`, `build`, validação de sintaxe, integridade do executável, sincronização do catálogo gerado de 34 ferramentas e `git diff --check` passaram. O build manteve o aviso existente sobre chunks maiores que 500 kB. As evidências estão também registradas na descrição do PR Draft. A integração nova verifica upload global, formatos, nomes com acentos/espaços, PDF inválido, capas versus exportação completa, documento de 80 páginas, seleção em lote, histórico, arraste/teclado, substituição PDF/imagem, posicionamento real da imagem exportada, cancelamento, bloqueio de duplicação e edição nativa após recarga offline. A suíte existente cobre CID, fontes incorporadas, restrições, orientação, imagens, nomes de downloads, ingestão, recuperação, cache e as demais ferramentas.
 
 Não foram alterados backend, dependências de produção, distribuição Windows, mecanismo de censura definitiva ou código da migração React. Nenhum documento privado ou captura de documento real integra os commits.
 
