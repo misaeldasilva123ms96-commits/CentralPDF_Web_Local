@@ -126,6 +126,7 @@ try:
         assert 'Documento original' in exported and 'Texto final revisado' in exported,exported
         page.locator('#continueEditingButton').click()
         page.set_viewport_size({'width':390,'height':844})
+        assert page.locator('#editorShowProperties').inner_text()=='Documento e saída'
         page.locator('[data-editor-mode="simple"]').click()
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
         page.locator('.editor-text-content').dblclick()
