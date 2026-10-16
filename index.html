@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
-  <link rel="stylesheet" href="assets/css/workspace-modernization.css?v=2.0.1-ux1" />
+  <link rel="stylesheet" href="assets/css/workspace-modernization.css?v=2.0.1-ux2" />
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true">
@@ -371,7 +371,7 @@
               <button type="button" data-editor-mode="advanced" aria-pressed="false">Avançado</button>
             </div>
             <p id="editorModeDescription">Texto, imagens e anotações com os controles essenciais.</p>
-            <button id="editorShowProperties" class="small-button editor-mobile-control" type="button">Propriedades</button>
+            <button id="editorShowProperties" class="small-button editor-mobile-control" type="button">Documento e saída</button>
             <button id="editorTogglePages" class="small-button" type="button" aria-expanded="true" aria-controls="editorPageSidebar">Ocultar páginas</button>
           </div>
           <div class="pdf-editor-toolbar">
@@ -417,6 +417,10 @@
             </aside>
             <div class="editor-work-area">
               <div class="editor-work-header"><span id="editorToolHint">Selecionar e mover objetos</span><span id="editorCurrentPageInfo">Nenhuma página</span></div>
+              <section id="editorContextControls" class="editor-context-controls" aria-label="Opções da seleção" hidden>
+                <div class="editor-context-heading"><strong id="editorContextTitle">Editar seleção</strong><button id="editorContextDone" class="small-button" type="button">Concluir</button></div>
+                <div id="editorContextFields"></div>
+              </section>
               <div class="editor-scroll-area">
                 <div id="editorStage" class="editor-stage empty">
                   <canvas id="editorBaseCanvas"></canvas>
@@ -600,15 +604,15 @@
   <script src="assets/js/compression-engine.js"></script>
   <script src="assets/js/organizer-planner.js"></script>
   <script src="assets/js/pdf-native-text.js?v=2.0.1-cid1"></script>
-  <script src="assets/js/pdf-editor.js?v=2.0.1-editor2"></script>
-  <script src="assets/js/ux-enhancements.js?v=2.0.1-ui2"></script>
+  <script src="assets/js/pdf-editor.js?v=2.0.1-editor3"></script>
+  <script src="assets/js/ux-enhancements.js?v=2.0.1-ui3"></script>
   <script src="assets/js/ocr-0.16.js?v=2.0.1-names1"></script>
   <script src="assets/js/compare-0.17.js?v=2.0.1-names1"></script>
   <script src="assets/js/redaction-0.17.js?v=2.0.1-names1"></script>
   <script src="assets/js/forms-signatures-0.18.js?v=0.18.2"></script>
   <script src="assets/js/conversions-0.19.js?v=2.0.1-names1"></script>
   <script src="assets/js/intelligence-0.20.js?v=2.0.1-names1"></script>
-  <script src="assets/js/app.js?v=2.0.1-ui13"></script>
+  <script src="assets/js/app.js?v=2.0.1-ui14"></script>
   <script src="assets/js/tool-quality-1.2.0.js?v=1.2.3"></script>
   <script src="assets/js/layout-controls.js?v=2.0.1-ui1"></script>
   <script src="assets/js/foundation.js?v=2.0.1-ux1"></script>

@@ -12,10 +12,10 @@
     },
     editPdf: {
       category: 'Editar', complexity: 'Simples e avançado', input: '1 PDF', capability: 'Texto, imagem e desenho', output: 'PDF editado',
-      steps: ['Adicione o PDF e escolha uma página na faixa de miniaturas.', 'Selecione Texto, Imagem, Pincel, Marcador, Cobrir ou Recortar.', 'Ajuste o objeto no painel lateral e exporte a nova cópia.'],
-      tip: 'Clique no objeto para editar suas propriedades. Use Ctrl + Z para desfazer a última ação.',
+      steps: ['Adicione o PDF e escolha uma página na faixa de miniaturas.', 'Selecione Texto, Imagem, Pincel, Marcador, Cobrir ou Recortar.', 'Edite nos controles junto à seleção e exporte a nova cópia.'],
+      tip: 'Ao inserir texto, comece a escrever no painel próximo à página. Um duplo clique no texto reabre a edição.',
       attention: 'A ferramenta Cobrir oculta visualmente, mas não elimina o conteúdo interno. Não use como redação segura de dados sensíveis.',
-      inspectorTitle: 'Propriedades e ferramentas', inspectorDescription: 'O painel muda conforme o objeto ou ferramenta selecionada.',
+      inspectorTitle: 'Documento e saída', inspectorDescription: 'Os controles do item selecionado ficam junto à página.',
       dropSubtitle: 'Abra um PDF para editar visualmente cada página.', badges: ['1 arquivo', 'Canvas', 'Avançado']
     },
     merge: {

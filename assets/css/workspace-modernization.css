@@ -62,3 +62,45 @@ body[data-theme='dark'][data-active-tool='editPdf'] #dropzone small { color:#bdc
  body[data-active-tool='editPdf']:has(#editorThumbnailList .editor-thumbnail) #dropzone .drop-icon,
  body[data-active-tool='editPdf']:has(#editorThumbnailList .editor-thumbnail) #dropText { display:none; }
 }
+
+/* Selection tools stay with the document, independently of the settings sidebar. */
+.editor-context-controls { position:fixed; bottom:12px; z-index:800; box-sizing:border-box; max-height:52dvh; overflow:auto; padding:10px 12px; border:1px solid var(--border,#dce2e9); border-radius:14px; background:var(--surface,#fff); color:var(--text,#172033); box-shadow:0 8px 40px #10182733; }
+.editor-context-controls[hidden], .editor-context-controls.outside-editor,
+body.foundation-processing .editor-context-controls, body.completion-open .editor-context-controls { display:none !important; }
+.editor-context-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:6px; font-size:12px; }
+.editor-context-controls .editor-selection-panel { padding:0; margin:0; border:0; border-radius:0; background:transparent !important; }
+.editor-context-controls .editor-selection-heading { margin:0 0 6px; }
+.editor-context-controls .editor-selection-heading span { display:none; }
+.editor-context-controls .field { min-width:0; margin:0; }
+.editor-context-controls label { font-size:10px; }
+.editor-context-controls input:not([type='checkbox']), .editor-context-controls select, .editor-context-controls textarea { width:100%; min-width:0; box-sizing:border-box; min-height:32px; padding:6px 8px; font-size:12px; }
+.editor-context-controls textarea { resize:vertical; min-height:44px; max-height:90px; }
+.editor-context-controls .small-button { min-height:32px; }
+.editor-context-controls #editorTextControlsPanel:not(.hidden) { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:8px; align-items:end; }
+.editor-context-controls #editorTextControlsPanel > .field:first-child { grid-column:1/-1; }
+.editor-context-controls #editorTextControlsPanel > .field-row:not(.editor-inline-options) { display:contents; }
+.editor-context-controls #editorTextControlsPanel .field:has(#editorFontFamily) { grid-column:span 2; }
+.editor-context-controls .editor-inline-options { display:flex; flex-wrap:wrap; align-items:center; grid-column:span 2; gap:6px; margin:0; }
+.editor-context-controls .toggle-row { margin:0; min-height:32px; font-size:11px; }
+.editor-context-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+.editor-context-controls #editorObjectSizePanel { margin-top:8px; padding-top:8px; border-top:1px solid var(--border,#dce2e9); }
+.editor-context-controls #editorObjectSizePanel summary { cursor:pointer; font-size:11px; font-weight:700; }
+body[data-pdf-editor-mode='simple'] #editorContextControls #editorObjectSizePanel:not(.hidden) { display:block !important; }
+.editor-context-controls #editorObjectSizePanel > .field-row { margin-top:8px; }
+.editor-context-controls .editor-settings-group { margin:0; padding:0; }
+.editor-context-controls .editor-settings-group > summary { font-size:12px; margin-bottom:8px; }
+.editor-context-controls .editor-settings-group .field-row { margin-block:8px; }
+body[data-theme='dark'] .editor-context-controls { background:#111c2e; color:#edf2ff; border-color:#40516b; }
+body[data-theme='dark'] .editor-context-controls input, body[data-theme='dark'] .editor-context-controls select, body[data-theme='dark'] .editor-context-controls textarea { background:#172338; color:#edf2ff; border-color:#40516b; }
+@media(max-width:640px) {
+ .editor-context-controls { bottom:8px; padding:8px 10px; }
+ .editor-context-controls #editorTextControlsPanel:not(.hidden) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+ .editor-context-controls #editorTextControlsPanel .field:has(#editorFontFamily),
+ .editor-context-controls .editor-inline-options { grid-column:span 1; }
+}
+.editor-context-controls .editor-selection-heading { display:none; }
+.editor-context-heading { position:sticky; top:-10px; z-index:2; padding-block:6px; background:var(--surface,#fff); }
+.editor-context-controls .editor-context-actions { position:sticky; bottom:-10px; padding-block:6px; background:var(--surface,#fff); }
+body[data-theme='dark'] .editor-context-heading, body[data-theme='dark'] .editor-context-actions { background:#111c2e; }
+/* A previous download notification must not cover the active editing controls. */
+body:has(#editorContextControls:not([hidden]):not(.outside-editor)) #cp15Toast { display:none; }

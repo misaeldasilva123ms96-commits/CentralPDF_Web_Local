@@ -159,6 +159,7 @@ try:
         page.wait_for_function('PDFVisualEditor.exportProjectState().pages[1].objects.length===1')
         obj=page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0]')
         assert obj['width']<=180 and obj['height']<=90
+        page.locator('#editorObjectSizePanel summary').click()
         page.locator('#editorObjectX').fill('45');page.locator('#editorObjectX').dispatch_event('change')
         page.locator('#editorObjectWidth').fill('220');page.locator('#editorObjectWidth').dispatch_event('change')
         assert page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0].x')==45
