@@ -86,7 +86,7 @@ try:
         # New HTML must bypass old script URLs on the very first reload, even
         # before the new worker activates.
         urls=re.findall(r'<script src="([^"]+)"', (root/'index.html').read_text())
-        for module, marker in [('app.js','function baseName'),('pdf-native-text.js','cidByteWidth'),('pdf-editor.js','invalidateReplacementPreview')]:
+        for module, marker in [('app.js','function baseName'),('pdf-native-text.js','cidByteWidth'),('pdf-editor.js','function positionContextControls')]:
             url=next('/'+url for url in urls if '/'+module+'?' in url)
             assert marker in page.evaluate("async url => (await (await fetch(url)).text())",url)
         updated = True
@@ -110,7 +110,7 @@ try:
         })""")
         assert 'function baseName' in fetched['app'], 'Stale download helper served'
         assert 'cidByteWidth' in fetched['native'], 'Stale native editor served'
-        assert 'invalidateReplacementPreview' in fetched['editor'], 'Stale replacement preview served'
+        assert 'function positionContextControls' in fetched['editor'], 'Stale contextual editor served'
         assert 'centralpdf-v2.0.1-pages-30-core' not in fetched['keys'], fetched['keys']
         assert 'centralpdf-v2.0.1-pages-30-runtime' not in fetched['keys'], fetched['keys']
         migrated=page.evaluate("""async urls => {
@@ -148,6 +148,9 @@ try:
         context.set_offline(True)
         offline = page.evaluate("async () => (await (await fetch('/assets/js/pdf-native-text.js')).text())")
         assert offline == current, 'Offline fallback did not use refreshed script'
+        editor_url=next('/'+url for url in urls if '/pdf-editor.js?' in url)
+        offline_editor=page.evaluate("async url => (await (await fetch(url)).text())",editor_url)
+        assert 'function positionContextControls' in offline_editor, 'Contextual editor missing offline'
         offline_engines=page.evaluate("""async urls => ({
           pdf:await (await fetch(urls.pdf)).text(),
           ocr:await (await fetch(urls.ocr)).text(),
