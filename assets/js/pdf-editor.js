@@ -1591,8 +1591,9 @@
             let exportedPreview=false;
             if(page.objects.length){
               const result=await exportPdf({pages:[deepClone(page)],silent:true});
-              const task=window.pdfjsLib.getDocument({data:result.bytes});const pdf=await task.promise;
-              preview={task,page:await pdf.getPage(1)};exportedPreview=true;
+              preview={task:window.pdfjsLib.getDocument({data:result.bytes})};
+              const pdf=await preview.task.promise;
+              preview.page=await pdf.getPage(1);exportedPreview=true;
             }else preview=await nativePreview(page);const source=state.sources.get(page.sourceId);
             const rendered=preview?.page||await source.rendered.getPage(page.sourceIndex+1);
             if(generation!==state.thumbnailRenderGeneration)continue;
@@ -1607,16 +1608,26 @@
         } catch(error) {
           if(generation===state.thumbnailRenderGeneration&&!isRenderCancellation(error)){button.dataset.rendered='error';drawBlankThumb(canvas.getContext('2d'),'PDF');}
         } finally {
-          state.thumbnailTask=null;if(temp){temp.width=1;temp.height=1;}await preview?.task.destroy();
+          state.thumbnailTask=null;if(temp){temp.width=1;temp.height=1;}
+          try {await preview?.task.destroy();}catch(_){}
         }
         await new Promise(resolve=>setTimeout(resolve,0));
       }
     } finally {state.thumbnailWorkerRunning=false;}
   }
 
-  function clearReplacement() {
-    state.replacementGeneration++;state.replacementPreviewGeneration++;
+  function invalidateReplacementPreview() {
+    state.replacementPreviewGeneration++;
     try {state.replacementTask?.cancel();}catch(_){}
+    state.replacementTask=null;
+    if(state.replacement)state.replacement.model=null;
+    const apply=$('#editorReplacementApply');if(apply)apply.disabled=true;
+    const canvas=$('#editorReplacementPreview');if(canvas){canvas.width=0;canvas.height=0;}
+  }
+
+  function clearReplacement() {
+    state.replacementGeneration++;invalidateReplacementPreview();
+    const field=$('#editorReplacementPageField');if(field)field.hidden=true;
     const candidate=state.replacement;state.replacement=null;
     if(candidate?.source&&!candidate.committed)Promise.resolve(candidate.source.loadingTask?.destroy?.()).catch(()=>{});
   }
@@ -1659,33 +1670,38 @@
 
   async function previewReplacement() {
     const candidate=state.replacement;if(!candidate?.source&&!candidate?.image)return;
-    const generation=++state.replacementPreviewGeneration;
-    try {state.replacementTask?.cancel();}catch(_){}
-    $('#editorReplacementApply').disabled=true;
+    invalidateReplacementPreview();
+    const generation=state.replacementPreviewGeneration;
+    const live=()=>generation===state.replacementPreviewGeneration&&state.replacement===candidate&&$('#editorReplaceDialog').open&&candidate.loadGeneration===state.loadGeneration;
+    $('#editorReplacementStatus').textContent='Preparando a prévia da página…';
+    // Render privately: a canceled or outdated task must never repaint the dialog.
+    const canvas=document.createElement('canvas');let task=null,model;
     try {
-      const canvas=$('#editorReplacementPreview');
       if(candidate.source){
         const number=Number($('#editorReplacementPage').value);
         if(!Number.isInteger(number)||number<1||number>candidate.source.rendered.numPages)throw new Error(`Escolha uma página entre 1 e ${candidate.source.rendered.numPages}.`);
         const page=await candidate.source.rendered.getPage(number),rotation=normalizeAngle(page.rotate||0),base=page.getViewport({scale:1,rotation});
-        if(generation!==state.replacementPreviewGeneration)return;
+        if(!live())return;
         const viewport=page.getViewport({scale:Math.min(400/base.width,280/base.height),rotation});
         canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
-        const task=page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport});state.replacementTask=task;await task.promise;
-        candidate.model={kind:'pdf',sourceId:candidate.source.id,sourceIndex:number-1,width:base.width,height:base.height,sourceRotation:rotation,rotation:0,crop:null,objects:[]};
+        task=page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport});state.replacementTask=task;await task.promise;
+        model={kind:'pdf',sourceId:candidate.source.id,sourceIndex:number-1,width:base.width,height:base.height,sourceRotation:rotation,rotation:0,crop:null,objects:[]};
       } else {
         const original=state.pages.find(page=>page.id===candidate.targetId);if(!original)throw new Error('A página de destino não está mais disponível.');
         const {dataUrl,dimensions}=candidate.image,scale=Math.min(original.width/dimensions.width,original.height/dimensions.height);
         const width=dimensions.width*scale,height=dimensions.height*scale;
-        candidate.model={kind:'blank',width:original.width,height:original.height,sourceRotation:0,rotation:0,crop:null,objects:[{id:nextObjectId(),type:'image',dataUrl,mime:'image/png',x:(original.width-width)/2,y:(original.height-height)/2,width,height,rotation:0,lockAspect:true,aspectRatio:dimensions.width/dimensions.height}]};
+        model={kind:'blank',width:original.width,height:original.height,sourceRotation:0,rotation:0,crop:null,objects:[{id:nextObjectId(),type:'image',dataUrl,mime:'image/png',x:(original.width-width)/2,y:(original.height-height)/2,width,height,rotation:0,lockAspect:true,aspectRatio:dimensions.width/dimensions.height}]};
         const bitmap=await loadImage(dataUrl);
-        if(generation!==state.replacementPreviewGeneration)return;
+        if(!live())return;
         const fit=Math.min(400/original.width,280/original.height);canvas.width=Math.ceil(original.width*fit);canvas.height=Math.ceil(original.height*fit);
-        const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,candidate.model.objects[0].x*fit,candidate.model.objects[0].y*fit,width*fit,height*fit);
+        const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,model.objects[0].x*fit,model.objects[0].y*fit,width*fit,height*fit);
       }
-      if(generation!==state.replacementPreviewGeneration||state.replacement!==candidate)return;
+      if(!live())return;
+      const visible=$('#editorReplacementPreview');visible.width=canvas.width;visible.height=canvas.height;
+      visible.getContext('2d',{alpha:false}).drawImage(canvas,0,0);candidate.model=model;
       $('#editorReplacementStatus').textContent='Prévia pronta. Confirme para substituir somente a página selecionada.';$('#editorReplacementApply').disabled=false;
-    } catch(error) {if(generation===state.replacementPreviewGeneration&&!isRenderCancellation(error))$('#editorReplacementStatus').textContent=error.message;}
+    } catch(error) {if(live()&&!isRenderCancellation(error))$('#editorReplacementStatus').textContent=error.message;}
+    finally {if(state.replacementTask===task)state.replacementTask=null;canvas.width=0;canvas.height=0;}
   }
 
   function commitReplacement() {
