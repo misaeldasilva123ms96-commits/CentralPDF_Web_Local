@@ -76,7 +76,8 @@ try:
         page.locator('#editorTextValue').fill('Revisado por Misael')
         before = page.evaluate('PDFVisualEditor.exportProjectState().pages')
         selected = page.evaluate('PDFVisualEditor.exportProjectState().selectedObjectId')
-        assert not page.locator('#editorObjectSizePanel').is_visible()
+        assert page.locator('#editorObjectSizePanel').is_visible()
+        assert not page.locator('#editorObjectSizePanel').evaluate('el=>el.open')
         advanced.click()
         assert advanced.get_attribute('aria-pressed') == 'true'
         assert page.locator('#editorObjectSizePanel').is_visible()

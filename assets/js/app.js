@@ -31,7 +31,7 @@
         <div id="editorSelectionPanel" class="editor-selection-panel inactive">
           <div class="editor-selection-heading"><span>Objeto selecionado</span><strong id="editorSelectedType">Nenhum objeto selecionado</strong></div>
           <div id="editorTextControlsPanel">
-            <div class="field"><label for="editorTextValue">Texto</label><textarea id="editorTextValue" rows="4" data-editor-text-control placeholder="Digite o texto que será inserido">Digite seu texto</textarea></div>
+            <div class="field"><label for="editorTextValue">Texto</label><textarea id="editorTextValue" rows="1" data-editor-text-control placeholder="Digite o texto que será inserido">Digite seu texto</textarea></div>
             <div class="field-row">
               <div class="field"><label for="editorFontFamily">Fonte</label><select id="editorFontFamily" data-editor-text-control><option value="Helvetica">Helvetica / Arial</option><option value="TimesRoman">Times / Georgia</option><option value="Courier">Courier</option></select></div>
               <div class="field"><label for="editorFontSize">Tamanho</label><input id="editorFontSize" data-editor-text-control type="number" min="6" max="120" value="16" /></div>
@@ -43,8 +43,9 @@
             <div class="field-row editor-inline-options"><label class="toggle-row compact"><input id="editorBold" data-editor-text-control type="checkbox" /><span>Negrito</span></label><label class="toggle-row compact"><input id="editorItalic" data-editor-text-control type="checkbox" /><span>Itálico</span></label></div>
             <div class="field"><label for="editorTextAlign">Alinhamento</label><select id="editorTextAlign" data-editor-text-control><option value="left">Esquerda</option><option value="center">Centralizado</option><option value="right">Direita</option></select></div>
           </div>
-          <div id="editorObjectSizePanel" class="editor-object-size-panel hidden">
-            <div class="editor-transform-title"><strong>Posição e transformação</strong><span>Valores em pontos do PDF</span></div>
+          <details id="editorObjectSizePanel" class="editor-object-size-panel hidden">
+            <summary>Posição, tamanho e camadas</summary>
+            <p class="field-hint">Valores em pontos do PDF.</p>
             <div class="field-row">
               <div class="field"><label for="editorObjectX">Posição X</label><input id="editorObjectX" type="number" min="0" step="1" /></div>
               <div class="field"><label for="editorObjectY">Posição Y</label><input id="editorObjectY" type="number" min="0" step="1" /></div>
@@ -76,10 +77,9 @@
               <button id="editorSendBackward" class="small-button" type="button">Enviar para trás</button>
               <button id="editorBringForward" class="small-button" type="button">Trazer à frente</button>
             </div>
-            <button id="editorDuplicateObject" class="small-button full-width" type="button">Duplicar objeto</button>
             <p class="field-hint"><strong>No documento:</strong> use as oito alças para ajustar por qualquer lado e a alça circular superior para girar. Segure Shift para preservar a proporção e encaixar a rotação em intervalos de 15°.</p>
-          </div>
-          <button id="editorDeleteObject" class="small-button danger full-width" type="button" disabled>Excluir objeto selecionado</button>
+          </details>
+          <div class="editor-context-actions"><button id="editorDuplicateObject" class="small-button" type="button">Duplicar</button><button id="editorDeleteObject" class="small-button danger" type="button" disabled>Excluir selecionado</button></div>
         </div>
         <details id="editorDrawingSettings" class="editor-settings-group" open><summary>Pincel e marcador</summary>
           <div class="field-row"><div class="field"><label for="editorBrushColor">Cor do pincel</label><input id="editorBrushColor" type="color" value="#1f2937" /></div><div class="field"><label for="editorBrushWidth">Espessura</label><input id="editorBrushWidth" type="number" min="1" max="40" value="3" /></div></div>
@@ -821,6 +821,8 @@
     processButton.disabled = true;
     state.selectedFileKeys.clear();
     state.outputNameTouched = false;
+    // Selected-object controls are mounted next to the page; discard the previous tool session first.
+    $('#editorContextFields')?.replaceChildren();
     settingsContent.innerHTML = `${config.settings}${buildOutputNameField(config)}`;
     window.CentralPDFUX?.enhanceSettings(settingsContent, tool);
     const outputInput = $('#outputFileName');

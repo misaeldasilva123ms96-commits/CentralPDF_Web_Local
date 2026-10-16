@@ -5,6 +5,7 @@ import re
 root=Path(__file__).resolve().parents[1]
 html=(root/'index.html').read_text(encoding='utf-8')
 css=(root/'assets/css/styles.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/ux-redesign.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/layout-controls.css').read_text(encoding='utf-8')
+css+='\n'+(root/'assets/css/workspace-modernization.css').read_text(encoding='utf-8')
 html=re.sub(r'\s*<link rel="stylesheet" href="[^"]+"\s*/?>','',html)
 html=html.replace('</head>',f'<style>{css}</style></head>')
 html=re.sub(r'\s*<script src="[^"]+"></script>','',html)
@@ -44,6 +45,7 @@ with sync_playwright() as p:
     assert page.locator('.editor-object.selected .editor-rotate-handle').count()==1
     assert page.locator('#editorObjectSizePanel:not(.hidden)').count()==1
 
+    page.locator('#editorObjectSizePanel summary').click()
     original_width=float(page.locator('#editorObjectWidth').input_value())
     page.evaluate("""() => {
       const handle=document.querySelector('.editor-object.selected .handle-e');

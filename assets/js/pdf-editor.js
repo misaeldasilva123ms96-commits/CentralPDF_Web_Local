@@ -82,6 +82,18 @@
 
   function bindStaticUi() {
     ensurePageRotationControls();
+    $('#editorContextDone')?.addEventListener('click', closeContextControls);
+    $('#editorContextControls')?.addEventListener('keydown', event => {
+      if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeContextControls();}
+    });
+    window.addEventListener('scroll', positionContextControls, true);
+    window.addEventListener('resize', positionContextControls);
+    const workArea=$('.editor-work-area');
+    if(window.ResizeObserver&&workArea)new ResizeObserver(positionContextControls).observe(workArea);
+    window.visualViewport?.addEventListener('resize',()=>{
+      if(document.activeElement?.id==='editorTextValue')ensureContextTextSpace();
+      else positionContextControls();
+    });
     document.querySelectorAll('[data-editor-mode]').forEach(button => {
       button.addEventListener('click', () => setMode(button.dataset.editorMode));
     });
@@ -186,6 +198,14 @@
   }
 
   function bindSettings() {
+    const fields=$('#editorContextFields');
+    if(fields)for(const id of ['editorSelectionPanel','editorDrawingSettings','editorCoverSettings','editorCropSettings']){
+      const group=$(`#${id}`);if(group)fields.appendChild(group);
+    }
+    $('#editorObjectSizePanel')?.addEventListener('toggle',event=>{
+      if(!event.currentTarget.open&&$('#editorContextControls'))$('#editorContextControls').scrollTop=0;
+    });
+    $('#editorTextValue')?.addEventListener('focus',ensureContextTextSpace);
     state.settingsBound = true;
     $('#editorReturnToPage')?.addEventListener('click',()=>{$('#editorStage')?.scrollIntoView({block:'center',behavior:'smooth'});$('#editorShowProperties')?.focus({preventScroll:true});});
     const ids = [
@@ -908,11 +928,7 @@
         content.style.textAlign = object.align || 'left';
         content.style.lineHeight = '1.2';
         content.addEventListener('dblclick', event => {
-          event.stopPropagation(); selectObject(object.id); content.contentEditable = 'true'; content.focus();
-          const range = document.createRange(); range.selectNodeContents(content); const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
-        });
-        content.addEventListener('blur', () => {
-          if (content.contentEditable === 'true') { checkpoint(); object.text = content.innerText || ' '; content.contentEditable = 'false'; updateInspector(); renderCurrentPage(); }
+          event.preventDefault();event.stopPropagation();selectObject(object.id);focusContextText();
         });
         element.appendChild(content);
       } else if (object.type === 'image') {
@@ -948,6 +964,7 @@
     });
     if (state.tempCrop) appendCropTransformControls(layer);
     updateEditorPointerRouting();
+    positionContextControls();
   }
 
   function appendCropTransformControls(layer) {
@@ -1029,15 +1046,16 @@
     const page = currentPage(); if (!page) return;
     const point = stagePoint(event);
     if (state.activeTool === 'text') {
+      event.preventDefault();
       checkpoint();
       const object = {
-        id: nextObjectId(), type:'text', x: point.x, y: point.y, width: 190, height: 44, rotation: 0,
+        id: nextObjectId(), type:'text', x: point.x, y: point.y, width: Math.min(140,page.width), height: 24, rotation: 0,
         text: $('#editorTextValue')?.value || 'Digite seu texto', fontFamily: $('#editorFontFamily')?.value || 'Helvetica',
         fontSize: Number($('#editorFontSize')?.value || 16), color: $('#editorTextColor')?.value || '#202735',
         opacity: Number($('#editorTextOpacity')?.value || 100)/100, bold: Boolean($('#editorBold')?.checked),
         italic: Boolean($('#editorItalic')?.checked), align: $('#editorTextAlign')?.value || 'left'
       };
-      clampObjectInsidePage(object,page); page.objects.push(object); state.selectedObjectId = object.id; setTool('select'); renderCurrentPage(); updateInspector();
+      fitTextBoxHeight(object,page);clampObjectInsidePage(object,page); page.objects.push(object); state.selectedObjectId = object.id; setTool('select'); renderCurrentPage(); updateInspector();focusContextText();
       return;
     }
     if (['brush','highlight'].includes(state.activeTool)) {
@@ -1173,16 +1191,18 @@
 
   function startObjectDrag(event, object) {
     if (state.activeTool !== 'select' || event.target.closest('.editor-transform-handle, .editor-rotate-handle') || event.target.closest('[contenteditable="true"]')) return;
-    event.preventDefault(); event.stopPropagation(); selectObject(object.id); checkpoint();
+    event.preventDefault(); event.stopPropagation(); selectObject(object.id);
     const start = { x:event.clientX, y:event.clientY, ox:object.x, oy:object.y };
+    let moved=false;
     const move = moveEvent => {
+      if(!moved){if(Math.hypot(moveEvent.clientX-start.x,moveEvent.clientY-start.y)<3)return;checkpoint();moved=true;}
       object.x = start.ox + (moveEvent.clientX-start.x)/state.scale;
       object.y = start.oy + (moveEvent.clientY-start.y)/state.scale;
       clampObjectInsidePage(object);
       renderObjects();
       updateInspectorTransformFields(object);
     };
-    const up = () => { window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); renderCurrentPage(); };
+    const up = () => { window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); if(moved)renderCurrentPage(); };
     window.addEventListener('pointermove',move); window.addEventListener('pointerup',up);
   }
 
@@ -1252,7 +1272,66 @@
 
   function selectObject(id) {
     state.selectedObjectId = id;
-    renderObjects(); updateInspector();
+    // Preserve the text node between clicks so double click can enter editing.
+    $('#editorObjectLayer')?.querySelectorAll('.editor-object').forEach(element=>{
+      const active=element.dataset.objectId===id;
+      element.classList.toggle('selected',active);
+      element.querySelectorAll('.editor-transform-handle,.editor-rotate-handle,.editor-rotate-line').forEach(handle=>handle.remove());
+      if(active){const object=selectedObject();if(object)appendTransformControls(element,object);}
+    });
+    updateInspector();
+  }
+
+  function focusContextText() {
+    const input=$('#editorTextValue');if(!input)return;
+    input.focus({preventScroll:true});input.select();
+  }
+
+  function ensureContextTextSpace() {
+    const object=selectedObject(),stage=$('#editorStage');if(object?.type!=='text'||!stage)return;
+    const bounds=stage.getBoundingClientRect();
+    const element=Array.from($('#editorObjectLayer')?.querySelectorAll('.editor-object')||[]).find(node=>node.dataset.objectId===object.id);
+    const rect=element?.getBoundingClientRect()||{top:bounds.top+object.y*state.scale,bottom:bounds.top+(object.y+object.height)*state.scale};
+    const height=window.visualViewport?.height||window.innerHeight;
+    const desiredTop=Math.max(100,height*.18);
+    if(height-rect.bottom<Math.min(420,height*.52)+24&&rect.top>desiredTop+16){
+      window.scrollBy({top:rect.top-desiredTop,behavior:'instant'});
+    }
+    const dock=$('#editorContextControls');if(dock)dock.scrollTop=0;
+    positionContextControls();
+  }
+
+  function closeContextControls() {
+    if(state.activeTool!=='select')setTool('select');
+    selectObject(null);
+    $('#editorAddText')?.focus({preventScroll:true});
+  }
+
+  function positionContextControls() {
+    const dock=$('#editorContextControls');if(!dock||dock.hidden)return;
+    const area=$('.editor-work-area')?.getBoundingClientRect(),section=$('#pdfEditorSection')?.getBoundingClientRect();
+    if(!area||!section)return;
+    const visibleBottom=Math.min(window.innerHeight,(window.visualViewport?.height||window.innerHeight)+(window.visualViewport?.offsetTop||0));
+    const selection=$('#editorObjectLayer .editor-object.selected')?.getBoundingClientRect();
+    dock.classList.toggle('outside-editor',section.bottom<80||(selection?area.top>visibleBottom-100:section.top>visibleBottom-80));
+    const width=Math.max(0,Math.min(760,area.width-24,window.innerWidth-24));
+    dock.style.width=`${width}px`;
+    dock.style.left=`${Math.max(12,Math.min(area.left+(area.width-width)/2,window.innerWidth-width-12))}px`;
+    const topLimit=selection?Math.max(80,area.top)+12:80;
+    const aboveEnd=selection?Math.min(selection.top-12,visibleBottom-12):visibleBottom-12;
+    const belowStart=selection?Math.max(selection.bottom+12,topLimit):topLimit;
+    const aboveSpace=aboveEnd-topLimit,belowSpace=visibleBottom-belowStart-12;
+    const above=Boolean(selection&&aboveSpace>belowSpace);
+    dock.style.bottom=`${window.innerHeight-(above?aboveEnd:visibleBottom-12)}px`;
+    // Keep the selection and document toolbar reachable, including a double click.
+    dock.style.maxHeight=`${Math.max(100,Math.min(visibleBottom*.52,above?aboveSpace:belowSpace))}px`;
+  }
+
+  function fitTextBoxHeight(object,page=currentPage()) {
+    const context=document.createElement('canvas').getContext('2d');if(!context||!page)return;
+    context.font=`${object.italic?'italic ':''}${object.bold?'bold ':''}${object.fontSize}px ${browserFont(object.fontFamily)}`;
+    const lines=wrapText(object.text,{widthOfTextAtSize:text=>context.measureText(text).width},object.fontSize,Math.max(20,object.width-4));
+    object.height=Math.min(page.height,Math.max(object.height,lines.length*object.fontSize*1.2+4));
   }
 
   function selectedObject() {
@@ -1262,6 +1341,18 @@
   function updateInspector() {
     const object = selectedObject();
     const panel = $('#editorSelectionPanel'); if (!panel) return;
+    const dock=$('#editorContextControls');
+    if(dock){
+      const key=object?.id||state.activeTool;
+      if(dock.dataset.contextKey!==key){
+        dock.dataset.contextKey=key;dock.scrollTop=0;
+        const precision=$('#editorObjectSizePanel');if(precision)precision.open=false;
+      }
+      dock.hidden=!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));
+      const title=$('#editorContextTitle');if(title)title.textContent=object?`Editar ${objectLabel(object).toLocaleLowerCase('pt-BR')}`:'Opções da ferramenta';
+      positionContextControls();
+    }
+    panel.hidden=!object&&state.activeTool!=='text';
     renderObjectList();
     const contexts = {
       editorDrawingSettings: ['brush', 'highlight'].includes(state.activeTool),
@@ -1271,7 +1362,7 @@
     Object.entries(contexts).forEach(([id, active]) => {
       const group = $(`#${id}`);
       if (!group) return;
-      group.hidden = state.mode === 'simple' && !active;
+      group.hidden = !active;
       if (active) group.open = true;
     });
     panel.classList.toggle('inactive', !object);
@@ -1329,10 +1420,13 @@
       if (event?.target?.id === 'editorObjectHeight') width = height*ratio;
       else if (event?.target?.id === 'editorObjectWidth') height = width/ratio;
     }
+    x=Number.isFinite(x)?x:object.x;y=Number.isFinite(y)?y:object.y;
+    const rotation=normalizeAngle(Number($('#editorObjectRotation')?.value || 0));
+    if(x===object.x&&y===object.y&&width===object.width&&height===object.height&&rotation===normalizeAngle(object.rotation||0)&&lockAspect===Boolean(object.lockAspect))return;
     checkpoint();
-    object.x = Number.isFinite(x)?x:object.x; object.y = Number.isFinite(y)?y:object.y;
+    object.x = x; object.y = y;
     object.width = width; object.height = height;
-    object.rotation = normalizeAngle(Number($('#editorObjectRotation')?.value || 0));
+    object.rotation = rotation;
     object.lockAspect = lockAspect;
     clampObjectInsidePage(object,page);
     renderCurrentPage(); updateInspector();
@@ -1400,6 +1494,7 @@
       object.opacity = Number($('#editorTextOpacity')?.value || 100)/100;
       object.bold = Boolean($('#editorBold')?.checked); object.italic = Boolean($('#editorItalic')?.checked);
       object.align = $('#editorTextAlign')?.value || 'left';
+      fitTextBoxHeight(object);clampObjectInsidePage(object);
       renderCurrentPage();
     } else if (object.type === 'cover') {
       checkpoint(); object.color = $('#editorCoverColor')?.value || '#ffffff'; object.opacity = Number($('#editorCoverOpacity')?.value || 100)/100; renderCurrentPage();
