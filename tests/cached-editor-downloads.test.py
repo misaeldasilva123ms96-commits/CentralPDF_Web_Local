@@ -80,13 +80,13 @@ try:
           await old.put('/assets/js/app.js?v=2.0.1-ui10',new Response('stale-runtime-app'));
           await old.put('/assets/js/stale-only.js',new Response('do-not-migrate'));
           // A newer engine copy already stored by another tab must win.
-          await (await caches.open('centralpdf-v2.0.1-pages-32-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
+          await (await caches.open('centralpdf-v2.0.1-pages-33-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
         }""",engines)
 
         # New HTML must bypass old script URLs on the very first reload, even
         # before the new worker activates.
         urls=re.findall(r'<script src="([^"]+)"', (root/'index.html').read_text())
-        for module, marker in [('app.js','function baseName'),('pdf-native-text.js','cidByteWidth')]:
+        for module, marker in [('app.js','function baseName'),('pdf-native-text.js','cidByteWidth'),('pdf-editor.js','invalidateReplacementPreview')]:
             url=next('/'+url for url in urls if '/'+module+'?' in url)
             assert marker in page.evaluate("async url => (await (await fetch(url)).text())",url)
         updated = True
@@ -105,14 +105,16 @@ try:
         fetched = page.evaluate("""async () => ({
           app: await (await fetch('/assets/js/app.js?v=2.0.1-ui10')).text(),
           native: await (await fetch('/assets/js/pdf-native-text.js')).text(),
+          editor: await (await fetch('/assets/js/pdf-editor.js?v=2.0.1-editor1')).text(),
           keys: await caches.keys()
         })""")
         assert 'function baseName' in fetched['app'], 'Stale download helper served'
         assert 'cidByteWidth' in fetched['native'], 'Stale native editor served'
+        assert 'invalidateReplacementPreview' in fetched['editor'], 'Stale replacement preview served'
         assert 'centralpdf-v2.0.1-pages-30-core' not in fetched['keys'], fetched['keys']
         assert 'centralpdf-v2.0.1-pages-30-runtime' not in fetched['keys'], fetched['keys']
         migrated=page.evaluate("""async urls => {
-          const runtime=await caches.open('centralpdf-v2.0.1-pages-32-runtime');
+          const runtime=await caches.open('centralpdf-v2.0.1-pages-33-runtime');
           const pdf=await runtime.match(urls.pdf),ocr=await runtime.match(urls.ocr),opaque=await runtime.match(urls.opaque);
           return {
             pdf:pdf && await pdf.text(),ocr:ocr && await ocr.text(),opaque:opaque?.type,
@@ -121,7 +123,7 @@ try:
         }""",engines)
         assert migrated=={'pdf':'newer-pdf-engine','ocr':'prepared-ocr-engine','opaque':'opaque','marker':'prepared-before-upgrade'},migrated
 
-        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v2.0.1-pages-32-runtime')).match('/assets/js/stale-only.js'))") is False
+        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v2.0.1-pages-33-runtime')).match('/assets/js/stale-only.js'))") is False
         # A stale entry for an unversioned URL must also refresh online, and the
         # most recently fetched code must remain available offline.
         page.evaluate("""async () => {

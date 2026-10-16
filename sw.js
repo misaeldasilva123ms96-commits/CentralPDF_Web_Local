@@ -1,6 +1,6 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v2.0.1-pages-32';
+const CACHE_VERSION = 'centralpdf-v2.0.1-pages-33';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
@@ -21,10 +21,10 @@ const CORE_ASSETS = [
   './assets/css/split-interactive.css?v=2.0.1-split1',
   './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=2.0.1-ingest1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
-  './assets/js/pdf-native-text.js?v=2.0.1-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=2.0.1-editor1', './assets/js/ux-enhancements.js?v=2.0.1-ui2',
+  './assets/js/pdf-native-text.js?v=2.0.1-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=2.0.1-editor2', './assets/js/ux-enhancements.js?v=2.0.1-ui2',
   './assets/js/ocr-0.16.js?v=2.0.1-names1', './assets/js/compare-0.17.js?v=2.0.1-names1', './assets/js/redaction-0.17.js?v=2.0.1-names1',
   './assets/js/forms-signatures-0.18.js?v=0.18.2', './assets/js/conversions-0.19.js?v=2.0.1-names1',
-  './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/app.js?v=2.0.1-ui12', './assets/js/tool-quality-1.2.0.js?v=1.2.3',
+  './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/app.js?v=2.0.1-ui13', './assets/js/tool-quality-1.2.0.js?v=1.2.3',
   './assets/js/layout-controls.js?v=2.0.1-ui1', './assets/js/foundation.js?v=2.0.1-ux1', './assets/js/experience-0.15.js',
   './assets/js/stable-1.0.js', './assets/js/header-settings-1.0.3.js?v=2.0.1-ui1',
   './assets/js/product-redesign-2.0.js?v=2.0.9',

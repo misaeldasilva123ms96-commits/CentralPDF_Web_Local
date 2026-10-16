@@ -1105,6 +1105,7 @@
 
     // Editor visual: o primeiro PDF abre o editor; os demais são anexados como páginas.
     if (queuedTool === 'editPdf') {
+      const hadDocument = Boolean(window.PDFVisualEditor?.hasDocument());
       try {
         if (!state.files.length) {
           const [base, ...additional] = valid;
@@ -1126,7 +1127,8 @@
         notifyFilesChanged(options.source || 'add');
       } catch (error) {
         if (abortInactiveSession()) return;
-        processButton.disabled = true; setStatus(readablePdfError(error), 'error');
+        processButton.disabled = !hadDocument || !window.PDFVisualEditor?.hasDocument();
+        setStatus(readablePdfError(error), 'error');
       }
       return;
     }
