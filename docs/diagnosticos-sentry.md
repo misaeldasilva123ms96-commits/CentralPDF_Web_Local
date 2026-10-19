@@ -4,12 +4,17 @@ Os logs da tela **Qualidade / Autodiagnóstico** pertencem ao navegador, perfil 
 origem atuais (`localStorage`). Um contador `xN` representa ocorrências repetidas,
 não pessoas. Limpar essa lista não limpa dados de outros navegadores.
 
-Esta integração prepara uma coleta central opcional. **A configuração entregue
-está desativada e não contém DSN: nenhum relatório é enviado ao Sentry.** O
+Esta integração oferece uma coleta central opcional. **O DSN público fornecido
+pelo responsável está configurado, mas cada navegador começa sem autorização:
+nenhum relatório é enviado antes do consentimento.** A disponibilização no site
+depende da publicação da versão configurada pelo fluxo normal do projeto. O
 processamento dos documentos continua no navegador. Não existe painel público
 com os erros dos visitantes; o responsável consulta seu projeto privado no Sentry.
 
-## Ativação pelo responsável
+## Configuração e verificação pelo responsável
+
+O destino desta entrega já está configurado. Os passos abaixo documentam a
+configuração de outro projeto e a verificação dos ajustes na conta Sentry.
 
 1. Crie sua conta em <https://sentry.io/> e um projeto para JavaScript no navegador.
    Convide somente as pessoas que devem consultar os diagnósticos. Verifique
@@ -40,7 +45,7 @@ com os erros dos visitantes; o responsável consulta seu projeto privado no Sent
 5. Para entregar uma nova configuração aos navegadores existentes, atualize a
    revisão `?v=` do arquivo de configuração em **index.html e sw.js**, e incremente
    `CACHE_VERSION` em `sw.js` e as expectativas dos testes de cache. Faça a revisão
-   e publicação pelo fluxo normal do projeto. Esta preparação não publica o app.
+   e publicação pelo fluxo normal do projeto. Alterar esta configuração não publica o app.
    Atualize também o pacote local quando for distribuí-lo; cópias antigas ou
    páginas ainda abertas não recebem a configuração instantaneamente.
 6. Abra a versão configurada, entre em **Qualidade / Autodiagnóstico**, marque
@@ -119,5 +124,13 @@ o envio; a tela informa contadores e pausas desta aba.
   além dos destinos já usados pelo app. O executável Windows foi recompilado pelo
   mesmo comando reproduzível da CI, com checksum atualizado.
 
-Sem conta/DSN real, o ingresso e os ajustes de privacidade do projeto Sentry ainda
-precisam da verificação de ativação acima. O app entregue permanece desativado.
+Em 19/10/2026, foi realizado separadamente um único envio real de
+`diagnostic_test`, gerado pelo transporte do app com o DSN configurado. O receptor
+Sentry respondeu HTTP 200 com o mesmo identificador do evento; os cabeçalhos CORS
+permitem a origem do site. Nenhum documento, log antigo ou nome de arquivo foi
+usado nesse teste. Os testes automatizados continuam locais e não enviam eventos
+ao projeto real.
+
+A aceitação HTTP foi verificada; a exibição do evento no painel, retenção,
+visibilidade privada e limpeza de IP ainda devem ser conferidas pelo responsável
+na conta Sentry, conforme o passo 6. O teste real não publicou a versão no site.

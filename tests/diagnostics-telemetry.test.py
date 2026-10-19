@@ -26,7 +26,9 @@ responses = []
 class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/test'):
-            config = '<script src="/assets/js/diagnostics-config.js"></script>' if self.path.startswith('/test-disabled') else '<script>window.CentralPDFDiagnosticsConfig={enabled:true,dsn:'+json.dumps(dsn)+'};</script>'
+            config = '<script src="/assets/js/diagnostics-config.js"></script>' if self.path.startswith(('/test-disabled', '/test-production')) else '<script>window.CentralPDFDiagnosticsConfig={enabled:true,dsn:'+json.dumps(dsn)+'};</script>'
+            if self.path.startswith('/test-disabled'):
+                config += '<script>window.CentralPDFDiagnosticsConfig=Object.freeze({...window.CentralPDFDiagnosticsConfig,enabled:false});</script>'
             self.send_response(200)
             self.send_header('Content-Type', 'text/html; charset=utf-8')
             self.end_headers()
@@ -58,15 +60,17 @@ def intercept(route):
     response = route.fetch(url=origin+'/receiver', max_redirects=0)
     route.fulfill(response=response)
 
-def setup(browser, disabled=False, mobile=False):
+def setup(browser, disabled=False, mobile=False, production=False):
     context = browser.new_context(viewport={'width':390 if mobile else 1440,'height':844 if mobile else 1000}, service_workers='block')
+    context.sentry_requests = []
+    context.on('request', lambda request: context.sentry_requests.append(request.url) if '.sentry.io/' in request.url else None)
     # Every external request is blocked except the explicit local-only receiver route.
     context.route(re.compile(r'^https?://(?!127\.0\.0\.1:)'), lambda route: route.abort())
     context.route(endpoint, intercept)
     context.add_cookies([{'name':'private_session','value':'SECRET_COOKIE','domain':'o123.ingest.us.sentry.io','path':'/','secure':True}])
     context.add_init_script('''if(!localStorage.getItem('centralpdf-1.0-errors'))localStorage.setItem('centralpdf-1.0-errors',JSON.stringify([{time:new Date().toISOString(),kind:'console',message:'OLD_SECRET_FILENAME.pdf',source:'console.error',count:99}]));''')
     page = context.new_page()
-    page.goto(origin+('/test-disabled' if disabled else '/test')+'?private=SECRET_URL')
+    page.goto(origin+('/test-disabled' if disabled else '/test-production' if production else '/test')+'?private=SECRET_URL')
     page.wait_for_function('window.testReady && document.querySelector("#cpTelemetryPanel")')
     page.evaluate('document.querySelector("#cp10Quality").showModal()')
     return context, page
@@ -79,6 +83,16 @@ try:
         off.evaluate("CentralPDFStable.addLog('console','disabled SECRET.pdf');CentralPDFTelemetry.setConsent(true);CentralPDFTelemetry.flush()")
         assert len(received) == 0
         disabled.close()
+        production, prod = setup(browser, production=True)
+        assert prod.evaluate('CentralPDFTelemetry.getStatus().configured')
+        assert not prod.locator('#cpTelemetryConsent').is_checked()
+        assert not prod.locator('#cpTelemetryConsent').is_disabled()
+        prod.evaluate("CentralPDFStable.addLog('console','before authorization');CentralPDFTelemetry.flush()")
+        assert not prod.evaluate('CentralPDFTelemetry.getStatus().consent')
+        assert not prod.evaluate('CentralPDFTelemetry.sendTest()')
+        assert not production.sentry_requests
+        assert len(received) == 0
+        production.close()
         a, owner = setup(browser)
         b, visitor = setup(browser, mobile=True)
         assert not owner.locator('#cpTelemetryConsent').is_checked()
