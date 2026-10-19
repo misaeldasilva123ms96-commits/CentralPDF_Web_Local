@@ -66,3 +66,27 @@ func TestModuleMimeType(t *testing.T) {
 		t.Fatalf("Content-Type = %q, want JavaScript", got)
 	}
 }
+
+// Local Windows builds must allow the same validated Sentry Cloud destinations
+// as the browser transport without permitting arbitrary HTTPS connections.
+func TestSentryConnectPolicy(t *testing.T) {
+	response := httptest.NewRecorder()
+	newHandler(t.TempDir()).ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+	policy := response.Header().Get("Content-Security-Policy")
+	var connect string
+	for _, directive := range strings.Split(policy, ";") {
+		if strings.HasPrefix(strings.TrimSpace(directive), "connect-src ") {
+			connect = directive
+		}
+	}
+	for _, host := range []string{"https://*.ingest.sentry.io", "https://*.ingest.us.sentry.io", "https://*.ingest.de.sentry.io"} {
+		if !strings.Contains(connect, host) {
+			t.Errorf("connect-src missing %s", host)
+		}
+	}
+	for _, token := range strings.Fields(connect) {
+		if token == "https:" || token == "*" {
+			t.Errorf("overbroad connect-src: %s", token)
+		}
+	}
+}

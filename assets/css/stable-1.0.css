@@ -31,3 +31,8 @@ body.cp10-strong-focus :focus-visible{outline:3px solid #ffb000!important;outlin
 body[data-theme='dark'] .cp10-last-check{border-color:#2b3850;background:#121c2c;color:#9dafc7}
 body[data-theme='dark'] .cp10-last-check[data-state='success']{border-color:#205541;background:#10261e;color:#95dfbd}
 body[data-theme='dark'] .cp10-last-check[data-state='error']{border-color:#6d3240;background:#26131a;color:#f2a8b1}
+/* Consent text stays readable inside the scrolling diagnostics dialog. */
+#cpTelemetryPanel strong{font-size:14px}
+#cpTelemetryPanel p{font-size:13px;line-height:1.5;margin:8px 0}
+#cpTelemetryPanel .toggle-row{font-size:13px;line-height:1.5}
+#cpTelemetryPanel .cp10-button{margin:4px 0}
