@@ -171,7 +171,7 @@ with tempfile.TemporaryDirectory() as temp_dir, sync_playwright() as playwright:
     assert page.locator("#processButton").is_hidden()
     assert page.locator("#continueEditingButton").is_visible()
     assert page.locator("#clearButton").is_visible()
-    assert page.evaluate("document.activeElement === document.querySelector('#continueEditingButton')")
+    page.wait_for_function("document.activeElement === document.querySelector('#continueEditingButton')")
     assert page.locator(".app-shell").get_attribute("inert") is not None
     assert page.locator("#continueEditingButton").inner_text() == "Continuar convertendo"
     assert page.locator("#clearButton").inner_text() == "Nova conversão"
