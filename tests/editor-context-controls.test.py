@@ -6,7 +6,7 @@ from threading import Thread
 import os
 import re
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 root = Path(__file__).resolve().parents[1]
 html = (root / 'index.html').read_text()
@@ -49,10 +49,14 @@ Thread(target=server.serve_forever, daemon=True).start()
 try:
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage'])
-        page=browser.new_page(viewport={'width':1440,'height':1000},accept_downloads=True)
+        page=browser.new_page(viewport={'width':1440,'height':1000},accept_downloads=True,has_touch=True)
         errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
+        console_errors=[]
+        page.on('console',lambda message:console_errors.append(message.text) if message.type in ['error','warning'] else None)
         page.goto(f'http://127.0.0.1:{server.server_port}/test');page.wait_for_function('window.testReady')
         assert 'Central PDF' in page.title()
+        assert page.url.endswith('/test') and page.locator('body').inner_text().strip()
+        assert page.locator('vite-error-overlay, nextjs-portal').count()==0
         page.evaluate('''async()=>{
           const doc=await PDFLib.PDFDocument.create();
           doc.addPage([420,595]).drawText('Documento original',{x:30,y:540,size:18});
@@ -143,20 +147,91 @@ try:
             page.evaluate("document.body.dataset.theme='light'")
         page.locator('#editorTextValue').focus();page.keyboard.press('Escape')
         assert dock.is_hidden()
-        # Image selection exposes geometry, duplication and deletion in the same dock.
+        # Image selection keeps the page clear; handles and shortcuts still work.
         page.evaluate('''async()=>{
           const canvas=document.createElement('canvas');canvas.width=300;canvas.height=70;
           canvas.getContext('2d').fillRect(0,0,300,70);
           const bytes=Uint8Array.from(atob(canvas.toDataURL().split(',')[1]),c=>c.charCodeAt(0));
           await PDFVisualEditor.addImages([new File([bytes],'Assinatura João.png',{type:'image/png'})]);
         }''')
-        assert dock.is_visible() and page.locator('#editorTextControlsPanel').is_hidden()
-        assert page.locator('#editorSelectedType').inner_text()=='Imagem'
-        page.locator('#editorDuplicateObject').click()
+        if os.environ.get('CONTEXT_SCREENSHOTS'):
+            page.screenshot(path=os.path.join(os.environ['CONTEXT_SCREENSHOTS'],'image-selection.png'))
+        assert dock.is_hidden()
+        assert page.locator('#editorSelectedType').text_content()=='Imagem'
+        image_actions=page.locator('#editorImageActions')
+        assert image_actions.count()==1, 'Image actions must remain available without a keyboard'
+        assert image_actions.is_visible()
+        assert not image_actions.evaluate('el=>el.open')
+        for width,height in [(1440,1000),(390,844)]:
+            page.set_viewport_size({'width':width,'height':height})
+            if width==390:
+                page.locator('#editorZoom').evaluate("el=>{el.value='50';el.dispatchEvent(new Event('input',{bubbles:true}));}")
+                page.wait_for_function("document.querySelector('#editorStage').getBoundingClientRect().width < innerWidth")
+            for mode in ['simple','advanced']:
+                page.locator(f'[data-editor-mode="{mode}"]').click()
+                image=page.locator('.editor-image-object')
+                image.scroll_into_view_if_needed();image.click()
+                assert dock.is_hidden()
+                assert page.locator('.editor-image-object.selected .editor-transform-handle').count()==8
+                assert page.locator('.editor-image-object.selected .editor-rotate-handle').count()==1
+                # All non-pointer operations remain accessible through touch, without a keyboard.
+                image_actions.locator(':scope > summary').tap()
+                if os.environ.get('CONTEXT_SCREENSHOTS'):
+                    image_actions.scroll_into_view_if_needed()
+                    page.screenshot(path=os.path.join(os.environ['CONTEXT_SCREENSHOTS'],f'image-actions-{width}-{mode}.png'))
+                page.locator('#editorDuplicateObject').tap()
+                assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==3
+                page.locator('#editorObjectSizePanel summary').tap()
+                page.locator('#editorObjectWidth').fill('120')
+                page.locator('#editorObjectWidth').dispatch_event('change')
+                objects=page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects')
+                duplicate=objects[-1]
+                assert duplicate['width']==120 and abs(duplicate['width']/duplicate['height']-300/70)<.01
+                page.locator('#editorRotateRight').tap()
+                page.locator('#editorAlignLeft').tap()
+                objects=page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects')
+                assert objects[-1]['rotation']==90
+                page.locator('#editorSendBackward').tap()
+                assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects[1].id')==duplicate['id']
+                page.locator('#editorBringForward').tap()
+                assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects[2].id')==duplicate['id']
+                # Controls participate in document flow and never overlay the PDF canvas.
+                assert image_actions.evaluate("el=>getComputedStyle(el).position")=='static'
+                assert image_actions.bounding_box()['y']+image_actions.bounding_box()['height'] <= page.locator('.editor-scroll-area').bounding_box()['y']+1
+                page.locator('#editorDeleteObject').tap()
+                assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==2
+                page.locator('#editorUndo').tap()
+                assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==3
+                page.locator('#editorRedo').tap()
+                assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==2
+                assert image_actions.is_hidden()
+                expect(page.locator('.editor-image-object')).to_have_count(1)
+                page.locator('.editor-image-object').tap()
+                image_actions.locator(':scope > summary').tap()
+
+            if os.environ.get('CONTEXT_SCREENSHOTS'):
+                page.evaluate("document.body.dataset.theme='dark'")
+                page.screenshot(path=os.path.join(os.environ['CONTEXT_SCREENSHOTS'],f'image-{width}.png'))
+                page.evaluate("document.body.dataset.theme='light'")
+        page.keyboard.press('Control+d')
         assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==3
-        page.locator('#editorDeleteObject').click()
+        assert dock.is_hidden()
+        page.keyboard.press('Delete')
         assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==2
+        page.locator('#editorUndo').click()
+        assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==3
+        assert dock.is_hidden()
+        page.locator('#editorRedo').click()
+        assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==2
+        page.locator('.editor-text-content').dblclick()
+        assert dock.is_visible() and page.locator('#editorTextControlsPanel').is_visible()
+        page.locator('#editorContextDone').click()
+        page.locator('.editor-image-object').click()
+        assert dock.is_hidden()
         page.locator('[data-editor-tool="brush"]').click()
+        # The floating dock follows the visible page, not the toolbar above it.
+        page.locator('#editorInteractionCanvas').scroll_into_view_if_needed()
+        page.locator('#editorDrawingSettings').wait_for(state='visible')
         assert page.locator('#editorDrawingSettings').is_visible()
         assert page.locator('#editorSelectionPanel').is_hidden()
         # Returning to a tool must not leave duplicate IDs or double-bound actions.
@@ -168,6 +243,7 @@ try:
         page.locator('#editorDuplicateObject').click()
         assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==2
         assert not errors,errors
+        assert not console_errors,console_errors
         browser.close()
         print('editor-context-controls: compact text, focus, formatting, transforms, export, mobile and tool re-entry passed')
 finally:

@@ -159,12 +159,26 @@ try:
         page.wait_for_function('PDFVisualEditor.exportProjectState().pages[1].objects.length===1')
         obj=page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0]')
         assert obj['width']<=180 and obj['height']<=90
-        page.locator('#editorObjectSizePanel summary').click()
-        page.locator('#editorObjectX').fill('45');page.locator('#editorObjectX').dispatch_event('change')
-        page.locator('#editorObjectWidth').fill('220');page.locator('#editorObjectWidth').dispatch_event('change')
-        assert page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0].x')==45
-        assert page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0].width')==220
-        placement=page.evaluate("""async()=>{
+        assert page.locator('#editorContextControls').is_hidden()
+        image=page.locator('.editor-image-object.selected')
+        image.hover()
+        rect=image.bounding_box();scale=rect['width']/obj['width']
+        handle=image.locator('.handle-e').bounding_box()
+        px=handle['x']+handle['width']/2;py=handle['y']+handle['height']/2
+        page.mouse.move(px,py);page.mouse.down()
+        page.mouse.move(px+(220-obj['width'])*scale,py,steps=4);page.mouse.up()
+        resized=page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0]')
+        image.hover()
+        rect=image.bounding_box();scale=rect['width']/resized['width']
+        px=rect['x']+rect['width']/2;py=rect['y']+rect['height']/2
+        page.mouse.move(px,py);page.mouse.down()
+        page.mouse.move(px+(45-resized['x'])*scale,py,steps=4);page.mouse.up()
+        exported_object=page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0]')
+        assert abs(exported_object['x']-45)<1,exported_object
+        assert abs(exported_object['width']-220)<1,exported_object
+        assert abs(exported_object['width']/exported_object['height']-1000/240)<.01
+        assert page.locator('#editorContextControls').is_hidden()
+        placement=page.evaluate("""async expected=>{
           const result=await PDFVisualEditor.exportPdf({silent:true}),task=pdfjsLib.getDocument({data:result.bytes}),doc=await task.promise;
           const ops=await (await doc.getPage(2)).getOperatorList();
           const stack=[],matrices=[];let ctm=[1,0,0,1,0,0];
@@ -174,9 +188,9 @@ try:
             else if(op===pdfjsLib.OPS.transform)ctm=pdfjsLib.Util.transform(ctm,ops.argsArray[i]);
             else if(op===pdfjsLib.OPS.paintImageXObject)matrices.push([...ctm]);
           });
-          await task.destroy();return matrices.find(m=>Math.abs(m[0]-220)<.01&&Math.abs(m[4]-45)<.01);
-        }""")
-        assert placement and abs(placement[3]-52.8)<.01,placement
+          await task.destroy();return matrices.find(m=>Math.abs(m[0]-expected.width)<.01&&Math.abs(m[4]-expected.x)<.01);
+        }""",exported_object)
+        assert placement and abs(placement[3]-exported_object['height'])<.01,placement
         before_reorder=page.evaluate('PDFVisualEditor.exportProjectState().pages')
         page.locator('#editorThumbnailList button').nth(1).focus();page.keyboard.press('Alt+ArrowDown')
         assert page.evaluate('PDFVisualEditor.exportProjectState().pages[2].objects[0].rotation')==0

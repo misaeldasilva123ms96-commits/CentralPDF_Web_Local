@@ -1,10 +1,10 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v2.0.1-pages-36';
+const CACHE_VERSION = 'centralpdf-v2.0.1-pages-38';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
-  './assets/css/workspace-modernization.css?v=2.0.1-ux2', './assets/js/workspace-modernization.js?v=2.0.1-ux1',
+  './assets/css/workspace-modernization.css?v=2.0.1-ux3', './assets/js/workspace-modernization.js?v=2.0.1-ux1',
   './', './index.html', './assets/css/styles.css', './assets/css/ux-redesign.css',
   './assets/css/layout-controls.css?v=2.0.1-ui1', './assets/css/foundation.css', './assets/css/experience-0.15.css',
   './assets/css/ocr-0.16.css', './assets/css/professional-0.17.css',
@@ -21,7 +21,7 @@ const CORE_ASSETS = [
   './assets/css/split-interactive.css?v=2.0.1-split1',
   './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=2.0.1-ingest1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
-  './assets/js/pdf-native-text.js?v=2.0.1-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=2.0.1-editor3', './assets/js/ux-enhancements.js?v=2.0.1-ui3',
+  './assets/js/pdf-native-text.js?v=2.0.1-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=2.0.1-editor5', './assets/js/ux-enhancements.js?v=2.0.1-ui3',
   './assets/js/ocr-0.16.js?v=2.0.1-names1', './assets/js/compare-0.17.js?v=2.0.1-names1', './assets/js/redaction-0.17.js?v=2.0.1-names1',
   './assets/js/forms-signatures-0.18.js?v=0.18.2', './assets/js/conversions-0.19.js?v=2.0.1-names1',
   './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/app.js?v=2.0.1-ui14', './assets/js/tool-quality-1.2.0.js?v=1.2.3',

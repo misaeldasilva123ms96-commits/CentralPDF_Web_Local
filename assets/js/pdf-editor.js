@@ -1342,13 +1342,21 @@
     const object = selectedObject();
     const panel = $('#editorSelectionPanel'); if (!panel) return;
     const dock=$('#editorContextControls');
+    // Reuse the same controls in document flow for images, without an overlay.
+    const imageActions=$('#editorImageActions');
+    if(imageActions){
+      const imageSelected=object?.type==='image';
+      imageActions.hidden=!imageSelected;
+      const target=imageSelected?imageActions:$('#editorContextFields');
+      if(target&&panel.parentElement!==target)target.appendChild(panel);
+    }
     if(dock){
       const key=object?.id||state.activeTool;
       if(dock.dataset.contextKey!==key){
         dock.dataset.contextKey=key;dock.scrollTop=0;
         const precision=$('#editorObjectSizePanel');if(precision)precision.open=false;
       }
-      dock.hidden=!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));
+      dock.hidden=object?.type==='image'||!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));
       const title=$('#editorContextTitle');if(title)title.textContent=object?`Editar ${objectLabel(object).toLocaleLowerCase('pt-BR')}`:'Opções da ferramenta';
       positionContextControls();
     }
