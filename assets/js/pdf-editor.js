@@ -1342,6 +1342,14 @@
     const object = selectedObject();
     const panel = $('#editorSelectionPanel'); if (!panel) return;
     const dock=$('#editorContextControls');
+    // Reuse the same controls in document flow for images, without an overlay.
+    const imageActions=$('#editorImageActions');
+    if(imageActions){
+      const imageSelected=object?.type==='image';
+      imageActions.hidden=!imageSelected;
+      const target=imageSelected?imageActions:$('#editorContextFields');
+      if(target&&panel.parentElement!==target)target.appendChild(panel);
+    }
     if(dock){
       const key=object?.id||state.activeTool;
       if(dock.dataset.contextKey!==key){
