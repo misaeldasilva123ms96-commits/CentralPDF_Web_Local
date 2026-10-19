@@ -161,14 +161,14 @@ try:
         assert obj['width']<=180 and obj['height']<=90
         assert page.locator('#editorContextControls').is_hidden()
         image=page.locator('.editor-image-object.selected')
-        image.scroll_into_view_if_needed()
+        image.hover()
         rect=image.bounding_box();scale=rect['width']/obj['width']
         handle=image.locator('.handle-e').bounding_box()
         px=handle['x']+handle['width']/2;py=handle['y']+handle['height']/2
         page.mouse.move(px,py);page.mouse.down()
         page.mouse.move(px+(220-obj['width'])*scale,py,steps=4);page.mouse.up()
         resized=page.evaluate('PDFVisualEditor.exportProjectState().pages[1].objects[0]')
-        image.scroll_into_view_if_needed()
+        image.hover()
         rect=image.bounding_box();scale=rect['width']/resized['width']
         px=rect['x']+rect['width']/2;py=rect['y']+rect['height']/2
         page.mouse.move(px,py);page.mouse.down()
