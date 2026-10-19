@@ -145,8 +145,10 @@ try:
             x:.15,y:.15,w:.3,h:.1,type:'text',name:'nome',label:'Nome'}]});
         }""")
         field = page.locator('#formBuilderOverlay [data-id="f1"]')
-        field.scroll_into_view_if_needed()
+        field.evaluate("el => el.scrollIntoView({block:'center',inline:'center',behavior:'instant'})")
+        field.hover()
         box = field.bounding_box()
+        assert field.evaluate("el => { const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }")
         page.mouse.move(box['x'] + box['width']/2, box['y'] + box['height']/2)
         page.mouse.down()
         page.mouse.move(box['x'] + box['width']/2 + 40, box['y'] + box['height']/2 + 30, steps=5)
@@ -171,8 +173,10 @@ try:
             x:.15,y:.15,w:.3,h:.1,dataUrl:canvas.toDataURL(),rotation:0}]});
         }""")
         signature = page.locator('#signatureOverlay [data-id="s1"]')
-        signature.scroll_into_view_if_needed()
+        signature.evaluate("el => el.scrollIntoView({block:'center',inline:'center',behavior:'instant'})")
+        signature.hover()
         box = signature.bounding_box()
+        assert signature.evaluate("el => { const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }")
         page.mouse.move(box['x']+box['width']/2, box['y']+box['height']/2)
         page.mouse.down()
         page.mouse.move(box['x']+box['width']/2+40, box['y']+box['height']/2+30, steps=4)

@@ -186,6 +186,9 @@ try:
         page.locator('.editor-image-object').click()
         assert dock.is_hidden()
         page.locator('[data-editor-tool="brush"]').click()
+        # The floating dock follows the visible page, not the toolbar above it.
+        page.locator('#editorInteractionCanvas').scroll_into_view_if_needed()
+        page.locator('#editorDrawingSettings').wait_for(state='visible')
         assert page.locator('#editorDrawingSettings').is_visible()
         assert page.locator('#editorSelectionPanel').is_hidden()
         # Returning to a tool must not leave duplicate IDs or double-bound actions.
