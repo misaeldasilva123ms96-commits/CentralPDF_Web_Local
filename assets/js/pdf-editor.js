@@ -1348,7 +1348,7 @@
         dock.dataset.contextKey=key;dock.scrollTop=0;
         const precision=$('#editorObjectSizePanel');if(precision)precision.open=false;
       }
-      dock.hidden=!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));
+      dock.hidden=object?.type==='image'||!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));
       const title=$('#editorContextTitle');if(title)title.textContent=object?`Editar ${objectLabel(object).toLocaleLowerCase('pt-BR')}`:'Opções da ferramenta';
       positionContextControls();
     }

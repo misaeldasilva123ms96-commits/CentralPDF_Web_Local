@@ -143,19 +143,48 @@ try:
             page.evaluate("document.body.dataset.theme='light'")
         page.locator('#editorTextValue').focus();page.keyboard.press('Escape')
         assert dock.is_hidden()
-        # Image selection exposes geometry, duplication and deletion in the same dock.
+        # Image selection keeps the page clear; handles and shortcuts still work.
         page.evaluate('''async()=>{
           const canvas=document.createElement('canvas');canvas.width=300;canvas.height=70;
           canvas.getContext('2d').fillRect(0,0,300,70);
           const bytes=Uint8Array.from(atob(canvas.toDataURL().split(',')[1]),c=>c.charCodeAt(0));
           await PDFVisualEditor.addImages([new File([bytes],'Assinatura João.png',{type:'image/png'})]);
         }''')
-        assert dock.is_visible() and page.locator('#editorTextControlsPanel').is_hidden()
+        if os.environ.get('CONTEXT_SCREENSHOTS'):
+            page.screenshot(path=os.path.join(os.environ['CONTEXT_SCREENSHOTS'],'image-selection.png'))
+        assert dock.is_hidden()
         assert page.locator('#editorSelectedType').inner_text()=='Imagem'
-        page.locator('#editorDuplicateObject').click()
+        for width,height in [(1440,1000),(390,844)]:
+            page.set_viewport_size({'width':width,'height':height})
+            if width==390:
+                page.locator('#editorZoom').evaluate("el=>{el.value='50';el.dispatchEvent(new Event('input',{bubbles:true}));}")
+                page.wait_for_function("document.querySelector('#editorStage').getBoundingClientRect().width < innerWidth")
+            for mode in ['simple','advanced']:
+                page.locator(f'[data-editor-mode="{mode}"]').click()
+                image=page.locator('.editor-image-object')
+                image.scroll_into_view_if_needed();image.click()
+                assert dock.is_hidden()
+                assert page.locator('.editor-image-object.selected .editor-transform-handle').count()==8
+                assert page.locator('.editor-image-object.selected .editor-rotate-handle').count()==1
+            if os.environ.get('CONTEXT_SCREENSHOTS'):
+                page.evaluate("document.body.dataset.theme='dark'")
+                page.screenshot(path=os.path.join(os.environ['CONTEXT_SCREENSHOTS'],f'image-{width}.png'))
+                page.evaluate("document.body.dataset.theme='light'")
+        page.keyboard.press('Control+d')
         assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==3
-        page.locator('#editorDeleteObject').click()
+        assert dock.is_hidden()
+        page.keyboard.press('Delete')
         assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==2
+        page.locator('#editorUndo').click()
+        assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==3
+        assert dock.is_hidden()
+        page.locator('#editorRedo').click()
+        assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==2
+        page.locator('.editor-text-content').dblclick()
+        assert dock.is_visible() and page.locator('#editorTextControlsPanel').is_visible()
+        page.locator('#editorContextDone').click()
+        page.locator('.editor-image-object').click()
+        assert dock.is_hidden()
         page.locator('[data-editor-tool="brush"]').click()
         assert page.locator('#editorDrawingSettings').is_visible()
         assert page.locator('#editorSelectionPanel').is_hidden()
