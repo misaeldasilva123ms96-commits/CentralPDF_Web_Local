@@ -67,9 +67,13 @@ Os quatro módulos de inteligência documental usam regras e análise de texto e
 - Achados de auditoria são indícios automáticos e não substituem revisão jurídica, contábil, fiscal, clínica ou administrativa.
 - Páginas sem texto podem ser digitalizações. Execute OCR e confira novamente antes de concluir que uma página está vazia.
 
-## Estabilidade e diagnóstico — 1.0
+## Estabilidade e diagnósticos
 
-A camada 1.0 registra localmente até 25 erros JavaScript para ajudar no suporte. O registro contém horário, mensagem e origem técnica, mas não inclui o conteúdo integral dos documentos. O usuário pode limpar o registro ou exportar um diagnóstico JSON.
+O registro local mantém até **250 registros únicos**, com eventos repetidos agrupados, no navegador e origem atuais. Inclui horário, mensagem, tipo e origem técnica. Não é um registro compartilhado de todos os usuários. O usuário pode buscar, copiar, baixar e limpar os logs ou exportar um diagnóstico JSON. Revise esse arquivo antes de compartilhá-lo: nomes de documentos e URLs técnicas podem aparecer nas mensagens locais.
+
+O código inclui uma integração **opcional com Sentry**, com destino público configurado. Cada navegador inicia sem consentimento; somente a autorização explícita permite novos envios. O transporte usa categorias e descrições fixas, sem documentos, texto digitado, nomes de arquivos, mensagens brutas, stack traces ou histórico local. Não utiliza replay, tracing ou anexos.
+
+O receptor recebe os metadados normais da conexão HTTP, como IP e cabeçalhos. O responsável deve conferir retenção, região, limpeza de IP/dados e acesso privado na conta Sentry. Não há promessa de anonimato absoluto, cobertura de todos os erros ou entrega garantida. Revogar descarta pendências e interrompe novos envios; limpar logs locais não apaga eventos já recebidos pelo serviço. Consulte [Diagnósticos compartilhados com Sentry](docs/diagnosticos-sentry.md).
 
 A proteção contra fechamento acidental é ativada quando a aplicação identifica um trabalho aberto. O navegador decide como apresentar o aviso e pode ignorá-lo em algumas políticas corporativas.
 

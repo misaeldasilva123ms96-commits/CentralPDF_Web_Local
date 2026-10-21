@@ -1,51 +1,61 @@
-# Guia do usuário — Central PDF & Imagem 1.0
+# Guia do usuário — Central PDF & Imagem
 
-## Abertura recomendada
+Referência da versão declarada **2.0.1**, revisada em **21/10/2026**. O nome deste arquivo foi mantido para preservar os links existentes.
 
-Use `ABRIR_CENTRAL_PDF.bat`. Ele inicia o servidor local em um endereço `127.0.0.1`, abre o navegador e habilita as condições necessárias para cache offline, projetos e recuperação mais completa.
+[Documentação](../README.md) · [Editor PDF](EDITOR_PDF.md) · [Offline e projetos](OFFLINE_E_PROJETOS.md)
+
+## Escolha como abrir
+
+- **Site:** acesse o [Central PDF & Imagem](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/). A interface e os motores são carregados pelo navegador; os documentos são processados no dispositivo.
+- **Windows:** extraia o pacote de Releases, confira o hash e execute `ABRIR_CENTRAL_PDF.bat`. Se faltarem motores, prepare-os com `PREPARAR_OFFLINE.bat` enquanto houver internet.
+- **Código-fonte:** use um servidor HTTP na raiz. Evite abrir `index.html` por `file://`, que limita Workers, módulos e cache.
+
+A versão do site acompanha as publicações da `main`; o ZIP corresponde à sua release e pode ser anterior, mesmo com o mesmo número de versão.
 
 ## Fluxo básico
 
-1. Escolha uma ferramenta pela busca, categoria, favoritos ou recentes.
-2. Adicione os documentos por clique ou arraste.
-3. Confira as páginas, arquivos e configurações.
-4. Execute a operação.
-5. Baixe o resultado ou encaminhe-o diretamente para outra ferramenta.
+1. Escolha uma ferramenta por busca, categoria, favoritos ou recentes. A Home também aceita **Abrir arquivos** e arraste, oferecendo ferramentas compatíveis.
+2. Adicione os arquivos e confira formatos, quantidade e avisos. Algumas ferramentas aceitam um documento por operação; siga a orientação para remover o anterior antes de substituí-lo.
+3. Confira páginas, sequência e configurações. Em **Juntar PDFs**, “Só capas” representa documentos inteiros e não remove as páginas internas.
+4. Defina o **Nome do arquivo final**. Espaços e acentos são preservados, com tratamento de caracteres inválidos para nomes de arquivo.
+5. Execute, acompanhe o progresso e revise a saída. O original não é sobrescrito automaticamente.
+6. Na conclusão, continue usando os arquivos atuais ou inicie outra tarefa. **Resultados** permite reutilizar saídas na mesma aba.
 
-O documento original não é substituído automaticamente.
+## Editar documentos
 
-## Trabalhos longos
+O [guia do editor](EDITOR_PDF.md) explica os modos Simples/Avançado, texto original, imagens, organização de páginas e exportação. Os controles de texto ficam junto à página. As imagens têm ações recolhíveis acima dela, com botões acessíveis por toque e sem barra suspensa sobre o documento.
 
-- Use **Projetos** para salvar um arquivo `.cpdf`.
-- Use **Processos** para acompanhar operações demoradas.
-- Use **Resultados** para reutilizar arquivos gerados na mesma sessão.
-- Para centenas de páginas, mantenha somente as abas necessárias abertas e aguarde o término antes de fechar o navegador.
+Use **Original e resultado** e **Desfazer/Refazer** antes de exportar. Edição pode invalidar assinaturas digitais; assinatura visual não equivale a certificado ICP-Brasil.
 
-## Uso offline
+## Trabalhos longos e privacidade
 
-Execute `PREPARAR_OFFLINE.bat` uma vez com internet. A preparação tenta colocar na pasta `vendor` os motores necessários para PDF, OCR, HEIC, TIFF e demais recursos opcionais.
+- Exporte **Projetos → Salvar projeto atual** para obter um `.cpdf` com cópias dos documentos e estado compatível da ferramenta.
+- **Recuperação automática** depende do armazenamento do navegador e possui limite de tamanho; não substitui um projeto salvo por você.
+- **Processos** acompanha tarefas; **Resultados** mantém arquivos na memória da aba, sem persistir após fechá-la.
+- Prepare os motores offline antes de trabalhar sem internet. Limpar dados do site pode apagar a recuperação, preferências e logs locais.
 
-## Autodiagnóstico
+Consulte [Offline e projetos](OFFLINE_E_PROJETOS.md) e [Fluxos, resultados e predefinições](FLUXOS_RESULTADOS_E_PREDEFINICOES.md).
 
-O botão **Qualidade** verifica:
+## Diagnóstico e suporte
 
-- quantidade de ferramentas registradas;
-- motores disponíveis;
-- OCR e inteligência documental;
-- projetos, recuperação, resultados e fluxos;
-- modo servidor local ou abertura direta;
-- contexto seguro e armazenamento local.
+Abra **Qualidade / Autodiagnóstico** pelo menu de configurações ou `Alt+Q`. A verificação informa motores, ferramentas, modo de execução, armazenamento e recursos disponíveis.
 
-O relatório pode ser baixado em JSON para suporte técnico.
+O registro local possui até **250 registros únicos**, agrupando repetições. Use busca/filtro, copiar, baixar ou limpar. O contador de ocorrências não representa pessoas; os logs pertencem ao navegador e à origem atuais. Revise o JSON antes de compartilhá-lo, pois pode conter nomes e mensagens técnicas.
 
-## Atalhos principais
+O envio central para **Sentry** é opcional: só começa após marcar **Permitir o envio de novos diagnósticos técnicos**. O responsável consulta eventos recebidos no painel privado do serviço; arquivos e logs antigos não são enviados automaticamente. Desmarcar revoga o envio futuro; limpar a lista local não apaga eventos centrais. [Detalhes e limites](../diagnosticos-sentry.md).
 
-- `Ctrl K`: buscar ferramentas;
-- `Alt H`: voltar ao início;
-- `Alt R`: abrir resultados;
-- `Alt P`: abrir projetos;
-- `Alt Q`: abrir diagnóstico da versão;
-- `Alt A`: abrir acessibilidade;
-- `?`: abrir ajuda;
-- `F9`: alternar barra lateral;
-- `Ctrl Shift F`: modo foco.
+## Atalhos
+
+| Atalho | Ação |
+| --- | --- |
+| `Ctrl+K` | Buscar ferramentas |
+| `Alt+H` | Início |
+| `Alt+R` | Resultados |
+| `Alt+P` | Projetos |
+| `Alt+Q` | Diagnóstico |
+| `Alt+A` | Acessibilidade |
+| `?` | Ajuda |
+| `F9` | Alternar barra lateral |
+| `Ctrl+Shift+F` | Modo de foco |
+
+Consulte também [Acessibilidade](ACESSIBILIDADE_1.0.md), [Segurança](../../SECURITY.md) e [Limitações conhecidas](../reference/LIMITACOES_CONHECIDAS_1.0.md).

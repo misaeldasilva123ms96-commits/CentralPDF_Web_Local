@@ -1,29 +1,65 @@
-# CentralPDF 2.0 — app
+# CentralPDF 2.0 — migração React
 
-Núcleo do CentralPDF 2.0 (Vite + React 19 + TypeScript). Ver
-`../docs/architecture/ADR-0001-arquitetura-2.0.md` para o contexto
-arquitetural.
+Interface em **React 19, TypeScript e Vite 7**, com versão de pacote **2.0.1**. Estado conferido em **21/10/2026**.
 
-## Comandos
+> A aplicação publicada no GitHub Pages e no pacote Windows continua na raiz do repositório. Este diretório tem build próprio; não oferece automaticamente as 34 ferramentas do produto atual. [Voltar ao projeto](../README.md).
+
+## O que existe hoje
+
+- Registro e contratos tipados de ferramentas, roteamento de runtime, validação de entrada e motor de tarefas.
+- Catálogo inicial, busca/favoritos, workspace, arquivos, configurações, progresso e resultados.
+- Ferramentas e motores PDF no navegador, além de suítes Vitest/Testing Library.
+
+| Ferramenta registrada | Estado no catálogo React |
+| --- | --- |
+| Juntar PDFs | Implementada |
+| Extrair texto | Implementada |
+| Proteger PDF | Experimental; qpdf WASM em Worker |
+| PDF para imagens | Experimental; PDF.js com limites de saída |
+| Comprimir PDF | Planejada; execução bloqueada no catálogo |
+| OCR e PDF pesquisável | Planejada; execução bloqueada no catálogo |
+
+A implementação experimental de compressão presente nos arquivos não torna a ferramenta disponível no registro. A referência executável é [`src/core/catalog.ts`](src/core/catalog.ts) e os metadados das ferramentas.
+
+Proteger PDF e PDF para imagens têm testes unitários/contratuais, mas não uma integração realista dos respectivos motores na CI. Não interprete mocks de qpdf/PDF.js como validação completa do WASM/renderizador. Faça a conferência manual com documentos sintéticos antes de liberar uma distribuição dessa interface.
+
+## Executar e validar
+
+Com Node.js 22, da raiz do repositório:
 
 ```bash
-npm install       # instala dependências
-npm run dev       # servidor de desenvolvimento
-npm run test      # Vitest (unit/componentes)
-npm run build     # tsc -b && vite build → dist/
-npm run typecheck # verificação de tipos
+npm ci --prefix app
+npm --prefix app run dev -- --host 127.0.0.1
+npm --prefix app test
+npm --prefix app run typecheck
+npm --prefix app run build
+npm --prefix app run preview -- --host 127.0.0.1
 ```
 
-## Estrutura prevista
+Abra a URL que o Vite informar. O build produz `app/dist/`. Dentro de `app/`, os equivalentes são `npm ci`, `npm run dev`, `npm test`, `npm run typecheck`, `npm run build` e `npm run preview`. Para observar testes durante desenvolvimento, use `npm run test:watch`.
+
+## Estrutura atual
 
 ```text
 src/
-├── core/         # ToolDefinition, ToolRegistry, TaskEngine, RuntimeRouter (PR 4+)
-├── workspace/    # layout 3 colunas, arquivos, configurações, progresso (PR 7)
-├── home/         # catálogo, busca, favoritas (PR 7)
-├── legacy/       # LegacyToolAdapter via iframe + postMessage (PR 8)
-└── styles/       # design tokens (tokens.css)
+├── core/         # contratos, catálogo, registro, runtime, validação e tarefas
+├── home/         # catálogo e cartões de ferramentas
+├── store/        # estado da aplicação
+├── workspace/    # layout, arquivos, ajustes, progresso e resultados
+├── tools/        # implementações PDF, motores e ponte/Worker qpdf
+├── ui/           # componentes compartilhados
+├── styles/       # tokens e estilos
+├── test/         # setup e verificações transversais
+├── types/        # declarações auxiliares
+├── App.tsx       # composição da interface
+└── main.tsx      # entrada Vite
 ```
 
-O app antigo na raiz continua sendo o produto publicado no GitHub Pages até o
-fim da migração. Este app publicará apenas a partir da Fase 3.
+Testes também ficam junto aos módulos. `legacy/` e o adaptador via iframe descritos no ADR ainda não existem neste diretório; integrações companion/remote e a migração completa são direções arquiteturais, não recursos entregues por este catálogo.
+
+## Referências
+
+- [Contribuição e validação das duas interfaces](../CONTRIBUTING.md).
+- [Estrutura e distribuição atuais](../docs/reference/ESTRUTURA_DO_PROJETO.md).
+- [ADR-0001](../docs/architecture/ADR-0001-arquitetura-2.0.md): decisão histórica e direção da migração.
+- [Componentes de terceiros](../THIRD_PARTY_NOTICES.md).

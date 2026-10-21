@@ -1,13 +1,15 @@
 # Diagnósticos compartilhados com Sentry
 
+[Documentação](README.md) · [Segurança](../SECURITY.md). Guia revisado em **21/10/2026**.
+
 Os logs da tela **Qualidade / Autodiagnóstico** pertencem ao navegador, perfil e
 origem atuais (`localStorage`). Um contador `xN` representa ocorrências repetidas,
 não pessoas. Limpar essa lista não limpa dados de outros navegadores.
 
 Esta integração oferece uma coleta central opcional. **O DSN público fornecido
 pelo responsável está configurado, mas cada navegador começa sem autorização:
-nenhum relatório é enviado antes do consentimento.** A disponibilização no site
-depende da publicação da versão configurada pelo fluxo normal do projeto. O
+nenhum relatório é enviado antes do consentimento.** A configuração integra o código atual da `main`; o site e os pacotes locais
+precisam carregar essa distribuição para disponibilizar a opção. O
 processamento dos documentos continua no navegador. Não existe painel público
 com os erros dos visitantes; o responsável consulta seu projeto privado no Sentry.
 

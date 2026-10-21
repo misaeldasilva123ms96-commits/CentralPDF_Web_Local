@@ -1,5 +1,7 @@
 # Estabilização do editor após o PR #52
 
+> Relatório histórico desta entrega. Bases, caches e resultados abaixo correspondem à validação original. Para o comportamento atual, consulte o [guia do editor](guides/EDITOR_PDF.md) e a [documentação](README.md).
+
 Base: `main` em `e9f5a70`, com o PR #52 já integrado. Esta entrega cobre recuperação de falhas e ciclo de vida de prévias do editor publicado na raiz do projeto.
 
 ## Falhas reproduzidas e correções

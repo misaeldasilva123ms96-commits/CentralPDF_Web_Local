@@ -1,5 +1,7 @@
 # Modernização UX e editor — entrega para revisão
 
+> Relatório histórico desta entrega. Bases, caches e resultados abaixo correspondem à validação original. Para o comportamento atual, consulte o [guia do editor](guides/EDITOR_PDF.md) e a [documentação](README.md).
+
 ## Base e escopo
 
 Implementação na branch `feat/centralpdf-ux-editor-v2`, criada de `main` em `d495ec1`. Os PRs #49, #50 e #51 já estão integrados nessa base. Nenhum merge, release ou publicação foi realizado.

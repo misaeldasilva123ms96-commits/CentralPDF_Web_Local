@@ -1,38 +1,35 @@
-# Central PDF 0.10 — Guia de experiência
+# Guia de experiência
 
-## Princípios aplicados
+Referência da aplicação publicada, revisada em **21/10/2026**. [Documentação](../README.md) · [Editor](EDITOR_PDF.md)
 
-1. **Divulgação progressiva:** configurações e áreas complexas aparecem somente após a seleção dos arquivos.
-2. **Contexto antes do controle:** cada módulo informa entrada, capacidade, resultado, etapas e riscos antes do processamento.
-3. **Consistência:** upload, arquivos, ajustes, estado e botão final permanecem nas mesmas posições.
-4. **Foco na tarefa:** o editor e o organizador recebem mais espaço após o arquivo ser carregado.
-5. **Segurança compreensível:** limitações e riscos aparecem no módulo correspondente, sem mensagens genéricas.
+## Princípios
 
-## Pontos de atenção por família
+1. **Contexto antes da ação:** cada ferramenta apresenta entrada, saída, opções e limitações pertinentes.
+2. **Revelar conforme a necessidade:** opções complexas são recolhíveis e ficam próximas do trabalho.
+3. **Continuidade:** arquivos, configurações, processamento e resultado compõem um fluxo; é possível continuar ou iniciar outra tarefa após baixar.
+4. **Conferência:** prévias, comparação e histórico ajudam a revisar antes da exportação.
+5. **Privacidade compreensível:** processamento documental local e compartilhamento técnico opcional são apresentados separadamente.
 
-### Organizar
-- Ordem e seleção visual claras.
-- Prévia do plano antes de dividir, extrair ou juntar.
-- Diferença explícita entre extrair e remover páginas.
+## Aplicação no editor
 
-### Editar
-- Painel muda conforme objeto ou ferramenta selecionada.
-- Cobertura visual não é apresentada como redação segura.
-- Operações de rotação, recorte e marca-d’água explicam efeitos colaterais.
+- Texto adicionado começa com caixa compacta e barra contextual junto à página.
+- Texto original usa seleção de trechos compatíveis, prévia durante a digitação e confirmação explícita.
+- Imagens mantêm arraste e alças, com ações recolhíveis acima da página para excluir, duplicar e ajustar sem teclado. Não usam painel suspenso sobre o documento.
+- A barra lateral direita fica dedicada ao documento e à saída; não é necessária para formatar o texto selecionado ou abrir as ações da imagem.
+- Miniaturas sob demanda, controles de seleção em lote e substituição com prévia ajudam a organizar sem alterar páginas por engano.
 
-### Converter
-- Formato, qualidade, tamanho e preservação de recursos são explicados.
-- Compressão alerta quando rasteriza páginas.
-- Conversão para imagem informa que o texto deixa de ser selecionável.
+## Conferência por família
 
-### Segurança
-- Módulos experimentais são identificados.
-- Senhas não são recuperadas ou quebradas.
-- Recuperação e fixação de formulários exigem conferência da cópia final.
+| Família | Ponto de atenção |
+| --- | --- |
+| Organizar | Ordem, seleção e total de páginas; capas representam documentos inteiros. |
+| Editar | Fonte, posição, histórico e cópia exportada; cobertura não é censura segura. |
+| Converter | Formato, qualidade e preservação de recursos; rasterização perde texto selecionável. |
+| Segurança | Estado experimental quando aplicável; permissões, limites e validação do resultado. |
+| Diagnóstico | Distinguir logs locais de eventos opcionais recebidos no Sentry. |
 
-## Atalhos
+## Teclado, toque e acessibilidade
 
-- `Ctrl + K`: buscar ferramentas.
-- `Ctrl + Z`: desfazer em Organizar e Editar PDF.
-- `Ctrl + Y` ou `Ctrl + Shift + Z`: refazer.
-- `Delete`: remover páginas ou objetos selecionados quando aplicável.
+Busca por `Ctrl+K`, foco visível, botões nomeados, diálogos e ações alternativas ao arraste devem ser preservados. No editor, mantenha Desfazer/Refazer, duplicar e excluir acessíveis conforme o contexto; botões por toque não devem depender de atalhos físicos.
+
+Teste desktop e viewport móvel, temas claro/escuro, foco, rolagem, controles e a saída real. Uma simulação no Chromium não comprova conformidade integral de acessibilidade nem valida todos os dispositivos. Consulte [Acessibilidade](ACESSIBILIDADE_1.0.md) e [Contribuir](../../CONTRIBUTING.md).
