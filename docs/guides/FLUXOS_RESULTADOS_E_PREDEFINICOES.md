@@ -1,4 +1,6 @@
-# Fluxos, resultados e predefinições — 0.15
+# Fluxos, resultados e predefinições
+
+Guia revisado em **21/10/2026**. [Documentação](../README.md).
 
 ## Resultados
 Ao concluir uma operação, o arquivo aparece em **Resultados**. É possível baixar novamente ou abrir diretamente em uma ferramenta compatível. Os resultados não são persistidos após fechar a aba.

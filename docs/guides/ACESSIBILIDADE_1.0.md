@@ -1,6 +1,6 @@
-# Acessibilidade — versão 1.0
+# Acessibilidade
 
-A Central PDF 1.0 oferece preferências locais de leitura e navegação.
+Guia revisado em **21/10/2026**. O aplicativo oferece preferências locais de leitura e navegação. [Documentação](../README.md).
 
 ## Preferências
 
@@ -19,4 +19,6 @@ A interface possui um link “Pular para o conteúdo principal”, regiões de s
 
 ## Limites
 
-A versão 1.0 melhora a compatibilidade com teclado e leitores de tela, mas documentos PDF e editores visuais podem conter superfícies complexas em canvas. Operações de posicionamento gráfico podem exigir mouse, toque ou caneta.
+A interface inclui recursos para teclado e leitores de tela, sem declaração de conformidade integral. Documentos PDF e editores visuais podem conter superfícies complexas em canvas. Operações de posicionamento gráfico podem exigir mouse, toque ou caneta.
+
+No editor, imagens têm ações recolhíveis acima da página para duplicar/excluir e ajustar por botões; texto mantém controles contextuais. Veja o [guia do editor](EDITOR_PDF.md). Testes em viewport móvel não substituem avaliação em aparelhos físicos ou com leitores de tela.

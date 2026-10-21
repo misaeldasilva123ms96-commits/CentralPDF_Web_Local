@@ -1,5 +1,19 @@
 ## 2.0.1 — workspace renovado e entrega verificável
 
+### Melhorias integradas após a release 2.0.1
+
+Estas entradas descrevem a evolução da `main`; não indicam uma nova release Windows. O site e os pacotes locais têm ciclos de distribuição próprios.
+
+- Preserva espaços e acentos nos nomes de download, tratando caracteres inválidos para arquivo; amplia compatibilidade de texto original com fontes CID e fallback informado.
+- Moderniza entrada global de arquivos, escolha de ferramenta, miniaturas sob demanda, seleção em lote e substituição de páginas com prévia/confirmação.
+- Mantém exportação após falha ao anexar PDF e descarta prévias inválidas ou atrasadas sem substituir a escolha atual.
+- Torna a caixa de texto adicionado compacta e aproxima a formatação da seleção, mantendo texto original, comparação, histórico e exportação.
+- Retira o painel suspenso das imagens; oferece duplicação, exclusão, medidas, proporção, alinhamento e camadas em seção recolhível acima da página, acessível por toque nos modos Simples e Avançado.
+- Amplia logs locais para até 250 registros únicos com agrupamento, busca, filtros e exportação; adiciona diagnósticos centrais opcionais via Sentry, com consentimento por navegador e categorias técnicas restritas.
+- Atualiza entrega por cache e regressões de interação, estabilidade, exportação e diagnósticos.
+- Reorganiza README, navegação documental, guias de editor/offline, privacidade e contribuição conforme o código atual, distinguindo a aplicação publicada da migração React.
+
+
 ### Editor PDF — fechamento após aplicar
 
 - Fecha o campo automaticamente após uma substituição bem-sucedida, inclusive quando o conteúdo já está aplicado.
