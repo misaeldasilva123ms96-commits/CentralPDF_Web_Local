@@ -1,10 +1,10 @@
-# Plano de estabilização e release — proposta 2.0.2
+# Plano de estabilização e release — proposta 2.1.0
 
 **Proposta, sem tag nem publicação.** O código continua declarando 2.0.1. A versão final depende da revisão e aprovação do responsável.
 
 ## Escolha da versão
 
-Uma **2.0.2** é adequada para correções compatíveis de cache offline, controles do editor, aviso de assinaturas e manutenção de ferramentas de desenvolvimento. A migração React continua separada; esta entrega não justifica anunciar migração completa ou uma versão maior.
+A proposta **2.1.0** consolida funcionalidades compatíveis acumuladas desde a tag v2.0.1, como diagnóstico central opcional, evolução da edição original e substituição de páginas, além das correções desta auditoria. Pela convenção semântica, funcionalidades novas compatíveis justificam incremento minor. A migração React continua separada; não se anuncia migração completa nem mudança incompatível de versão maior.
 
 A tag v2.0.1 foi publicada em 17/08/2026; a base da auditoria tem 78 commits posteriores. Mesmo com 2.0.1 na interface, o site já inclui melhorias ausentes do ZIP daquela release. Uma nova tag deverá apontar para o commit aprovado que inclua essas melhorias e a atualização coordenada da versão.
 
@@ -16,11 +16,11 @@ A tag v2.0.1 foi publicada em 17/08/2026; a base da auditoria tem 78 commits pos
 4. Preparar motores com `scripts/prepare-offline.ps1`, verificar hashes, grafo de assets, manifesto PDF.js completo e as regressões reais da publicação.
 5. Executar a suíte geral e confirmar o pacote extraído em Windows, com trabalho online/offline, download, fechamento do servidor e reabertura de projeto.
 6. Revisar privacidade, retenção/IP/acesso do Sentry no painel externo; conferir quota do plano sem enviar documentos. Ver checklist em [SECURITY_REVIEW.md](SECURITY_REVIEW.md).
-7. Revisar as [notas propostas](../../releases/2.0.2.md), comparar `v2.0.1` com o commit candidato, criar a tag e publicar **somente com autorização explícita**.
+7. Revisar as [notas propostas](../../releases/2.1.0.md), comparar `v2.0.1` com o commit candidato, criar a tag e publicar **somente com autorização explícita**.
 
 ## Artefatos e instalação
 
-A release deve produzir `CentralPDF_Web_Local_v2.0.2.zip`, `CentralPDF_Local_Server.exe` e `CentralPDF_Web_Local_v2.0.2.sha256`, com as atestações do workflow. Nesta auditoria, esses nomes são planejados, não arquivos publicados.
+A release deve produzir `CentralPDF_Web_Local_v2.1.0.zip`, `CentralPDF_Local_Server.exe` e `CentralPDF_Web_Local_v2.1.0.sha256`, com as atestações do workflow. Nesta auditoria, esses nomes são planejados, não arquivos publicados.
 
 - Extraia o ZIP inteiro em uma pasta nova; não misture com instalação antiga.
 - Compare o SHA-256 do executável com `checksums.sha256` e o manifesto da release. A compilação deve corresponder byte a byte à CI antes da assinatura Authenticode.
@@ -28,7 +28,7 @@ A release deve produzir `CentralPDF_Web_Local_v2.0.2.zip`, `CentralPDF_Local_Ser
 - Abra `ABRIR_CENTRAL_PDF.bat`. Motores de release devem estar preparados. Não use `file://`.
 - Exporte/importante `.cpdf` antes de migrar ou limpar dados do navegador. Projetos contêm cópias dos documentos e devem ser protegidos.
 
-A auditoria verificou a reprodução do executável 2.0.1 original e a recompilação com o patch Go 1.26.10 em Linux com destino Windows, além dos hashes dos motores preparados. Isso não é uma execução nativa Windows nem uma validação de um futuro pacote já renumerado para 2.0.2.
+A auditoria verificou a reprodução do executável 2.0.1 original e a recompilação com o patch Go 1.26.10 em Linux com destino Windows, além dos hashes dos motores preparados. Isso não é uma execução nativa Windows nem uma validação de um futuro pacote já renumerado para 2.1.0.
 
 ## Compatibilidade e limites
 

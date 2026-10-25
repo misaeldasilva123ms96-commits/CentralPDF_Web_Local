@@ -8,7 +8,7 @@
 - Atualiza Vite/Vitest e tipos Node; recompila o executável Windows com Go 1.26.10 e atualiza SHA-256, mantendo reprodução verificável.
 - Amplia testes adversariais de privacidade, regressão real das 34 ferramentas, exportação/offline e editor Chromium/Firefox.
 - Valida grafo de assets/Workers/cache e hashes no pacote Pages; fixa Actions por SHA e configura CI semanal/Dependabot.
-- Prepara relatório, checklist administrativo e proposta 2.0.2 sem criar tag, publicar release ou alterar o ruleset da main.
+- Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
 ### Melhorias integradas após a release 2.0.1

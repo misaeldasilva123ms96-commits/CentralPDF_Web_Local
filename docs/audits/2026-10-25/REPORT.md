@@ -28,7 +28,7 @@ As prioridades abaixo são operacionais da auditoria, não pontuação CVSS. Avi
 | F06 | P1 / cobertura | Registro de 34 módulos e presença de poucos arquivos não comprovavam funcionamento e pacote completo | Harness de 34 exportações reais, recarga offline, editor entre navegadores e gate de assets/Workers/hashes | Corrigido como cobertura; novos gates executam antes do upload Pages |
 | F07 | P1 / governança | Ruleset exige `test` e `build`, mas não `app-2-0` | Procedimento revisável para incluir check e atualizar verificador em conjunto | Pendente de aprovação administrativa; regra não alterada |
 | F08 | P1 / privacidade externa | Não há acesso ao projeto privado Sentry para conferir IP, retenção e acesso | Checklist verificável e limites explícitos; payload testado contra receptor local | Código/testes verificados; painel pendente do responsável |
-| F09 | P2 / distribuição | Site e ZIP v2.0.1 têm commits diferentes | Proposta 2.0.2, notas, instalação, hashes e rollback | Preparado, sem bump generalizado, tag ou publicação |
+| F09 | P2 / distribuição | Site e ZIP v2.0.1 têm commits diferentes | Proposta 2.1.0, notas, instalação, hashes e rollback | Preparado, sem bump generalizado, tag ou publicação |
 | F10 | P2 / manutenção | Ausência de CI periódico/dependências e referências mutáveis de Actions | Cron semanal só de CI, Dependabot e Actions fixadas por SHA das tags resolvidas | Configuração testada em arquivos; ativação periódica depende da integração à branch padrão |
 | F11 | P2 / plataforma | WebKit sem bibliotecas nativas; sem Windows físico/leitor de tela | Escopo emulado explícito e gates manuais de release | Não testado nessas plataformas; não contado como aprovado |
 | F12 | P2 / produto | Sem PAdES/ICP-Brasil nem Authenticode; aviso existente de chunks React >500 kB | Estudo técnico, custos/requisitos e limites; sem provedores, certificados ou refatoração cosmética | Planos preparados; capacidades não implementadas nem anunciadas como prontas |
@@ -80,7 +80,7 @@ python tests/offline-marker-cache.test.py
 
 Para os testes entre navegadores, prepare Chromium e Firefox com Playwright. No ambiente local Linux sem PowerShell, o staging foi montado com arquivos validados pelos hashes do mesmo instalador e recursos PDF.js compatíveis; o workflow Pages executa o instalador PowerShell real antes dos gates. Não se declarou teste nativo do instalador Windows.
 
-O executável final desta auditoria tem SHA-256 `215032b92ab256e87df70c13dabf2ea8dc1253c565f1f5712b79c689c7c019dd`. Compare com o arquivo versionado `checksums.sha256`. A versão do produto permanece 2.0.1; nenhum artefato 2.0.2 foi publicado.
+O executável final desta auditoria tem SHA-256 `215032b92ab256e87df70c13dabf2ea8dc1253c565f1f5712b79c689c7c019dd`. Compare com o arquivo versionado `checksums.sha256`. A versão do produto permanece 2.0.1; nenhum artefato 2.1.0 foi publicado.
 
 ## Arquivos e limites de escopo
 
@@ -101,4 +101,4 @@ O payload Sentry é restrito, mas IP/cabeçalhos da conexão são visíveis ao r
 
 **Não testados:** Windows físico/SmartScreen, WebKit/Safari, aparelhos físicos, leitores de tela, provedores comerciais, trust chain ICP-Brasil/ITI e painel privado Sentry.
 
-**Pendentes de aprovação:** incluir `app-2-0` no ruleset, coordenar bump/tag/release 2.0.2, executar eventual homologação externa e contratar certificados/provedores. Os procedimentos concretos estão nos planos vinculados. A revisão pode prosseguir sem mudar essas configurações unilateralmente; uma decisão de publicação deve considerar os gates restantes.
+**Pendentes de aprovação:** incluir `app-2-0` no ruleset, coordenar bump/tag/release 2.1.0, executar eventual homologação externa e contratar certificados/provedores. Os procedimentos concretos estão nos planos vinculados. A revisão pode prosseguir sem mudar essas configurações unilateralmente; uma decisão de publicação deve considerar os gates restantes.

@@ -17,3 +17,5 @@ Achados iniciais:
 Sentry: leitura inicial encontrou payload de lista fechada, opt-in, revogação, agregação, quotas e transporte sem SDK. Ainda não há resultado novo de validação; testar adversarialmente CPF/CNPJ/caminhos/credenciais, limites, disponibilidade e consentimento. Configurações do painel não acessíveis; checklist externo obrigatório.
 
 Limites ambientais: Linux; Windows físico/SmartScreen/leitores de tela e painel Sentry não disponíveis. Ferramenta do serviço Deep Security Scan ausente; revisão por código e testes não será apresentada como resultado desse serviço. Chromium instalado; Firefox/WebKit baixados, disponibilidade de bibliotecas nativas em avaliação. Nenhum documento real será usado e nenhum evento será enviado ao Sentry real.
+
+A intenção inicial de patch indicada em A05 foi refinada após considerar as funcionalidades acumuladas desde a tag; a recomendação final de SemVer está em [RELEASE_PLAN.md](RELEASE_PLAN.md). Nenhuma versão do runtime foi alterada.
