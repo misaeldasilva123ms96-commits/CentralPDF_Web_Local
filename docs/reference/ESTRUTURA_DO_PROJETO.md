@@ -55,7 +55,7 @@ Os nomes JavaScript da tabela pertencem a `assets/js/`, salvo o manifesto indica
 
 ## Distribuição e integridade
 
-1. **CI** valida a raiz e `app/`, roda testes Go e compara o executável Windows com a recompilação. Node.js 22, Python 3.12 e Go 1.26.5 são as versões do workflow; o módulo Go declara 1.23.
+1. **CI** valida a raiz e `app/`, roda testes Go e compara o executável Windows com a recompilação. Node.js 22, Python 3.12 e Go 1.26.10 são as versões do workflow; o módulo Go declara 1.23.
 2. **Pages** prepara motores verificados e copia somente os arquivos estáticos da raiz para o site. `app/dist/`, executável, fontes Go e testes não integram esse pacote. Em PR não há deploy; eventos elegíveis na `main` publicam pelo workflow.
 3. **Release** usa tag estável e notas em `docs/releases/`, prepara o pacote Windows e produz ZIP, executável, manifesto SHA-256 e atestações.
 

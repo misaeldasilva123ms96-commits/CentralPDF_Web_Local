@@ -38,14 +38,14 @@ run=r'''async(tool)=>{
  if(tool==='unlock')set('unlockPassword','Audit-Owner-2026');
  if(tool==='ocr'){set('ocrOutputMode','searchable');set('ocrLanguage','por');}
  auditOutputs.length=0;const start=performance.now();const result=await CentralPDFApp.processCurrentTool();const ms=performance.now()-start;
- if(!result.ok)return{tool,ok:false,ms,error:result.error?.message,status:document.querySelector('#statusBox')?.textContent};
+ if(!result.ok)return{tool,inputs:inputs.map(f=>({name:f.name,type:f.type,bytes:f.size})),ok:false,ms,error:result.error?.message,status:document.querySelector('#statusBox')?.textContent};
  const outputs=[];
  for(const o of auditOutputs){
   const bytes=new Uint8Array(await o.blob.arrayBuffer());let validation={};
   if(/\.pdf$/i.test(o.filename)){
-   if(tool==='protect'){const m=await import('/vendor/libpdf-core.mjs');const pd=await m.PDF.load(bytes,{credentials:'Audit-Test-2026'});validation={encrypted:pd.isEncrypted,authenticated:pd.isAuthenticated};f.encrypted=new File([bytes],'Protegido.pdf',{type:'application/pdf'});}
+   if(tool==='protect'){const m=await import('/vendor/libpdf-core.mjs');const pd=await m.PDF.load(bytes,{credentials:'Audit-Test-2026'});const task=pdfjsLib.getDocument({data:bytes.slice(),password:'Audit-Test-2026'});const check=await task.promise;validation={encrypted:pd.isEncrypted,authenticated:pd.isAuthenticated,pages:check.numPages};await task.destroy();f.encrypted=new File([bytes],'Protegido.pdf',{type:'application/pdf'});}
    else{const pd=await PDFLib.PDFDocument.load(bytes);validation={pages:pd.getPageCount(),fields:pd.getForm().getFields().map(x=>x.getName()),rotations:pd.getPages().map(p=>p.getRotation().angle)};const task=pdfjsLib.getDocument({data:bytes.slice()});const r=await task.promise;validation.text=(await r.getPage(1).then(p=>p.getTextContent())).items.map(i=>i.str).join(' ');await task.destroy();}
-  }else if(/\.(zip|docx|xlsx|pptx)$/i.test(o.filename)){const z=await JSZip.loadAsync(bytes);validation={entries:Object.keys(z.files)};for(const name of Object.keys(z.files).filter(n=>n.endsWith('.pdf'))){const b=await z.file(name).async('uint8array');const p=await PDFLib.PDFDocument.load(b);validation[name]={pages:p.getPageCount()};}}
+  }else if(/\.(zip|docx|xlsx|pptx)$/i.test(o.filename)){const z=await JSZip.loadAsync(bytes);validation={entries:Object.keys(z.files)};for(const name of Object.keys(z.files).filter(n=>n.endsWith('.pdf'))){const b=await z.file(name).async('uint8array');const p=await PDFLib.PDFDocument.load(b);validation[name]={pages:p.getPageCount(),bytes:b.length};}}
   else if(/\.(png|jpg|jpeg|webp)$/i.test(o.filename)){const bitmap=await createImageBitmap(o.blob);validation={width:bitmap.width,height:bitmap.height};bitmap.close();}
   else {const text=await o.blob.text();validation={text:text.slice(0,500)};if(/\.json$/i.test(o.filename))JSON.parse(text);}
   const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -57,8 +57,9 @@ run=r'''async(tool)=>{
  if(tool==='extract'&&outputs[0]?.validation.pages!==2)problem.push('Wrong extracted page count');
  if(tool==='ocr'&&!outputs.some(o=>/CONTRATO/.test(o.validation.text||'')&&/1250/.test(o.validation.text||'')))problem.push('Real OCR did not recognize expected text');
  if(tool==='redact'&&outputs.some(o=>/CONTRATO/.test(o.validation.text||'')))problem.push('Rasterized redaction retained source text');
+ if(tool==='compress'){const o=outputs[0];const candidate=Object.entries(o.validation).find(([key])=>key.endsWith('.pdf'));if(!candidate||candidate[1].bytes>=inputs[0].size)problem.push('Scanned fixture did not become smaller');}
  if(tool==='flattenForms'&&outputs.some(o=>o.validation.fields?.length))problem.push('Form fields were not flattened');
- return{tool,ok:problem.length===0,ms,outputs,error:problem.join('; ')};
+ return{tool,inputs:inputs.map(f=>({name:f.name,type:f.type,bytes:f.size})),ok:problem.length===0,ms,outputs,error:problem.join('; ')};
 }'''
 rows=[]
 try:

@@ -14,7 +14,7 @@ Use uma branch a partir da `main` atualizada. Preserve mudanças não relacionad
 
 ## Ambiente
 
-A CI usa **Node.js 22**, **Python 3.12**, **Go 1.26.5** e Chromium do Playwright. `server/go.mod` declara Go 1.23, mas a comparação byte a byte do executável exige o compilador e as flags usados pela CI.
+A CI usa **Node.js 22**, **Python 3.12**, **Go 1.26.10** e Chromium do Playwright. `server/go.mod` declara Go 1.23, mas a comparação byte a byte do executável exige o compilador e as flags usados pela CI.
 
 Da raiz, depois de clonar o repositório e entrar na pasta:
 
@@ -79,7 +79,7 @@ O catálogo gerado deve acompanhar alterações intencionais de `toolConfig`. N�
 
 ### Integridade do executável
 
-No ambiente de compilação reproduzível, use **Go 1.26.5** e as mesmas flags da CI:
+No ambiente de compilação reproduzível, use **Go 1.26.10** e as mesmas flags da CI:
 
 ```bash
 sha256sum -c checksums.sha256

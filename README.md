@@ -213,7 +213,7 @@ Estas são **versões adotadas no repositório**, não uma afirmação sobre a �
 | PDF.js | `6.2.108`, legacy ESM com Worker, fontes, CMaps e WASM |
 | pdf-lib | `1.17.1` |
 | Tesseract.js / core | `7.0.0`, com idiomas português e inglês na preparação offline |
-| Go | CI e compilação reproduzível em `1.26.5`; `go.mod` declara `1.23` |
+| Go | CI e compilação reproduzível em `1.26.10`; `go.mod` declara `1.23` |
 | Node.js / Python | CI em Node.js `22` e Python `3.12` |
 | Migração da interface | React `19`, TypeScript `5`, Vite `7` |
 

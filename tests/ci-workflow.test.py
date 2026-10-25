@@ -11,7 +11,7 @@ required = [
     "actions/setup-go@v7",
     "node-version: 22",
     'python-version: "3.12"',
-    'go-version: "1.26.5"',
+    'go-version: "1.26.10"',
     "cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.ci.exe",
 ]
 
