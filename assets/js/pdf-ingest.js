@@ -70,6 +70,8 @@
       return {
         status: 'valid',
         pageCount,
+        signatureFields: Boolean(parsed?.signatureFields),
+        digitalSignatures: Boolean(parsed?.digitalSignatures),
         name: String(metadata?.name || ''),
         size,
         mimeType: String(metadata?.mimeType ?? metadata?.type ?? '')
@@ -96,9 +98,26 @@
     return inspectOwnedPdfBytes(bytes, { name: file.name, mimeType: file.type }, options?.parse);
   }
 
+  // Structural detection only: never asserts certificate trust or signature validity.
+  function signatureInfo(document, library) {
+    let signatureFields=false, digitalSignatures=false;
+    const name=value=>library.PDFName.of(value);
+    try {
+      for(const [,object] of document.context.enumerateIndirectObjects()) {
+        if(!(object instanceof library.PDFDict))continue;
+        if(object.get(name('FT'))?.toString()==='/Sig')signatureFields=true;
+        if(object.has(name('ByteRange'))&&object.has(name('Contents'))) {
+          const range=object.lookup(name('ByteRange'));
+          if(range instanceof library.PDFArray && range.size()>=4)digitalSignatures=true;
+        }
+      }
+    }catch(_) { /* Unreadable signature structures are not proof of absence. */ }
+    return {signatureFields,digitalSignatures};
+  }
+
   function describeError(error) {
     return error instanceof PdfIngestError ? error.message : messages.corrupted;
   }
 
-  return { PdfIngestError, classifyParserError, describeError, hasPdfSignature, inspectPdfBytes, inspectPdfFile, isPdfCandidate };
+  return { signatureInfo, PdfIngestError, classifyParserError, describeError, hasPdfSignature, inspectPdfBytes, inspectPdfFile, isPdfCandidate };
 });
