@@ -48,8 +48,8 @@ try:
         cached = page.evaluate(
             """async () => {
               const cache = await caches.open('centralpdf-v2.0.1-pages-39-core');
-              const app = await cache.match('/assets/js/app.js?v=2.0.1-ui14');
-              const ingest = await cache.match('/assets/js/pdf-ingest.js?v=2.0.1-ingest1');
+              const app = await cache.match('/assets/js/app.js?v=2.0.1-ui15');
+              const ingest = await cache.match('/assets/js/pdf-ingest.js?v=2.0.1-ingest2');
               return {app: Boolean(app), ingest: Boolean(ingest)};
             }"""
         )
@@ -58,8 +58,8 @@ try:
         context.set_offline(True)
         offline = page.evaluate(
             """async () => ({
-              app: (await (await fetch('/assets/js/app.js?v=2.0.1-ui14')).text()).includes('fileIngestChain'),
-              ingest: (await (await fetch('/assets/js/pdf-ingest.js?v=2.0.1-ingest1')).text()).includes('inspectPdfFile')
+              app: (await (await fetch('/assets/js/app.js?v=2.0.1-ui15')).text()).includes('fileIngestChain'),
+              ingest: (await (await fetch('/assets/js/pdf-ingest.js?v=2.0.1-ingest2')).text()).includes('inspectPdfFile')
             })"""
         )
         assert offline == {"app": True, "ingest": True}, offline
