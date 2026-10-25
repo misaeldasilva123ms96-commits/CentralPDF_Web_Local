@@ -31,7 +31,12 @@ run=r'''async(tool)=>{
  if(tool==='watermark')set('watermarkText','AUDITORIA');
  if(tool==='split')set('splitMode','pages');
  if(tool==='extract')set('extractPages','1,3');
- if(tool==='redact'){set('redactionRasterAll',true);set('redactionReport',false);}
+ if(tool==='redact'){
+  set('redactionRasterAll',true);set('redactionReport',false);set('redactionSearch','CONTRATO');
+  const marked=new Promise((resolve,reject)=>{const host=document.querySelector('#redactionSummary');let timer;const observer=new MutationObserver(()=>{if(host.textContent.includes('3 área(s)')){observer.disconnect();clearTimeout(timer);resolve();}});observer.observe(host,{childList:true,subtree:true});timer=setTimeout(()=>{observer.disconnect();reject(new Error('Text redaction search did not mark the three real pages'));},10000);});
+  document.querySelector('#redactionFind').click();await marked;
+ }
+
  if(tool==='formBuilder')await CentralPDFForms.restoreProjectState({page:1,seq:1,fields:[{id:'f1',page:1,x:.1,y:.5,w:.5,h:.06,type:'text',name:'audit_name',label:'Nome',defaultValue:'Auditoria',options:[],fontSize:11,textColor:'#111827',borderColor:'#111827',background:'#ffffff'}]});
  if(tool==='signPdf')await CentralPDFSignatures.restoreProjectState({page:1,seq:1,items:[{id:'s1',page:1,x:.1,y:.7,w:.25,h:.06,dataUrl:auditDataUrl,rotation:0,signerName:'Pessoa Teste',date:''}]});
  if(tool==='protect'){set('protectPassword','Audit-Test-2026');set('protectPasswordConfirm','Audit-Test-2026');set('protectOwnerPassword','Audit-Owner-2026');}
@@ -44,7 +49,11 @@ run=r'''async(tool)=>{
   const bytes=new Uint8Array(await o.blob.arrayBuffer());let validation={};
   if(/\.pdf$/i.test(o.filename)){
    if(tool==='protect'){const m=await import('/vendor/libpdf-core.mjs');const pd=await m.PDF.load(bytes,{credentials:'Audit-Test-2026'});const task=pdfjsLib.getDocument({data:bytes.slice(),password:'Audit-Test-2026'});const check=await task.promise;validation={encrypted:pd.isEncrypted,authenticated:pd.isAuthenticated,pages:check.numPages};await task.destroy();f.encrypted=new File([bytes],'Protegido.pdf',{type:'application/pdf'});}
-   else{const pd=await PDFLib.PDFDocument.load(bytes);validation={pages:pd.getPageCount(),fields:pd.getForm().getFields().map(x=>x.getName()),rotations:pd.getPages().map(p=>p.getRotation().angle)};const task=pdfjsLib.getDocument({data:bytes.slice()});const r=await task.promise;validation.text=(await r.getPage(1).then(p=>p.getTextContent())).items.map(i=>i.str).join(' ');await task.destroy();}
+   else{const pd=await PDFLib.PDFDocument.load(bytes);validation={pages:pd.getPageCount(),fields:pd.getForm().getFields().map(x=>x.getName()),rotations:pd.getPages().map(p=>p.getRotation().angle)};const task=pdfjsLib.getDocument({data:bytes.slice()});const r=await task.promise;validation.text=(await r.getPage(1).then(p=>p.getTextContent())).items.map(i=>i.str).join(' ');if(tool==='redact'){
+    const rp=await r.getPage(1);const v=rp.getViewport({scale:1});const canvas=document.createElement('canvas');canvas.width=Math.ceil(v.width);canvas.height=Math.ceil(v.height);await rp.render({canvasContext:canvas.getContext('2d'),viewport:v}).promise;
+    const pixels=canvas.getContext('2d').getImageData(35,82,160,9).data;let black=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i]<30&&pixels[i+1]<30&&pixels[i+2]<30)black++;
+    validation.blackCoverage=black/(160*9);validation.redactedAreas=CentralPDFRedaction.getLast().pages.reduce((n,p)=>n+p.areas,0);
+   }await task.destroy();}
   }else if(/\.(zip|docx|xlsx|pptx)$/i.test(o.filename)){const z=await JSZip.loadAsync(bytes);validation={entries:Object.keys(z.files)};for(const name of Object.keys(z.files).filter(n=>n.endsWith('.pdf'))){const b=await z.file(name).async('uint8array');const p=await PDFLib.PDFDocument.load(b);validation[name]={pages:p.getPageCount(),bytes:b.length};}}
   else if(/\.(png|jpg|jpeg|webp)$/i.test(o.filename)){const bitmap=await createImageBitmap(o.blob);validation={width:bitmap.width,height:bitmap.height};bitmap.close();}
   else {const text=await o.blob.text();validation={text:text.slice(0,500)};if(/\.json$/i.test(o.filename))JSON.parse(text);}
@@ -56,7 +65,7 @@ run=r'''async(tool)=>{
  if(tool==='merge'&&outputs[0]?.validation.pages!==5)problem.push('Merged output lost pages');
  if(tool==='extract'&&outputs[0]?.validation.pages!==2)problem.push('Wrong extracted page count');
  if(tool==='ocr'&&!outputs.some(o=>/CONTRATO/.test(o.validation.text||'')&&/1250/.test(o.validation.text||'')))problem.push('Real OCR did not recognize expected text');
- if(tool==='redact'&&outputs.some(o=>/CONTRATO/.test(o.validation.text||'')))problem.push('Rasterized redaction retained source text');
+ if(tool==='redact'&&outputs.some(o=>/CONTRATO/.test(o.validation.text||'')||o.validation.redactedAreas!==3||o.validation.blackCoverage<.95))problem.push('Redaction did not remove selected text visually and structurally');
  if(tool==='compress'){const o=outputs[0];const candidate=Object.entries(o.validation).find(([key])=>key.endsWith('.pdf'));if(!candidate||candidate[1].bytes>=inputs[0].size)problem.push('Scanned fixture did not become smaller');}
  if(tool==='flattenForms'&&outputs.some(o=>o.validation.fields?.length))problem.push('Form fields were not flattened');
  return{tool,inputs:inputs.map(f=>({name:f.name,type:f.type,bytes:f.size})),ok:problem.length===0,ms,outputs,error:problem.join('; ')};
@@ -85,7 +94,14 @@ try:
     const rotated=await PDFLib.PDFDocument.load(await auditFixtures.scan.arrayBuffer());rotated.getPage(0).setRotation(PDFLib.degrees(90));
     await CentralPDFApp.openFilesInTool([new File([await rotated.save()],'Digitalizacao girada.pdf',{type:'application/pdf'})],'ocr');document.querySelector('#ocrOutputMode').value='searchable';document.querySelector('#ocrManualRotation').value='270';document.querySelector('#ocrRecognitionMode').value='force';auditOutputs.length=0;const r=await CentralPDFApp.processCurrentTool();if(!r.ok)throw r.error;
     const rt=pdfjsLib.getDocument({data:await getOutputPdf()});const rp=await rt.promise;const recognized=(await (await rp.getPage(1)).getTextContent()).items.map(i=>i.str).join(' ');await rt.destroy();if(!recognized.includes('CONTRATO')||!recognized.includes('1250'))throw new Error('Rotated OCR failed expected recognition');
-    return {compression:{nativeText:true,nativeVector:true,noReductionPreservesBytes:stable,sizes},rotatedOCR:{sourceRotation:90,manualCorrection:270,text:recognized}};
+    const office={};
+    for(const format of ['docx','xlsx','pptx']){
+      await CentralPDFApp.openFilesInTool([auditFixtures.pdf],'pdfToOffice');const select=document.querySelector('#officeExportFormat');select.value=format;select.dispatchEvent(new Event('change',{bubbles:true}));auditOutputs.length=0;const run=await CentralPDFApp.processCurrentTool();if(!run.ok)throw run.error;
+      const output=auditOutputs[0];const zip=await JSZip.loadAsync(output.blob);const names=Object.keys(zip.files);const main={docx:'word/document.xml',xlsx:'xl/worksheets/sheet1.xml',pptx:'ppt/slides/slide1.xml'}[format];if(!zip.file(main)||!zip.file('[Content_Types].xml'))throw new Error('Office package missing main XML');
+      for(const name of names.filter(n=>/\.(xml|rels)$/.test(n))){const xml=await zip.file(name).async('text');if(new DOMParser().parseFromString(xml,'application/xml').querySelector('parsererror'))throw new Error('Malformed Office XML: '+name);}
+      office[format]={filename:output.filename,bytes:output.blob.size,entries:names.length,xmlValid:true};
+    }
+    return {compression:{nativeText:true,nativeVector:true,noReductionPreservesBytes:stable,sizes},rotatedOCR:{sourceRotation:90,manualCorrection:270,text:recognized},office};
   }""")
   args.report.write_text(json.dumps({'results':rows,'pageErrors':errors,'edgeCases':edges},ensure_ascii=False,indent=2))
   b.close()

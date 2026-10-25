@@ -6,16 +6,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 61.099999994039536,
+      "ms": 41,
       "outputs": [
         {
           "name": "Contrato João_organizado.pdf",
           "size": 1525,
-          "sha256": "561348eff1d1a166de67815a04f25da9f2707f31f2509d9a1d249140128b3877",
+          "sha256": "be3be81ab08411569de509aae9251669d7a6a9857f26c9ff5527ba3fc5bd4a55",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -36,16 +36,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 141.90000000596046,
+      "ms": 149.8999999910593,
       "outputs": [
         {
           "name": "Contrato João_editado.pdf",
           "size": 29264,
-          "sha256": "8042a1fb536bdd623691cd4c6dd060c2788dea6ef259f858b0903b6d86dd5a78",
+          "sha256": "637ed9216deb7a7c1f4d81aba82930497b1906281ae3ffeb923bc8fb1d0b871d",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -66,7 +66,7 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         },
         {
           "name": "Anexo São Paulo.pdf",
@@ -75,12 +75,12 @@
         }
       ],
       "ok": true,
-      "ms": 13.5,
+      "ms": 12.900000005960464,
       "outputs": [
         {
           "name": "PDF_unido.pdf",
           "size": 2081,
-          "sha256": "3fe13845d18b912fd3c7789a888e72d5e214907af54689cc337e7b519656b1d8",
+          "sha256": "33e2b4d11ef105e1c392ddd6a1c197920c724dbea04977c1592254f84f6c3d8b",
           "validation": {
             "pages": 5,
             "fields": [],
@@ -103,16 +103,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 10.299999997019768,
+      "ms": 31.600000008940697,
       "outputs": [
         {
           "name": "Contrato João_dividido.zip",
-          "size": 3030,
-          "sha256": "55bf25a6be0239ba1751502c468b2f16fbb11c4d9128cdbc6a33f6af8d98f7d5",
+          "size": 3028,
+          "sha256": "a53785c4610f96dd9a864afd62985955a0313db245adcc14419a35a6815602ec",
           "validation": {
             "entries": [
               "Contrato João_dividido_parte_01_paginas_1-2.pdf",
@@ -125,7 +125,7 @@
             },
             "Contrato João_dividido_parte_02_paginas_3.pdf": {
               "pages": 1,
-              "bytes": 949
+              "bytes": 947
             }
           }
         }
@@ -138,16 +138,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 13.5,
+      "ms": 9.700000002980232,
       "outputs": [
         {
           "name": "Contrato João_extracao_01.pdf",
           "size": 1236,
-          "sha256": "5ecb7a4ba867f76b050923dd095efa4a65e740f44219f1b46f730395124989d0",
+          "sha256": "b1d3c0ccd814c238cde6fe60503107d5d0ca005c31777c45ce51bceacf138c1a",
           "validation": {
             "pages": 2,
             "fields": [],
@@ -167,16 +167,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 9.5,
+      "ms": 9,
       "outputs": [
         {
           "name": "Contrato João_girado.pdf",
-          "size": 1533,
-          "sha256": "8e099303d3188806ccb349ccfc651a0be18254f840f7d802107b95a58585e36e",
+          "size": 1534,
+          "sha256": "3699951c6b2327a6cc41d7c18018111da04aa93b054944726e2476305eea763a",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -197,16 +197,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 23.100000008940697,
+      "ms": 38.6000000089407,
       "outputs": [
         {
           "name": "Contrato João_marca_dagua.pdf",
-          "size": 2523,
-          "sha256": "bdd91b620a923df0b93338c52fbb41d1eacd50987fe10c44c7c0e69351e7231a",
+          "size": 2524,
+          "sha256": "233b3740a5cfdaaffd2394bf0e22eab76a22f99ce2f022c3dcf01e1390a0067d",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -227,16 +227,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 16.299999997019768,
+      "ms": 13,
       "outputs": [
         {
           "name": "Contrato João_numerado.pdf",
-          "size": 2239,
-          "sha256": "fc1583ee094569f57429f4871fbd71ba084869a2a0f57c34a7b48a62ad694b8a",
+          "size": 2240,
+          "sha256": "fb6797e6d0401ebff01fc5ad99fc868cb12ec58e38dbe4987e96d467f70723f0",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -261,12 +261,12 @@
         }
       ],
       "ok": true,
-      "ms": 85,
+      "ms": 72.40000000596046,
       "outputs": [
         {
           "name": "imagens_convertidas.pdf",
           "size": 28274,
-          "sha256": "4a5cb88816e0a06fb277cbfa4413d6911b043dfabc7877b45fbfe28c3db77eef",
+          "sha256": "0dd114934a284e10d63d041148daa4b8f97431628890f40e8e8889f206c70cf1",
           "validation": {
             "pages": 1,
             "fields": [],
@@ -289,7 +289,7 @@
         }
       ],
       "ok": true,
-      "ms": 49.20000000298023,
+      "ms": 43.79999999701977,
       "outputs": [
         {
           "name": "Imagem São Paulo_convertida.jpg",
@@ -313,12 +313,12 @@
         }
       ],
       "ok": true,
-      "ms": 496.1000000089407,
+      "ms": 471.19999998807907,
       "outputs": [
         {
           "name": "PDFs_comprimidos.zip",
-          "size": 16044,
-          "sha256": "96cb647119178d7313db1928047bca344e7020b2ce0899333a9be76ac4ef94b7",
+          "size": 16046,
+          "sha256": "08cea7fcf270dcad629494e37f86ec05686fde9d9d27c09582f1d91b1d533ca3",
           "validation": {
             "entries": [
               "Digitalização_comprimido.pdf",
@@ -339,16 +339,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 169.59999999403954,
+      "ms": 152.79999999701977,
       "outputs": [
         {
           "name": "PDF_para_imagens.zip",
           "size": 63652,
-          "sha256": "fa7fed8424bcfd07f55aca599f6e18a401a8fcea59d1b1cc0a17838393fd6774",
+          "sha256": "130434a351e1770736d0e9c331cc4b71ba7d1da5b766e3aa7ab40fd15df3e565",
           "validation": {
             "entries": [
               "Contrato João_pagina_1.jpg",
@@ -366,16 +366,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 8.5,
+      "ms": 10.199999988079071,
       "outputs": [
         {
           "name": "Contrato João_recortado.pdf",
-          "size": 1539,
-          "sha256": "987dbd3ce7f0e22fcfd58f1fcb40fd4db9802e3395e6ec25aeed83cf0793cf4d",
+          "size": 1538,
+          "sha256": "5633c62138d52958e1521df7bd4dcb371ec3722baa539ee8eca2e27cc71d6e5c",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -396,16 +396,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 12.5,
+      "ms": 12.199999988079071,
       "outputs": [
         {
           "name": "Contrato João_sem_metadados.pdf",
-          "size": 1463,
-          "sha256": "729fa5b4285da64d520c8bd198e06433c418c4601fbb4c5fb2d93ef940b43ed5",
+          "size": 1464,
+          "sha256": "87a650636f59a5ac10156e62d758cf9836a8fc569de8bf060b3eb86a44b76efa",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -426,16 +426,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 10.700000002980232,
+      "ms": 20.400000005960464,
       "outputs": [
         {
           "name": "Contrato João_normalizado.pdf",
-          "size": 1523,
-          "sha256": "027c54f04a0f9b5fb2f5b09af6baa14ef12229458db19ebd05cd0b5105642c0f",
+          "size": 1524,
+          "sha256": "b2a50bafdb315992c9bc69d7325102b33b125e63f3739fb2f06eaac06e65cde1",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -456,11 +456,11 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 138.29999999701977,
+      "ms": 105.1000000089407,
       "outputs": [
         {
           "name": "textos_extraidos.txt",
@@ -483,12 +483,12 @@
         }
       ],
       "ok": true,
-      "ms": 912.5999999940395,
+      "ms": 885,
       "outputs": [
         {
           "name": "Imagem São Paulo_pesquisavel.pdf",
-          "size": 65886,
-          "sha256": "12c02f6e9e0a9f0a6cabef81022cd1b51e08109bb8a4cba09a27f17233cd02a2",
+          "size": 65888,
+          "sha256": "f3b5cd2b6a59662dbe3dfb91628d2dbabcd827b5a24e85aa2f02453f8942b532",
           "validation": {
             "pages": 1,
             "fields": [],
@@ -507,7 +507,7 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         },
         {
           "name": "Anexo São Paulo.pdf",
@@ -516,12 +516,12 @@
         }
       ],
       "ok": true,
-      "ms": 425.29999999701977,
+      "ms": 373.70000000298023,
       "outputs": [
         {
           "name": "Contrato João_versus_Anexo São Paulo_comparacao.zip",
           "size": 101406,
-          "sha256": "a17226f66e9ee9e468cf1d455bdb13310fcb08dffbaf6a06127956bbdcc8f08f",
+          "sha256": "6c3012de29ecff480357e6dea38bf806a4c0e17a5bea61720a3339e1aff68b46",
           "validation": {
             "entries": [
               "imagens/",
@@ -549,16 +549,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 64.59999999403954,
+      "ms": 54,
       "outputs": [
         {
           "name": "Contrato João_censurado.pdf",
-          "size": 96156,
-          "sha256": "69b9c606630f1fad75dbfb7ae36312da9969eb45373098df6f3288916b5455f0",
+          "size": 73492,
+          "sha256": "586fd88bc266563742cbedb0a972320630e7eeb3cdaf100870d794377e94cdd4",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -567,7 +567,9 @@
               0,
               0
             ],
-            "text": ""
+            "text": "",
+            "blackCoverage": 1,
+            "redactedAreas": 3
           }
         }
       ],
@@ -579,16 +581,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 24.700000002980232,
+      "ms": 22.299999997019768,
       "outputs": [
         {
           "name": "Contrato João_formulario_preenchivel.pdf",
-          "size": 2813,
-          "sha256": "56305972026327164acbf677cf25e5d156b829bf98f6b35b68546f8c28b1d9ec",
+          "size": 2812,
+          "sha256": "194ee0a852d058491268933372ba870c931aa9bae1ad5b3e04c4c6fe8f4b73c4",
           "validation": {
             "pages": 3,
             "fields": [
@@ -611,16 +613,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 83.29999999701977,
+      "ms": 76.90000000596046,
       "outputs": [
         {
           "name": "Contrato João_assinado_visual.pdf",
           "size": 29455,
-          "sha256": "60dad3dc469f1ee2eb0731288e594db126e5f27801c6f311fbca9a15b332b0ec",
+          "sha256": "159e826b50432e0dbc8a30832a77e42601dd53766236d40f73b4424d0d869a9e",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -641,16 +643,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 119.79999999701977,
+      "ms": 108.8999999910593,
       "outputs": [
         {
           "name": "Contrato João.docx",
           "size": 2899,
-          "sha256": "838981fe670bff9c9a98ae04b805fff8d13a39c8be24f46cb1d56b58746736cf",
+          "sha256": "949a83fb56747d32d40506db418803aa5b7feb0048c87522b9ade4cbd9dacb7e",
           "validation": {
             "entries": [
               "[Content_Types].xml",
@@ -676,16 +678,16 @@
         {
           "name": "Documento.docx",
           "type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "bytes": 2778
+          "bytes": 2779
         }
       ],
       "ok": true,
-      "ms": 11.299999997019768,
+      "ms": 18.5,
       "outputs": [
         {
           "name": "Documento.pdf",
-          "size": 983,
-          "sha256": "d5c7099921a7ff15c5c9ddfbbae27eee6edbd1ff57e122cb40ecfb5d5adf5510",
+          "size": 982,
+          "sha256": "8d782eb541877181d6e5ac96e34378db1e9ddfcf0e78db66deb84f4c40af1c66",
           "validation": {
             "pages": 1,
             "fields": [],
@@ -708,12 +710,12 @@
         }
       ],
       "ok": true,
-      "ms": 119.3999999910593,
+      "ms": 130.20000000298023,
       "outputs": [
         {
           "name": "imagens_extraidas.zip",
-          "size": 43619,
-          "sha256": "a6463fc2f39c02b1c95f5927d66e8a0728eafed8d5678efe830240a3ea78c3da",
+          "size": 43618,
+          "sha256": "5cc4fb1a0af166ec65cfe8c8e31d2ecb15156f30bd728e38ab004d2bd3db1b9f",
           "validation": {
             "entries": [
               "Digitalização/",
@@ -731,16 +733,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 21,
+      "ms": 15.5,
       "outputs": [
         {
           "name": "pacote_de_arquivamento.zip",
-          "size": 2685,
-          "sha256": "73b420d852623d864de5ea37ec1fe9dca31a21a5eecb7affe6ec31df8ba2bece",
+          "size": 2681,
+          "sha256": "c5e5fc2daab333cb7a9d4eafa3d0f7bd7b216203eaf003b7f90f4d104752d696",
           "validation": {
             "entries": [
               "Contrato João_arquivamento.pdf",
@@ -762,16 +764,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 116.79999999701977,
+      "ms": 100.8999999910593,
       "outputs": [
         {
           "name": "documentAssistant_2026-10-25.zip",
-          "size": 2542,
-          "sha256": "17da15d0a0e69e514b0f385aba0a60f6320b766bd6c1e0d1f593be814f880ba4",
+          "size": 2543,
+          "sha256": "f823a6521e87ef56ac76251ed9d189f75c50ad91f161d9b95d569fd4c47fc133",
           "validation": {
             "entries": [
               "relatorio_assistente.html",
@@ -790,16 +792,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 18,
+      "ms": 11.5,
       "outputs": [
         {
           "name": "structuredExtraction_2026-10-25.zip",
-          "size": 1720,
-          "sha256": "0d98f64a317a589b96a33d91cc9476e5ed912d4beda7ae4961158b6f0460874d",
+          "size": 1719,
+          "sha256": "2403b3552c2764e478b93d028786032069128c8c2f8d797a18e6a30bed304c71",
           "validation": {
             "entries": [
               "extracao_estruturada.csv",
@@ -818,16 +820,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 49.70000000298023,
+      "ms": 11.600000008940697,
       "outputs": [
         {
           "name": "documentAudit_2026-10-25.zip",
           "size": 2374,
-          "sha256": "5e33ea7ff6481be5cf1c2957fea7ee36557f18b3cb6bdebf81d7463dccdd2042",
+          "sha256": "f3e61c04d99224f0520a3982526303215cb18de1426c1e586be18c39e6853336",
           "validation": {
             "entries": [
               "relatorio_auditoria.html",
@@ -846,16 +848,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 107.59999999403954,
+      "ms": 103.29999999701977,
       "outputs": [
         {
           "name": "classifyRename_2026-10-25.zip",
           "size": 3637,
-          "sha256": "2c6b93b1424a0c8676d376b6d5e06858efbb30960bbfbd1dc0308c5cebddab2c",
+          "sha256": "2952b5e87281622143783495860b1ca4cc23376ca9911c70c50aac909e589801",
           "validation": {
             "entries": [
               "arquivos_renomeados/",
@@ -867,7 +869,7 @@
             ],
             "arquivos_renomeados/CONTRATO_2026-10-25_SEM_NUMERO.pdf": {
               "pages": 3,
-              "bytes": 1523
+              "bytes": 1524
             }
           }
         }
@@ -880,16 +882,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 137.59999999403954,
+      "ms": 147.3999999910593,
       "outputs": [
         {
           "name": "Contrato João_protegido.pdf",
           "size": 3609,
-          "sha256": "fc8224d28671db326f17d77f449692d7291612a452772275f0a47ba5ac667b71",
+          "sha256": "708d84ad6269f565c4474fbfbaffc0f93a3640dae0bdcd98573292b4b4ac2475",
           "validation": {
             "encrypted": true,
             "authenticated": true,
@@ -909,12 +911,12 @@
         }
       ],
       "ok": true,
-      "ms": 54.5,
+      "ms": 51.5,
       "outputs": [
         {
           "name": "Protegido_desbloqueado.pdf",
           "size": 2706,
-          "sha256": "96bf3c111488658250ef6869ade83a43daf43dd97faa589e956f5cfb3e965782",
+          "sha256": "f993f1a159acbec1c3609b5572826d715bdf74b8fa3c1cf35a44ea72d23f078c",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -935,16 +937,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 31.5,
+      "ms": 13,
       "outputs": [
         {
           "name": "diagnostico_PDF.zip",
           "size": 988,
-          "sha256": "9222c5e1d131100b56e5276e1cf33623f4089e2b97f1783698d56a97209cc8f0",
+          "sha256": "f5dc5f9fc624f7a9cee44ab99fa7091cb669d989973fbde5cf8d4ced911674ad",
           "validation": {
             "entries": [
               "diagnostico.txt",
@@ -961,16 +963,16 @@
         {
           "name": "Contrato João.pdf",
           "type": "application/pdf",
-          "bytes": 1523
+          "bytes": 1524
         }
       ],
       "ok": true,
-      "ms": 9.599999994039536,
+      "ms": 16.200000002980232,
       "outputs": [
         {
           "name": "Contrato João_recuperado.pdf",
-          "size": 1523,
-          "sha256": "027c54f04a0f9b5fb2f5b09af6baa14ef12229458db19ebd05cd0b5105642c0f",
+          "size": 1524,
+          "sha256": "b2a50bafdb315992c9bc69d7325102b33b125e63f3739fb2f06eaac06e65cde1",
           "validation": {
             "pages": 3,
             "fields": [],
@@ -991,16 +993,16 @@
         {
           "name": "Formulário.pdf",
           "type": "application/pdf",
-          "bytes": 1571
+          "bytes": 1572
         }
       ],
       "ok": true,
-      "ms": 11.599999994039536,
+      "ms": 11.099999994039536,
       "outputs": [
         {
           "name": "Formulário_formulario_fixado.pdf",
           "size": 1625,
-          "sha256": "d96fa9b58ce6be0929a428d03d131f38eb57bc29f1ff31a6914d07210afee3ba",
+          "sha256": "79d821af13bfd33fa3bbaed690e7ef8f22f8c3bdf66d7d87d618e88592d2ca60",
           "validation": {
             "pages": 1,
             "fields": [],
@@ -1023,10 +1025,6 @@
       "sizes": [
         {
           "before": 28387,
-          "after": 28386
-        },
-        {
-          "before": 28386,
           "after": 28385
         },
         {
@@ -1039,6 +1037,26 @@
       "sourceRotation": 90,
       "manualCorrection": 270,
       "text": "CONTRATO   DE   PRESTACAO   DE   SERVICOS VALOR   R$   1250,00 DOCUMENTO   TESTE   CENTRAL   PDF"
+    },
+    "office": {
+      "docx": {
+        "filename": "Contrato João.docx",
+        "bytes": 2898,
+        "entries": 11,
+        "xmlValid": true
+      },
+      "xlsx": {
+        "filename": "Contrato João.xlsx",
+        "bytes": 4187,
+        "entries": 15,
+        "xmlValid": true
+      },
+      "pptx": {
+        "filename": "Contrato João.pptx",
+        "bytes": 174601,
+        "entries": 50,
+        "xmlValid": true
+      }
     }
   }
 }

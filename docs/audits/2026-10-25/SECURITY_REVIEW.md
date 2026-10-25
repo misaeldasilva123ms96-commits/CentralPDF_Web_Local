@@ -47,6 +47,14 @@ Os motores preparados foram comparados aos hashes do instalador; PDF.js API/Work
 
 Actions foram fixadas aos commits resolvidos das tags existentes. Dependabot e CI semanal fazem manutenção visível; não há auto-merge, aquisição de serviços nem deploy por cron adicionado. Licenças e versões dos motores permanecem conforme [THIRD_PARTY_NOTICES.md](../../../THIRD_PARTY_NOTICES.md); componentes de desenvolvimento alterados seguem metadados do lockfile. Não foi copiado código de terceiros para implementar funcionalidades.
 
+## Triagem auxiliar das versões dos motores
+
+Uma árvore npm isolada, apenas para auditoria das versões dos motores, apontou **dois avisos altos**: PptxGenJS 4.0.1 e seu efeito transitivo `image-size` (parsers ICNS/JXL/HEIF com possíveis loops). Essa árvore recém-resolvida não é o lockfile de `app/` nem uma reconstrução da árvore histórica do bundle.
+
+O [recibo](vendor-npm-audit.json) é preservado sem ocultar esses avisos. Os [metadados do pacote 4.0.1](vendor-browser-metadata.json) definem `browser.image-size: false`. O artefato entregue é o **dist browser** `vendor/pptxgen.min.js`, com SHA-256 fixado `097f0b92e15035a72bba72b59ef1ece62ab45ec6075ac85fe0e2d80d3f59b8e3`; ele usa Image/Canvas e não contém os parsers indicados. No fluxo PDF → PPTX, as imagens são PNGs recém-renderizados pelo navegador; o app não entrega arquivos ICNS/JXL/HEIF ao parser Node.
+
+**Classificação:** dependência sinalizada na distribuição npm Node, não caminho vulnerável confirmado no artefato browser desta aplicação. Não foi feito downgrade sugerido automaticamente pelo audit nem foi anunciado “zero alertas em todos os motores”. A suíte dedicada do bundle e o fluxo real de exportação PPTX passaram. Uma futura adoção de PptxGenJS em Node deve ser bloqueada até atualizar a árvore afetada e validar compatibilidade; o resultado não autoriza reutilizar o pacote Node vulnerável.
+
 ## Assinaturas e integridade
 
 A fixture sintética tem assinatura CMS real com certificado autoassinado de teste; verificação local confirmou integridade do documento e da assinatura CMS, com confiança no certificado definida apenas para esse teste. A chave temporária/PKCS#12 não integra o repositório e foi removida após a geração.

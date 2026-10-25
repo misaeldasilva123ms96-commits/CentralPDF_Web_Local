@@ -10,7 +10,7 @@ A base foi confirmada em `a4c11e4aa88d68d47daa78b5e781524112d2a412`, commit de 2
 
 Foram corrigidos problemas reproduzidos de recarga offline, acesso às alças de imagens compactas e ausência de aviso antes de modificar PDFs com estruturas de assinatura. Ferramentas de desenvolvimento afetadas foram atualizadas, e o executável foi recompilado com o patch de segurança Go 1.26.10, mantendo o número do produto 2.0.1 e a reprodução byte a byte.
 
-A validação funcional executou **34/34 ferramentas com motores reais**, mais casos específicos de compressão/OCR. O editor passou em Chromium e Firefox com desktop/tablet/celular emulados; as matrizes de transformação do PDF exportado foram conferidas. Telemetria passou em testes adversariais sem envio ao Sentry real. O site publicado foi carregado separadamente, sem ser alterado por esta auditoria.
+A validação funcional executou **34/34 ferramentas com motores reais**, mais casos específicos de compressão/OCR, censura visual e formatos Office. O editor passou em Chromium e Firefox com desktop/tablet/celular emulados; as matrizes de transformação do PDF exportado foram conferidas. Telemetria passou em testes adversariais sem envio ao Sentry real. O site publicado foi carregado separadamente, sem ser alterado por esta auditoria.
 
 **Prontidão:** trabalho preparado para revisão em PR. Não é aprovação automática de release: Windows físico, WebKit/Safari, leitores de tela, configuração privada do Sentry e decisões administrativas/comerciais permanecem pendentes. Não há falha crítica/alta confirmada introduzida pelas mudanças nos casos executados; isso não é garantia de ausência de vulnerabilidades ou regressões fora do corpus.
 
@@ -31,6 +31,7 @@ As prioridades abaixo são operacionais da auditoria, não pontuação CVSS. Avi
 | F09 | P2 / distribuição | Site e ZIP v2.0.1 têm commits diferentes | Proposta 2.1.0, notas, instalação, hashes e rollback | Preparado, sem bump generalizado, tag ou publicação |
 | F10 | P2 / manutenção | Ausência de CI periódico/dependências e referências mutáveis de Actions | Cron semanal só de CI, Dependabot e Actions fixadas por SHA das tags resolvidas | Configuração testada em arquivos; ativação periódica depende da integração à branch padrão |
 | F11 | P2 / plataforma | WebKit sem bibliotecas nativas; sem Windows físico/leitor de tela | Escopo emulado explícito e gates manuais de release | Não testado nessas plataformas; não contado como aprovado |
+| F13 | P2 / triagem de componente | Árvore npm auxiliar sinalizou image-size/PptxGenJS Node | Metadados `browser.image-size:false`, bundle browser de hash fixado e fluxo PNG/Canvas conferidos | Não aplicável ao caminho distribuído; avisos preservados, futura integração Node bloqueada até correção |
 | F12 | P2 / produto | Sem PAdES/ICP-Brasil nem Authenticode; aviso existente de chunks React >500 kB | Estudo técnico, custos/requisitos e limites; sem provedores, certificados ou refatoração cosmética | Planos preparados; capacidades não implementadas nem anunciadas como prontas |
 
 ## Evidências e contagens
@@ -41,14 +42,15 @@ As prioridades abaixo são operacionais da auditoria, não pontuação CVSS. Avi
 | Suíte final local | **93 comandos passaram, 0 falharam, 0 ignorados** no runner final; [recibos com tempo e exit code](validation-commands.json) |
 | React | **240 testes / 22 arquivos**, tipos e build; aviso de chunks grandes preservado, não ocultado |
 | Ferramentas reais | **34 aprovadas, 0 falhas, 0 ignoradas** na configuração válida por ferramenta; [matriz](TOOLS.md), [dados e SHA-256](tool-matrix.json) |
-| Casos extras | OCR pesquisável de página 90° com correção manual 270°; compressão reduz digitalização, preserva texto/caminho vetorial e mantém bytes quando não há redução |
+| Casos extras | OCR pesquisável de página 90° com correção manual 270°; compressão reduz digitalização, preserva texto/caminho vetorial e mantém bytes quando não há redução; DOCX/XLSX/PPTX com XMLs válidos; censura com três áreas e pixels conferidos |
 | Editor real | **6 execuções de navegador/viewport**, abrangendo 24 combinações de modo/tema; [recibo](editor-browsers.json). Toque no Chromium; mouse/teclado nos dois navegadores |
 | Offline | Reload após preparação/aquecimento do cache, Worker PDF.js real, extração de texto e exportação de união com 5 páginas; [recibo](offline.json) |
 | Assets | 62 referências na raiz; 265 no pacote preparado, incluindo manifesto PDF.js completo, arquivos CSS/JS/Workers e hashes de motores |
 | Gate negativo | 6 testes de cópia de pacote: arquivo ausente, imagem CSS ausente, caminho externo, revisões inconsistentes e Worker ausente, além do caso íntegro |
 | Sentry | Testes Node adversariais e navegador/HTTP local; consentimento, revogação, quotas e ausência de conteúdo sensível nos payloads cobertos |
 | Assinatura sintética | CMS e digest intactos na verificação independente local, com confiança de teste explícita; [recibo](signature-integrity.json). Não equivale a cadeia confiável/ITI |
-| npm | Zero avisos conhecidos no [audit completo](npm-audit.json) e [produção](npm-production-audit.json); [licenças do lockfile](licenses.json) inventariadas |
+| npm de app/ | Zero avisos conhecidos no [audit completo](npm-audit.json) e [produção](npm-production-audit.json); [licenças do lockfile](licenses.json) inventariadas |
+| Motores npm auxiliares | Dois avisos altos na árvore Node de image-size/PptxGenJS, triados como fora do caminho browser distribuído; [evidência](vendor-npm-audit.json) e [análise](SECURITY_REVIEW.md) |
 | Go | Testes/vet com 1.26.10, duas compilações Windows iguais e [govulncheck do binário](go-binary-audit.txt) sem avisos |
 | Site publicado | 58 recursos HTTP conferidos; Chromium carregou título e 34 ferramentas, sem pageerror, com consentimento falso/zero envios; [recibo](published.json) |
 
