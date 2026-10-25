@@ -1,0 +1,24 @@
+{
+  "pages": 5,
+  "text": "OFFLINE TEST 2",
+  "bytes": 1683,
+  "telemetry": {
+    "configured": true,
+    "consent": false,
+    "pending": 0,
+    "sent": 0,
+    "discarded": 0,
+    "lastResult": "idle",
+    "pausedUntil": 0
+  },
+  "offlineStatus": {
+    "prepared": true,
+    "pdfLib": true,
+    "pdfJs": true,
+    "pdfWorker": true,
+    "pdfJsVersion": "6.2.108",
+    "libPdf": true,
+    "ocr": true,
+    "conversions": true
+  }
+}

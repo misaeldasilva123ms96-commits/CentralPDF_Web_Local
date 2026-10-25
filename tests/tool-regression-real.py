@@ -71,6 +71,23 @@ try:
    try:row=page.evaluate(run,tool)
    except Exception as e:row={'tool':tool,'ok':False,'error':str(e)[:1000]}
    rows.append(row);args.report.write_text(json.dumps({'results':rows,'pageErrors':errors},ensure_ascii=False,indent=2));print(tool,row.get('ok'),row.get('error',''),round(row.get('ms',0)),flush=True)
+  edges=page.evaluate(r"""async()=>{
+    const getOutputPdf=async()=>{const o=auditOutputs[0];if(/\.pdf$/i.test(o.filename))return new Uint8Array(await o.blob.arrayBuffer());const z=await JSZip.loadAsync(o.blob);const name=Object.keys(z.files).find(n=>n.endsWith('.pdf'));return await z.file(name).async('uint8array');};
+    const doc=await PDFLib.PDFDocument.create();const vp=doc.addPage([420,595]);vp.drawText('VETOR NATIVO PRESERVADO',{x:30,y:500,size:18});vp.drawRectangle({x:30,y:300,width:200,height:50,color:PDFLib.rgb(.2,.4,.6)});
+    const im=await doc.embedPng(await auditFixtures.image.arrayBuffer());vp.drawImage(im,{x:30,y:250,width:40,height:20});let data=await doc.save();
+    const sizes=[];let stable=false;
+    for(let i=0;i<6;i++){
+      const before=data;await CentralPDFApp.openFilesInTool([new File([before],'Texto e vetor.pdf',{type:'application/pdf'})],'compress');auditOutputs.length=0;const r=await CentralPDFApp.processCurrentTool();if(!r.ok)throw r.error;data=await getOutputPdf();sizes.push({before:before.length,after:data.length});if(data.length===before.length){if(!data.every((v,i)=>v===before[i]))throw new Error('No-size-reduction compression changed original bytes');stable=true;break;}
+      if(data.length>before.length)throw new Error('Compression increased output size');
+    }
+    if(!stable)throw new Error('Synthetic compression did not reach no-reduction case');
+    const task=pdfjsLib.getDocument({data:data.slice()});const pdf=await task.promise;const page=await pdf.getPage(1);const text=(await page.getTextContent()).items.map(i=>i.str).join(' ');const ops=await page.getOperatorList();await task.destroy();if(!text.includes('VETOR NATIVO'))throw new Error('Compression rasterized native text');if(!ops.fnArray.includes(pdfjsLib.OPS.constructPath))throw new Error('Compression lost native vector path');
+    const rotated=await PDFLib.PDFDocument.load(await auditFixtures.scan.arrayBuffer());rotated.getPage(0).setRotation(PDFLib.degrees(90));
+    await CentralPDFApp.openFilesInTool([new File([await rotated.save()],'Digitalizacao girada.pdf',{type:'application/pdf'})],'ocr');document.querySelector('#ocrOutputMode').value='searchable';document.querySelector('#ocrManualRotation').value='270';document.querySelector('#ocrRecognitionMode').value='force';auditOutputs.length=0;const r=await CentralPDFApp.processCurrentTool();if(!r.ok)throw r.error;
+    const rt=pdfjsLib.getDocument({data:await getOutputPdf()});const rp=await rt.promise;const recognized=(await (await rp.getPage(1)).getTextContent()).items.map(i=>i.str).join(' ');await rt.destroy();if(!recognized.includes('CONTRATO')||!recognized.includes('1250'))throw new Error('Rotated OCR failed expected recognition');
+    return {compression:{nativeText:true,nativeVector:true,noReductionPreservesBytes:stable,sizes},rotatedOCR:{sourceRotation:90,manualCorrection:270,text:recognized}};
+  }""")
+  args.report.write_text(json.dumps({'results':rows,'pageErrors':errors,'edgeCases':edges},ensure_ascii=False,indent=2))
   b.close()
 finally:server.shutdown()
 assert len(rows)==34, len(rows)

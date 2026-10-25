@@ -72,6 +72,10 @@ try:
                 page.evaluate("()=>{const list=document.querySelectorAll('#editorThumbnailList .editor-thumbnail');for(const i of [1,5,2,6,0])list[i]?.click();}")
                 page.wait_for_function("document.querySelector('#editorPageIndicator').textContent.startsWith('1 /')")
                 assert not errors,errors
+                image=page.locator('.editor-image-object');image.hover();image.click()
+                actions=page.locator('#editorImageActions')
+                if not actions.evaluate('e=>e.open'):actions.locator(':scope > summary').click()
+                actions.scroll_into_view_if_needed()
                 page.screenshot(path=str(args.report.parent/f'editor-{name}-{width}.png'))
                 rows.append({'browser':name,'viewport':[width,height],'modes':['simple','advanced'],'themes':['light','dark'],'ok':True,'pageErrors':errors,'touch':name=='chromium'})
                 context.close()

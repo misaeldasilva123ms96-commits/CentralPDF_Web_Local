@@ -1,6 +1,6 @@
 # Estrutura e distribuição do projeto
 
-Estado revisado em **21/10/2026**, versão declarada **2.0.1**. [Documentação](../README.md) · [Desenvolvimento](../../CONTRIBUTING.md)
+Estado revisado em **25/10/2026**, versão declarada **2.0.1**. [Documentação](../README.md) · [Desenvolvimento](../../CONTRIBUTING.md)
 
 ## Duas interfaces, uma publicação atual
 
