@@ -4,7 +4,7 @@ const CACHE_VERSION = 'centralpdf-v2.0.1-pages-39';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
-  './assets/css/workspace-modernization.css?v=2.0.1-ux3', './assets/js/workspace-modernization.js?v=2.0.1-ux1',
+  './assets/css/workspace-modernization.css?v=2.0.1-ux4', './assets/js/workspace-modernization.js?v=2.0.1-ux1',
   './', './index.html', './assets/css/styles.css', './assets/css/ux-redesign.css',
   './assets/css/layout-controls.css?v=2.0.1-ui1', './assets/css/foundation.css', './assets/css/experience-0.15.css',
   './assets/css/ocr-0.16.css', './assets/css/professional-0.17.css',

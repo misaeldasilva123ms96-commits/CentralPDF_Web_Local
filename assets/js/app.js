@@ -1248,7 +1248,7 @@
       try {
         const documentProxy = await loadingTask.promise;
         const fields=await documentProxy.getFieldObjects?.().catch(()=>null);
-        const signatureFields=Object.values(fields||{}).some(items=>Array.isArray(items)&&items.some(item=>item.type==='signature'));
+        const signatureFields=Object.values(fields||{}).some(items=>Array.isArray(items)&&items.some(item=>item?.type==='signature'));
         return { pageCount: documentProxy.numPages,signatureFields };
       } finally {
         await loadingTask.destroy?.();
