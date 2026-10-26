@@ -110,3 +110,13 @@ body:has(#editorContextControls:not([hidden]):not(.outside-editor)) #cp15Toast {
 .editor-image-controls > summary { cursor:pointer; font-size:12px; font-weight:700; min-height:32px; align-content:center; }
 .editor-image-controls .editor-context-actions { position:static; }
 .editor-image-controls .editor-selection-panel { margin-top:8px; }
+/* On compact images, expanded corner hit areas must not cover side handles or
+   the drag surface. Grow touch targets outward from the image instead. */
+.editor-image-object .handle-nw::after,
+.editor-image-object .handle-n::after,
+.editor-image-object .handle-ne::after { inset:-8px -8px 0; }
+.editor-image-object .handle-sw::after,
+.editor-image-object .handle-s::after,
+.editor-image-object .handle-se::after { inset:0 -8px -8px; }
+.editor-image-object .handle-e::after,
+.editor-image-object .handle-w::after { inset:0 -8px; }

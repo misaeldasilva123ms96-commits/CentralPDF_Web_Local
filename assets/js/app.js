@@ -584,6 +584,7 @@
     processing: false,
     taskCompleted: false
   };
+  const fileSignatureInfo = new WeakMap();
   const PDFLIB_INGEST_TOOLS = new Set(['organize', 'editPdf', 'merge', 'split', 'extract', 'rotate', 'watermark', 'pageNumbers', 'compress', 'crop', 'metadata', 'normalize', 'redact', 'formBuilder', 'signPdf', 'archivePdf']);
   let fileIngestChain = Promise.resolve();
   let fileIngestSession = 0;
@@ -1200,6 +1201,7 @@
         const result = await window.CentralPDFIngest.inspectPdfFile(file, { parse: bytes => parsePdfForIngest(bytes, queuedTool) });
         if (!sessionIsActive()) return null;
         state.filePageCounts.set(getFileCacheKey(file), result.pageCount);
+        fileSignatureInfo.set(file,{signatureFields:result.signatureFields,digitalSignatures:result.digitalSignatures});
         valid.push(file);
         logPdfIngest('metadata-ready', file, null, 'metadata');
       } catch (error) {
@@ -1234,7 +1236,7 @@
       if (!window.PDFLib?.PDFDocument) throw Object.assign(new Error('pdf-lib não está disponível.'), { name: 'PDFLibUnavailableError', engine: 'pdf-lib' });
       try {
         const document = await window.PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false });
-        return { pageCount: document.getPageCount() };
+        return { pageCount: document.getPageCount(), ...(window.CentralPDFIngest.signatureInfo?.(document,window.PDFLib)||{}) };
       } catch (error) {
         try { error.engine = 'pdf-lib'; } catch (_) {}
         throw error;
@@ -1245,14 +1247,16 @@
       const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(ownedBytes) });
       try {
         const documentProxy = await loadingTask.promise;
-        return { pageCount: documentProxy.numPages };
+        const fields=await documentProxy.getFieldObjects?.().catch(()=>null);
+        const signatureFields=Object.values(fields||{}).some(items=>Array.isArray(items)&&items.some(item=>item?.type==='signature'));
+        return { pageCount: documentProxy.numPages,signatureFields };
       } finally {
         await loadingTask.destroy?.();
       }
     }
     if (window.PDFLib?.PDFDocument) {
       const document = await window.PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false });
-      return { pageCount: document.getPageCount() };
+      return { pageCount: document.getPageCount(), ...(window.CentralPDFIngest.signatureInfo?.(document,window.PDFLib)||{}) };
     }
     throw Object.assign(new Error('PDF.js e pdf-lib não estão disponíveis.'), { name: 'WorkerError' });
   }
@@ -4253,6 +4257,7 @@
         settingIds: Array.from(String(value.settings || '').matchAll(/\bid=["']([^"']+)["']/g), match => match[1])
       }]));
     },
+    getFileSignatureInfo: file => ({...fileSignatureInfo.get(file)}),
     getProfessionalEngineStatus: () => ({ ready: Boolean(state.libPdfEngine), loading: Boolean(state.libPdfEnginePromise) })
   };
 

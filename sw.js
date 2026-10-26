@@ -1,10 +1,10 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v2.0.1-pages-38';
+const CACHE_VERSION = 'centralpdf-v2.0.1-pages-39';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
-  './assets/css/workspace-modernization.css?v=2.0.1-ux3', './assets/js/workspace-modernization.js?v=2.0.1-ux1',
+  './assets/css/workspace-modernization.css?v=2.0.1-ux4', './assets/js/workspace-modernization.js?v=2.0.1-ux1',
   './', './index.html', './assets/css/styles.css', './assets/css/ux-redesign.css',
   './assets/css/layout-controls.css?v=2.0.1-ui1', './assets/css/foundation.css', './assets/css/experience-0.15.css',
   './assets/css/ocr-0.16.css', './assets/css/professional-0.17.css',
@@ -19,18 +19,18 @@ const CORE_ASSETS = [
   './assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3',
   './assets/css/product-redesign-2.0.css?v=2.0.18',
   './assets/css/split-interactive.css?v=2.0.1-split1',
-  './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=2.0.1-ingest1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
+  './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=2.0.1-ingest2', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
   './assets/js/pdf-native-text.js?v=2.0.1-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=2.0.1-editor5', './assets/js/ux-enhancements.js?v=2.0.1-ui3',
   './assets/js/ocr-0.16.js?v=2.0.1-names1', './assets/js/compare-0.17.js?v=2.0.1-names1', './assets/js/redaction-0.17.js?v=2.0.1-names1',
   './assets/js/forms-signatures-0.18.js?v=0.18.2', './assets/js/conversions-0.19.js?v=2.0.1-names1',
-  './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/app.js?v=2.0.1-ui14', './assets/js/tool-quality-1.2.0.js?v=1.2.3',
+  './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/app.js?v=2.0.1-ui15', './assets/js/tool-quality-1.2.0.js?v=2.0.1-signatures1',
   './assets/js/layout-controls.js?v=2.0.1-ui1', './assets/js/foundation.js?v=2.0.1-ux1', './assets/js/experience-0.15.js',
   './assets/js/diagnostics-config.js?v=2.0.1-diagnostics2', './assets/js/diagnostics-telemetry.js?v=2.0.1-diagnostics1',
   './assets/js/stable-1.0.js', './assets/js/header-settings-1.0.3.js?v=2.0.1-ui1',
   './assets/js/product-redesign-2.0.js?v=2.0.9',
   './vendor/libpdf-core.mjs', './vendor/jszip.min.js', './vendor/pptxgen.min.js',
-  './vendor/pdfjs-manifest.js', './manifest.webmanifest', './assets/icons/icon-192.png',
+  './vendor/pdfjs-manifest.js', './vendor/offline-status.js', './manifest.webmanifest', './assets/icons/icon-192.png',
   './assets/icons/icon-512.png', ...(self.CentralPDFPdfJsAssets || [])
 ];
 
@@ -65,13 +65,9 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
 
-  if (url.origin === self.location.origin && url.pathname.endsWith('/vendor/offline-status.js')) {
-    event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match(request)));
-    return;
-  }
-
   if (url.origin === self.location.origin) {
-    const networkFirst = request.mode === 'navigate'
+    const networkFirst = url.pathname.endsWith('/vendor/offline-status.js')
+      || request.mode === 'navigate'
       || url.pathname.endsWith('/index.html')
       || url.pathname.endsWith('/assets/js/pdf-editor.js')
       || (url.pathname.includes('/assets/js/') && url.pathname.endsWith('.js'));

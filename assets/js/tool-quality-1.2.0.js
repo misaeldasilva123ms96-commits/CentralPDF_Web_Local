@@ -83,6 +83,11 @@
     if (empty.length) issues.push({level:'error',message:`${empty.length} arquivo(s) estão vazios ou inacessíveis.`});
     const huge=list.filter(file=>Number(file.size)>600*1024*1024);
     if (huge.length) issues.push({level:'warn',message:`${huge.length} arquivo(s) excedem 600 MB e podem consumir muita memória.`});
+    const readOnly=new Set(['pdfToText','pdfToImage','pdfToOffice','extractImages','compare','diagnose','documentAssistant','structuredExtraction','documentAudit','classifyRename']);
+    if(!readOnly.has(tool)&&list.some(file=>{
+      const info=window.CentralPDFApp?.getFileSignatureInfo?.(file);
+      return info?.digitalSignatures||info?.signatureFields;
+    }))issues.push({level:'warn',message:'Assinatura digital ou campo de assinatura detectado. Esta operação pode invalidar assinaturas existentes. Preserve o original e valide a cópia; a detecção não verifica confiança ou validade criptográfica.'});
     const total=list.reduce((sum,file)=>sum+Number(file.size||0),0);
     if (total>1200*1024*1024) issues.push({level:'warn',message:`O lote possui ${bytes(total)}; processe em grupos menores se o navegador ficar lento.`});
     if (!engineReady(meta.engine)) issues.push({level:'warn',message:`O motor ${meta.engine} será carregado quando necessário ou precisa do modo offline preparado.`});

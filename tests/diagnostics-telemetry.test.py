@@ -99,7 +99,7 @@ try:
         owner.locator('#cpTelemetryConsent').check()
         owner.evaluate('CentralPDFTelemetry.flush()')
         assert len(received) == 0, 'Historical logs must not be replayed after consent'
-        owner.evaluate("for(let i=0;i<3;i++)CentralPDFStable.addLog('javascript','PRIVATE_DOCUMENT_TEXT João SECRET_FILE.pdf','https://private.invalid/assets/js/pdf-editor.js?SECRET=1');CentralPDFTelemetry.flush()")
+        owner.evaluate("for(let i=0;i<3;i++)CentralPDFStable.addLog('javascript','PRIVATE_DOCUMENT_TEXT João SECRET_FILE.pdf CPF 123.456.789-09 CNPJ 12.345.678/0001-90 C:\\Users\\Pessoa\\segredo.pdf Authorization: Bearer SECRET_TOKEN password=SECRET_PASSWORD','https://private.invalid/assets/js/pdf-editor.js?SECRET=1');CentralPDFTelemetry.flush()")
         owner.wait_for_function('CentralPDFTelemetry.getStatus().sent===1')
         event = json.loads(received[0].splitlines()[2])
         assert event['extra']['occurrences'] == 3
@@ -139,7 +139,7 @@ try:
         assert owner.evaluate('CentralPDFStable.getErrors().length') == 0
         assert len(received) == 4, 'Clearing local logs must not claim to erase received events'
         for raw in received:
-            for secret in ['SECRET', 'PRIVATE_DOCUMENT_TEXT', 'private.invalid', 'João', 'OLD_', 'OFFLINE_', 'Cookie', 'userAgent']:
+            for secret in ['SECRET', 'PRIVATE_DOCUMENT_TEXT', 'private.invalid', 'João', 'OLD_', 'OFFLINE_', 'Cookie', 'userAgent', 'CPF', 'CNPJ', 'Users', 'Pessoa', 'Authorization', '123.456', '12.345']:
                 assert secret not in raw, (secret, raw)
             envelope, item, event = map(json.loads, raw.splitlines())
             assert item['length'] == len(raw.splitlines()[2].encode())

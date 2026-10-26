@@ -84,5 +84,38 @@ function body(call) {
   assert.equal(full.api.getStatus().pending,20);assert.equal(full.api.getStatus().discarded,1);
   const noop=harness();noop.api.setConsent(true);noop.respond(options=>new Promise(resolve=>{noop.resolve=()=>resolve({ok:true,status:200,headers:{get:()=>null}});}));
   noop.api.capture('console','x');const inflight=noop.api.flush();noop.listeners.storage({key:KEY,newValue:noop.saved.get(KEY)});noop.resolve();await inflight;assert.equal(noop.api.getStatus().sent,1);
+  // Adversarial document/credential data must never cross the transport boundary.
+  const privateVectors = [
+    'CPF 123.456.789-09 CNPJ 12.345.678/0001-90',
+    'João da Silva joao@example.invalid NF medição confidencial.pdf',
+    'C:\\Users\\Pessoa\\Documents\\segredo.pdf /home/pessoa/private.pem',
+    'Authorization: Bearer SECRET_ACCESS_TOKEN Cookie: session=SECRET_COOKIE',
+    'password=SECRET_PASSWORD api_key=SECRET_API_KEY PRIVATE_DOCUMENT_CONTENT',
+    '-----BEGIN PRIVATE KEY----- SECRET_KEY -----END PRIVATE KEY-----',
+    'x'.repeat(1024*1024)+'TAIL_SECRET'
+  ];
+  for (const secret of privateVectors) {
+    for (const kind of ['javascript','promessa','console','interface','recurso']) {
+      const sensitive=harness();
+      assert.equal(sensitive.api.capture(kind,secret,secret),false);
+      await sensitive.api.flush();assert.equal(sensitive.calls.length,0);
+      sensitive.api.setConsent(true);
+      assert.equal(sensitive.api.capture(kind,secret,secret),true);
+      await sensitive.api.flush();assert.equal(sensitive.calls.length,1);
+      const request=sensitive.calls[0];const value=body(request);
+      assert(Buffer.byteLength(request.options.body)<2048,'generated envelope must remain bounded');
+      assert.equal(value.tags.component,'runtime');
+      for(const key of ['CPF','CNPJ','João','example.invalid','SECRET','Users','Documents','PRIVATE','TAIL_SECRET'])
+        assert(!request.options.body.includes(key),key);
+      assert.equal(request.url,'https://o123.ingest.us.sentry.io/api/456/envelope/');
+      sensitive.api.setConsent(false);
+      sensitive.api.capture(kind,secret,secret);await sensitive.api.flush();assert.equal(sensitive.calls.length,1);
+    }
+  }
+  const malformed=harness();malformed.api.setConsent(true);
+  assert.equal(malformed.api.capture('javascript',{toString(){throw new Error('PRIVATE');}},''),false);
+  for(const raw of ['true','{"version":1,"allowed":"true"}','{"version":2,"allowed":true}']) {
+    malformed.listeners.storage({key:KEY,newValue:raw});assert.equal(malformed.api.getStatus().consent,false);
+  }
   console.log('Sentry telemetry: consent, closed payload, aggregation, privacy, offline, retry, revocation and quotas passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});

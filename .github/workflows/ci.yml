@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  schedule:
+    - cron: "23 9 * * 1"
   push:
     branches: [main]
   pull_request:
@@ -20,23 +22,23 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # actions/setup-node@v7
         with:
           node-version: 22
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: requirements-test.txt
 
-      - uses: actions/setup-go@v7
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # actions/setup-go@v7
         with:
-          go-version: "1.26.5"
+          go-version: "1.26.10"
           cache-dependency-path: server/go.mod
 
       - name: Install Python test dependencies
@@ -47,6 +49,9 @@ jobs:
 
       - name: Install browser regression engine
         run: npm ci --prefix app --ignore-scripts
+
+      - name: Audit dependencies
+        run: npm --prefix app audit --audit-level=moderate
 
       - name: Check JavaScript syntax
         shell: bash
@@ -81,6 +86,12 @@ jobs:
           cd ..
           cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.ci.exe
 
+      - name: Check shipped Go binary against vulnerability database
+        shell: bash
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@v1.9.0
+          "$(go env GOPATH)/bin/govulncheck" -mode=binary CentralPDF_Local_Server.exe
+
   app-2-0:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -89,11 +100,11 @@ jobs:
         working-directory: app
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # actions/setup-node@v7
         with:
           node-version: 22
           cache: npm

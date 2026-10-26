@@ -1,0 +1,432 @@
+{
+  "index": {
+    "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/",
+    "status": 200,
+    "bytes": 64174,
+    "sha256": "0d71d89ebf2a363ce6dce0691544f2be17de74d4fe338e6ed508f3bdac9ba9a0",
+    "content_type": "text/html; charset=utf-8"
+  },
+  "assets": [
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/styles.css",
+      "status": 200,
+      "bytes": 51102,
+      "sha256": "52a4c4b6bb1e4386481397a75e0c056bc2c2d1627b2c6e5da680f88fbd0f9d38",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/ux-redesign.css",
+      "status": 200,
+      "bytes": 26905,
+      "sha256": "7296388ff0cd4314eb6ec0a82a06b959d41e861810d2a575b0c9fa563e37f7da",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/layout-controls.css?v=2.0.1-ui1",
+      "status": 200,
+      "bytes": 12725,
+      "sha256": "1def46098825705aaa27cc775e1355d143ab2109a7702369a1044b96936c64c7",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/foundation.css",
+      "status": 200,
+      "bytes": 9241,
+      "sha256": "664fadf8a3fdd921f9b7c7878a712fc10040bfdbf2f43b40d09126202a99a3c6",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/experience-0.15.css",
+      "status": 200,
+      "bytes": 8692,
+      "sha256": "5f5314e4adab912dd06a0618cfb67d55095bd35e7210ada86241203959e83985",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/ocr-0.16.css",
+      "status": 200,
+      "bytes": 3237,
+      "sha256": "647d768b4f323bcbd97c047f0b4d0c469e164f9b91bb71a50db87379b095eacc",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/professional-0.17.css",
+      "status": 200,
+      "bytes": 2326,
+      "sha256": "7d27922ad510025580c7cfd12fa2faf99e09f0fb5434fcf7f8c316b2d7870865",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/forms-signatures-0.18.css",
+      "status": 200,
+      "bytes": 5297,
+      "sha256": "c539c956616341ee06b7fcb2f8156b3735524c586939bd66555610846778750a",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/conversions-0.19.css",
+      "status": 200,
+      "bytes": 2261,
+      "sha256": "14c8e24176e1dafbfe5b05c11635d3baa236eb8274d5f9d1c71383f20f1cbb3b",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/intelligence-0.20.css",
+      "status": 200,
+      "bytes": 1426,
+      "sha256": "536c46243d946145d8d483e7f74d1d0d3501c6cb04d6e27c717e6a404fa5573d",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/stable-1.0.css",
+      "status": 200,
+      "bytes": 9908,
+      "sha256": "fc2030d80ca917bd0ecdccc1d315e96fdb369cd55e21ff17415487a3f39f75d2",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/header-settings-1.0.1.css",
+      "status": 200,
+      "bytes": 2838,
+      "sha256": "a02b07ce5cc6051f178d26f7bea87e231f60ad72864bdfe039535a6020e9abdc",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/tool-cards-uniform-1.0.2.css",
+      "status": 200,
+      "bytes": 1355,
+      "sha256": "3858f319234bdac648f63785a8de7eb66bbb00193c9cbdd2897d86b92f4830ec",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/theme-and-visual-1.0.3.css",
+      "status": 200,
+      "bytes": 11717,
+      "sha256": "e4728e6117cbb888a3966de7dc1e323e1f1b032ec88122b3b4682da1bda017bf",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/dark-theme-polish-1.0.4.css",
+      "status": 200,
+      "bytes": 11448,
+      "sha256": "f9fffa4d20eb300bd825da87a8fe583c04a237c607771d0d5810f597dd5449b1",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/home-dark-refine-1.0.5.css",
+      "status": 200,
+      "bytes": 7026,
+      "sha256": "01bff3abbad7c87db99d5785355ce9e59ad9423d6be044fcdfa75a0fe253c393",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/dark-theme-audit-1.0.6.css",
+      "status": 200,
+      "bytes": 7549,
+      "sha256": "ad26b0bd2f5c3a16e6dcc220f114859d0ee9ba07e07e8ccf84c6936572b5d119",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/settings-fit-1.0.7.css",
+      "status": 200,
+      "bytes": 3466,
+      "sha256": "406e209758fbf26fbd63616414eb09878a394d74ed8fb4733fd3002c2da8c1b2",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/dialog-audit-1.0.8.css",
+      "status": 200,
+      "bytes": 7739,
+      "sha256": "cc4c43f9bb581430b0f14186c636f3e0b27d6480d7a196e620ba614f6398256b",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/modal-fit-1.0.9.css",
+      "status": 200,
+      "bytes": 3130,
+      "sha256": "e5feddb2191b7af83876e332265479470660430a404ab20146922a8ededfce37",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/micro-polish-1.1.0.css",
+      "status": 200,
+      "bytes": 2847,
+      "sha256": "fc492ad25c1944a41c1789d10e81d64c579117d76efa140dae11edbb8d6e41af",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/quality-logs-1.1.2.css",
+      "status": 200,
+      "bytes": 3334,
+      "sha256": "dd62f8bb6f28e3428ca21e922a98c403ddf239843f66ccd8b0d48e57c75e0c9d",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/tool-quality-1.2.0.css",
+      "status": 200,
+      "bytes": 6296,
+      "sha256": "735bd57c2f93f735706004e3da0b5bbb4873ad68ec88e7c38a01fc7a571da6e4",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3",
+      "status": 200,
+      "bytes": 10143,
+      "sha256": "e7277f4b397bd30dd2a2470d389f01f517a49216dcb019325a57ec3fd63b2535",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/product-redesign-2.0.css?v=2.0.18",
+      "status": 200,
+      "bytes": 20672,
+      "sha256": "208e8631f9eefbcfaa48e32da189ea4a8620ceb04479eff1cb85ea353f3bf6ca",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/split-interactive.css?v=2.0.1-split1",
+      "status": 200,
+      "bytes": 10143,
+      "sha256": "6d4a009c5ed42ee0397257d08765be426617a9e9bc225ccdaa0b9d87af0d6965",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/css/workspace-modernization.css?v=2.0.1-ux3",
+      "status": 200,
+      "bytes": 10246,
+      "sha256": "f36b62a1c7c239b5624e55e192dd4eca85cbc0b323d2af922d6967adad059219",
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/vendor/offline-status.js",
+      "status": 200,
+      "bytes": 224,
+      "sha256": "728b91645aaf74ab0224f7cf491b180ad63bc5a610c41b5ce1282151be27a454",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/engine-loader.js",
+      "status": 200,
+      "bytes": 10765,
+      "sha256": "52d2ddac9399752cf1ca40368a1b1823ae8f1b9321248e57b1623e4260c11e6b",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/pdf-ingest.js?v=2.0.1-ingest1",
+      "status": 200,
+      "bytes": 4956,
+      "sha256": "10598bb6a39a36cf32be4b98af34758d3968de4bac8a0a452a11a025d4faf3fa",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/vendor/jszip.min.js",
+      "status": 200,
+      "bytes": 97630,
+      "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/vendor/pptxgen.min.js",
+      "status": 200,
+      "bytes": 271010,
+      "sha256": "097f0b92e15035a72bba72b59ef1ece62ab45ec6075ac85fe0e2d80d3f59b8e3",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/split-planner.js",
+      "status": 200,
+      "bytes": 7243,
+      "sha256": "2c4f475dc2455cd26758909319afd2baedadf803ea1ad4991e7d53fd131eb096",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/advanced-planner.js",
+      "status": 200,
+      "bytes": 8173,
+      "sha256": "4c801f8b96660ba3d9a944085ae70f208338b958a6ffc9349f5d2e55320f4814",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/compression-engine.js",
+      "status": 200,
+      "bytes": 5630,
+      "sha256": "7757af8cf471325710f7bb26b66719d8d3e830f938a4cb26d320150da649c403",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/organizer-planner.js",
+      "status": 200,
+      "bytes": 2050,
+      "sha256": "114f5c65c5b5ffbe0c2ef6264d966729d2ab89a552d9aca5b21fa14d40083b46",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/pdf-native-text.js?v=2.0.1-cid1",
+      "status": 200,
+      "bytes": 18583,
+      "sha256": "539394152a2c5109a9312134259bf274685d7754a46b0fb521d67cc60416e7be",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/pdf-editor.js?v=2.0.1-editor5",
+      "status": 200,
+      "bytes": 120660,
+      "sha256": "ef1a03a59ca191f0cd0d2afcbdcbb617b344d5bb8038e6c0d2e2a6d9628cc6f4",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/ux-enhancements.js?v=2.0.1-ui3",
+      "status": 200,
+      "bytes": 34397,
+      "sha256": "c2642e6b7fbcd64d041c88c26c56815eb75adc1d7035c9f044d69097412ea784",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/ocr-0.16.js?v=2.0.1-names1",
+      "status": 200,
+      "bytes": 30827,
+      "sha256": "bd56b5005ac0f39bbb955a176625c7068130fca58ecbc59b97d3a26b9adf384f",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/compare-0.17.js?v=2.0.1-names1",
+      "status": 200,
+      "bytes": 10302,
+      "sha256": "56b571610c3dcee89e11a58599f3e35e24256d4062d7a5447f40366beca94fca",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/redaction-0.17.js?v=2.0.1-names1",
+      "status": 200,
+      "bytes": 11628,
+      "sha256": "be944adcca51643a987016c9a310ee27f6aff0b82f2a27a98fe5a359acfe164b",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/forms-signatures-0.18.js?v=0.18.2",
+      "status": 200,
+      "bytes": 40467,
+      "sha256": "76dd2dbb370de27dc55c55b10217202a2ad7e73c54fc791fffc251aa89c2374f",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/conversions-0.19.js?v=2.0.1-names1",
+      "status": 200,
+      "bytes": 39129,
+      "sha256": "e7caf6e2369249be9eebf60cef8b9ede7a61cfb4c8b029168148e2a03adb9bbf",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/intelligence-0.20.js?v=2.0.1-names1",
+      "status": 200,
+      "bytes": 34944,
+      "sha256": "271d106d1631c16a2e1cf400297c9fbd769a88d0dd5845c91b160e945478db7a",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/app.js?v=2.0.1-ui14",
+      "status": 200,
+      "bytes": 303653,
+      "sha256": "66447c737d035808600f829fbfa2507f62c9e98a94d9f2401854f8de7fcc93a2",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/tool-quality-1.2.0.js?v=1.2.3",
+      "status": 200,
+      "bytes": 25450,
+      "sha256": "b924e7a5a3f2a13dca1330f8e6954c1c771c8ff029e39e117979f01740ffb9a3",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/layout-controls.js?v=2.0.1-ui1",
+      "status": 200,
+      "bytes": 6253,
+      "sha256": "5d1d43a222a7db19f8d56b5d3a25b5f49c2d84a0182701dd457cad69f20d903c",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/foundation.js?v=2.0.1-ux1",
+      "status": 200,
+      "bytes": 35011,
+      "sha256": "cd4e91914109cbba7ada606c57d1b42a855bcd1f2bb467e49db1a90fdb55c003",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/experience-0.15.js",
+      "status": 200,
+      "bytes": 18661,
+      "sha256": "53328b40ec7afe5143be288672636bb0965b29ad6ae1167052b66069d14e05e0",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/diagnostics-config.js?v=2.0.1-diagnostics2",
+      "status": 200,
+      "bytes": 340,
+      "sha256": "4a14498c7cc497e4605e502b48797b25da3b86c757997884116cc3c184682271",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/diagnostics-telemetry.js?v=2.0.1-diagnostics1",
+      "status": 200,
+      "bytes": 12799,
+      "sha256": "ec4c3c2345c434db9b067572e0ccbd2c309a8f8fcde417e98c1013ed28ab1f6e",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/stable-1.0.js",
+      "status": 200,
+      "bytes": 29869,
+      "sha256": "f0a6b498f08d11a2ec9214b1146764b1ae537af6193230de7085c58fb8e9b746",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/header-settings-1.0.3.js?v=2.0.1-ui1",
+      "status": 200,
+      "bytes": 8084,
+      "sha256": "75439079129017cbeb0b3e54e32937ede90fc5f1b460f66c5e247e8169a22c2c",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/product-redesign-2.0.js?v=2.0.9",
+      "status": 200,
+      "bytes": 5841,
+      "sha256": "3993a0e2017e3030ebd43334411c5b429c94e2fe0314cbd69030da0f621527e3",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/assets/js/workspace-modernization.js?v=2.0.1-ux1",
+      "status": 200,
+      "bytes": 4763,
+      "sha256": "025b3f41f252faf57d74e93946c4c56838dffdeff24c30cc8151b8cc16980dcc",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/sw.js",
+      "status": 200,
+      "bytes": 6673,
+      "sha256": "90b16553a017f50081b108852b69762259689f2d065c6b68844a78f933f91562",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/vendor/pdfjs/pdf.worker.min.mjs",
+      "status": 200,
+      "bytes": 1312452,
+      "sha256": "bc0d1b88ea0b66196b1d36a58ac243c6d92adfe725624e2a9fdd381bdf8ef434",
+      "content_type": "text/javascript; charset=utf-8"
+    }
+  ],
+  "browser": {
+    "url": "https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/",
+    "title": "Central PDF & Imagem",
+    "tools": 34,
+    "telemetry": {
+      "configured": true,
+      "consent": false,
+      "pending": 0,
+      "sent": 0,
+      "discarded": 0,
+      "lastResult": "idle",
+      "pausedUntil": 0
+    },
+    "pageErrors": []
+  }
+}

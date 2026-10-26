@@ -50,3 +50,7 @@ O site e o pacote Windows usam a aplicação estática da raiz. O conteúdo de `
 - `previews/`: capturas de versões identificadas nos nomes; não representam necessariamente a interface atual.
 
 Alguns guias mantêm números antigos no nome do arquivo para preservar os links. Quando revisados, o título e o conteúdo indicam o estado atual. Relatórios, ADRs e notas de release preservam o contexto da entrega original.
+
+## Auditoria de estabilização — 25/10/2026
+
+[Relatório e evidências](audits/2026-10-25/REPORT.md) · [Matriz das 34 ferramentas](audits/2026-10-25/TOOLS.md) · [Plano de release](audits/2026-10-25/RELEASE_PLAN.md) · [Privacidade e checklist Sentry](audits/2026-10-25/SECURITY_REVIEW.md) · [Estudo de assinaturas](audits/2026-10-25/SIGNING_PLAN.md). A auditoria prepara uma PR, sem publicar uma release.

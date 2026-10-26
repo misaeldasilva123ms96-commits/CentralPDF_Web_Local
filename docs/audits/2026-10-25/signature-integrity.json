@@ -1,0 +1,6 @@
+{
+  "intact": true,
+  "valid_cms_signature": true,
+  "trust_assumption": "ephemeral self-signed audit certificate explicitly trusted only for this check; not ICP-Brasil or ITI",
+  "signature_field": "AuditSignature"
+}

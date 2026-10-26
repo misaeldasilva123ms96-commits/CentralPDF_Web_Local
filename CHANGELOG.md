@@ -1,5 +1,16 @@
 ## 2.0.1 — workspace renovado e entrega verificável
 
+### Auditoria de estabilização de 25/10/2026
+
+- Corrige cache do marcador de motores e fallback na recarga offline.
+- Corrige sobreposição das áreas de toque das alças em imagens compactas.
+- Detecta estruturas/campos de assinatura para avisar antes de operações modificadoras, sem declarar validação criptográfica ou ICP-Brasil.
+- Atualiza Vite/Vitest e tipos Node; recompila o executável Windows com Go 1.26.10 e atualiza SHA-256, mantendo reprodução verificável.
+- Amplia testes adversariais de privacidade, regressão real das 34 ferramentas, exportação/offline e editor Chromium/Firefox.
+- Valida grafo de assets/Workers/cache e hashes no pacote Pages; fixa Actions por SHA e configura CI semanal/Dependabot.
+- Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
+
+
 ### Melhorias integradas após a release 2.0.1
 
 Estas entradas descrevem a evolução da `main`; não indicam uma nova release Windows. O site e os pacotes locais têm ciclos de distribuição próprios.

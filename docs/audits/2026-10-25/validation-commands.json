@@ -1,0 +1,467 @@
+[
+  {
+    "test": "advanced-planner.test.js",
+    "exit": 0,
+    "seconds": 0.04
+  },
+  {
+    "test": "app-load-smoke.test.js",
+    "exit": 0,
+    "seconds": 0.05
+  },
+  {
+    "test": "diagnostics-telemetry.test.js",
+    "exit": 0,
+    "seconds": 0.09
+  },
+  {
+    "test": "download-filenames.test.js",
+    "exit": 0,
+    "seconds": 0.05
+  },
+  {
+    "test": "libpdf-offline-runtime.test.js",
+    "exit": 0,
+    "seconds": 0.07
+  },
+  {
+    "test": "organizer-planner.test.js",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "pdf-editor-orientation.test.js",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "pdf-editor-restricted.test.js",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "pdf-editor.test.js",
+    "exit": 0,
+    "seconds": 0.04
+  },
+  {
+    "test": "pdf-ingest.test.js",
+    "exit": 0,
+    "seconds": 0.15
+  },
+  {
+    "test": "quality-balanced-auto.test.js",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "smart-compression-engine.test.js",
+    "exit": 0,
+    "seconds": 0.04
+  },
+  {
+    "test": "cached-editor-downloads.test.py",
+    "exit": 0,
+    "seconds": 2.64
+  },
+  {
+    "test": "ci-workflow.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "compare-redaction-engine-0.17.test.py",
+    "exit": 0,
+    "seconds": 1.92
+  },
+  {
+    "test": "completion-labels-contract-2.0.6.test.py",
+    "exit": 0,
+    "seconds": 0.1
+  },
+  {
+    "test": "compression-worker-1.1.6.test.py",
+    "exit": 0,
+    "seconds": 1.12
+  },
+  {
+    "test": "conversions-0.19.test.py",
+    "exit": 0,
+    "seconds": 0.78
+  },
+  {
+    "test": "dark-theme-1.0.4.test.py",
+    "exit": 0,
+    "seconds": 0.77
+  },
+  {
+    "test": "diagnostics-telemetry.test.py",
+    "exit": 0,
+    "seconds": 4.29
+  },
+  {
+    "test": "dialog-audit-1.0.8.test.py",
+    "exit": 0,
+    "seconds": 0.9
+  },
+  {
+    "test": "editor-context-controls.test.py",
+    "exit": 0,
+    "seconds": 14.44
+  },
+  {
+    "test": "editor-modes.test.py",
+    "exit": 0,
+    "seconds": 4.7
+  },
+  {
+    "test": "editor-native-text.test.py",
+    "exit": 0,
+    "seconds": 13.83
+  },
+  {
+    "test": "editor-orientation-delivery.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "editor-page-orientation.test.py",
+    "exit": 0,
+    "seconds": 2.16
+  },
+  {
+    "test": "editor-restricted-runtime.test.py",
+    "exit": 0,
+    "seconds": 2.31
+  },
+  {
+    "test": "editor-stability.test.py",
+    "exit": 0,
+    "seconds": 9.93
+  },
+  {
+    "test": "editor-transform.test.py",
+    "exit": 0,
+    "seconds": 2.55
+  },
+  {
+    "test": "experience-0.15.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "extract-panels-runtime-1.2.1.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "forms-recovery-real-pdf.test.py",
+    "exit": 0,
+    "seconds": 1.83
+  },
+  {
+    "test": "forms-signatures-0.18.test.py",
+    "exit": 0,
+    "seconds": 0.11
+  },
+  {
+    "test": "forms-signatures-ui-0.18.test.py",
+    "exit": 0,
+    "seconds": 1.62
+  },
+  {
+    "test": "foundation-dark-1.0.6.test.py",
+    "exit": 0,
+    "seconds": 0.97
+  },
+  {
+    "test": "foundation.test.py",
+    "exit": 0,
+    "seconds": 2.84
+  },
+  {
+    "test": "github-governance-verifier.test.py",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "home-dark-1.0.5.test.py",
+    "exit": 0,
+    "seconds": 0.76
+  },
+  {
+    "test": "intelligence-0.20.test.py",
+    "exit": 0,
+    "seconds": 0.71
+  },
+  {
+    "test": "internal-drag-overlay.test.py",
+    "exit": 0,
+    "seconds": 1.68
+  },
+  {
+    "test": "large-merge.test.py",
+    "exit": 0,
+    "seconds": 2.21
+  },
+  {
+    "test": "layout-controls.test.py",
+    "exit": 0,
+    "seconds": 2.61
+  },
+  {
+    "test": "libpdf-offline-bundle.test.py",
+    "exit": 0,
+    "seconds": 0.04
+  },
+  {
+    "test": "local-server-sw-0.14.test.py",
+    "exit": 0,
+    "seconds": 1.79
+  },
+  {
+    "test": "merge-cover-default.test.py",
+    "exit": 0,
+    "seconds": 2.62
+  },
+  {
+    "test": "merge-default-az.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "merge-dragdrop.test.py",
+    "exit": 0,
+    "seconds": 3.01
+  },
+  {
+    "test": "merge-source-order.test.py",
+    "exit": 0,
+    "seconds": 2.05
+  },
+  {
+    "test": "micro-polish-1.1.0.test.py",
+    "exit": 0,
+    "seconds": 0.55
+  },
+  {
+    "test": "modal-fit-1.0.9.test.py",
+    "exit": 0,
+    "seconds": 0.61
+  },
+  {
+    "test": "ocr-0.16.test.py",
+    "exit": 0,
+    "seconds": 0.64
+  },
+  {
+    "test": "offline-installer-integrity.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "offline-marker-1.1.3.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "offline-marker-cache.test.py",
+    "exit": 0,
+    "seconds": 1.65
+  },
+  {
+    "test": "pages-deployment.test.py",
+    "exit": 0,
+    "seconds": 0.04
+  },
+  {
+    "test": "pdf-compatibility-sw.test.py",
+    "exit": 0,
+    "seconds": 1.43
+  },
+  {
+    "test": "pdf-corpus-manifest.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "pdf-ingest-browser.test.py",
+    "exit": 0,
+    "seconds": 1.46
+  },
+  {
+    "test": "pdf-log-migration-1.1.3.test.py",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "pdf-runtime-regressions-1.1.5.test.py",
+    "exit": 0,
+    "seconds": 0.73
+  },
+  {
+    "test": "pdf-worker-file-mode-1.1.3.test.py",
+    "exit": 0,
+    "seconds": 0.62
+  },
+  {
+    "test": "pdf-worker-routing-1.1.2.test.py",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "pptxgenjs-4.0.1.test.py",
+    "exit": 0,
+    "seconds": 0.73
+  },
+  {
+    "test": "product-redesign-functional-parity-2.0.test.py",
+    "exit": 0,
+    "seconds": 0.11
+  },
+  {
+    "test": "professional-0.17.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "quality-button-1.1.4.test.py",
+    "exit": 0,
+    "seconds": 2.94
+  },
+  {
+    "test": "quality-logs-1.1.2.test.py",
+    "exit": 0,
+    "seconds": 1.8
+  },
+  {
+    "test": "readme-guide.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "recovery-containment.test.py",
+    "exit": 0,
+    "seconds": 1.85
+  },
+  {
+    "test": "release-2.0.1.test.py",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "release-provenance.test.py",
+    "exit": 0,
+    "seconds": 0.04
+  },
+  {
+    "test": "remote-engine-consent.test.py",
+    "exit": 0,
+    "seconds": 1.96
+  },
+  {
+    "test": "runtime-reliability.test.py",
+    "exit": 0,
+    "seconds": 26.03
+  },
+  {
+    "test": "settings-panel-fit-1.0.7.test.py",
+    "exit": 0,
+    "seconds": 0.84
+  },
+  {
+    "test": "signature-warning.test.py",
+    "exit": 0,
+    "seconds": 1.7
+  },
+  {
+    "test": "smart-compression-integration.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "split-interactive-ui.test.py",
+    "exit": 0,
+    "seconds": 0.13
+  },
+  {
+    "test": "stable-release-1.0.test.py",
+    "exit": 0,
+    "seconds": 2.29
+  },
+  {
+    "test": "static-site-validation.test.py",
+    "exit": 0,
+    "seconds": 0.19
+  },
+  {
+    "test": "tool-quality-1.2.0.test.py",
+    "exit": 0,
+    "seconds": 0.11
+  },
+  {
+    "test": "ux-editor-modernization.test.py",
+    "exit": 0,
+    "seconds": 10.99
+  },
+  {
+    "test": "ux_interaction.test.py",
+    "exit": 0,
+    "seconds": 1.48
+  },
+  {
+    "test": "version-sync-1.1.1.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "workflow-governance.test.py",
+    "exit": 0,
+    "seconds": 0.03
+  },
+  {
+    "test": "workflow-supply-chain.test.py",
+    "exit": 0,
+    "seconds": 0.02
+  },
+  {
+    "test": "workspace-compact-panels-1.2.3.test.py",
+    "exit": 0,
+    "seconds": 0.55
+  },
+  {
+    "test": "workspace-completion-actions-2.0.6.test.py",
+    "exit": 0,
+    "seconds": 1.56
+  },
+  {
+    "test": "workspace-fixed-settings-2.0.5.test.py",
+    "exit": 0,
+    "seconds": 0.63
+  },
+  {
+    "test": "workspace-visual-fixes-1.2.2.test.py",
+    "exit": 0,
+    "seconds": 0.56
+  },
+  {
+    "test": "static_integrity.py",
+    "exit": 0,
+    "seconds": 0.12
+  },
+  {
+    "test": "react-test",
+    "exit": 0,
+    "seconds": 20.83
+  },
+  {
+    "test": "react-typecheck",
+    "exit": 0,
+    "seconds": 3.48
+  },
+  {
+    "test": "react-build",
+    "exit": 0,
+    "seconds": 8.65
+  }
+]
