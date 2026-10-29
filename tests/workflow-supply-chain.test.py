@@ -12,4 +12,7 @@ pages=(ROOT/'.github/workflows/pages.yml').read_text()
 assert 'verify-static-site.py _site --require-engines' in pages
 assert "github.event_name != 'pull_request' && github.ref == 'refs/heads/main'" in pages
 for eco in ['npm','gomod','github-actions']:assert f'package-ecosystem: {eco}' in (ROOT/'.github/dependabot.yml').read_text()
+assert 'xargs -0 -n1 python scripts/run-browser-test.py' in ci
+for script in ['tool-regression-real','offline-tools-real','editor-cross-browser-real']:
+    assert f'python scripts/run-browser-test.py tests/{script}.py' in pages
 print('workflow-supply-chain: immutable action refs, weekly CI, dependency audit and asset gate passed')

@@ -62,7 +62,7 @@ set -euo pipefail
 find assets/js -maxdepth 1 -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
 node --check sw.js
 find tests -maxdepth 1 -name '*.js' -print0 | sort -z | xargs -0 -n1 node
-find tests -maxdepth 1 -name '*.test.py' -print0 | sort -z | xargs -0 -n1 python
+find tests -maxdepth 1 -name '*.test.py' -print0 | sort -z | xargs -0 -n1 python scripts/run-browser-test.py
 python tests/static_integrity.py
 
 (cd server && go test ./... && go vet ./...)
@@ -74,6 +74,8 @@ node scripts/extract-tool-catalog.mjs
 git diff --exit-code -- docs/architecture/_CATALOGO_RAW.md
 git diff --check
 ```
+
+Execute testes Python de navegador com `python scripts/run-browser-test.py tests/NOME.test.py`. Esse executor bloqueia destinos Sentry reais nas páginas de teste e permite o receptor local explicitamente interceptado. Assim os erros deliberados da suíte não poluem o projeto de produção.
 
 O catálogo gerado deve acompanhar alterações intencionais de `toolConfig`. Não edite `_CATALOGO_RAW.md` manualmente. Relatórios antigos podem citar totais menores de testes; o workflow e os arquivos atuais são a referência.
 

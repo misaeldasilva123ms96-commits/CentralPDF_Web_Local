@@ -1,6 +1,6 @@
 # Guia do usuário — Central PDF & Imagem
 
-Referência da versão declarada **2.0.1**, revisada em **21/10/2026**. O nome deste arquivo foi mantido para preservar os links existentes.
+Referência da versão declarada **2.0.1**, revisada em **29/10/2026**. O nome deste arquivo foi mantido para preservar os links existentes.
 
 [Documentação](../README.md) · [Editor PDF](EDITOR_PDF.md) · [Offline e projetos](OFFLINE_E_PROJETOS.md)
 
@@ -42,7 +42,7 @@ Abra **Qualidade / Autodiagnóstico** pelo menu de configurações ou `Alt+Q`. A
 
 O registro local possui até **250 registros únicos**, agrupando repetições. Use busca/filtro, copiar, baixar ou limpar. O contador de ocorrências não representa pessoas; os logs pertencem ao navegador e à origem atuais. Revise o JSON antes de compartilhá-lo, pois pode conter nomes e mensagens técnicas.
 
-O envio central para **Sentry** é opcional: só começa após marcar **Permitir o envio de novos diagnósticos técnicos**. O responsável consulta eventos recebidos no painel privado do serviço; arquivos e logs antigos não são enviados automaticamente. Desmarcar revoga o envio futuro; limpar a lista local não apaga eventos centrais. [Detalhes e limites](../diagnosticos-sentry.md).
+O envio de novos erros técnicos para **Sentry** é automático por padrão. Em Qualidade / Autodiagnóstico, desmarque **Compartilhar erros técnicos automaticamente** para desativá-lo; desativações anteriores são preservadas. Compartilhar tempos de processamento exige marcar uma segunda opção, inicialmente desativada. O responsável consulta eventos recebidos no painel privado do serviço; arquivos e logs antigos não são enviados automaticamente. Desmarcar revoga o envio futuro; limpar a lista local não apaga eventos centrais. [Detalhes e limites](../diagnosticos-sentry.md).
 
 ## Atalhos
 

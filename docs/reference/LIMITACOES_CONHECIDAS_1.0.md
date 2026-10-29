@@ -1,6 +1,6 @@
 # Limitações conhecidas
 
-Referência da aplicação estática, revisada em **21/10/2026**. [Documentação](../README.md) · [Editor](../guides/EDITOR_PDF.md)
+Referência da aplicação estática, revisada em **29/10/2026**. [Documentação](../README.md) · [Editor](../guides/EDITOR_PDF.md)
 
 ## Documentos, fontes e aparência
 
@@ -29,7 +29,7 @@ Referência da aplicação estática, revisada em **21/10/2026**. [Documentaçã
 
 ## Diagnósticos e distribuições
 
-- Logs locais representam apenas o navegador/origem atual. O Sentry recebe categorias técnicas somente de instalações autorizadas e conectadas; quotas, bloqueadores e falhas de rede impedem cobertura total. Não há contagem de usuários únicos nem entrega garantida. [Diagnósticos](../diagnosticos-sentry.md).
+- Logs locais representam apenas o navegador/origem atual. O Sentry recebe categorias técnicas somente de instalações conectadas com compartilhamento ativado; quotas, bloqueadores e falhas de rede impedem cobertura total. Não há contagem de usuários únicos nem entrega garantida. [Diagnósticos](../diagnosticos-sentry.md).
 - O site e o ZIP Windows são distribuídos por fluxos separados. O mesmo número de versão pode corresponder a commits diferentes.
 - A migração React não implementa todas as 34 ferramentas e mantém recursos planejados/experimentais. [Estado de app/](../../app/README.md).
 - Testes em Chromium com viewport móvel não comprovam uso em aparelhos físicos, Safari, Firefox ou conformidade integral de acessibilidade. [Acessibilidade](../guides/ACESSIBILIDADE_1.0.md).

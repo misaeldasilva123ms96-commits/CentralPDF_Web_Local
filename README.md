@@ -12,7 +12,7 @@
 
 **[Abrir o aplicativo](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/)** · **[Baixar para Windows](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/releases/latest)** · **[Documentação](docs/README.md)** · **[Contribuir](CONTRIBUTING.md)**
 
-O processamento de PDFs e imagens acontece no navegador, sem upload dos documentos para um servidor da aplicação. Use o site ou um servidor local no computador. O diagnóstico compartilhado com Sentry é opcional, exige autorização em cada navegador e envia apenas categorias técnicas previstas — não os documentos.
+O processamento de PDFs e imagens acontece no navegador, sem upload dos documentos para um servidor da aplicação. Use o site ou um servidor local no computador. Os erros técnicos são compartilhados automaticamente com Sentry e podem ser desativados em cada navegador. O envio usa apenas categorias previstas, sem documentos; compartilhar tempos de processamento exige uma autorização adicional.
 
 > **Estado da documentação — 25/10/2026.** O site usa a aplicação da raiz (`index.html` + `assets/`). A migração React/TypeScript em [`app/`](app/README.md) é separada e ainda não substitui o produto publicado. O número da versão continua **2.0.1**; a `main` contém melhorias posteriores à release Windows de mesmo número. Consulte o [histórico](CHANGELOG.md) e a data da release antes de comparar as distribuições.
 
@@ -147,7 +147,8 @@ Os dados locais dependem do perfil e da origem — inclusive a porta no uso loca
 - **Documentos:** processamento no dispositivo; servidor Go limitado a `127.0.0.1`, sem rota de upload.
 - **Motores:** versões fixas e verificação SHA-256 na preparação offline. Carregar recursos do site ou de fornecedores é diferente de enviar documentos.
 - **Logs locais:** até 250 registros únicos, com repetições agrupadas, no navegador atual. É possível buscar, copiar, baixar e limpar em **Qualidade / Autodiagnóstico**. Revise o arquivo antes de compartilhá-lo: ele pode conter nomes e mensagens técnicas.
-- **Sentry opcional:** destino configurado, envio desligado por padrão até consentimento em cada navegador. Envia categorias e metadados técnicos limitados, sem PDFs, imagens, textos digitados, nomes de arquivos ou histórico local. O serviço receptor observa metadados normais da conexão, como IP e cabeçalhos.
+- **Erros no Sentry:** envio automático ativado por padrão, com opção de desativar em cada navegador e preservação de desativações anteriores. Envia categorias e metadados técnicos limitados, sem PDFs, imagens, textos digitados, nomes de arquivos ou histórico local. O serviço receptor observa metadados normais da conexão, como IP e cabeçalhos.
+- **Desempenho opcional:** uma autorização adicional permite amostrar 10% das execuções das 34 ferramentas, com duração e resultado. Até 10 traces por carga da página; sem nomes, documentos ou captura automática de navegação.
 - **Consulta central:** disponível ao responsável no painel privado do Sentry; não representa todos os usuários nem todas as falhas. Limpar logs locais não apaga eventos já recebidos pelo serviço.
 
 Leia a [política de segurança](SECURITY.md) e o [guia dos diagnósticos](docs/diagnosticos-sentry.md).

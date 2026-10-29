@@ -2,7 +2,8 @@
    replay, breadcrumbs, attachments, user identifier or historical-log replay. */
 (() => {
   'use strict';
-  const RELEASE='centralpdf@2.0.1-diagnostics1';
+  const RELEASE='centralpdf@2.0.1-tracing1';
+  const TRACING_KEY='centralpdf-tracing-consent-v1';
   const CONSENT_KEY='centralpdf-diagnostics-consent-v1';
   const MAX_QUEUE=20, MAX_AGE=15*60*1000, MAX_SENT=30, PER_MINUTE=10;
   const tools=new Set('organize editPdf merge split extract rotate watermark pageNumbers imagesToPdf imageConvert compress pdfToImage crop metadata normalize pdfToText ocr compare redact formBuilder signPdf pdfToOffice documentsToPdf extractImages archivePdf documentAssistant structuredExtraction documentAudit classifyRename protect unlock diagnose repairAdvanced flattenForms'.split(' '));
@@ -29,21 +30,26 @@
   }
   const config=window.CentralPDFDiagnosticsConfig;
   const target=destination(config);
+  const sampleRate=typeof config?.tracesSampleRate==='number'&&Number.isFinite(config.tracesSampleRate)&&config.tracesSampleRate>=0&&config.tracesSampleRate<=1?config.tracesSampleRate:0;
   const environment=config?.environment==='staging'?'staging':'production';
   function storedConsent(value){
     try {const item=JSON.parse(value);return Boolean(target&&item?.version===1&&item.destination===target.identity&&item.allowed===true);}catch(_){return false;}
   }
   let consent=false;
-  try {consent=storedConsent(localStorage.getItem(CONSENT_KEY));}catch(_){}
+  try {const saved=localStorage.getItem(CONSENT_KEY);consent=Boolean(target&&(saved===null?config?.automaticErrors===true:storedConsent(saved)));}catch(_){}
+  let tracingConsent=false,traceGeneration=0,tracesSent=0,inflightType=null,traceBlockedUntil=0;
+  try {tracingConsent=consent&&sampleRate>0&&storedConsent(localStorage.getItem(TRACING_KEY));}catch(_){}
   let queue=[],timer=null,controller=null,busy=false,generation=0,blockedUntil=0;
   let sent=0,discarded=0,lastResult='idle',recent=[];
   const $=id=>document.getElementById(id);
-  function status(){return {configured:Boolean(target),consent,pending:queue.length,sent,discarded,lastResult,pausedUntil:blockedUntil};}
+  function status(){return {configured:Boolean(target),consent,pending:queue.length,sent,discarded,lastResult,pausedUntil:blockedUntil,tracingConfigured:Boolean(target&&sampleRate>0),tracingConsent,tracesSampleRate:sampleRate,tracesSent,tracingPausedUntil:traceBlockedUntil};}
   function update(){
     const checkbox=$('cpTelemetryConsent');if(checkbox){checkbox.disabled=!target;checkbox.checked=consent;}
+    const tracing=$('cpTracingConsent');if(tracing){tracing.disabled=!target||!consent||sampleRate===0;tracing.checked=tracingConsent;}
+    const traceStatus=$('cpTracingStatus');if(traceStatus)traceStatus.textContent=tracingConsent?`Desempenho autorizado: amostragem de ${Math.round(sampleRate*100)}% das operações; ${tracesSent} trace(s) enviado(s) nesta aba.`:'Compartilhamento de desempenho desativado.';
     const test=$('cpTelemetryTest');if(test)test.disabled=!target||!consent;
     const node=$('cpTelemetryStatus');if(!node)return;
-    let text=!target?'Coleta central não configurada. Os logs continuam somente neste navegador.':!consent?'Compartilhamento desativado neste navegador.':`Compartilhamento autorizado. ${sent} relatório(s) enviado(s); ${queue.length} pendente(s) nesta aba.`;
+    let text=!target?'Coleta central não configurada. Os logs continuam somente neste navegador.':!consent?'Compartilhamento desativado neste navegador.':`Compartilhamento de erros ativado. ${sent} relatório(s) enviado(s); ${queue.length} pendente(s) nesta aba.`;
     if(target&&consent&&lastResult==='retry')text+=' Envio indisponível; nova tentativa limitada será feita.';
     if(target&&consent&&blockedUntil>Date.now())text+=' O serviço limitou os envios temporariamente.';
     if(target&&consent&&discarded)text+=` ${discarded} relatório(s) descartado(s) por limite, expiração ou falha.`;
@@ -51,9 +57,39 @@
   }
   function setConsent(allowed,persist=true){
     const next=Boolean(target&&allowed===true);if(next!==consent)generation++;consent=next;
-    if(!consent){queue=[];clearTimeout(timer);timer=null;controller?.abort();lastResult='idle';}
+    if(!consent){setTracingConsent(false,persist);queue=[];clearTimeout(timer);timer=null;controller?.abort();lastResult='idle';}
     if(persist)try{localStorage.setItem(CONSENT_KEY,JSON.stringify({version:1,destination:target?.identity||'',allowed:consent}));}catch(_){}
     update();return consent;
+  }
+  function setTracingConsent(allowed,persist=true){
+    const next=Boolean(target&&consent&&sampleRate>0&&allowed===true);
+    if(next!==tracingConsent)traceGeneration++;
+    tracingConsent=next;
+    if(!next){queue=queue.filter(entry=>entry.type!=='transaction');if(inflightType==='transaction')controller?.abort();}
+    if(persist)try{localStorage.setItem(TRACING_KEY,JSON.stringify({version:1,destination:target?.identity||'',allowed:next}));}catch(_){}
+    update();return next;
+  }
+  function startToolTrace(tool){
+    // No document objects, settings, paths or arbitrary names enter this API.
+    if(!target||!consent||!tracingConsent||!tools.has(tool)||sampleRate===0||traceBlockedUntil>Date.now()||tracesSent>=10)return null;
+    try {
+      if(Math.random()>=sampleRate)return null;
+      const started=Date.now()/1000,monotonic=performance.now(),epoch=traceGeneration;
+      const traceId=crypto.randomUUID().replace(/-/g,''),spanId=crypto.randomUUID().replace(/-/g,'').slice(0,16);
+      let finished=false;
+      return success=>{
+        if(finished)return false;finished=true;
+        if(epoch!==traceGeneration||!consent||!tracingConsent)return false;
+        try {
+          const elapsed=performance.now()-monotonic;
+          if(!Number.isFinite(elapsed)||elapsed<0||elapsed>MAX_AGE)return false;
+          return enqueue({event_id:crypto.randomUUID().replace(/-/g,''),type:'transaction',platform:'javascript',release:RELEASE,environment,
+            transaction:`tool.${tool}`,transaction_info:{source:'component'},start_timestamp:started,timestamp:started+elapsed/1000,
+            contexts:{trace:{trace_id:traceId,span_id:spanId,op:'ui.action',status:success===true?'ok':'internal_error'}},
+            tags:{tool,tracing_schema:'1'},spans:[]},'transaction');
+        }catch(_){return false;}
+      };
+    }catch(_){return null;}
   }
   function classify(kind,message,source){
     const text=String(message||'').slice(0,4000),origin=String(source||'').slice(0,1000);
@@ -87,25 +123,27 @@
     if(timer!==null||!consent||!target||!queue.length)return;
     timer=setTimeout(()=>{timer=null;void flush();},Math.max(0,delay));
   }
-  function enqueue(item){
-    if(!target||!consent||blockedUntil>Date.now())return false;
-    const key=item.fingerprint.join('|'),existing=queue.find(entry=>entry.key===key);
+  function enqueue(item,type='event'){
+    if(!target||!consent||(type==='transaction'?traceBlockedUntil:blockedUntil)>Date.now())return false;
+    if(type==='transaction'&&(!tracingConsent||tracesSent+queue.filter(entry=>entry.type==='transaction').length+(inflightType==='transaction'?1:0)>=10))return false;
+    const key=type==='transaction'?item.event_id:item.fingerprint.join('|'),existing=queue.find(entry=>entry.key===key);
     if(existing){existing.event.extra.occurrences=Math.min(1000000,existing.event.extra.occurrences+1);update();return true;}
     if(queue.length>=MAX_QUEUE||sent>=MAX_SENT){discarded++;update();return false;}
-    queue.push({key,event:item,created:Date.now(),attempts:0});update();schedule();return true;
+    queue.push({key,type,traceGeneration,event:item,created:Date.now(),attempts:0});update();schedule();return true;
   }
   function capture(kind,message,source){
     if(!target||!consent)return false;
     try {const item=makeEvent(kind,message,source);return item?enqueue(item):false;}catch(_){return false;}
   }
-  function rateDelay(response){
+  function rateDelay(response,type){
     const header=response.headers.get('X-Sentry-Rate-Limits');
     if(header!==null){
       const delay=Math.max(0,...header.split(',').map(part=>{
         const [seconds,categories]=part.trim().split(':');const value=Number(seconds);
-        return Number.isFinite(value)&&value>=0&&categories!==undefined&&(!categories||categories.split(';').some(c=>c==='error'||c==='default'))?value*1000:0;
+        return Number.isFinite(value)&&value>=0&&categories!==undefined&&(!categories||categories.split(';').some(c=>c===(type==='transaction'?'transaction':'error')||c==='default'))?value*1000:0;
       }));
-      if(delay>0||response.status!==429)return delay;
+      // An explicit category header takes precedence over generic 429 delays.
+      return delay;
     }
     if(response.status!==429)return 0;
     const retry=response.headers.get('Retry-After');
@@ -114,37 +152,43 @@
   }
   async function flush(){
     clearTimeout(timer);timer=null;
-    if(busy||!target||!consent||navigator.onLine===false||blockedUntil>Date.now())return;
+    if(busy||!target||!consent||navigator.onLine===false)return;
     const now=Date.now();
     queue=queue.filter(entry=>{if(now-entry.created<=MAX_AGE)return true;discarded++;return false;});
     if(sent>=MAX_SENT){discarded+=queue.length;queue=[];update();return;}
     recent=recent.filter(time=>now-time<60000);
     if(recent.length>=PER_MINUTE){schedule(recent[0]+60000-now);return;}
-    const entry=queue.shift();if(!entry){update();return;}
-    busy=true;const activeGeneration=generation;
+    // Error diagnostics retain priority over performance samples.
+    let index=queue.findIndex(entry=>entry.type==='event'&&blockedUntil<=now);
+    if(index<0)index=queue.findIndex(entry=>entry.type==='transaction'&&traceBlockedUntil<=now);
+    const entry=index<0?null:queue.splice(index,1)[0];if(!entry){update();return;}
+    busy=true;inflightType=entry.type;const activeGeneration=generation;
     controller=new AbortController();const timeout=setTimeout(()=>controller?.abort(),8000);
     const payload=JSON.stringify(entry.event);
     const envelope=JSON.stringify({event_id:entry.event.event_id,dsn:target.dsn,sent_at:new Date().toISOString()})+'\n'+
-      JSON.stringify({type:'event',length:new TextEncoder().encode(payload).length})+'\n'+payload+'\n';
+      JSON.stringify({type:entry.type,length:new TextEncoder().encode(payload).length})+'\n'+payload+'\n';
     let retryDelay=0;
     recent.push(now);
     try {
       const response=await fetch(target.endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:envelope,
         credentials:'omit',referrerPolicy:'no-referrer',redirect:'error',keepalive:true,signal:controller.signal});
-      if(activeGeneration!==generation||!consent)return;
-      const delay=rateDelay(response);
-      if(delay>0){blockedUntil=Math.max(blockedUntil,Date.now()+delay);discarded+=queue.length;queue=[];}
-      if(response.ok){sent++;lastResult='sent';}
-      else if(response.status===429){blockedUntil=Math.max(blockedUntil,Date.now()+1000);discarded++;lastResult='limited';}
+      if(activeGeneration!==generation||!consent||(entry.type==='transaction'&&(!tracingConsent||entry.traceGeneration!==traceGeneration)))return;
+      const delay=rateDelay(response,entry.type);
+      const errorDelay=rateDelay(response,'event'),traceDelay=rateDelay(response,'transaction');
+      if(errorDelay>0)blockedUntil=Math.max(blockedUntil,Date.now()+errorDelay);
+      if(traceDelay>0)traceBlockedUntil=Math.max(traceBlockedUntil,Date.now()+traceDelay);
+      queue=queue.filter(item=>{const limited=item.type==='transaction'?traceDelay>0:errorDelay>0;if(limited)discarded++;return !limited;});
+      if(response.ok){sent++;if(entry.type==='transaction')tracesSent++;lastResult='sent';}
+      else if(response.status===429){if(entry.type==='transaction')traceBlockedUntil=Math.max(traceBlockedUntil,Date.now()+1000);else blockedUntil=Math.max(blockedUntil,Date.now()+1000);discarded++;lastResult='limited';}
       else if(response.status>=500){if(delay>0){discarded++;lastResult='limited';}else throw new Error('transient');}
       else {discarded++;lastResult='rejected';}
     }catch(_){
-      if(activeGeneration===generation&&consent){
+      if(activeGeneration===generation&&consent&&(entry.type!=='transaction'||(tracingConsent&&entry.traceGeneration===traceGeneration))){
         entry.attempts++;lastResult='retry';
         if(entry.attempts<3&&queue.length<MAX_QUEUE){queue.unshift(entry);retryDelay=5000*entry.attempts;}else discarded++;
       }
     }finally{
-      clearTimeout(timeout);controller=null;busy=false;update();schedule(retryDelay||250);
+      clearTimeout(timeout);controller=null;inflightType=null;busy=false;update();schedule(retryDelay||250);
     }
   }
   function sendTest(){
@@ -155,13 +199,17 @@
     if(!parent||$('cpTelemetryPanel'))return;
     const panel=document.createElement('section');panel.id='cpTelemetryPanel';panel.className='notice-card';
     panel.setAttribute('aria-label','Compartilhamento de diagnóstico');
-    panel.innerHTML='<strong>Diagnóstico compartilhado (opcional)</strong><p>A lista abaixo pertence somente a este navegador. Se você permitir, categorias técnicas de erros serão enviadas ao Sentry para melhorar o app. PDFs, textos e nomes de documentos não são enviados. O serviço recebe os dados de conexão necessários ao envio, como IP.</p><label class="toggle-row"><input id="cpTelemetryConsent" type="checkbox"><span>Permitir o envio de novos diagnósticos técnicos</span></label><p id="cpTelemetryStatus" role="status" aria-live="polite"></p><button id="cpTelemetryTest" class="cp10-button" type="button">Enviar diagnóstico de teste</button><p>Desativar descarta os pendentes desta aba. Limpar os logs locais não apaga relatórios já recebidos no Sentry.</p>';
+    panel.innerHTML='<strong>Diagnóstico compartilhado (opcional)</strong><p>A lista abaixo pertence somente a este navegador. O envio automático de categorias técnicas de erros ao Sentry está ativado por padrão. Você pode desativá-lo abaixo. PDFs, textos e nomes de documentos não são enviados. O serviço recebe os dados de conexão necessários ao envio, como IP.</p><label class="toggle-row"><input id="cpTelemetryConsent" type="checkbox"><span>Compartilhar erros técnicos automaticamente</span></label><label class="toggle-row"><input id="cpTracingConsent" type="checkbox"><span>Permitir também o envio de tempos de processamento</span></label><p>Esta opção mede a duração e o resultado das ferramentas, sem enviar documentos. Exige que o compartilhamento de erros acima esteja ativado.</p><p id="cpTracingStatus" role="status" aria-live="polite"></p><p id="cpTelemetryStatus" role="status" aria-live="polite"></p><button id="cpTelemetryTest" class="cp10-button" type="button">Enviar diagnóstico de teste</button><p>Desativar descarta os pendentes desta aba. Limpar os logs locais não apaga relatórios já recebidos no Sentry.</p>';
     parent.prepend(panel);
     $('cpTelemetryConsent').addEventListener('change',e=>setConsent(e.target.checked));
+    $('cpTracingConsent').addEventListener('change',e=>setTracingConsent(e.target.checked));
     $('cpTelemetryTest').addEventListener('click',()=>{sendTest();void flush();});update();
   }
   window.addEventListener('online',()=>schedule(0));
   window.addEventListener('pagehide',()=>{void flush();});
-  window.addEventListener('storage',e=>{if(e.key===CONSENT_KEY||e.key===null)setConsent(e.key===null?false:storedConsent(e.newValue),false);});
-  window.CentralPDFTelemetry=Object.freeze({capture,setConsent,sendTest,flush,getStatus:status,mount});
+  window.addEventListener('storage',e=>{
+    if(e.key===CONSENT_KEY||e.key===null)setConsent(e.key===null?false:storedConsent(e.newValue),false);
+    if(e.key===TRACING_KEY||e.key===null)setTracingConsent(e.key===null?false:storedConsent(e.newValue),false);
+  });
+  window.CentralPDFTelemetry=Object.freeze({capture,setConsent,setTracingConsent,startToolTrace,sendTest,flush,getStatus:status,mount});
 })();
