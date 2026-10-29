@@ -26,10 +26,10 @@ assert "width: var(--cp2-inspector-width)" in css
 assert "overscroll-behavior: contain" in css
 assert "product-redesign-2.0.css?v=2.0.18" in index
 assert "assets/js/forms-signatures-0.18.js?v=0.18.2" in index
-assert "assets/js/app.js?v=2.0.1-ui15" in index
+assert "assets/js/app.js?v=2.0.1-ui16" in index
 assert "./assets/js/forms-signatures-0.18.js?v=0.18.2" in service_worker
-assert "./assets/js/app.js?v=2.0.1-ui15" in service_worker
+assert "./assets/js/app.js?v=2.0.1-ui16" in service_worker
 assert "./assets/css/product-redesign-2.0.css?v=2.0.18" in service_worker
-assert "centralpdf-v2.0.1-pages-39" in service_worker
+assert "centralpdf-v2.0.1-pages-40" in service_worker
 
 print("extract-panels-runtime-2.0.1: passed")

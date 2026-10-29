@@ -26,7 +26,9 @@ responses = []
 class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/test'):
-            config = '<script src="/assets/js/diagnostics-config.js"></script>' if self.path.startswith(('/test-disabled', '/test-production')) else '<script>window.CentralPDFDiagnosticsConfig={enabled:true,dsn:'+json.dumps(dsn)+'};</script>'
+            config = '<script src="/assets/js/diagnostics-config.js"></script>' if self.path.startswith(('/test-disabled', '/test-production')) else '<script>window.CentralPDFDiagnosticsConfig={enabled:true,dsn:'+json.dumps(dsn)+',tracesSampleRate:1};</script>'
+            if self.path.startswith('/test-automatic'):
+                config += '<script>window.CentralPDFDiagnosticsConfig=Object.freeze({...window.CentralPDFDiagnosticsConfig,automaticErrors:true});</script>'
             if self.path.startswith('/test-disabled'):
                 config += '<script>window.CentralPDFDiagnosticsConfig=Object.freeze({...window.CentralPDFDiagnosticsConfig,enabled:false});</script>'
             self.send_response(200)
@@ -60,7 +62,7 @@ def intercept(route):
     response = route.fetch(url=origin+'/receiver', max_redirects=0)
     route.fulfill(response=response)
 
-def setup(browser, disabled=False, mobile=False, production=False):
+def setup(browser, disabled=False, mobile=False, production=False, automatic=False):
     context = browser.new_context(viewport={'width':390 if mobile else 1440,'height':844 if mobile else 1000}, service_workers='block')
     context.sentry_requests = []
     context.on('request', lambda request: context.sentry_requests.append(request.url) if '.sentry.io/' in request.url else None)
@@ -70,7 +72,7 @@ def setup(browser, disabled=False, mobile=False, production=False):
     context.add_cookies([{'name':'private_session','value':'SECRET_COOKIE','domain':'o123.ingest.us.sentry.io','path':'/','secure':True}])
     context.add_init_script('''if(!localStorage.getItem('centralpdf-1.0-errors'))localStorage.setItem('centralpdf-1.0-errors',JSON.stringify([{time:new Date().toISOString(),kind:'console',message:'OLD_SECRET_FILENAME.pdf',source:'console.error',count:99}]));''')
     page = context.new_page()
-    page.goto(origin+('/test-disabled' if disabled else '/test-production' if production else '/test')+'?private=SECRET_URL')
+    page.goto(origin+('/test-disabled' if disabled else '/test-production' if production else '/test-automatic' if automatic else '/test')+'?private=SECRET_URL')
     page.wait_for_function('window.testReady && document.querySelector("#cpTelemetryPanel")')
     page.evaluate('document.querySelector("#cp10Quality").showModal()')
     return context, page
@@ -85,14 +87,27 @@ try:
         disabled.close()
         production, prod = setup(browser, production=True)
         assert prod.evaluate('CentralPDFTelemetry.getStatus().configured')
-        assert not prod.locator('#cpTelemetryConsent').is_checked()
+        assert prod.locator('#cpTelemetryConsent').is_checked()
         assert not prod.locator('#cpTelemetryConsent').is_disabled()
-        prod.evaluate("CentralPDFStable.addLog('console','before authorization');CentralPDFTelemetry.flush()")
-        assert not prod.evaluate('CentralPDFTelemetry.getStatus().consent')
-        assert not prod.evaluate('CentralPDFTelemetry.sendTest()')
+        assert prod.evaluate('CentralPDFTelemetry.getStatus().consent')
+        assert not prod.evaluate('CentralPDFTelemetry.getStatus().tracingConsent')
         assert not production.sentry_requests
         assert len(received) == 0
         production.close()
+        automatic, auto = setup(browser, automatic=True)
+        assert auto.locator('#cpTelemetryConsent').is_checked()
+        assert not auto.locator('#cpTracingConsent').is_checked()
+        auto.evaluate("setTimeout(()=>{throw new Error('AUTOMATIC_SECRET.pdf');},0)")
+        auto.wait_for_function('CentralPDFTelemetry.getStatus().sent===1')
+        assert json.loads(received[-1].splitlines()[2])['tags']['code']=='javascript_failure'
+        assert 'AUTOMATIC_SECRET' not in received[-1]
+        auto.locator('#cpTelemetryConsent').uncheck()
+        auto.reload();auto.wait_for_function('window.testReady')
+        assert not auto.evaluate('CentralPDFTelemetry.getStatus().consent')
+        before=len(received)
+        auto.evaluate("CentralPDFStable.addLog('javascript','opted out');CentralPDFTelemetry.flush()")
+        assert len(received)==before
+        automatic.close();received.clear();headers_seen.clear()
         a, owner = setup(browser)
         b, visitor = setup(browser, mobile=True)
         assert not owner.locator('#cpTelemetryConsent').is_checked()
@@ -147,6 +162,53 @@ try:
         for headers in headers_seen:
             assert 'cookie' not in headers
             assert 'referer' not in headers
+        # Real tool execution emits a trace only after both permissions.
+        tracing, page = setup(browser)
+        assert page.locator('#cpTracingConsent').is_disabled()
+        page.locator('#cpTelemetryConsent').check()
+        assert not page.locator('#cpTracingConsent').is_checked()
+        page.locator('#cpTracingConsent').check()
+        assert page.evaluate('CentralPDFTelemetry.getStatus().tracingConsent')
+        before = len(received)
+        page.evaluate("document.querySelector('#cp10Quality').close()")
+        result = page.evaluate("""async()=>{
+          HTMLAnchorElement.prototype.click=function(){};
+          const doc=await PDFLib.PDFDocument.create();doc.addPage([200,200]);doc.setTitle('PRIVATE_DOCUMENT_TEXT');
+          await CentralPDFApp.openFilesInTool([new File([await doc.save()],'SECRET Pessoa.pdf',{type:'application/pdf'})],'metadata');
+          const run=await CentralPDFApp.processCurrentTool();await CentralPDFTelemetry.flush();return run.ok;
+        }""")
+        assert result, 'The real metadata tool must complete successfully'
+        page.wait_for_function('CentralPDFTelemetry.getStatus().tracesSent===1')
+        trace_raw = received[before]
+        trace = json.loads(trace_raw.splitlines()[2])
+        assert json.loads(trace_raw.splitlines()[1])['type'] == 'transaction'
+        assert trace['transaction'] == 'tool.metadata'
+        assert trace['contexts']['trace']['status'] == 'ok'
+        assert trace['timestamp'] >= trace['start_timestamp']
+        assert 'SECRET' not in trace_raw and 'PRIVATE_DOCUMENT_TEXT' not in trace_raw and 'Pessoa' not in trace_raw
+        # Failure is measured without forwarding its error message or document.
+        page.evaluate("CentralPDFApp.clearAll();CentralPDFApp.processCurrentTool().then(()=>CentralPDFTelemetry.flush())")
+        page.wait_for_function('CentralPDFTelemetry.getStatus().tracesSent===2')
+        assert json.loads(received[-1].splitlines()[2])['contexts']['trace']['status'] == 'internal_error'
+        second = tracing.new_page();second.goto(origin+'/test');second.wait_for_function('window.testReady')
+        assert second.evaluate('CentralPDFTelemetry.getStatus().tracingConsent')
+        page.evaluate("document.querySelector('#cp10Quality').showModal()")
+        page.locator('#cpTracingConsent').uncheck()
+        second.wait_for_function('!CentralPDFTelemetry.getStatus().tracingConsent')
+        assert second.evaluate('CentralPDFTelemetry.getStatus().consent'), 'Trace revocation preserves error consent'
+        count = len(received)
+        second.evaluate("CentralPDFApp.processCurrentTool().then(()=>CentralPDFTelemetry.flush())")
+        assert len(received) == count
+        page.locator('#cpTracingConsent').check()
+        from os import environ
+        if environ.get('CENTRALPDF_QA_SCREENSHOTS'):
+            out=Path(environ['CENTRALPDF_QA_SCREENSHOTS']);out.mkdir(parents=True,exist_ok=True)
+            for width in [1440,390]:
+                page.set_viewport_size({'width':width,'height':1000 if width==1440 else 844})
+                panel=page.locator('#cpTelemetryPanel');panel.scroll_into_view_if_needed()
+                assert panel.evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+                panel.screenshot(path=str(out/f'tracing-{width}.png'))
+        tracing.close()
         a.close(); b.close(); browser.close()
     print('Browser diagnostics: two independent clients, local envelope receiver, private payload, consent, offline, revocation, 429 and mobile UI passed')
 finally:

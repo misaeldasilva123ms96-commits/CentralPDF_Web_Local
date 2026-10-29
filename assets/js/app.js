@@ -2874,8 +2874,13 @@
     state.processing = true;
     $('#cancelProcessing')?.classList.remove('hidden');
     $('#pdfEditorSection')?.setAttribute('inert','');$('#organizerSection')?.setAttribute('inert','');fileInput.disabled=true;
-    try { return await executeCurrentTool(); }
-    finally { state.processing = false; $('#cancelProcessing')?.classList.add('hidden');$('#pdfEditorSection')?.removeAttribute('inert');$('#organizerSection')?.removeAttribute('inert');fileInput.disabled=false; }
+    let finishTrace=null,succeeded=false;
+    try {finishTrace=window.CentralPDFTelemetry?.startToolTrace?.(state.tool);}catch(_){}
+    try {const result=await executeCurrentTool();succeeded=result?.ok===true;return result;}
+    finally {
+      try {finishTrace?.(succeeded);}catch(_){}
+      state.processing = false; $('#cancelProcessing')?.classList.add('hidden');$('#pdfEditorSection')?.removeAttribute('inert');$('#organizerSection')?.removeAttribute('inert');fileInput.disabled=false;
+    }
   }
 
   async function executeCurrentTool() {

@@ -47,7 +47,7 @@ CentralPDF_Web_Local/
 | `workspace-modernization.js` | Importação global e escolha de ferramentas compatíveis |
 | `foundation.js` / `experience-0.15.js` | Projetos, recuperação, processos, resultados, fluxos e predefinições |
 | `stable-1.0.js` | Autodiagnóstico, logs locais e acessibilidade |
-| `diagnostics-config.js` / `diagnostics-telemetry.js` | Destino Sentry, consentimento e transporte restrito |
+| `diagnostics-config.js` / `diagnostics-telemetry.js` | Destino Sentry, erros automáticos com opção de desativar, autorização de desempenho e transporte restrito |
 | `engine-loader.js` / `pdfjs-manifest.js` em `vendor/` | Carregamento dos motores e recursos PDF.js |
 | `sw.js` | Cache e atualização da aplicação estática |
 

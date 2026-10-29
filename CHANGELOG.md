@@ -67,6 +67,19 @@ Estas entradas descrevem a evolução da `main`; não indicam uma nova release W
 - Amplia regressões de workspace, formulários, acessibilidade, sincronização de versão, pacote, workflow e histórico de releases.
 - Faz o workflow consumir notas versionadas, validar o manifesto SHA-256 gerado e continuar aceitando tags estáveis futuras sem lógica exclusiva da `2.0.1`.
 
+## Em desenvolvimento — erros automáticos e tracing opcional (29/10/2026)
+
+- Compartilhamento automático de novos erros técnicos, com aviso, opção de
+  desativar e preservação de desativações anteriores.
+- Rastreamento Sentry da duração e do resultado das 34 ferramentas, com autorização
+  adicional por navegador e amostragem padrão de 10%.
+- Limite de 10 traces por carga, prioridade aos erros, revogação entre abas e
+  descarte de traces pendentes ou iniciados sob autorização revogada.
+- Transporte existente preservado, sem dados de documentos, SDK automático ou
+  captura de navegação/requisições. Cache atualizado para entregar a configuração.
+- Testes locais de privacidade, falhas, amostragem e ferramenta real no navegador.
+  Confirmação no painel Sentry depende do acesso autenticado ao projeto.
+
 ## Fluxo pós-download e painéis sem sobreposição
 
 - mantém o menu global de configurações acima do inspetor lateral;

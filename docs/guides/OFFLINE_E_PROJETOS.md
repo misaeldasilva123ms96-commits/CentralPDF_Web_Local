@@ -1,6 +1,6 @@
 # Uso offline, projetos e recuperação
 
-Referência atualizada em **21/10/2026**. [Documentação](../README.md) · [Guia do usuário](GUIA_DO_USUARIO_1.0.md)
+Referência atualizada em **29/10/2026**. [Documentação](../README.md) · [Guia do usuário](GUIA_DO_USUARIO_1.0.md)
 
 ## Preparar a execução local
 
@@ -49,4 +49,4 @@ A cópia fica no IndexedDB do navegador. Preferências e a opção de recuperaç
 
 O site recebe publicações da `main`; pacotes Windows são atualizados por releases. Para trocar o pacote, encerre o servidor, extraia a nova release em outra pasta, verifique hashes e reabra o projeto salvo.
 
-O compartilhamento Sentry é opcional e depende de consentimento. Não funciona sem rede e não oferece entrega garantida das pendências. Para documentos sigilosos, prepare tudo antes, mantenha o compartilhamento desativado e trabalhe desconectado, conforme a política da organização. [Diagnósticos e privacidade](../diagnosticos-sentry.md).
+O compartilhamento de novos erros técnicos com Sentry vem ativado por padrão e pode ser desativado; tempos de processamento exigem autorização adicional. Não funciona sem rede e não oferece entrega garantida das pendências. Para documentos sigilosos, prepare tudo antes, mantenha o compartilhamento desativado e trabalhe desconectado, conforme a política da organização. [Diagnósticos e privacidade](../diagnosticos-sentry.md).
