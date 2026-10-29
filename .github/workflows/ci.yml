@@ -66,7 +66,7 @@ jobs:
       - name: Run Python tests
         shell: bash
         run: |
-          find tests -maxdepth 1 -name '*.test.py' -print0 | sort -z | xargs -0 -n1 python
+          find tests -maxdepth 1 -name '*.test.py' -print0 | sort -z | xargs -0 -n1 python scripts/run-browser-test.py
           python tests/static_integrity.py
 
       - name: Run Go tests

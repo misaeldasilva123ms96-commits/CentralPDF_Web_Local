@@ -183,7 +183,9 @@ o envio; a tela informa contadores e pausas desta aba.
   painel desktop/mobile e pedidos reais para receptor HTTP **local**, com a URL
   Sentry interceptada. Inclui uma execução real de remoção de metadados com PDF
   sintético, falha de processamento e revogação dos traces entre abas. Nenhum dado
-  vai ao Sentry durante o teste.
+  vai ao Sentry durante esse teste. CI e gates de navegador usam
+  `scripts/run-browser-test.py` para bloquear destinos Sentry reais, mantendo o
+  receptor de testes explicitamente interceptado.
 - `go test ./...` em `server/`: CSP aceita apenas os domínios de ingresso previstos,
   além dos destinos já usados pelo app. O executável Windows foi recompilado pelo
   mesmo comando reproduzível da CI, com checksum atualizado.

@@ -75,9 +75,9 @@ jobs:
 
       - name: Exercise real prepared tools, offline reload and editor browsers
         run: |
-          python tests/tool-regression-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/tools.json"
-          python tests/offline-tools-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/offline.json"
-          python tests/editor-cross-browser-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/editor.json"
+          python scripts/run-browser-test.py tests/tool-regression-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/tools.json"
+          python scripts/run-browser-test.py tests/offline-tools-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/offline.json"
+          python scripts/run-browser-test.py tests/editor-cross-browser-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/editor.json"
 
       - name: Preserve synthetic regression evidence
         if: always()
