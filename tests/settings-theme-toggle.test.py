@@ -19,7 +19,7 @@ try:
         for engine in ['chromium','firefox']:
             browser=getattr(p,engine).launch()
             for width,height in [(1440,1000),(390,844),(1366,640)]:
-                context=browser.new_context(viewport={'width':width,'height':height})
+                context=browser.new_context(viewport={'width':width,'height':height},reduced_motion='reduce')
                 context.route('https://**/*',lambda route:route.abort())
                 page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
                 page.goto(origin);page.wait_for_selector('#cp101SettingsButton')
@@ -34,6 +34,14 @@ try:
                     assert page.locator('html').get_attribute('data-theme')==theme
                     assert toggle.get_attribute('aria-checked')==str(theme=='dark').lower()
                     assert panel.is_visible()
+                    contrast=toggle.evaluate(r"""el=>{
+                      const inactive=el.querySelector(el.getAttribute('aria-checked')==='true'?'[data-mode="light"]':'[data-mode="dark"]');
+                      const rgb=s=>s.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+                      const lum=s=>rgb(s).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+                      const a=lum(getComputedStyle(inactive).color),b=lum(getComputedStyle(el).backgroundColor);
+                      return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+                    }""")
+                    assert contrast>=4.5, (theme,contrast)
                     bounds=panel.bounding_box();assert bounds['x']>=0 and bounds['y']>=0 and bounds['x']+bounds['width']<=width+1 and bounds['y']+bounds['height']<=height+1,bounds
                     assert panel.evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
                     if environ.get('CENTRALPDF_QA_SCREENSHOTS') and height!=640:

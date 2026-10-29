@@ -1,6 +1,6 @@
 /* Compact settings panel and one keyboard-accessible theme switch. */
 #cp101SettingsPanel {
-  --settings-surface:#fff;--settings-text:#252b3b;--settings-muted:#72798b;
+  --settings-surface:#fff;--settings-text:#252b3b;--settings-muted:#626a7b;
   --settings-border:#e8eaf1;--settings-hover:#f5f5fa;--settings-track:#f5f5f9;
   --settings-selected:#e8e7f2;--settings-selected-text:#414057;
   width:min(400px,calc(100vw - 24px));max-height:calc(100dvh - 90px);
