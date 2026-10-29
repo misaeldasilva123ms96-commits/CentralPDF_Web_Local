@@ -16,8 +16,8 @@
   let mounted = false;
 
   function getStoredTheme() {
-    const stored = window.localStorage.getItem(THEME_KEY);
-    return stored === 'dark' || stored === 'light' ? stored : 'light';
+    try {const stored=window.localStorage.getItem(THEME_KEY);return stored==='dark'?'dark':'light';}
+    catch (_) {return document.body.dataset.theme==='dark'?'dark':'light';}
   }
 
   function applyTheme(mode) {
@@ -25,22 +25,20 @@
     document.body.setAttribute('data-theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.style.colorScheme = theme;
-    window.localStorage.setItem(THEME_KEY, theme);
+    try {window.localStorage.setItem(THEME_KEY, theme);}catch (_) {}
     syncThemeButtons(theme);
   }
 
   function syncThemeButtons(theme = getStoredTheme()) {
-    document.querySelectorAll('.cp101-theme-option').forEach((button) => {
-      const active = button.dataset.themeMode === theme;
-      button.setAttribute('aria-pressed', active ? 'true' : 'false');
-    });
+    const toggle=$('#cp101ThemeToggle');
+    if(toggle){toggle.setAttribute('aria-checked',String(theme==='dark'));toggle.title=theme==='dark'?'Ativar tema claro':'Ativar tema escuro';}
   }
 
   function allButtonsReady() {
     return buttonIds.every(id => document.getElementById(id));
   }
 
-  function closeMenu() {
+  function closeMenu(restoreFocus = false) {
     const panel = $('#cp101SettingsPanel');
     const trigger = $('#cp101SettingsButton');
     const backdrop = $('#cp101SettingsBackdrop');
@@ -48,6 +46,7 @@
     panel.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
     backdrop?.setAttribute('hidden', 'hidden');
+    if(restoreFocus)trigger.focus();
   }
 
   function openMenu() {
@@ -58,6 +57,7 @@
     panel.hidden = false;
     trigger.setAttribute('aria-expanded', 'true');
     backdrop?.removeAttribute('hidden');
+    $('#cp101ThemeToggle')?.focus();
   }
 
   function toggleMenu() {
@@ -83,26 +83,12 @@
     const section = document.createElement('section');
     section.className = 'cp101-settings-section';
     section.innerHTML = `
-      <div class="cp101-settings-section-title">Aparência</div>
-      <div class="cp101-theme-section">
-        <div class="cp101-theme-head">
-          <div>
-            <strong>Tema da interface</strong>
-            <span>Escolha entre modo claro e escuro. A preferência fica salva neste navegador.</span>
-          </div>
-          <span class="cp101-theme-badge">Visual</span>
-        </div>
-        <div class="cp101-theme-options" role="group" aria-label="Escolha o tema da interface">
-          <button type="button" class="cp101-theme-option" data-theme-mode="light" data-keep-settings-open="true" aria-pressed="false">
-            <span class="swatch"><svg><use href="#i-eye"></use></svg></span>
-            <span><b>Tema claro</b><small>Limpo, suave e ideal para o dia.</small></span>
-          </button>
-          <button type="button" class="cp101-theme-option" data-theme-mode="dark" data-keep-settings-open="true" aria-pressed="false">
-            <span class="swatch"><svg><use href="#i-focus"></use></svg></span>
-            <span><b>Tema escuro</b><small>Mais confortável para uso prolongado.</small></span>
-          </button>
-        </div>
-        <div class="cp101-theme-note">Dica: o tema vale para toda a Central PDF & Imagem.</div>
+      <div class="cp101-appearance-row">
+        <div><strong>Aparência</strong><span>Escolha o tema da interface</span></div>
+        <button id="cp101ThemeToggle" class="cp101-theme-toggle" type="button" role="switch" aria-label="Tema escuro" aria-checked="false" data-keep-settings-open="true">
+          <span class="cp101-theme-segment" data-mode="dark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg>Escuro</span>
+          <span class="cp101-theme-segment" data-mode="light"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>Claro</span>
+        </button>
       </div>`;
     return section;
   }
@@ -116,16 +102,31 @@
 
   function relabelButtons() {
     const qualityLabel = $('#cp10QualityButton .cp10-label');
-    if (qualityLabel) qualityLabel.textContent = 'Qualidade 2.0.1';
+    if (qualityLabel) qualityLabel.textContent = 'Diagnóstico e erros';
     const resultsButton = $('#cp15ResultsBtn span');
     if (resultsButton) resultsButton.textContent = 'Resultados';
   }
 
+  function decorateActions() {
+    const descriptions={layoutSettingsButton:['Interface e painéis','Organize a área de trabalho'],cp15PresetsBtn:['Predefinições','Reutilize os ajustes das ferramentas'],foundationProjectsButton:['Projetos salvos','Salve e continue seu trabalho'],cp15ResultsBtn:['Resultados','Acesse os arquivos processados'],foundationQueueButton:['Fila de tarefas','Acompanhe os processamentos'],cp15FlowsBtn:['Fluxos de trabalho','Combine etapas de processamento'],foundationDiagnosticsButton:['Sistema e modo offline','Verifique os motores e a conexão'],cp10QualityButton:['Diagnóstico e erros','Consulte os logs e o compartilhamento']};
+    Object.entries(descriptions).forEach(([id,[title,description]])=>{
+      const button=document.getElementById(id);if(!button)return;
+      const label=button.querySelector('span.label, .cp10-label, span');
+      const icon=button.querySelector('svg');const badge=button.querySelector('b, .foundation-badge');
+      if(!label)return;
+      label.textContent=title;
+      const copy=document.createElement('span');copy.className='cp101-action-copy';
+      const heading=document.createElement('strong');heading.append(label);
+      const detail=document.createElement('small');detail.textContent=description;copy.append(heading,detail);
+      const visual=document.createElement('span');visual.className='cp101-action-icon';visual.setAttribute('aria-hidden','true');if(icon)visual.append(icon);
+      button.classList.add('cp101-settings-action');button.append(visual,copy);if(badge)button.append(badge);
+      const arrow=document.createElement('span');arrow.className='cp101-action-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='›';button.append(arrow);
+    });
+  }
+
   function bindThemeEvents() {
-    document.querySelectorAll('.cp101-theme-option').forEach((button) => {
-      button.addEventListener('click', () => {
-        applyTheme(button.dataset.themeMode);
-      });
+    $('#cp101ThemeToggle')?.addEventListener('click',()=>{
+      applyTheme(document.body.dataset.theme==='dark'?'light':'dark');
     });
     syncThemeButtons();
   }
@@ -139,21 +140,17 @@
     menu.id = 'cp101SettingsMenu';
     menu.className = 'cp101-settings-menu';
     menu.innerHTML = `
-      <button id="cp101SettingsButton" class="cp101-settings-trigger" type="button" aria-haspopup="true" aria-expanded="false" title="Abrir painel de configurações rápidas">
+      <button id="cp101SettingsButton" class="cp101-settings-trigger" type="button" aria-haspopup="dialog" aria-controls="cp101SettingsPanel" aria-expanded="false" title="Abrir painel de configurações rápidas">
         <svg><use href="#i-layout"></use></svg>
         <span>Configurações</span>
       </button>
-      <div id="cp101SettingsPanel" class="cp101-settings-panel" hidden>
+      <div id="cp101SettingsPanel" class="cp101-settings-panel" role="dialog" aria-labelledby="cp101SettingsTitle" hidden>
         <div class="cp101-settings-head">
-          <small>Atalhos do produto</small>
-          <strong>Configurações rápidas</strong>
-          <span>Reunimos projetos, resultados, fluxos, diagnósticos, qualidade e aparência em um painel mais limpo.</span>
+          <div><strong id="cp101SettingsTitle">Configurações</strong><span>Seu espaço de trabalho, do seu jeito.</span></div>
+          <button id="cp101CloseSettings" class="cp101-settings-close" type="button" aria-label="Fechar configurações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
         </div>
         <div id="cp101SettingsBody" class="cp101-settings-body"></div>
-        <div class="cp101-settings-footer">
-          <span>Feche com Esc ou clicando fora.</span>
-          <button id="cp101CloseSettings" type="button">Fechar</button>
-        </div>
+        <div class="cp101-settings-footer"><span>CentralPDF · 2.0.1</span><span><kbd>Esc</kbd> para fechar</span></div>
       </div>
       <div id="cp101SettingsBackdrop" class="cp101-settings-backdrop" hidden></div>`;
 
@@ -161,21 +158,24 @@
 
     const body = $('#cp101SettingsBody');
     body.appendChild(appearanceSection());
-    body.appendChild(group('Interface', ['layoutSettingsButton']));
-    body.appendChild(group('Projetos e sistema', ['foundationProjectsButton', 'foundationQueueButton', 'foundationDiagnosticsButton']));
-    body.appendChild(group('Continuidade', ['cp15ResultsBtn', 'cp15FlowsBtn', 'cp15PresetsBtn']));
-    body.appendChild(group('Qualidade da versão', ['cp10QualityButton'], 'cp101-settings-slim'));
+    body.appendChild(group('Personalização', ['layoutSettingsButton','cp15PresetsBtn']));
+    body.appendChild(group('Projetos e tarefas', ['foundationProjectsButton','cp15ResultsBtn','foundationQueueButton','cp15FlowsBtn']));
+    body.appendChild(group('Sistema e suporte', ['foundationDiagnosticsButton','cp10QualityButton']));
 
     cleanupEmptyGroups();
     relabelButtons();
+    decorateActions();
     bindThemeEvents();
 
     $('#cp101SettingsButton')?.addEventListener('click', (event) => {
       event.stopPropagation();
       toggleMenu();
     });
-    $('#cp101CloseSettings')?.addEventListener('click', closeMenu);
+    $('#cp101CloseSettings')?.addEventListener('click', () => closeMenu(true));
     $('#cp101SettingsBackdrop')?.addEventListener('click', closeMenu);
+    menu.addEventListener('focusout',event=>{
+      if(event.relatedTarget&&!menu.contains(event.relatedTarget))closeMenu();
+    });
     $('#cp101SettingsPanel')?.addEventListener('click', (event) => {
       const target = event.target.closest('button');
       if (!target) return;
@@ -185,7 +185,7 @@
     });
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeMenu();
+      if (event.key === 'Escape' && !$('#cp101SettingsPanel')?.hidden) {event.preventDefault();closeMenu(true);}
     });
     document.addEventListener('click', (event) => {
       const wrap = $('#cp101SettingsMenu');

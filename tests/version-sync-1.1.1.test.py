@@ -25,12 +25,12 @@ for snippet in [
 ]:
     assert snippet in stable, snippet
 assert "qualityLabel.textContent = 'Qualidade 2.0.1';" in head1
-assert "qualityLabel.textContent = 'Qualidade 2.0.1';" in head3
+assert "qualityLabel.textContent = 'Diagnóstico e erros';" in head3
 assert "const APP_VERSION = '2.0.1';" in foundation
 assert "const APP_VERSION = '2.0.1';" in engine_loader
 assert "const VERSION = '2.0.1';" in quality
 assert 'Central PDF & Imagem 2.0.1' in manifest
-assert "centralpdf-v2.0.1-pages-41" in service_worker
+assert "centralpdf-v2.0.1-pages-42" in service_worker
 assert '"version":"2.0.1"' in server
 assert readme.startswith('# Central PDF & Imagem 2.0.1\n')
 print('version-sync-2.0.1: passed')

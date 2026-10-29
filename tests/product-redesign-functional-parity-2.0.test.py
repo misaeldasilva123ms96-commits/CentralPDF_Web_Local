@@ -44,6 +44,6 @@ header_settings = (root / "assets/js/header-settings-1.0.3.js").read_text(encodi
 assert "tool-card[data-tool]" in redesign
 assert "workspaceToolNav" in redesign
 assert "34 ferramentas" in redesign
-assert "group('Interface', ['layoutSettingsButton'])" in header_settings
+assert "group('Personalização', ['layoutSettingsButton','cp15PresetsBtn'])" in header_settings
 
 print("product-redesign-functional-parity-2.0: passed")
