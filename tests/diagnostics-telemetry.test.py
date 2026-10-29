@@ -64,6 +64,7 @@ def intercept(route):
 
 def setup(browser, disabled=False, mobile=False, production=False, automatic=False):
     context = browser.new_context(viewport={'width':390 if mobile else 1440,'height':844 if mobile else 1000}, service_workers='block')
+    context.add_init_script('window.__centralPdfTestLocalReceiver='+json.dumps(endpoint)+';')
     context.sentry_requests = []
     context.on('request', lambda request: context.sentry_requests.append(request.url) if '.sentry.io/' in request.url else None)
     # Every external request is blocked except the explicit local-only receiver route.

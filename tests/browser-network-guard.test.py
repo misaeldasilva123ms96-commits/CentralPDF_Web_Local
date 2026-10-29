@@ -28,12 +28,11 @@ try:
         browser = p.chromium.launch(args=['--host-resolver-rules=MAP telemetry.sentry.io 127.0.0.1'])
         context = browser.new_context()
         for page in [context.new_page(), browser.new_page()]:
-            failures = []
-            page.on('requestfailed', lambda request: failures.append(request.failure))
-            result = page.evaluate("""async url=>{try{await fetch(url,{method:'POST',mode:'no-cors',body:'probe'});return true;}catch(_){return false;}}""", url)
-            assert result is False and failures and 'BLOCKED_BY_CLIENT' in failures[-1], failures
+            result = page.evaluate("""async url=>{try{await fetch(url,{method:'POST',mode:'no-cors',body:'probe'});return 'sent';}catch(error){return error.message;}}""", url)
+            assert result == 'Sentry blocked by browser test runner', result
             assert not received, 'The default guard must stop the request before any receiver'
             # A dedicated test receiver route can override the default guard.
+            page.evaluate('(url)=>window.__centralPdfTestLocalReceiver=url', url)
             page.context.route(url, lambda route: route.fulfill(status=200, body='local fixture', headers={'Access-Control-Allow-Origin':'*'}))
             assert page.evaluate("async url=>(await fetch(url)).text()", url) == 'local fixture'
             assert not received

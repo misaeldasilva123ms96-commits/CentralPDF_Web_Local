@@ -1,19 +1,33 @@
 """Run a Python test with real Sentry destinations blocked in Playwright.
 
-Only browser requests are guarded. Tests can register a later, explicit route
-for their local receiver. Product sources and consent defaults are untouched.
+Only the app's browser fetch transport is guarded. A test may explicitly allow
+its intercepted local receiver via __centralPdfTestLocalReceiver. Product sources and consent defaults are untouched.
 """
 from pathlib import Path
-import re
 import runpy
 import sys
 from playwright.sync_api import Browser, BrowserType
 
-SENTRY = re.compile(r'^https?://(?:[^/]+\.)?sentry\.io(?::\d+)?/')
+GUARD = r"""(() => {
+  const original = window.fetch;
+  window.fetch = function(...args) {
+    try {
+      const input=args[0];
+      const url=new URL(typeof input==='string'||input instanceof URL?input:input.url,location.href);
+      if((url.hostname==='sentry.io'||url.hostname.endsWith('.sentry.io')) &&
+          url.href!==window.__centralPdfTestLocalReceiver) {
+        return Promise.reject(new TypeError('Sentry blocked by browser test runner'));
+      }
+    } catch (_) { /* Let the browser validate ordinary fetch arguments. */ }
+    return Reflect.apply(original,this,args);
+  };
+})();"""
 
 
 def guard(context):
-    context.route(SENTRY, lambda route: route.abort('blockedbyclient'))
+    # Routing disables the HTTP cache and interferes with offline regression.
+    # Guard the app's fetch transport before page scripts execute instead.
+    context.add_init_script(GUARD)
     return context
 
 
@@ -28,6 +42,7 @@ def install_guard():
     def new_page(self, *args, **kwargs):
         page = original_page(self, *args, **kwargs)
         guard(page.context)
+        page.evaluate(GUARD)
         return page
 
     def persistent(self, *args, **kwargs):
