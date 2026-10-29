@@ -67,6 +67,14 @@ Estas entradas descrevem a evolução da `main`; não indicam uma nova release W
 - Amplia regressões de workspace, formulários, acessibilidade, sincronização de versão, pacote, workflow e histórico de releases.
 - Faz o workflow consumir notas versionadas, validar o manifesto SHA-256 gerado e continuar aceitando tags estáveis futuras sem lógica exclusiva da `2.0.1`.
 
+## Em desenvolvimento — configurações e tema (29/10/2026)
+
+- Controle único de tema Escuro / Claro com ícones, preferência salva e acesso
+  por teclado, seguindo a referência visual fornecida.
+- Configurações organizadas em Personalização, Projetos e tarefas, e Sistema e
+  suporte, com descrições curtas e preservação dos atalhos existentes.
+- Painel adaptável para celular e telas baixas, foco visível e fechamento por Esc.
+
 ## Em desenvolvimento — erros automáticos e tracing opcional (29/10/2026)
 
 - Compartilhamento automático de novos erros técnicos, com aviso, opção de

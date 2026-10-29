@@ -59,3 +59,12 @@ O envio de novos erros técnicos para **Sentry** é automático por padrão. Em 
 | `Ctrl+Shift+F` | Modo de foco |
 
 Consulte também [Acessibilidade](ACESSIBILIDADE_1.0.md), [Segurança](../../SECURITY.md) e [Limitações conhecidas](../reference/LIMITACOES_CONHECIDAS_1.0.md).
+
+### Tema e configurações
+
+Abra **Configurações** no cabeçalho. O controle único **Escuro / Claro** alterna
+a aparência com um clique; a preferência fica salva neste navegador. Ele também
+funciona com Enter e Espaço. O painel reúne **Personalização** (interface e
+predefinições), **Projetos e tarefas** (projetos, resultados, fila e fluxos) e
+**Sistema e suporte** (modo offline e diagnóstico de erros). As predefinições
+se aplicam à ferramenta aberta. Feche pelo botão ×, por Esc ou clicando fora.
