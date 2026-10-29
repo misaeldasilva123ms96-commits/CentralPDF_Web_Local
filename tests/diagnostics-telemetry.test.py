@@ -25,6 +25,7 @@ responses = []
 
 class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
+        """Serve isolated app variants with explicit diagnostic settings."""
         if self.path.startswith('/test'):
             config = '<script src="/assets/js/diagnostics-config.js"></script>' if self.path.startswith(('/test-disabled', '/test-production')) else '<script>window.CentralPDFDiagnosticsConfig={enabled:true,dsn:'+json.dumps(dsn)+',tracesSampleRate:1};</script>'
             if self.path.startswith('/test-automatic'):

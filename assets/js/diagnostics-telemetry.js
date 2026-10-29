@@ -142,7 +142,8 @@
         const [seconds,categories]=part.trim().split(':');const value=Number(seconds);
         return Number.isFinite(value)&&value>=0&&categories!==undefined&&(!categories||categories.split(';').some(c=>c===(type==='transaction'?'transaction':'error')||c==='default'))?value*1000:0;
       }));
-      if(delay>0||response.status!==429)return delay;
+      // An explicit category header takes precedence over generic 429 delays.
+      return delay;
     }
     if(response.status!==429)return 0;
     const retry=response.headers.get('Retry-After');

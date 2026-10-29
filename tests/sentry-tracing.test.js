@@ -67,6 +67,33 @@ function payload(call){
   const limited=client();limited.api.setConsent(true);limited.api.setTracingConsent(true);limited.respond({status:200,headers:{'X-Sentry-Rate-Limits':'60:transaction:organization'}});
   limited.api.startToolTrace('merge')(true);await limited.api.flush();assert.equal(limited.api.startToolTrace('merge'),null);
   limited.api.capture('console','trace quota must not block errors');await limited.api.flush();assert.equal(limited.calls.length,2);
+  // A transaction-only 429 must preserve errors queued during the request and
+  // accept new errors even when Retry-After accompanies the explicit category.
+  for(const retryAfter of [null,'120']) {
+    const separate=client();separate.api.setConsent(true);separate.api.setTracingConsent(true);
+    separate.respond(()=>{
+      separate.api.capture('console','queued error');
+      const headers={'X-Sentry-Rate-Limits':'60:transaction:organization'};
+      if(retryAfter!==null)headers['Retry-After']=retryAfter;
+      return {ok:false,status:429,headers:{get:key=>headers[key]??null}};
+    });
+    separate.api.startToolTrace('merge')(true);await separate.api.flush();
+    assert.equal(separate.api.getStatus().pausedUntil,0,'transaction-only 429 must not pause errors');
+    assert.equal(separate.api.getStatus().pending,1,'queued errors must survive transaction limits');
+    assert.equal(separate.api.capture('javascript','new error'),true);
+    assert.equal(separate.api.startToolTrace('merge'),null,'traces remain paused');
+    separate.respond({status:200,headers:{}});await separate.api.flush();await separate.api.flush();
+    assert.equal(separate.calls.length,3);assert.equal(separate.api.getStatus().sent,2);
+    assert.equal(separate.api.getStatus().discarded,1,'only the rejected trace is discarded');
+  }
+  for(const seconds of [60,120]) {
+    const fallback=client();fallback.api.setConsent(true);fallback.api.setTracingConsent(true);
+    fallback.respond({status:429,headers:seconds===120?{'Retry-After':'120'}:{}});
+    fallback.api.startToolTrace('merge')(true);await fallback.api.flush();
+    assert.equal(fallback.api.capture('console','globally limited'),false);
+    fallback.advance(seconds*1000+1);
+    assert.equal(fallback.api.capture('console','after generic cooldown'),true);
+  }
   const quota=client();quota.api.setConsent(true);quota.api.setTracingConsent(true);
   for(let i=0;i<15;i++){const end=quota.api.startToolTrace('merge');if(end)end(true);await quota.api.flush();quota.advance(61000);}
   assert.equal(quota.calls.length,10);assert.equal(quota.api.getStatus().tracesSent,10);
