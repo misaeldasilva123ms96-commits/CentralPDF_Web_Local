@@ -109,6 +109,7 @@ try:
     page.get_by_role('button',name='Sair da conta').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
     # Provider invitations do not initiate browser PKCE: test the fixed invite callback.
     invite=origin+('/auth/invite' if width==1440 else '/')+'#access_token='+jwt('aal1')+'&refresh_token=fixture-refresh-token&expires_in=3600&token_type=bearer&type=invite'
+    page.goto("about:blank")  # Email verification returns through a fresh document.
     page.goto(invite)
     try:page.get_by_role('heading',name='Definir nova senha').wait_for(timeout=10000)
     except Exception:
