@@ -2,7 +2,7 @@
 
 **Proposta para avaliação · 30/10/2026 · versão 1.1**
 
-Estado: revisão de planejamento. Nenhum serviço, login real, recurso Cloudflare ou alteração no site/protótipo foi implantado nesta revisão. O exemplo navegável anterior continua ilustrativo.
+Estado: revisão de planejamento. Nenhum serviço, login real, recurso Cloudflare ou alteração no site público foi implantado nesta revisão. O exemplo navegável foi atualizado por solicitação do responsável e continua ilustrativo.
 
 ## 1. Decisão de produto
 
@@ -166,9 +166,15 @@ Estimativa preliminar de implementação do MVP: **10 a 17 dias úteis de esfor�
 
 ## 12. Custos e decisões pendentes
 
+**Decisão do responsável: usar Cloudflare Free nesta fase.** Não contratar recursos pagos nem habilitar upgrade automático. Dimensionar o novo painel/API dentro das quotas vigentes do Free, considerando consumo compartilhado da conta. Prever limites de ingestão, cache de conteúdo público, retenção curta e interrupção da coleta antes de comprometer o funcionamento das ferramentas. Se o volume exceder as quotas, reduzir a coleta ou reavaliar o plano com o responsável; esta proposta não autoriza cobrança. A escolha Free é o requisito do projeto, não uma confirmação do plano atual da conta. Não alterar a assinatura compartilhada da conta, pois isso pode afetar o Omni.
+
+Referência pública consultada em 30/10/2026: [Workers Free](https://developers.cloudflare.com/workers/platform/pricing/) informa 100.000 requisições por dia e 10 ms de CPU por invocação. [Pages Functions](https://developers.cloudflare.com/pages/functions/pricing/) compartilha a quota diária de Workers; pedidos puramente estáticos são distintos da execução de funções. Esses limites não equivalem a um número garantido de pessoas simultâneas e precisam ser revalidados antes da implantação. O painel/API não fará processamento de PDFs. Rotas privadas devem recusar acesso quando limites ou serviços falharem, sem liberar dados por fallback.
+
+A escolha se refere à Cloudflare. Custos e limites de Supabase, remetente de recuperação e Sentry precisam de avaliação própria; não presumir gratuidade de toda a arquitetura.
+
 Não é necessário contratar nada para avaliar este protótipo. Na implementação, verificar preços/quotas vigentes de hospedagem, Auth, banco, funções, e-mail e Sentry. O principal dimensionamento novo será o volume de eventos e a retenção, não o processamento de PDFs. Adotar orçamento e alertas antes do piloto; não prometer custo zero permanente.
 
-Decisões para a próxima etapa: aprovação do MVP, confirmação de plano/limites e permissões específicas da conta Cloudflare, nome/endereço do novo projeto, projeto Supabase, método de primeiro acesso, envio de recuperação/MFA, acesso Sentry de leitura, política das novas métricas, limites compartilhados da conta e responsáveis operacionais. O Omni não é candidato a reaproveitamento. Não compartilhar senha administrativa ou chaves secretas nesta conversa.
+Decisões para a próxima etapa: aprovação do MVP, verificação de compatibilidade com Cloudflare Free e permissões específicas da conta, nome/endereço do novo projeto, projeto Supabase, método de primeiro acesso, envio de recuperação/MFA, acesso Sentry de leitura, política das novas métricas, limites compartilhados da conta e responsáveis operacionais. O Omni não é candidato a reaproveitamento. Não compartilhar senha administrativa ou chaves secretas nesta conversa.
 
 ## 13. Como avaliar o exemplo
 
@@ -259,7 +265,7 @@ Em 30/10/2026, o plugin Cloudflare confirmou uma conexão autenticada e acesso d
 
 O nome sugerido `centralpdf-admin` não aparece nesses inventários; isso não o reserva nem garante a disponibilidade do endereço final. Nenhum recurso foi criado e nenhuma chamada de escrita foi executada. A autenticação e as leituras bem-sucedidas não comprovam permissão para futuras ações de implantação.
 
-**Ainda não confirmados:** plano contratado, quotas efetivas e consumo compartilhado, orçamento, subdomínio/endereço final, permissões de escrita necessárias, projeto Supabase, entrega SMTP e integração Sentry de leitura. Não foi solicitado token secreto ao responsável.
+**Requisito definido:** Cloudflare Free nesta fase, sem ativação de recursos pagos. **Ainda não confirmados:** plano atual da conta, quotas efetivas e consumo compartilhado, orçamento, subdomínio/endereço final, permissões de escrita necessárias, projeto Supabase, entrega SMTP e integração Sentry de leitura. Não foi solicitado token secreto ao responsável.
 
 ### Fontes específicas desta revisão
 
@@ -272,7 +278,7 @@ O nome sugerido `centralpdf-admin` não aparece nesses inventários; isso não o
 
 1. Aprovar a revisão e manter o projeto Omni explicitamente fora de todas as ações.
 2. Conexão autenticada e inventário nominal já confirmados; verificar plano, limites e permissões específicas restantes, sem modificar recursos.
-3. Confirmar o projeto novo, seu endereço, orçamento, ambientes e estratégia de publicação independente.
+3. Confirmar o projeto novo, seu endereço, adequação às quotas Cloudflare Free, ambientes e estratégia de publicação independente, sem upgrade ou mudança de assinatura da conta.
 4. Aprovar Cloudflare + Supabase como base ou escolher conscientemente a alternativa de identidade.
 5. Aprovar primeiro acesso seguro, MFA, remetente, recuperação e proteção das rotas/sessões.
 6. Validar o texto/posição do novo cartão e sua regra offline/“Em configuração”.
@@ -280,6 +286,6 @@ O nome sugerido `centralpdf-admin` não aparece nesses inventários; isso não o
 
 ## 18. Registro da revisão 1.1
 
-Foram incorporados: Cloudflare como hospedagem preferida; projeto novo dedicado; preservação integral do Omni; identidade administrativa definida para configuração privada; redefinição/alteração de senha; avaliação da senha inicial e proposta de ativação segura; posição exata do cartão no diagnóstico; distinção entre projeto separado e quotas de conta; dependências de e-mail/callback/MFA e critérios de validação antes da implementação.
+Foram incorporados: Cloudflare como hospedagem preferida; projeto novo dedicado; preservação integral do Omni; identidade administrativa definida para configuração privada; redefinição/alteração de senha; avaliação da senha inicial e proposta de ativação segura; posição exata do cartão no diagnóstico; distinção entre projeto separado e quotas de conta; dependências de e-mail/callback/MFA, Cloudflare Free como limite inicial de contratação e critérios de validação antes da implementação.
 
-**Escopo desta entrega:** atualizar documentos, PDF e pacote de leitura. O aplicativo, o protótipo HTML anterior, contas, credenciais, Cloudflare, Supabase, Sentry, DNS e publicação permanecem sem alteração. O protótipo atual não inclui o novo cartão nem fluxos reais de senha; esses itens estão especificados para revisão futura.
+**Escopo desta entrega:** atualizar documentos, PDF, pacote e exemplo navegável. O protótipo agora inclui Conta e segurança, simulação de alteração de senha e encerramento de outras sessões, recuperação de acesso e prévia do cartão após Capacidade estimada. Os campos de credenciais ficam desabilitados; nenhuma senha é recebida ou salva. O aplicativo público, contas, credenciais, Cloudflare, Supabase, Sentry, DNS e publicação permanecem sem alteração. Autenticação e recuperação reais são etapas futuras.
