@@ -180,3 +180,23 @@ describe("bounded inputs", () => {
       expect(() => validateNotice(v)).toThrow();
   });
 });
+
+it("uses Workers-supported manual redirects and refuses upstream redirects", async () => {
+  const f = vi.fn<typeof fetch>(
+    async () =>
+      new Response(null, {
+        status: 302,
+        headers: { Location: "https://other.example.test" },
+      }),
+  );
+  const response = await handle(authorized("/api/history"), env, f);
+  expect(response.status).toBe(503);
+  expect(await response.json()).toEqual({ error: "unexpected_redirect" });
+  expect(f).toHaveBeenCalledTimes(1);
+  expect(f.mock.calls[0][1]?.redirect).toBe("manual");
+});
+
+it("accepts bounded notice-list responses larger than one request body", async () => {
+  const value = { message: "x".repeat(140000) };
+  expect(await readJson(Response.json(value))).toEqual(value);
+});

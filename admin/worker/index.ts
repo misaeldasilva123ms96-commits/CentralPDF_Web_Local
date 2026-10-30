@@ -14,7 +14,7 @@ const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export async function readJson(
   response: Response,
-  limit = 65536,
+  limit = 262144,
 ): Promise<unknown> {
   const reader = response.body?.getReader();
   if (!reader) throw new ApiError(400, "invalid_json");
@@ -75,11 +75,15 @@ async function provider(
       ...init,
       headers,
       credentials: "omit",
-      redirect: "error",
+      redirect: "manual",
       signal: AbortSignal.timeout(8000),
     });
   } catch {
     throw new ApiError(503, "service_unavailable");
+  }
+  if (response.status >= 300 && response.status < 400) {
+    await response.body?.cancel();
+    throw new ApiError(503, "unexpected_redirect");
   }
   if (!response.ok) {
     if (response.status === 409) throw new ApiError(409, "revision_conflict");
