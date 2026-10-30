@@ -139,3 +139,46 @@ jobs:
           node scripts/extract-tool-catalog.mjs
           git diff --exit-code -- docs/architecture/_CATALOGO_RAW.md
           test "$(grep -cE '^\| (organize|editPdf|merge|split|extract|rotate|watermark|pageNumbers|imagesToPdf|imageConvert|compress|pdfToImage|crop|metadata|normalize|pdfToText|ocr|compare|redact|formBuilder|signPdf|pdfToOffice|documentsToPdf|extractImages|archivePdf|documentAssistant|structuredExtraction|documentAudit|classifyRename|protect|unlock|diagnose|repairAdvanced|flattenForms) ' docs/architecture/_CATALOGO_RAW.md)" -eq 34
+
+  admin-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: admin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
+      - name: Test private API contracts
+        run: npm test
+      - name: Type check and build
+        run: npm run build
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install -r ../requirements-test.txt
+          python -m playwright install --with-deps chromium firefox
+      - name: Test admin browser flows with isolated provider fixtures
+        env:
+          CENTRALPDF_ADMIN_QA: ${{ runner.temp }}/admin-staging-evidence
+        run: python tests/browser.py
+      - name: Preserve admin screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # actions/upload-artifact@v7.0.2
+        with:
+          name: admin-staging-evidence
+          path: ${{ runner.temp }}/admin-staging-evidence
+          if-no-files-found: warn
+          retention-days: 14
