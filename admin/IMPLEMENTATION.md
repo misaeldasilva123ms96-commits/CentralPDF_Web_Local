@@ -7,7 +7,7 @@
 - Quatro migrations e RLS nas quatro tabelas; nenhum alerta no advisor de segurança
   depois da configuração. As funções privilegiadas estão no schema privado,
   têm `search_path` fixo e exposição/grants mínimos.
-- Quinze testes de API/dados passaram; TypeScript, build e auditoria npm passaram.
+- Dezesseis testes de API/dados passaram; TypeScript, build e auditoria npm passaram.
 - Teste transacional de RLS passou no banco real, sem manter contas ou avisos
   fictícios. Conta comum, metadados adulterados, MFA, rascunhos, snapshot publicado preservado após novo rascunho,
   revisões, auditoria e revogação foram verificados.
@@ -55,3 +55,8 @@ HTTP real: shell e callbacks com CSP; APIs privadas responderam 401 para
 anonimato. A projeção pública respondeu 200 com lista vazia pelo caminho
 Worker → Supabase. O primeiro acesso real permanece pendente da configuração
 de Auth; a entrega de e-mail ainda não foi validada.
+
+O contrato de navegador inclui convite padrão/rota dedicada, cadastro TOTP com
+QR code fornecido pelo SDK, recuperação PKCE, definição de nova senha e recusa
+de callback inválido. O controle de versão das verificações impede que respostas
+atrasadas reabram o painel após sair ou sobrescrevam a tela de nova senha.

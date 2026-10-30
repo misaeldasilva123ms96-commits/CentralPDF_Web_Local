@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { strongPassword, type Config } from "./auth";
+import { strongPassword, totpImageSource, type Config } from "./auth";
 import { Message, Theme } from "./ui";
 export type AccessState =
   "login" | "recover" | "new-password" | "mfa" | "denied" | "loading" | "ready";
@@ -18,7 +18,13 @@ export function Access({
   refresh: () => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false),
-    [message, setMessage] = useState(""),
+    [message, setMessage] = useState(() => {
+      const updated = sessionStorage.getItem(
+        "centralpdf-admin-password-updated",
+      );
+      sessionStorage.removeItem("centralpdf-admin-password-updated");
+      return updated ? "Senha atualizada. Entre novamente para continuar." : "";
+    }),
     [error, setError] = useState("");
   const [factor, setFactor] = useState(""),
     [qr, setQr] = useState("");
@@ -77,8 +83,8 @@ export function Access({
           );
           return;
         }
-        setState("login");
-        setMessage("Senha atualizada. Entre novamente para continuar.");
+        sessionStorage.setItem("centralpdf-admin-password-updated", "1");
+        location.replace("/");
       } else if (state === "mfa") {
         if (!factor) throw new Error();
         const { error } = await client.auth.mfa.challengeAndVerify({
@@ -163,7 +169,7 @@ export function Access({
               void run(async () => {
                 const result = await client.auth.signOut({ scope: "local" });
                 if (result.error) throw result.error;
-                setState("login");
+                location.replace("/");
               })
             }
           >
@@ -235,10 +241,7 @@ export function Access({
                   <div className="mfa-qr">
                     <img
                       alt="QR code para cadastrar o CentralPDF no autenticador"
-                      src={
-                        "data:image/svg+xml;charset=utf-8," +
-                        encodeURIComponent(qr)
-                      }
+                      src={totpImageSource(qr)}
                     />
                     <p>
                       Escaneie no seu aplicativo autenticador. Guarde os meios
@@ -309,7 +312,7 @@ export function Access({
                 void run(async () => {
                   const result = await client.auth.signOut({ scope: "local" });
                   if (result.error) throw result.error;
-                  setState("login");
+                  location.replace("/");
                 })
               }
             >

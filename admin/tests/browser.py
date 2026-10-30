@@ -29,7 +29,7 @@ try:
    browser=getattr(p,engine).launch()
    for width,height in [(1440,1000),(390,844)]:
     context=browser.new_context(viewport={'width':width,'height':height},reduced_motion='reduce',accept_downloads=True)
-    page=context.new_page();errors=[];outbound=[];state={'mfa':False,'notices':[],'history':[],'password':None,'recovery':0,'logout':0,'metrics':[]}
+    page=context.new_page();errors=[];outbound=[];state={'mfa':False,'notices':[],'history':[],'password':None,'recovery':0,'logout':0,'metrics':[],'enrolled':False}
     page.on('pageerror',lambda e:errors.append(str(e)))
     def intercept(route):
      req=route.request;url=req.url
@@ -55,10 +55,16 @@ try:
      if url.startswith(PROJECT+'/auth/v1/'):
       path=url.split('/auth/v1/',1)[1].split('?')[0]
       if req.method=='OPTIONS':route.fulfill(status=204,headers={'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Methods':'GET,POST,PUT','Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info,x-supabase-api-version'});return
-      if path=='token':respond(session('aal1'));return
+      if path=='token':
+       state['mfa']=False;respond(session('aal1'));return
       if path=='user':
        if req.method=='PUT':state['password']=req.post_data_json
-       respond(session('aal2' if state['mfa'] else 'aal1')['user']);return
+       user=session('aal2' if state['mfa'] else 'aal1')['user']
+       if not state['enrolled']:user['factors']=[]
+       respond(user);return
+      if path=='factors' and req.method=='POST':
+       state['enrolled']=True
+       respond({'id':'70000000-0000-4000-8000-000000000001','type':'totp','totp':{'qr_code':'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="black"/></svg>','secret':'fixture-not-real','uri':'otpauth://totp/fixture'}});return
       if path=='recover':state['recovery']+=1;respond({});return
       if path.endswith('/challenge'):respond({'id':'50000000-0000-4000-8000-000000000001','type':'totp','expires_at':int(time.time())+300});return
       if path.endswith('/verify'):state['mfa']=True;respond(session('aal2'));return
@@ -74,7 +80,7 @@ try:
      print('FAILURE',engine,width,state['recovery'],page.locator('body').inner_text(),errors,flush=True);page.screenshot(path=str(OUT/'failure.png'));raise
     assert state['recovery']==1
     page.get_by_role('button',name='Voltar ao acesso').click();page.locator('#email').fill('admin@example.invalid');page.locator('#password').fill('BrowserFixturePassword!2026');page.get_by_role('button',name='Entrar',exact=True).click()
-    page.get_by_role('heading',name='Verificação em duas etapas').wait_for();page.get_by_role('button',name='Configurar ou confirmar segundo fator').click();page.locator('#code').fill('654321');page.get_by_role('button',name='Confirmar código').click()
+    page.get_by_role('heading',name='Verificação em duas etapas').wait_for();page.get_by_role('button',name='Configurar ou confirmar segundo fator').click();page.get_by_role('img',name='QR code para cadastrar o CentralPDF no autenticador').wait_for();page.wait_for_function('document.querySelector(".mfa-qr img")?.naturalWidth>0');page.locator('#code').fill('654321');page.get_by_role('button',name='Confirmar código').click()
     page.get_by_role('heading',name='Visão geral',exact=True).wait_for();page.get_by_text('Sem dados de utilização neste período.',exact=False).wait_for();assert page.get_by_role('button',name='Exportar resumo').is_disabled()
     def nav(key,label):
      if width<800:page.get_by_role('button',name='Abrir menu').click()
@@ -101,6 +107,28 @@ try:
     nav('diagnostics','Diagnósticos');page.get_by_text('Leitura não conectada',exact=True).wait_for()
     if width<800:page.get_by_role('button',name='Abrir menu').click()
     page.get_by_role('button',name='Sair da conta').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
+    # Provider invitations do not initiate browser PKCE: test the fixed invite callback.
+    invite=origin+('/auth/invite' if width==1440 else '/')+'#access_token='+jwt('aal1')+'&refresh_token=fixture-refresh-token&expires_in=3600&token_type=bearer&type=invite'
+    page.goto(invite)
+    try:page.get_by_role('heading',name='Definir nova senha').wait_for(timeout=10000)
+    except Exception:
+     print('INVITE FAILURE',engine,width,page.locator('body').inner_text(),errors,flush=True);raise
+    assert 'access_token' not in page.url
+    page.locator('#password').fill('InvitationFixturePassword!2026');page.locator('#confirm').fill('InvitationFixturePassword!2026')
+    with page.expect_navigation():page.get_by_role('button',name='Salvar nova senha').click()
+    page.get_by_role('heading',name='Acesso do administrador').wait_for()
+    page.get_by_text('Senha atualizada. Entre novamente para continuar.',exact=True).wait_for()
+    # Recovery begins in this browser and exchanges the stored PKCE verifier.
+    page.get_by_role('button',name='Esqueci minha senha').click();page.locator('#email').fill('admin@example.invalid');page.get_by_role('button',name='Enviar instruções').click();page.get_by_text('Se houver uma conta habilitada',exact=False).wait_for()
+    page.goto(origin+'/auth/callback?code=fixture-recovery-code');page.get_by_role('heading',name='Definir nova senha').wait_for()
+    assert 'code=' not in page.url
+    page.locator('#password').fill('RecoveryFixturePassword!2026');page.locator('#confirm').fill('RecoveryFixturePassword!2026')
+    with page.expect_navigation():page.get_by_role('button',name='Salvar nova senha').click()
+    page.get_by_role('heading',name='Acesso do administrador').wait_for()
+    page.get_by_text('Senha atualizada. Entre novamente para continuar.',exact=True).wait_for()
+    page.goto(origin+'/auth/callback?code=used-or-expired-code')
+    page.get_by_role('heading',name='Acesso não confirmado').wait_for()
+    page.get_by_role('button',name='Voltar ao acesso').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
     assert not outbound,outbound;assert not errors,errors
     context.close()
    browser.close()

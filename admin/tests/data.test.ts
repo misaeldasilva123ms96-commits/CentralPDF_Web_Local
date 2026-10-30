@@ -1,6 +1,6 @@
 import { it, expect } from "vitest";
 import { summarize, csvCell, toolNames } from "../src/data";
-import { strongPassword } from "../src/auth";
+import { strongPassword, totpImageSource } from "../src/auth";
 it("aggregates received counts without inventing people or missing activity", () => {
   expect(summarize([])).toEqual([]);
   expect(
@@ -20,4 +20,13 @@ it("rejects predictable numeric passwords and accepts long passphrases", () => {
   expect(strongPassword("111111111111")).toBe(false);
   expect(strongPassword("1234")).toBe(false);
   expect(strongPassword("Frase de acesso segura!")).toBe(true);
+});
+
+it("renders the SDK TOTP data URI without double-wrapping and escapes SVG colors", () => {
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg"><rect fill="#000"/></svg>';
+  expect(totpImageSource("data:image/svg+xml;utf-8," + svg)).toBe(
+    totpImageSource(svg),
+  );
+  expect(totpImageSource(svg)).toContain("%23000");
 });

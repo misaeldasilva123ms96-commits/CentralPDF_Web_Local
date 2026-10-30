@@ -34,9 +34,15 @@ export const authStorage = {
   },
 };
 export function createAuth(config: Config): SupabaseClient {
+  // Admin invitations use the provider's implicit callback (no browser PKCE
+  // initiation). Accept that protocol only on the fixed invitation route;
+  // Auth verifies the token, then the API checks membership and live session.
+  const invitationCallback =
+    ["/", "/auth/invite"].includes(location.pathname) &&
+    new URLSearchParams(location.hash.slice(1)).get("type") === "invite";
   return createClient(config.supabaseUrl, config.publishableKey, {
     auth: {
-      flowType: "pkce",
+      flowType: invitationCallback ? "implicit" : "pkce",
       storage: authStorage,
       persistSession: true,
       autoRefreshToken: true,
@@ -92,4 +98,11 @@ export function strongPassword(value: string) {
     !/^\d+$/.test(value) &&
     !/(.)\1{7}/.test(value)
   );
+}
+
+export function totpImageSource(value: string) {
+  const svg = value.startsWith("data:image/svg+xml;")
+    ? value.slice(value.indexOf(",") + 1)
+    : value;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }

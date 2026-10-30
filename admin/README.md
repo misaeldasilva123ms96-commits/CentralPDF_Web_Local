@@ -59,7 +59,8 @@ projeto**, sem alterar os demais projetos da conta:
 3. Desativar cadastro público e autenticação anônima. Manter confirmação de e-mail,
    exigir senha mínima de 12 caracteres e senha atual na troca. Confirmar TOTP habilitado.
 4. Convidar apenas o endereço administrativo definido privadamente, usando
-   `/auth/invite` como redirecionamento. Não enviar senha padrão. Validar se o
+   `/auth/invite` como redirecionamento quando a interface oferecer essa opção.
+   O convite padrão para a raiz do Site URL também é aceito. Não enviar senha padrão. Validar se o
    destinatário está autorizado pelo SMTP de testes; para produção, configurar
    remetente/SMTP próprio e verificar entrega e limites.
 5. Conferir a identidade do usuário convidado e provisionar seu UUID em
@@ -136,3 +137,9 @@ Rollback: manter `ADMIN_READY=false` se o acesso não estiver validado e reverte
 apenas a versão do Worker novo. Não apagar banco ou dados sem análise e aprovação.
 O site público continua funcionando independentemente do painel. O endpoint de
 saúde demonstra resposta do Worker, não saúde global dos fornecedores.
+
+Convites administrativos usam o callback implícito nativo do provedor, aceito
+somente na raiz oficial ou em `/auth/invite`, com validação Auth e da permissão
+no backend. Após definir a senha, a sessão é encerrada e o app recarrega para
+retomar PKCE nos fluxos seguintes. Recuperação usa PKCE; links inválidos/usados
+ou sem verificador no navegador mostram uma mensagem de acesso não confirmado.

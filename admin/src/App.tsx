@@ -29,6 +29,15 @@ export function App() {
   const [page, setPage] = useState<Page>(pageFromHash),
     [menu, setMenu] = useState(false);
   const recovery = useRef(false);
+  const checkVersion = useRef(0);
+  const invitationIntent = useRef(
+    ["/", "/auth/invite"].includes(location.pathname) &&
+      new URLSearchParams(location.hash.slice(1)).get("type") === "invite",
+  );
+  const callbackIntent = useRef(
+    ["/auth/invite", "/auth/callback"].includes(location.pathname) ||
+      invitationIntent.current,
+  );
   useEffect(() => {
     let active = true;
     let cleanup: (() => void) | undefined;
@@ -53,10 +62,13 @@ export function App() {
         const sub = next.auth.onAuthStateChange((event) => {
           if (event === "INITIAL_SESSION") return;
           if (event === "PASSWORD_RECOVERY") {
+            checkVersion.current++;
             recovery.current = true;
             setState("new-password");
           } else if (event === "SIGNED_OUT") {
+            checkVersion.current++;
             recovery.current = false;
+            invitationIntent.current = false;
             setState("login");
           } else {
             setTimeout(() => {
@@ -68,7 +80,13 @@ export function App() {
           sub.data.subscription.unsubscribe();
           void next.auth.stopAutoRefresh();
         };
-        await next.auth.getSession();
+        const { data: initial } = await next.auth.getSession();
+        if (!initial.session && callbackIntent.current) {
+          setFailure(
+            "Este link de acesso é inválido, expirou ou pertence a outro navegador. Solicite um novo link na tela de acesso.",
+          );
+          return;
+        }
         if (!recovery.current) await check(next);
       })
       .catch(() => {
@@ -79,13 +97,16 @@ export function App() {
       });
     return () => {
       active = false;
+      checkVersion.current++;
       cleanup?.();
     };
   }, []);
   async function check(auth = client) {
     if (!auth) return;
+    const version = ++checkVersion.current;
     try {
       const { data } = await auth.auth.getSession();
+      if (version !== checkVersion.current) return;
       if (!data.session) {
         setState("login");
         return;
@@ -98,12 +119,19 @@ export function App() {
         administrator: boolean;
         mfaRequired: boolean;
       }>(auth, "session");
-      if (location.pathname === "/auth/invite") {
+      if (version !== checkVersion.current) return;
+      if (recovery.current) {
+        setState("new-password");
+        return;
+      }
+      if (location.pathname === "/auth/invite" || invitationIntent.current) {
+        invitationIntent.current = false;
         recovery.current = true;
         history.replaceState(null, "", "/");
         setState("new-password");
       } else setState(result.mfaRequired ? "mfa" : "ready");
     } catch (error) {
+      if (version !== checkVersion.current) return;
       if (error instanceof HttpError && error.status === 403)
         setState("denied");
       else
@@ -141,9 +169,19 @@ export function App() {
             <span className="logo">P</span>
             <b>CentralPDF</b>
           </div>
-          <h1>Conexão indisponível</h1>
+          <h1>
+            {callbackIntent.current
+              ? "Acesso não confirmado"
+              : "Conexão indisponível"}
+          </h1>
           <Message error>{failure}</Message>
-          <button onClick={() => location.reload()}>Tentar novamente</button>
+          <button
+            onClick={() =>
+              callbackIntent.current ? location.replace("/") : location.reload()
+            }
+          >
+            {callbackIntent.current ? "Voltar ao acesso" : "Tentar novamente"}
+          </button>
         </section>
       </div>
     );
