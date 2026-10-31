@@ -32,7 +32,7 @@ export function Diagnostics({ client }: { client: SupabaseClient }) {
                 : "Leitura não conectada"}
           </span>
         </div>
-        {data?.connected ? data.issues?.length ? <div className="table-wrap"><table><thead><tr><th>Categoria técnica</th><th>Ocorrências</th><th>Último registro</th></tr></thead><tbody>{data.issues.map(issue=><tr key={issue.id}><td><a href={issue.url} target="_blank" rel="noopener noreferrer">{issue.code.replaceAll('_',' ')}</a></td><td>{issue.count}</td><td>{issue.lastSeen?new Date(issue.lastSeen).toLocaleString('pt-BR'):'Não informado'}</td></tr>)}</tbody></table></div> : <Empty>Nenhuma ocorrência recebida do Sentry nos últimos 7 dias.</Empty> : <Empty>A consulta depende da credencial de leitura do Sentry no servidor.</Empty>}
+        {data?.connected ? data.issues?.length ? <div className="table-wrap"><table><thead><tr><th>Categoria técnica</th><th>Ocorrências</th><th>Último registro</th></tr></thead><tbody>{data.issues.map(issue=><tr key={issue.id}><td><a href={issue.url} target="_blank" rel="noopener noreferrer">{issue.code.replaceAll('_',' ')}</a></td><td>{issue.count??'Não informado'}</td><td>{issue.lastSeen?new Date(issue.lastSeen).toLocaleString('pt-BR'):'Não informado'}</td></tr>)}</tbody></table></div> : <Empty>Nenhuma ocorrência recebida do Sentry nos últimos 7 dias.</Empty> : <Empty>A consulta depende da credencial de leitura do Sentry no servidor.</Empty>}
         {data && (
           <a
             className="external-button"

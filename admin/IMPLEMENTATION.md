@@ -20,10 +20,11 @@
   pelo responsável; não declarar conexão enquanto o segredo estiver ausente.
 - Testes locais: 22 testes de API/dados, build TypeScript/Vite, consentimento no
   módulo público e execução/exportação real das 34 ferramentas com documentos
-  sintéticos. Receptor interceptado comprovou eventos de juntar/dividir sem
+  sintéticos. Receptor interceptado comprovou eventos de juntar/dividir e falha controlada sem
   nomes/conteúdo; nenhum evento desses testes foi enviado aos provedores reais.
   Chromium administrativo desktop/celular passou; Firefox local apresenta falha
-  de instalação do Windows e deve ser validado pelo job Linux da PR.
+  de instalação do Windows. O job Linux `admin-staging` da PR #67 passou com
+  Chromium e Firefox, desktop/celular.
 - Avisos públicos são consultados a cada dois minutos em clientes online;
   respostas da API ficam fora do cache do service worker. Estatísticas podem ser
   pausadas globalmente em Ajustes com histórico e revisão otimista.

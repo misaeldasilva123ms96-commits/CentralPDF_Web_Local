@@ -17,6 +17,9 @@ it('never exposes Sentry errors or attempts a request without its secret',async(
  const f=vi.fn<typeof fetch>(async()=>new Response('sensitive', {status:403}));
  expect((await sentryIssues({SENTRY_ORG:'example',SENTRY_PROJECT:'451'} as Env,f)).connected).toBe(false);expect(f).not.toHaveBeenCalled();
  await expect(sentryIssues({SENTRY_ORG:'example',SENTRY_PROJECT:'451',SENTRY_READ_TOKEN:'secret'} as Env,f)).rejects.toMatchObject({status:503,code:'sentry_unavailable'});
+ const env={SENTRY_ORG:'example',SENTRY_PROJECT:'451',SENTRY_READ_TOKEN:'secret'} as Env;
+ await expect(sentryIssues(env,async()=>{throw new Error('private provider detail')})).rejects.toMatchObject({status:503,code:'sentry_unavailable'});
+ await expect(sentryIssues(env,async()=>new Response('private non-json response'))).rejects.toMatchObject({status:503,code:'sentry_unavailable'});
 });
 it('allows only approved public origins and forwards sanitized ingestion server-side',async()=>{
  const env={APP_ORIGIN:'https://admin.test',PUBLIC_ORIGIN:'https://public.test',SUPABASE_URL:'https://project.supabase.co',SUPABASE_PUBLISHABLE_KEY:'publishable',SUPABASE_METRICS_KEY:'server-secret'} as Env;

@@ -13,11 +13,13 @@ export function usagePayload(value: unknown) {
 export async function sentryIssues(env: Env, fetcher: typeof fetch) {
   const url=`https://${encodeURIComponent(env.SENTRY_ORG)}.sentry.io/issues/?project=${encodeURIComponent(env.SENTRY_PROJECT)}`;
   if(!env.SENTRY_READ_TOKEN) return {connected:false,url,issues:[],reason:'read_integration_pending'};
-  const response=await fetcher(`https://sentry.io/api/0/organizations/${encodeURIComponent(env.SENTRY_ORG)}/issues/?project=${encodeURIComponent(env.SENTRY_PROJECT)}&statsPeriod=7d&query=&per_page=25`,{
+  let response:Response;
+  try { response=await fetcher(`https://sentry.io/api/0/organizations/${encodeURIComponent(env.SENTRY_ORG)}/issues/?project=${encodeURIComponent(env.SENTRY_PROJECT)}&statsPeriod=7d&query=&per_page=25`,{
     headers:{Authorization:`Bearer ${env.SENTRY_READ_TOKEN}`},redirect:'manual',credentials:'omit',signal:AbortSignal.timeout(8000),
-  });
+  }); } catch { throw new ApiError(503,'sentry_unavailable'); }
   if(!response.ok) throw new ApiError(503,'sentry_unavailable');
-  const raw=await readJson(response,524288);
+  let raw:unknown;
+  try { raw=await readJson(response,524288); } catch { throw new ApiError(503,'sentry_unavailable'); }
   if(!Array.isArray(raw)) throw new ApiError(503,'sentry_unavailable');
   const codes=new Set('input_empty input_read_failure input_unsupported input_encrypted input_unsupported_encryption input_corrupted worker_failure recovery_limit recovery_read_failure font_fallback pdf_repaired_object resource_failure javascript_failure promise_failure console_failure interface_failure diagnostic_test'.split(' '));
   return {connected:true,url,issues:raw.slice(0,25).filter(i=>i && typeof i==='object' && String(i.project?.id)===env.SENTRY_PROJECT && /^\d+$/.test(String(i.id))).map(i=>({
