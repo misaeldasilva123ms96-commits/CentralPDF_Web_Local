@@ -47,7 +47,7 @@ export function Notices({ client }: { client: SupabaseClient }) {
       setPublished(!!saved.published_value);
       setMessage(
         state === "published"
-          ? "Aviso publicado somente no ambiente de homologação. O site público ainda não consulta este ambiente."
+          ? "Aviso publicado somente no ambiente de homologação. Clientes online com a integração recebem a versão publicada."
           : state === "withdrawn"
             ? "Aviso retirado da homologação."
             : "Rascunho salvo. Ele permanece privado.",
@@ -191,8 +191,8 @@ export function Notices({ client }: { client: SupabaseClient }) {
             </p>
           </section>
           <div className="note-box">
-            Publicar aqui não altera o site dos colegas. A conexão do site com
-            os avisos será validada no piloto.
+            A integração consulta apenas avisos publicados. Clientes offline
+            podem continuar com uma versão anterior; o processamento local não depende do painel.
           </div>
         </aside>
       </div>
@@ -296,8 +296,7 @@ export function Notices({ client }: { client: SupabaseClient }) {
           }}
         >
           <p>
-            A mensagem ficará disponível na API pública desta homologação. O
-            site dos colegas permanece igual.
+            A mensagem ficará disponível na API pública desta homologação e nos clientes online com a integração. Confirme o texto antes de publicar.
           </p>
           <div className="preview" data-level={draft.level}>
             <strong>{draft.title}</strong>

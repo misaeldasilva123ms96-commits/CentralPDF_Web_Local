@@ -16,7 +16,7 @@ html = re.sub(r'\s*<script src="[^"]+"></script>', '', html)
 jszip = (root / 'vendor/jszip.min.js').read_text(encoding='utf-8')
 scripts = '\n'.join((root / name).read_text(encoding='utf-8') for name in [
     'assets/js/split-planner.js', 'assets/js/advanced-planner.js', 'assets/js/organizer-planner.js', 'assets/js/pdf-editor.js',
-    'assets/js/ux-enhancements.js', 'assets/js/app.js', 'assets/js/layout-controls.js', 'assets/js/foundation.js'
+    'assets/js/ux-enhancements.js', 'assets/js/admin-bridge.js', 'assets/js/app.js', 'assets/js/layout-controls.js', 'assets/js/foundation.js'
 ])
 stubs = "window.PDFLib={PDFDocument:{}};window.pdfjsLib={};window.CentralPDFEngineStatus={ready:true,engines:{pdfLib:{ready:true,source:'test'},pdfJs:{ready:true,source:'test'}}};"
 html = html.replace('</body>', f'<script>{jszip}</script><script>{stubs}</script><script>{scripts}</script></body>')
@@ -45,6 +45,9 @@ with tempfile.TemporaryDirectory() as temp_dir:
         page.locator('#foundationDiagnosticsButton').click()
         page.wait_for_function("document.querySelector('#foundationDiagnosticsDialog').open === true")
         assert page.locator('#foundationDiagnosticsDialog').evaluate('el => el.open')
+        assert page.locator('#cpAdminAccess').get_by_role('link',name='Entrar no administrador').get_attribute('href')=='https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/'
+        assert not page.locator('#cpUsageConsent').is_checked()
+        assert page.locator('footer').get_by_role('link',name='Administração',exact=True).count()==1
         page.locator('[data-close-dialog="foundationDiagnosticsDialog"]').click()
 
         # Abre ferramenta, adiciona arquivo e salva projeto.

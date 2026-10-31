@@ -149,7 +149,7 @@ export function Access({
               : "Área exclusiva do administrador. Os colegas continuam usando as ferramentas sem login."}
         </p>
         <div className="demo-banner">
-          Homologação · Cloudflare Free · sem alterações no site público
+          Homologação · Cloudflare Free · documentos processados no dispositivo
         </div>
         {!config.adminReady && (
           <Message>

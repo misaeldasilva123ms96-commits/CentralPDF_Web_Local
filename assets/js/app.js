@@ -2874,11 +2874,12 @@
     state.processing = true;
     $('#cancelProcessing')?.classList.remove('hidden');
     $('#pdfEditorSection')?.setAttribute('inert','');$('#organizerSection')?.setAttribute('inert','');fileInput.disabled=true;
-    let finishTrace=null,succeeded=false;
+    let finishTrace=null,succeeded=false;const measuredTool=state.tool;
     try {finishTrace=window.CentralPDFTelemetry?.startToolTrace?.(state.tool);}catch(_){}
     try {const result=await executeCurrentTool();succeeded=result?.ok===true;return result;}
     finally {
       try {finishTrace?.(succeeded);}catch(_){}
+      try {window.CentralPDFAdminBridge?.record(measuredTool,succeeded?'completed':'failed');}catch(_){}
       state.processing = false; $('#cancelProcessing')?.classList.add('hidden');$('#pdfEditorSection')?.removeAttribute('inert');$('#organizerSection')?.removeAttribute('inert');fileInput.disabled=false;
     }
   }

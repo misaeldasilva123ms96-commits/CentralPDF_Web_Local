@@ -1,5 +1,35 @@
 # Evidências da homologação
 
+## Integrações do piloto — 31/10/2026
+
+- Nova etapa autorizada pelo responsável: merge e publicação no site após testes.
+- Atalho Administração no rodapé e cartão em Compatibilidade e modo offline.
+  Estatísticas com consentimento próprio desativado inicialmente, sem reconstrução
+  de usos anteriores; IDs efêmeros, contrato fechado, quotas e retenção.
+- Migrações `20261031124635` e `20261031125823` aplicadas no projeto dedicado.
+  RLS, MFA, revisão/auditoria de ajustes, deduplicação, limites de aba/global e
+  limpeza passaram em transações reais com rollback das fixtures.
+- Advisor: quatro informações de RLS sem políticas nas tabelas privadas são
+  intencionais (nenhum acesso direto). A advertência de funções elevadas expostas
+  foi removida com wrappers invoker e implementações privadas. Permanece a
+  proteção de senhas vazadas indisponível no plano gratuito, já documentada.
+- Worker implantado em homologação com ingestão e cron diário. Chave de métricas
+  guardada exclusivamente como segredo; chamadas privadas mantêm token do usuário.
+- Leitura Sentry implementada e limitada ao projeto CentralPDF, sem títulos ou
+  conteúdo arbitrário. Validação real depende do cadastro de `SENTRY_READ_TOKEN`
+  pelo responsável; não declarar conexão enquanto o segredo estiver ausente.
+- Testes locais: 22 testes de API/dados, build TypeScript/Vite, consentimento no
+  módulo público e execução/exportação real das 34 ferramentas com documentos
+  sintéticos. Receptor interceptado comprovou eventos de juntar/dividir sem
+  nomes/conteúdo; nenhum evento desses testes foi enviado aos provedores reais.
+  Chromium administrativo desktop/celular passou; Firefox local apresenta falha
+  de instalação do Windows e deve ser validado pelo job Linux da PR.
+- Avisos públicos são consultados a cada dois minutos em clientes online;
+  respostas da API ficam fora do cache do service worker. Estatísticas podem ser
+  pausadas globalmente em Ajustes com histórico e revisão otimista.
+
+As seções abaixo registram etapas anteriores e suas limitações naquelas datas.
+
 ## Comentários da PR #66 — 31/10/2026
 
 - Revisão conferida na cabeça `072f92e`, após a integração da #65 na `main` e

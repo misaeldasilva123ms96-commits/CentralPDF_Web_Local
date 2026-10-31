@@ -14,7 +14,7 @@ GUARD = r"""(() => {
     try {
       const input=args[0];
       const url=new URL(typeof input==='string'||input instanceof URL?input:input.url,location.href);
-      if((url.hostname==='sentry.io'||url.hostname.endsWith('.sentry.io')) &&
+      if((url.hostname==='sentry.io'||url.hostname.endsWith('.sentry.io')||url.hostname==='centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev') &&
           url.href!==window.__centralPdfTestLocalReceiver) {
         return Promise.reject(new TypeError('Sentry blocked by browser test runner'));
       }

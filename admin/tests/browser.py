@@ -29,7 +29,7 @@ def request_aal(req):
  return json.loads(base64.urlsafe_b64decode(payload+'='*(-len(payload)%4)))['aal']
 try:
  with sync_playwright() as p:
-  for engine in ['chromium','firefox']:
+  for engine in environ.get('CENTRALPDF_TEST_BROWSERS','chromium,firefox').split(','):
    browser=getattr(p,engine).launch()
    for width,height in [(1440,1000),(390,844)]:
     context=browser.new_context(viewport={'width':width,'height':height},reduced_motion='reduce',accept_downloads=True)
@@ -46,6 +46,12 @@ try:
       if path=='overview':respond({'metrics':state['metrics'],'activeSessions':None,'collectionEnabled':False});return
       if path=='history':respond(state['history']);return
       if path=='diagnostics':respond({'connected':False,'url':'https://omni-nt.sentry.io/issues/'});return
+      if path=='usage/settings':
+       if req.method=='POST':
+        value=req.post_data_json
+        if value['revision']!=state.get('revision',1):respond({'error':'revision_conflict'},409);return
+        state['enabled']=value['enabled'];state['revision']=value['revision']+1
+       respond({'enabled':state.get('enabled',True),'revision':state.get('revision',1)});return
       if path=='notices':
        if req.method=='POST':
         n=req.post_data_json;old=next((x for x in state['notices'] if x['id']==n['id']),None)
@@ -145,6 +151,10 @@ try:
     page.get_by_text('Página 1',exact=True).wait_for()
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
     nav('diagnostics','Diagnósticos');page.get_by_text('Leitura não conectada',exact=True).wait_for()
+    nav('settings','Ajustes');page.get_by_role('button',name='Pausar estatísticas',exact=True).click()
+    page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).wait_for();assert state['enabled'] is False
+    page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).click()
+    page.get_by_role('button',name='Pausar estatísticas',exact=True).wait_for();assert state['enabled'] is True
     if width<800:page.get_by_role('button',name='Abrir menu').click()
     page.get_by_role('button',name='Sair da conta').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
     # Provider invitations do not initiate browser PKCE: test the fixed invite callback.
@@ -184,6 +194,6 @@ try:
     context.close()
    browser.close()
    print(f'PASS: {engine} desktop/mobile, including independent tab sign-out and recovery MFA',flush=True)
- print('PASS: Chromium/Firefox desktop/mobile, login→MFA gate, recovery, current-password change, session revocation, private drafts/publish, history, empty metrics, themes, no external requests')
+ print('PASS: selected browsers desktop/mobile, login/MFA gate, recovery, current-password change, session revocation, private drafts/publish, history, empty metrics, collection settings, themes, no external requests')
 finally:
  server.shutdown();TMP.cleanup()

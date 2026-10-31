@@ -1,6 +1,8 @@
 /** Stateless API: Auth + live-session/membership/MFA RLS on every private request.
- * No privileged key, documents, cookies or caller-selected user IDs. */
+ * Private calls use the caller's token. Metrics ingestion alone uses a server secret.
+ * No documents, cookies or caller-selected user IDs. */
 export type WorkerEnv = Env;
+import { usagePayload, sentryIssues } from './integrations';
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -92,6 +94,7 @@ async function provider(
     if (response.status === 429) throw new ApiError(429, "rate_limited");
     throw new ApiError(response.status >= 500 ? 503 : 400, "operation_failed");
   }
+  if(response.status===204 && ['/rest/v1/rpc/ingest_admin_usage','/rest/v1/rpc/cleanup_admin_usage'].includes(path)) return null;
   return readJson(response);
 }
 function bearer(request: Request): string {
@@ -166,7 +169,7 @@ export function validateNotice(value: unknown): Record<string, unknown> {
     p_revision: v.id === null ? null : v.revision,
   };
 }
-export async function handle(
+async function handleInternal(
   request: Request,
   env: WorkerEnv,
   fetcher: Fetcher = fetch,
@@ -181,6 +184,7 @@ export async function handle(
       throw new ApiError(405, "method_not_allowed");
     if (
       request.method === "POST" &&
+      url.pathname !== "/api/public/usage" &&
       request.headers.get("Origin") !== env.APP_ORIGIN
     )
       throw new ApiError(403, "invalid_origin");
@@ -210,6 +214,13 @@ export async function handle(
           fetcher,
         ),
       );
+    if (path === "/api/public/usage" && request.method === "POST") {
+      if (!env.SUPABASE_METRICS_KEY) throw new ApiError(503,'collection_disabled');
+      if (!(request.headers.get('Content-Type')||'').startsWith('application/json')) throw new ApiError(415,'json_required');
+      const payload=usagePayload(await readJson(new Response(request.body),4096));
+      await provider(env,'/rest/v1/rpc/ingest_admin_usage',env.SUPABASE_METRICS_KEY,{method:'POST',body:JSON.stringify(payload)},fetcher);
+      return json({accepted:true});
+    }
     const token = bearer(request);
     const user = (await provider(env, "/auth/v1/user", token, {}, fetcher)) as {
       id?: string;
@@ -242,6 +253,7 @@ export async function handle(
         const since = new Date(Date.now() - (days - 1) * 86400000)
           .toISOString()
           .slice(0, 10);
+        const status=env.SUPABASE_METRICS_KEY ? await provider(env,'/rest/v1/rpc/admin_usage_status',token,{method:'POST',body:'{}'},fetcher) as {enabled:boolean;activeSessions:number;budgetUsed:number;budgetLimit:number} : null;
         return json({
           metrics: await provider(
             env,
@@ -250,8 +262,10 @@ export async function handle(
             {},
             fetcher,
           ),
-          collectionEnabled: false,
-          activeSessions: null,
+          collectionEnabled: !!env.SUPABASE_METRICS_KEY && status?.enabled===true,
+          activeSessions: status?.activeSessions ?? null,
+          budgetUsed: status?.budgetUsed,
+          budgetLimit: status?.budgetLimit,
         });
       }
       if (path === "/api/notices") {
@@ -285,19 +299,13 @@ export async function handle(
             fetcher,
           ),
         );
-      if (path === "/api/diagnostics")
-        return json({
-          connected: false,
-          issues: [],
-          url:
-            "https://" +
-            encodeURIComponent(env.SENTRY_ORG) +
-            ".sentry.io/issues/" +
-            (env.SENTRY_PROJECT
-              ? "?project=" + encodeURIComponent(env.SENTRY_PROJECT)
-              : ""),
-          reason: "read_integration_pending",
-        });
+      if (path === "/api/diagnostics") return json(await sentryIssues(env,fetcher));
+      if (path === '/api/usage/settings') return json(await provider(env,'/rest/v1/rpc/admin_usage_settings',token,{method:'POST',body:'{}'},fetcher));
+    }
+    if(path==='/api/usage/settings' && request.method==='POST') {
+      const value=await readJson(new Response(request.body),1024) as Record<string,unknown>;
+      if(!value||typeof value!=='object'||Object.keys(value).sort().join(',')!=='enabled,revision'||typeof value.enabled!=='boolean'||!Number.isSafeInteger(value.revision)||Number(value.revision)<1) throw new ApiError(400,'invalid_settings');
+      return json(await provider(env,'/rest/v1/rpc/admin_usage_settings',token,{method:'POST',body:JSON.stringify({p_enabled:value.enabled,p_revision:value.revision})},fetcher));
     }
     if (path === "/api/notices" && request.method === "POST") {
       if (
@@ -324,7 +332,21 @@ export async function handle(
     return json({ error: failure.code }, failure.status);
   }
 }
+export async function handle(request:Request,env:WorkerEnv,fetcher:typeof fetch=fetch):Promise<Response> {
+  const path=new URL(request.url).pathname;
+  if(!path.startsWith('/api/public/')) return handleInternal(request,env,fetcher);
+  const origin=request.headers.get('Origin');
+  const allowed=origin===env.PUBLIC_ORIGIN || origin===env.APP_ORIGIN;
+  if ((origin && !allowed) || (request.method!=='GET' && !allowed)) return json({error:'invalid_origin'},403);
+  const response=request.method==='OPTIONS'?new Response(null,{status:204}):await handleInternal(request,env,fetcher);
+  const headers=new Headers(response.headers);
+  if(allowed && origin) {headers.set('Access-Control-Allow-Origin',origin);headers.set('Vary','Origin');headers.set('Access-Control-Allow-Methods','GET, POST, OPTIONS');headers.set('Access-Control-Allow-Headers','Content-Type');}
+  return new Response(response.body,{status:response.status,headers});
+}
 export default {
+  async scheduled(_event:unknown,env:WorkerEnv) {
+    if(env.SUPABASE_METRICS_KEY) await provider(env,'/rest/v1/rpc/cleanup_admin_usage',env.SUPABASE_METRICS_KEY,{method:'POST',body:'{}'});
+  },
   fetch(request: Request, env: WorkerEnv): Promise<Response> {
     return handle(request, env);
   },

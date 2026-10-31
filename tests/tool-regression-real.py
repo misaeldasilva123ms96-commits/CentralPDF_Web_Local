@@ -71,9 +71,20 @@ run=r'''async(tool)=>{
  return{tool,inputs:inputs.map(f=>({name:f.name,type:f.type,bytes:f.size})),ok:problem.length===0,ms,outputs,error:problem.join('; ')};
 }'''
 rows=[]
+usage=[]
 try:
  with sync_playwright() as p:
   b=p.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage']);page=b.new_page();page.set_default_timeout(90000);page.on('dialog',lambda d:d.dismiss());errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  usage_url='https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/api/public/usage'
+  def receive_usage(route):
+   if route.request.method=='POST':
+    payload=route.request.post_data_json
+    assert set(payload)=={'schema','tab','active','events'} and len(payload['events'])<=10
+    assert 'authorization' not in route.request.headers
+    usage.extend(payload['events'])
+   route.fulfill(status=200,content_type='application/json',body='{"accepted":true}',headers={'Access-Control-Allow-Origin':f'http://127.0.0.1:{server.server_port}','Access-Control-Allow-Methods':'POST,OPTIONS','Access-Control-Allow-Headers':'content-type'})
+  page.route(usage_url,receive_usage)
+  page.add_init_script("localStorage.setItem('centralpdf-usage-consent-v1','true');window.__centralPdfTestLocalReceiver="+json.dumps(usage_url))
   page.goto(f'http://127.0.0.1:{server.server_port}/');page.wait_for_function('window.PDFLib && window.pdfjsLib && window.CentralPDFApp');page.evaluate(setup)
   tools=page.evaluate('Object.keys(CentralPDFApp.getToolCatalog())');tools.remove('unlock');tools.insert(tools.index('protect')+1,'unlock')
   for tool in tools:
@@ -103,7 +114,14 @@ try:
     }
     return {compression:{nativeText:true,nativeVector:true,noReductionPreservesBytes:stable,sizes},rotatedOCR:{sourceRotation:90,manualCorrection:270,text:recognized},office};
   }""")
-  args.report.write_text(json.dumps({'results':rows,'pageErrors':errors,'edgeCases':edges},ensure_ascii=False,indent=2))
+  assert page.evaluate("async()=>{await CentralPDFApp.openFilesInTool([auditFixtures.pdf],'merge');return (await CentralPDFApp.processCurrentTool()).ok}") is False
+  page.evaluate('async()=>{await CentralPDFAdminBridge.flush()}')
+  page.wait_for_function('CentralPDFAdminBridge.getStatus().pending===0')
+  assert any(e['tool']=='merge' and e['result']=='completed' for e in usage),'Merge result not recorded'
+  assert any(e['tool']=='split' and e['result']=='completed' for e in usage),'Split result not recorded'
+  assert any(e['tool']=='merge' and e['result']=='failed' for e in usage),'Controlled failure not recorded'
+  assert all(set(e)=={'id','tool','result'} for e in usage),'Unexpected usage field'
+  args.report.write_text(json.dumps({'results':rows,'pageErrors':errors,'edgeCases':edges,'usageTools':sorted(set(e['tool'] for e in usage))},ensure_ascii=False,indent=2))
   b.close()
 finally:server.shutdown()
 assert len(rows)==34, len(rows)
