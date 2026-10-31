@@ -29,6 +29,11 @@ export interface Notice {
   revision: number;
   updated_at: string;
 }
+export interface NoticePage {
+  notices: Notice[];
+  page: number;
+  hasMore: boolean;
+}
 export function useData<T>(client: SupabaseClient, path: string) {
   const [data, setData] = useState<T | null>(null),
     [error, setError] = useState(""),

@@ -132,7 +132,10 @@ describe("private API boundaries", () => {
     const f = upstream();
     f.mockImplementation(async (input) =>
       String(input).endsWith("save_admin_notice")
-        ? new Response("{}", { status: 409 })
+        ? Response.json(
+            { code: "PT409", message: "revision_conflict", details: null, hint: null },
+            { status: 409 },
+          )
         : upstream()(input),
     );
     const r = await handle(
@@ -150,6 +153,52 @@ describe("private API boundaries", () => {
     );
     expect(r.status).toBe(409);
     expect(await r.json()).toEqual({ error: "revision_conflict" });
+  });
+  it("keeps unrelated database failures generic", async () => {
+    for (const failure of [
+      { code: "40001", message: "unrelated serialization failure" },
+      { code: "XX000", message: "revision_conflict" },
+    ]) {
+      const f = upstream();
+      f.mockImplementation(async (input) =>
+        String(input).endsWith("save_admin_notice")
+          ? Response.json(failure, { status: 500 })
+          : upstream()(input),
+      );
+      const r = await handle(request("/api/notices", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, Origin: origin, "Content-Type": "application/json" },
+        body: JSON.stringify(notice),
+      }), env, f);
+      expect(r.status).toBe(503);
+      expect(await r.json()).toEqual({ error: "operation_failed" });
+    }
+  });
+  it("makes older notices reachable with bounded pages and stable ordering", async () => {
+    const notices = Array.from({ length: 51 }, (_, i) => ({
+      id: String(i), title: i === 50 ? "Old published notice" : "Recent draft",
+      state: i === 50 ? "published" : "draft",
+    }));
+    const f = upstream();
+    f.mockImplementation(async (input) => {
+      const url = new URL(String(input));
+      if (url.pathname === "/rest/v1/admin_notices") {
+        expect(url.searchParams.get("order")).toBe("updated_at.desc,id.desc");
+        const offset = Number(url.searchParams.get("offset") || 0);
+        const limit = Number(url.searchParams.get("limit"));
+        expect(limit).toBe(51);
+        return Response.json(notices.slice(offset, offset + limit));
+      }
+      return upstream()(input);
+    });
+    expect(await (await handle(authorized("/api/notices"), env, f)).json())
+      .toEqual(notices.slice(0, 50));
+    const first = await (await handle(authorized("/api/notices?page=0"), env, f)).json();
+    expect(first).toEqual({ notices: notices.slice(0, 50), page: 0, hasMore: true });
+    const second = await (await handle(authorized("/api/notices?page=1"), env, f)).json();
+    expect(second).toEqual({ notices: [notices[50]], page: 1, hasMore: false });
+    for (const page of ["-1", "1.5", "1e2", "01", "9007199254740991", "garbage"])
+      expect((await handle(authorized("/api/notices?page=" + page), env, f)).status).toBe(400);
   });
 });
 describe("bounded inputs", () => {

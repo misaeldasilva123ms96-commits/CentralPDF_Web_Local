@@ -25,11 +25,11 @@ do $$declare saved public.admin_notices;begin
  select * into saved from public.save_admin_notice(null,'Fixture draft','Fixture message','info','draft',now(),null,null);
  perform set_config('test.notice_id',saved.id::text,true);
  if saved.revision<>1 then raise exception 'incorrect first revision';end if;
- if (select count(*) from public.admin_audit)<>1 then raise exception 'missing atomic audit';end if;
+ if (select count(*) from public.admin_audit where object_id=saved.id)<>1 then raise exception 'missing atomic audit';end if;
 end$$;
 set local role anon;
 do $$begin
- if exists(select 1 from public.published_notices()) then raise exception 'draft became public';end if;
+ if exists(select 1 from public.published_notices() where id=current_setting('test.notice_id')::uuid) then raise exception 'draft became public';end if;
  begin perform 1 from public.admin_audit;raise exception 'anonymous audit read succeeded';exception when insufficient_privilege then null;end;
  begin perform 1 from public.admin_notices;raise exception 'anonymous table read succeeded';exception when insufficient_privilege then null;end;
 end$$;
@@ -37,22 +37,22 @@ set local role authenticated;
 do $$declare saved public.admin_notices;begin
  select * into saved from public.save_admin_notice(current_setting('test.notice_id')::uuid,'Published fixture','Only published text','info','published',now(),null,1);
  if saved.revision<>2 then raise exception 'revision not incremented';end if;
- begin perform public.save_admin_notice(saved.id,'Stale','Stale','info','draft',now(),null,1);raise exception 'stale revision succeeded';exception when serialization_failure then null;end;
- if (select count(*) from public.admin_audit)<>2 then raise exception 'audit inconsistent';end if;
+ begin perform public.save_admin_notice(saved.id,'Stale','Stale','info','draft',now(),null,1);raise exception 'stale revision succeeded';exception when sqlstate 'PT409' then null;end;
+ if (select count(*) from public.admin_audit where object_id=saved.id)<>2 then raise exception 'audit inconsistent';end if;
  perform public.save_admin_notice(saved.id,'Private revision','Still private','info','draft',now(),null,2);
 end$$;
 set local role anon;
-do $$begin if (select count(*) from public.published_notices())<>1 then raise exception 'published projection missing';end if;
- if (select title from public.published_notices() limit 1)<>'Published fixture' then raise exception 'draft replaced published snapshot';end if;end$$;
+do $$begin if (select count(*) from public.published_notices() where id=current_setting('test.notice_id')::uuid)<>1 then raise exception 'published projection missing';end if;
+ if (select title from public.published_notices() where id=current_setting('test.notice_id')::uuid)<>'Published fixture' then raise exception 'draft replaced published snapshot';end if;end$$;
 set local role authenticated;
 do $$declare saved public.admin_notices;begin
  select * into saved from public.save_admin_notice(current_setting('test.notice_id')::uuid,'Private revision','Still private','info','withdrawn',now(),null,3);
  if saved.revision<>4 or saved.published_value is not null then raise exception 'withdrawal did not clear publication';end if;
- if (select count(*) from public.admin_audit)<>4 then raise exception 'withdrawal audit missing';end if;
+ if (select count(*) from public.admin_audit where object_id=saved.id)<>4 then raise exception 'withdrawal audit missing';end if;
  if not exists(select 1 from public.admin_audit where object_id=saved.id and revision=4 and action='notice_withdrawn' and previous_value->'published_value'->>'title'='Published fixture') then raise exception 'withdrawal audit lost prior publication';end if;
 end$$;
 set local role anon;
-do $$begin if exists(select 1 from public.published_notices()) then raise exception 'withdrawn notice remained public';end if;end$$;
+do $$begin if exists(select 1 from public.published_notices() where id=current_setting('test.notice_id')::uuid) then raise exception 'withdrawn notice remained public';end if;end$$;
 reset role;
 delete from auth.sessions where id='90000000-0000-4000-8000-000000000001';
 set local role authenticated;

@@ -254,16 +254,27 @@ export async function handle(
           activeSessions: null,
         });
       }
-      if (path === "/api/notices")
-        return json(
-          await provider(
-            env,
-            "/rest/v1/admin_notices?select=*&order=updated_at.desc&limit=50",
-            token,
-            {},
-            fetcher,
-          ),
+      if (path === "/api/notices") {
+        const value = url.searchParams.get("page") ?? "0";
+        const page = Number(value);
+        if (!/^(0|[1-9][0-9]*)$/.test(value) || !Number.isSafeInteger(page * 50))
+          throw new ApiError(400, "invalid_page");
+        const notices = await provider(
+          env,
+          `/rest/v1/admin_notices?select=*&order=updated_at.desc,id.desc&limit=51&offset=${page * 50}`,
+          token,
+          {},
+          fetcher,
         );
+        if (!Array.isArray(notices))
+          throw new ApiError(503, "invalid_provider_response");
+        // Existing open tabs still request the original array contract.
+        return json(
+          url.searchParams.has("page")
+            ? { notices: notices.slice(0, 50), page, hasMore: notices.length > 50 }
+            : notices.slice(0, 50),
+        );
+      }
       if (path === "/api/history")
         return json(
           await provider(

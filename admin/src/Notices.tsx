@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { api } from "./auth";
-import { useData, type Notice } from "./data";
+import { useData, type Notice, type NoticePage } from "./data";
 import { Empty, Heading, Message, Modal } from "./ui";
 type Draft = Omit<
   Notice,
@@ -18,7 +18,11 @@ const fresh = (): Draft => ({
   revision: null,
 });
 export function Notices({ client }: { client: SupabaseClient }) {
-  const { data, error, loading, reload } = useData<Notice[]>(client, "notices");
+  const [page, setPage] = useState(0);
+  const { data, error, loading, reload } = useData<NoticePage>(
+    client,
+    "notices?page=" + page,
+  );
   const [draft, setDraft] = useState<Draft>(fresh),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
@@ -49,6 +53,7 @@ export function Notices({ client }: { client: SupabaseClient }) {
             : "Rascunho salvo. Ele permanece privado.",
       );
       setConfirm(false);
+      setPage(0);
       reload();
     } catch (e) {
       setFailure(e instanceof Error ? e.message : "Não foi possível salvar.");
@@ -208,8 +213,10 @@ export function Notices({ client }: { client: SupabaseClient }) {
         </div>
         {loading ? (
           <Message>Carregando avisos…</Message>
-        ) : !data?.length ? (
-          <Empty>Nenhum aviso salvo.</Empty>
+        ) : !data?.notices.length ? (
+          <Empty>
+            {page ? "Nenhum aviso nesta página." : "Nenhum aviso salvo."}
+          </Empty>
         ) : (
           <div className="table-wrap">
             <table>
@@ -222,7 +229,7 @@ export function Notices({ client }: { client: SupabaseClient }) {
                 </tr>
               </thead>
               <tbody>
-                {data.map((n) => (
+                {data.notices.map((n) => (
                   <tr key={n.id}>
                     <td>{n.title}</td>
                     <td>
@@ -256,6 +263,21 @@ export function Notices({ client }: { client: SupabaseClient }) {
             </table>
           </div>
         )}
+        <nav className="button-row" aria-label="Páginas de avisos">
+          <button
+            disabled={busy || loading || page === 0}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Página anterior
+          </button>
+          <span aria-live="polite">Página {page + 1}</span>
+          <button
+            disabled={busy || loading || !data?.hasMore}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Próxima página
+          </button>
+        </nav>
       </section>
       {draft.id && published && (
         <button

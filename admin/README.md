@@ -96,6 +96,17 @@ apenas texto publicado, vigência e revisão, sem autor, auditoria ou rascunhos.
 Validação, incremento de revisão e auditoria acontecem na transação do banco.
 Revisões antigas são recusadas, evitando sobrescrita entre abas.
 
+O conflito de revisão usa SQLSTATE `PT409` na RPC, para o PostgREST retornar
+HTTP 409 e a interface orientar o administrador a recarregar. A migration
+`20261031101706_admin_notice_conflict_http.sql` preserva autorização, grants e RLS.
+As migrations anteriores, já aplicadas, não foram reescritas.
+
+Avisos salvos têm páginas de 50 itens, com ordenação por atualização e ID.
+“Página anterior” e “Próxima página” permitem editar ou retirar publicações antigas.
+Após salvar ou retirar, a lista volta à primeira página para mostrar o aviso atualizado.
+Abas antigas que consultam a lista sem parâmetro `page` continuam recebendo o
+formato de resposta anterior até serem recarregadas.
+
 Publicar nesta homologação **não muda o site dos colegas**. A ligação do app aos
 avisos e a coleta mínima de métricas serão validadas no piloto. Publicação de
 código continua por PR e pelo processo atual do repositório.

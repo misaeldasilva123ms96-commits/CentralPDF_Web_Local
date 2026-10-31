@@ -6,6 +6,7 @@ from threading import Thread
 from tempfile import TemporaryDirectory
 from os import environ
 import base64,json,time
+from urllib.parse import urlparse,parse_qs
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 TMP=TemporaryDirectory(prefix='centralpdf-admin-ui-')
@@ -52,8 +53,9 @@ try:
         snapshot=old.get('published_value') if old else None
         n['id']=n['id'] or '60000000-0000-4000-8000-000000000001';n['revision']=(old['revision'] if old else 0)+1;n['updated_at']='2026-10-30T12:00:00Z'
         n['published_value']=dict(n) if n['state']=='published' else None if n['state']=='withdrawn' else snapshot
-        state['notices']=[n];state['history'].append({'id':len(state['history'])+1,'action':'notice_'+n['state'],'object_id':n['id'],'revision':n['revision'],'changed_at':n['updated_at']});respond(n);return
-       respond(state['notices']);return
+        state['notices']=[n]+[x for x in state['notices'] if x['id']!=n['id']];state['history'].append({'id':len(state['history'])+1,'action':'notice_'+n['state'],'object_id':n['id'],'revision':n['revision'],'changed_at':n['updated_at']});respond(n);return
+       query=parse_qs(urlparse(url).query);index=int(query.get('page',['0'])[0]);rows=state['notices'][index*50:(index+1)*50]
+       respond({'notices':rows,'page':index,'hasMore':len(state['notices'])>(index+1)*50});return
       respond({'error':'not_found'},404);return
      if url.startswith(PROJECT+'/auth/v1/'):
       path=url.split('/auth/v1/',1)[1].split('?')[0]
@@ -124,6 +126,24 @@ try:
     page.get_by_role('button',name='Publicar aviso',exact=True).click();page.get_by_role('button',name='Confirmar publicação').click();page.get_by_text('Aviso publicado somente no ambiente',exact=False).wait_for()
     page.locator('#notice-title').fill('Rascunho ainda privado');page.get_by_role('button',name='Salvar rascunho').click();page.get_by_text('Rascunho salvo. Ele permanece privado.',exact=False).wait_for();assert state['notices'][0]['published_value']['title']=='Orientação da homologação'
     nav('history','Histórico');assert page.locator('tbody tr').count()==3
+    # An older publication must stay manageable beyond the first fifty rows.
+    recent=state['notices'][0]
+    state['notices']=[{**recent,'id':f'61000000-0000-4000-8000-{i:012d}','title':f'Rascunho recente {i}','state':'draft','published_value':None} for i in range(50)]
+    oldest={**recent,'id':'62000000-0000-4000-8000-000000000001','title':'Aviso publicado mais antigo','state':'published','revision':1}
+    oldest['published_value']={'title':oldest['title'],'message':oldest['message'],'level':'info','revision':1}
+    state['notices'].append(oldest)
+    nav('announcements','Avisos')
+    assert page.get_by_role('button',name='Página anterior',exact=True).is_disabled()
+    page.get_by_role('button',name='Próxima página',exact=True).click()
+    page.get_by_role('cell',name=oldest['title'],exact=True).wait_for()
+    assert page.get_by_role('button',name='Próxima página',exact=True).is_disabled()
+    page.get_by_role('button',name='Editar',exact=True).click()
+    page.screenshot(path=str(OUT/f'older-notice-{engine}-{width}.png'),full_page=True)
+    page.get_by_role('button',name='Retirar aviso',exact=True).click()
+    page.get_by_text('Aviso retirado da homologação.',exact=False).wait_for()
+    assert state['notices'][0]['id']==oldest['id'] and state['notices'][0]['state']=='withdrawn'
+    page.get_by_text('Página 1',exact=True).wait_for()
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
     nav('diagnostics','Diagnósticos');page.get_by_text('Leitura não conectada',exact=True).wait_for()
     if width<800:page.get_by_role('button',name='Abrir menu').click()
     page.get_by_role('button',name='Sair da conta').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()

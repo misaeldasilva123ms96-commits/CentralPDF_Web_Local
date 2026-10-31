@@ -1,5 +1,36 @@
 # Evidências da homologação
 
+## Comentários da PR #66 — 31/10/2026
+
+- Revisão conferida na cabeça `072f92e`, após a integração da #65 na `main` e
+  sincronização da branch pelo responsável. Os dois apontamentos foram confirmados.
+- [Conflito de revisão](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/66#discussion_r4430383740):
+  nova migration `20261031101706_admin_notice_conflict_http.sql` troca apenas o
+  erro de revisão antiga da RPC para `PT409`, preservando o predicado de revisão,
+  execução como invocador e permissões. Migration aplicada somente no Supabase
+  de homologação, como quinta migration. As quatro anteriores foram preservadas.
+- O teste de banco que exige `PT409` falhou com `40001` antes da migration e passou
+  depois. Os asserts de auditoria agora contam somente a fixture do próprio teste,
+  permitindo executá-lo em um banco que já possui histórico real; tudo faz rollback.
+- Teste real no navegador: editor manteve a revisão 3 do aviso de teste já retirado;
+  uma edição concorrente levou o banco à revisão 4. O salvamento antigo retornou
+  **HTTP 409 / `revision_conflict`**, exibiu a orientação de recarregar e não alterou
+  a revisão 4 nem republicou o aviso. Status e código foram inspecionados sem
+  registrar credenciais. Uma tentativa de tradução do erro HTTP 500 no Worker foi
+  descartada após timeout real; a solução final é a resposta explícita da RPC.
+- [Acesso aos avisos antigos](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/66#discussion_r4430383744):
+  API paginada, 50 registros por página, consulta limitada a 51 para detectar a
+  próxima página e desempate de ordenação por ID. A interface permite navegar,
+  selecionar e retirar avisos além dos primeiros 50; uma gravação retorna à
+  primeira página. O contrato de array sem `page` foi mantido para abas já abertas.
+- Dezoito testes de API/dados e o build passaram. A regressão de paginação busca
+  o 51º registro publicado e o retira em desktop/celular no Chromium. Firefox
+  continua indisponível localmente por configuração lado a lado do Windows;
+  a CI Linux executa ambos os navegadores. A CI da revisão final deve ser conferida.
+- Advisor após a migration: aviso de proteção contra senhas vazadas desativada,
+  já documentada como recurso fora do plano gratuito; nenhum recurso pago foi
+  habilitado. Não houve mudança no Omni, no site público ou merge da #66.
+
 ## Continuação — 31/10/2026
 
 - PR #66 conferida antes de editar: revisão `e5ed673`, sem atualização remota,
