@@ -1,0 +1,55 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "centralpdf-admin-local",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api", "/api/*"],
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1,
+    "redact_query_string": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false,
+      "head_sampling_rate": 0.1,
+    },
+  },
+  "vars": {
+    "ENVIRONMENT": "local",
+    "APP_ORIGIN": "http://127.0.0.1:8787",
+    "SUPABASE_URL": "",
+    "SUPABASE_PUBLISHABLE_KEY": "",
+    "SENTRY_ORG": "omni-nt",
+    "SENTRY_PROJECT": "",
+    "ADMIN_READY": "false",
+  },
+  "env": {
+    "staging": {
+      "name": "centralpdf-admin-homologacao",
+      "workers_dev": true,
+      "preview_urls": false,
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "APP_ORIGIN": "https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev",
+        "SUPABASE_URL": "https://alszupfnwerwtkyczzkw.supabase.co",
+        "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_rsdDbxRZ40xDuaPQ_oT8dw_yjfqumuJ",
+        "SENTRY_ORG": "omni-nt",
+        "SENTRY_PROJECT": "4512284680060928",
+        "ADMIN_READY": "true",
+      },
+      "assets": {
+        "directory": "./dist",
+        "binding": "ASSETS",
+        "not_found_handling": "single-page-application",
+        "run_worker_first": ["/api", "/api/*"],
+      },
+    },
+  },
+}
