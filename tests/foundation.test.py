@@ -46,6 +46,7 @@ with tempfile.TemporaryDirectory() as temp_dir:
         page.wait_for_function("document.querySelector('#foundationDiagnosticsDialog').open === true")
         assert page.locator('#foundationDiagnosticsDialog').evaluate('el => el.open')
         assert page.locator('#cpAdminAccess').get_by_role('link',name='Entrar no administrador').get_attribute('href')=='https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/'
+        # set_content uses an opaque origin: storage cannot be read, so fail closed.
         assert not page.locator('#cpUsageConsent').is_checked()
         assert page.locator('footer').get_by_role('link',name='Administração',exact=True).count()==1
         page.locator('[data-close-dialog="foundationDiagnosticsDialog"]').click()

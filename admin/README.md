@@ -119,7 +119,9 @@ Publicação de código continua por PR e pelo processo atual do repositório.
 
 O rodapé do site oferece **Administração**. Em Compatibilidade e modo offline,
 o cartão Área do administrador também oferece o acesso e **Permitir estatísticas
-de uso (opcional)**. Essa escolha começa desativada e é independente dos erros e
+de uso (opcional)**. A coleta começa ativada quando não há preferência salva;
+desativar fica salvo neste navegador e é respeitado nas próximas visitas.
+Essa preferência é independente dos erros e
 tempos enviados ao Sentry. Operações anteriores não são reconstruídas.
 
 A coleta envia UUID aleatório de aba em memória, IDs aleatórios dos eventos,
