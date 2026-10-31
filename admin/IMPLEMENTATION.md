@@ -14,8 +14,9 @@
   A identidade retornada foi conferida e provisionada em `private.administrators`.
   Contagem posterior: uma identidade e uma permissão habilitada. Não há senha padrão.
 - `ADMIN_READY=true` liberado somente em homologação após essas conferências.
-  O aceite do convite, senha e TOTP são preenchidos pelo responsável na interface;
-  o envio aceito pelo provedor não comprova entrega nem autenticação real.
+  O responsável recebeu e aceitou o convite, definiu a própria senha e cadastrou
+  TOTP diretamente na interface. O banco confirmou e-mail validado, um fator TOTP
+  verificado e uma sessão AAL2; a Visão geral foi conferida no navegador real.
 - Corrigida recuperação com MFA: o Auth recusa alterações de senha de contas com
   fator verificado em AAL1. O app agora verifica permissão e pede o TOTP existente
   antes de abrir a nova senha. O teste de regressão falhou na versão anterior e
@@ -35,18 +36,31 @@
   de e-mail foi feito por esse teste. O bundle publicado é idêntico ao build local
   por SHA-256. A API Auth real recusou cadastro público (`signup_disabled`) e
   anônimo (`anonymous_provider_disabled`), ambos com HTTP 422.
+- REST real sem autenticação recusou leitura de `admin_notices`, `admin_audit`
+  e `admin_daily_metrics` com HTTP 401/SQLSTATE 42501. Não retornou rascunhos,
+  auditoria ou métricas privadas.
+- CI completa da revisão `994b824` aprovada: testes gerais, `app-2-0`,
+  `admin-staging` e build. O deploy de produção foi ignorado, conforme esperado.
 - Publicação por Wrangler autenticado no Worker exclusivo. A opção
   `preview_urls=false` foi acrescentada: a primeira publicação por CLI revelou que
   o padrão do Wrangler habilitava prévias quando a opção era omitida.
+- Aviso identificado como teste criado com a sessão real: rascunho ausente da
+  API pública, publicação presente com apenas cinco campos permitidos, retirada
+  seguida de lista pública vazia. Banco e tela de Histórico confirmaram três
+  revisões e três registros de auditoria. O aviso permaneceu retirado; a auditoria
+  foi preservada. Esse teste não alterou o site público.
+- O link Sentry agora inclui somente o ID do projeto CentralPDF, obtido do DSN
+  público existente. Destino conferido na tela real; nenhum recurso Sentry foi
+  alterado. A API de leitura permanece explicitamente não conectada.
 
 ### Dependências que permanecem explícitas
 
 | Critério | Evidência / pendência |
 |---|---|
-| Convite, definição da senha e login real com MFA | Convite aceito pelo provedor; confirmação pessoal pendente |
+| Convite, definição da senha e login real com MFA | Confirmados pelo responsável, banco e navegador real |
 | Recuperação/alteração de senha e encerramento de outras sessões | Contrato de navegador aprovado no Chromium; exercício pessoal real pendente |
 | Anônimo, conta comum, sessão revogada, rascunhos e auditoria | API real anônima e teste transacional no banco aprovados; fixtures revertidas |
-| Sentry | API de leitura sem credencial disponível; permanece link privado. DSN de ingestão não autoriza consulta |
+| Sentry | API de leitura sem credencial disponível; link privado limitado ao projeto CentralPDF. DSN de ingestão não autoriza consulta |
 | Métricas | Ingestão desativada; sem contadores inventados. Piloto depende de consentimento separado, limites, retenção e origem de teste |
 | Acesso pelo aplicativo público | Cartão e consumo de avisos reservados ao piloto do plano aprovado; produção não foi modificada |
 

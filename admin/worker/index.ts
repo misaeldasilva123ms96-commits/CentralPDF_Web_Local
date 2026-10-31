@@ -281,7 +281,10 @@ export async function handle(
           url:
             "https://" +
             encodeURIComponent(env.SENTRY_ORG) +
-            ".sentry.io/issues/",
+            ".sentry.io/issues/" +
+            (env.SENTRY_PROJECT
+              ? "?project=" + encodeURIComponent(env.SENTRY_PROJECT)
+              : ""),
           reason: "read_integration_pending",
         });
     }

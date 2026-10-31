@@ -12,13 +12,13 @@ reutilizado e nenhuma publicação de produção é feita por esta pasta.
 |---|---|
 | Novo projeto Supabase Free e Worker independente | Criados para homologação |
 | React/Vite/TypeScript e Static Assets | Build e entrega na Cloudflare |
-| Login, PKCE e recuperação | Auth configurado; convite enviado; validação pessoal em andamento |
+| Login, PKCE e recuperação | Convite, definição pessoal de senha e entrada com TOTP confirmados; recuperação real ainda em validação |
 | Segundo fator TOTP | Cadastro/desafio implementados; obrigatório para dados e ações privadas |
 | Conta e segurança | Alteração com senha atual e encerramento de outras sessões |
 | Avisos | Rascunho, confirmação de publicação, retirada, revisão e auditoria transacionais |
 | Histórico | Consulta de alterações de avisos; registros de autenticação ficam no Auth |
 | Métricas de utilização | Consulta e estados vazios implementados; ingestão não habilitada |
-| Sentry | Link privado disponível; API de leitura ainda não configurada |
+| Sentry | Link privado limitado ao projeto CentralPDF; API de leitura ainda não configurada |
 | Ajustes remotos e cartão no app público | Reservados para etapa de piloto; site público permanece igual |
 
 `ADMIN_READY=true` está ativo somente em homologação desde 31/10/2026, após
@@ -53,7 +53,10 @@ O conector de banco não oferece configuração de Auth nem convite. Em 31/10/20
 o responsável autenticou as CLIs oficiais; a API de gerenciamento foi usada para
 configurar e reler o Auth do projeto exclusivo. O convite foi aceito pelo provedor,
 sem reenvio ou senha padrão, e a identidade conferida foi provisionada na tabela
-privada. Entrega de e-mail e primeiro acesso dependem da confirmação pessoal.
+privada. O responsável recebeu o convite, definiu a senha e entrou com TOTP;
+o banco confirmou e-mail validado, fator verificado e sessão AAL2. A entrada na
+Visão geral foi conferida no navegador real. Recuperação e alteração autenticada
+de senha são exercícios separados do aceite do convite.
 Procedimento para conferência ou recuperação operacional:
 
 1. Em [URL Configuration](https://supabase.com/dashboard/project/alszupfnwerwtkyczzkw/auth/url-configuration), definir Site URL como a origem exata de homologação.
