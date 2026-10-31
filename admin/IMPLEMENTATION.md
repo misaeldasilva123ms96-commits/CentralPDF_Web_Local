@@ -28,7 +28,13 @@
 - Testes de interface usam Playwright 1.61.0, conforme dependência da CI.
   Chromium passou em 1440×1000 e 390×844. Firefox local não iniciou: o Windows
   informou configuração lado a lado incorreta. Isso é limitação local, não teste
-  aprovado de Firefox; a execução Linux da CI deve ser conferida na revisão final.
+  aprovado de Firefox. O job `admin-staging` da revisão `c148080` passou no Linux,
+  incluindo Chromium e Firefox com provedores interceptados.
+- Conferência sem login no endereço publicado: entrada e recuperação habilitadas,
+  sem erros de JavaScript ou corte horizontal em 1440, 390 e 320 px. Nenhum envio
+  de e-mail foi feito por esse teste. O bundle publicado é idêntico ao build local
+  por SHA-256. A API Auth real recusou cadastro público (`signup_disabled`) e
+  anônimo (`anonymous_provider_disabled`), ambos com HTTP 422.
 - Publicação por Wrangler autenticado no Worker exclusivo. A opção
   `preview_urls=false` foi acrescentada: a primeira publicação por CLI revelou que
   o padrão do Wrangler habilitava prévias quando a opção era omitida.
