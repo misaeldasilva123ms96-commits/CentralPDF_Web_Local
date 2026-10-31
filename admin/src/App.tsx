@@ -64,7 +64,11 @@ export function App() {
           if (event === "PASSWORD_RECOVERY") {
             checkVersion.current++;
             recovery.current = true;
-            setState("new-password");
+            setState("loading");
+            // Auth callbacks run under the SDK lock; defer network checks.
+            setTimeout(() => {
+              if (active) void check(next);
+            }, 0);
           } else if (event === "SIGNED_OUT") {
             checkVersion.current++;
             recovery.current = false;
@@ -87,7 +91,7 @@ export function App() {
           );
           return;
         }
-        if (!recovery.current) await check(next);
+        await check(next);
       })
       .catch(() => {
         if (active)
@@ -111,17 +115,22 @@ export function App() {
         setState("login");
         return;
       }
-      if (recovery.current) {
-        setState("new-password");
-        return;
-      }
       const result = await api<{
         administrator: boolean;
         mfaRequired: boolean;
       }>(auth, "session");
       if (version !== checkVersion.current) return;
       if (recovery.current) {
-        setState("new-password");
+        // Recovery proves email access, not the existing second factor. Auth
+        // refuses password changes at AAL1 when a verified factor exists.
+        const { data: factors, error } = await auth.auth.mfa.listFactors();
+        if (error) throw error;
+        if (version !== checkVersion.current) return;
+        setState(
+          result.mfaRequired && factors.totp.some((f) => f.status === "verified")
+            ? "mfa"
+            : "new-password",
+        );
         return;
       }
       if (location.pathname === "/auth/invite" || invitationIntent.current) {

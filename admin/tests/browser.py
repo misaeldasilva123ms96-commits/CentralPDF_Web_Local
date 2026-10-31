@@ -58,7 +58,10 @@ try:
       if path=='token':
        state['mfa']=False;respond(session('aal1'));return
       if path=='user':
-       if req.method=='PUT':state['password']=req.post_data_json
+       if req.method=='PUT':
+        if state['enrolled'] and not state['mfa']:
+         respond({'code':'insufficient_aal','message':'AAL2 required to update password when MFA is enabled'},401);return
+        state['password']=req.post_data_json
        user=session('aal2' if state['mfa'] else 'aal1')['user']
        if not state['enrolled']:user['factors']=[]
        respond(user);return
@@ -108,6 +111,7 @@ try:
     if width<800:page.get_by_role('button',name='Abrir menu').click()
     page.get_by_role('button',name='Sair da conta').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
     # Provider invitations do not initiate browser PKCE: test the fixed invite callback.
+    state['enrolled']=False  # A newly invited identity has no verified factor yet.
     invite=origin+('/auth/invite' if width==1440 else '/')+'#access_token='+jwt('aal1')+'&refresh_token=fixture-refresh-token&expires_in=3600&token_type=bearer&type=invite'
     page.goto("about:blank")  # Email verification returns through a fresh document.
     page.goto(invite)
@@ -120,8 +124,17 @@ try:
     page.get_by_role('heading',name='Acesso do administrador').wait_for()
     page.get_by_text('Senha atualizada. Entre novamente para continuar.',exact=True).wait_for()
     # Recovery begins in this browser and exchanges the stored PKCE verifier.
+    state['enrolled']=True  # Existing administrators must confirm their existing TOTP.
     page.get_by_role('button',name='Esqueci minha senha').click();page.locator('#email').fill('admin@example.invalid');page.get_by_role('button',name='Enviar instruções').click();page.get_by_text('Se houver uma conta habilitada',exact=False).wait_for()
-    page.goto(origin+'/auth/callback?code=fixture-recovery-code');page.get_by_role('heading',name='Definir nova senha').wait_for()
+    state['password']=None
+    page.goto(origin+'/auth/callback?code=fixture-recovery-code')
+    page.get_by_role('heading',name='Verificação em duas etapas').wait_for(timeout=5000)
+    assert not page.locator('#password').count()
+    assert state['password'] is None
+    page.get_by_role('button',name='Configurar ou confirmar segundo fator').click()
+    assert not page.get_by_role('img',name='QR code para cadastrar o CentralPDF no autenticador').count()
+    page.locator('#code').fill('654321');page.get_by_role('button',name='Confirmar código').click()
+    page.get_by_role('heading',name='Definir nova senha').wait_for()
     assert 'code=' not in page.url
     page.locator('#password').fill('RecoveryFixturePassword!2026');page.locator('#confirm').fill('RecoveryFixturePassword!2026')
     with page.expect_navigation():page.get_by_role('button',name='Salvar nova senha').click()

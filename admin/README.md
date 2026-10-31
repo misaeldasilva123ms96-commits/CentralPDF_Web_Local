@@ -12,7 +12,7 @@ reutilizado e nenhuma publicação de produção é feita por esta pasta.
 |---|---|
 | Novo projeto Supabase Free e Worker independente | Criados para homologação |
 | React/Vite/TypeScript e Static Assets | Build e entrega na Cloudflare |
-| Login, PKCE e recuperação | Implementados; primeiro acesso depende das configurações de Auth abaixo |
+| Login, PKCE e recuperação | Auth configurado; convite enviado; validação pessoal em andamento |
 | Segundo fator TOTP | Cadastro/desafio implementados; obrigatório para dados e ações privadas |
 | Conta e segurança | Alteração com senha atual e encerramento de outras sessões |
 | Avisos | Rascunho, confirmação de publicação, retirada, revisão e auditoria transacionais |
@@ -21,8 +21,9 @@ reutilizado e nenhuma publicação de produção é feita por esta pasta.
 | Sentry | Link privado disponível; API de leitura ainda não configurada |
 | Ajustes remotos e cartão no app público | Reservados para etapa de piloto; site público permanece igual |
 
-`ADMIN_READY=false` mantém entrada/recuperação bloqueadas até concluir e validar
-primeiro acesso, URLs e políticas. Esse sinal de interface não concede permissão:
+`ADMIN_READY=true` está ativo somente em homologação desde 31/10/2026, após
+conferir as políticas, URLs, identidade convidada e permissão privada. O ambiente
+local continua bloqueado. Esse sinal de interface não concede permissão:
 Auth e RLS continuam obrigatórios em toda requisição privada.
 
 ## Arquitetura e autorização
@@ -46,11 +47,14 @@ Auth e RLS continuam obrigatórios em toda requisição privada.
 - Não recebemos documentos, nomes de arquivos ou textos das ferramentas públicas.
   Não há ingestão aberta, censo de pessoas, uploads ou reprodução de sessões.
 
-## Primeiro acesso — dependência operacional
+## Primeiro acesso — configuração e validação
 
-O conector disponível cria projetos e aplica SQL, mas não oferece configuração de
-Auth nem convite de usuários. A configuração abaixo deve ser concluída no **novo
-projeto**, sem alterar os demais projetos da conta:
+O conector de banco não oferece configuração de Auth nem convite. Em 31/10/2026,
+o responsável autenticou as CLIs oficiais; a API de gerenciamento foi usada para
+configurar e reler o Auth do projeto exclusivo. O convite foi aceito pelo provedor,
+sem reenvio ou senha padrão, e a identidade conferida foi provisionada na tabela
+privada. Entrega de e-mail e primeiro acesso dependem da confirmação pessoal.
+Procedimento para conferência ou recuperação operacional:
 
 1. Em [URL Configuration](https://supabase.com/dashboard/project/alszupfnwerwtkyczzkw/auth/url-configuration), definir Site URL como a origem exata de homologação.
 2. Permitir exatamente `https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/auth/callback`
@@ -72,6 +76,9 @@ projeto**, sem alterar os demais projetos da conta:
 
 A exigência de senha atual usa o campo `current_password` confirmado pelos tipos
 do SDK instalado. Não há formulário de cadastro nem convite no painel público.
+A recuperação de senha de uma conta que já possui TOTP exige confirmar o fator
+existente antes de apresentar a nova senha. A verificação de permissão também
+acontece nesse fluxo; o link de recuperação não remove o segundo fator.
 A recuperação de MFA é um procedimento distinto; não existe atalho que remova MFA
 pelo frontend. Não reduzir proteções para contornar uma falha de acesso.
 
@@ -127,9 +134,18 @@ assinatura, integração paga ou deploy no Omni. Quotas de conta podem ser
 compartilhadas; não usar esta entrega para prometer capacidade simultânea garantida.
 Supabase Free, SMTP de testes e Sentry possuem limites próprios.
 
+Na configuração consultada, o remetente embutido permite **dois e-mails por hora**
+no projeto. O destinatário do convite foi conferido como autorizado pelo remetente
+de testes. Não foi contratado SMTP nem habilitada proteção paga de senhas vazadas.
+Evite reenvios; convite e recuperação podem consumir a mesma quota. A confirmação
+do provedor não comprova entrega na caixa de entrada. Consulte as
+[limitações oficiais de teste de Auth](https://supabase.com/docs/guides/auth/testing-auth-flows).
+
 `npm run deploy:staging` usa a autenticação local do Wrangler e apenas o nome
 `centralpdf-admin-homologacao`. A primeira implantação foi feita pela conexão
 Cloudflare, usando o bundle validado e o protocolo oficial de upload de assets.
+As implantações de 31/10/2026 usam Wrangler autenticado; `preview_urls=false`
+está explícito para preservar o bloqueio das URLs de prévia a cada publicação.
 Não existe deploy automático por merge. A produção depende de revisão e aprovação
 posteriores, conforme o plano.
 

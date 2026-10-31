@@ -34,6 +34,7 @@
     "staging": {
       "name": "centralpdf-admin-homologacao",
       "workers_dev": true,
+      "preview_urls": false,
       "vars": {
         "ENVIRONMENT": "staging",
         "APP_ORIGIN": "https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev",
@@ -41,7 +42,7 @@
         "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_rsdDbxRZ40xDuaPQ_oT8dw_yjfqumuJ",
         "SENTRY_ORG": "omni-nt",
         "SENTRY_PROJECT": "",
-        "ADMIN_READY": "false",
+        "ADMIN_READY": "true",
       },
       "assets": {
         "directory": "./dist",
