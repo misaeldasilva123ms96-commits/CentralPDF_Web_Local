@@ -52,13 +52,22 @@
 - O link Sentry agora inclui somente o ID do projeto CentralPDF, obtido do DSN
   público existente. Destino conferido na tela real; nenhum recurso Sentry foi
   alterado. A API de leitura permanece explicitamente não conectada.
+- Encerramento de outras sessões exercitado com duas sessões AAL2 reais: após
+  o comando, restou uma e a segunda aba teve acesso recusado. O teste revelou
+  que eventos `SIGNED_OUT` do SDK atravessam abas apesar do uso de `sessionStorage`:
+  a interface principal voltava ao login sem perder sua sessão no banco. Corrigido
+  para consultar a sessão da própria aba; recuperação só inicia em um documento
+  que entrou pela rota de callback. A regressão de saída falhou antes da correção.
+  Na repetição real, a sessão principal permaneceu na Conta e segurança mesmo
+  após revogação e saída local da outra aba.
 
 ### Dependências que permanecem explícitas
 
 | Critério | Evidência / pendência |
 |---|---|
 | Convite, definição da senha e login real com MFA | Confirmados pelo responsável, banco e navegador real |
-| Recuperação/alteração de senha e encerramento de outras sessões | Contrato de navegador aprovado no Chromium; exercício pessoal real pendente |
+| Encerramento de outras sessões | Duas sessões reais → uma; segunda recusada, sessão principal preservada |
+| Recuperação/alteração de senha | Contrato de navegador aprovado; exercício pessoal real em andamento |
 | Anônimo, conta comum, sessão revogada, rascunhos e auditoria | API real anônima e teste transacional no banco aprovados; fixtures revertidas |
 | Sentry | API de leitura sem credencial disponível; link privado limitado ao projeto CentralPDF. DSN de ingestão não autoriza consulta |
 | Métricas | Ingestão desativada; sem contadores inventados. Piloto depende de consentimento separado, limites, retenção e origem de teste |

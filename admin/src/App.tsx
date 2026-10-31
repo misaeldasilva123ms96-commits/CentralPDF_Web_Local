@@ -62,6 +62,9 @@ export function App() {
         const sub = next.auth.onAuthStateChange((event) => {
           if (event === "INITIAL_SESSION") return;
           if (event === "PASSWORD_RECOVERY") {
+            // Only this document's fixed callback may start password recovery;
+            // another tab's broadcast must not replace our account screen.
+            if (!callbackIntent.current) return;
             checkVersion.current++;
             recovery.current = true;
             setState("loading");
@@ -71,9 +74,11 @@ export function App() {
             }, 0);
           } else if (event === "SIGNED_OUT") {
             checkVersion.current++;
-            recovery.current = false;
-            invitationIntent.current = false;
-            setState("login");
+            // The SDK broadcasts other tabs' events even with sessionStorage.
+            // Recheck this tab instead of treating another session's exit as ours.
+            setTimeout(() => {
+              if (active) void check(next);
+            }, 0);
           } else {
             setTimeout(() => {
               if (active && !recovery.current) void check(next);
@@ -112,6 +117,8 @@ export function App() {
       const { data } = await auth.auth.getSession();
       if (version !== checkVersion.current) return;
       if (!data.session) {
+        recovery.current = false;
+        invitationIntent.current = false;
         setState("login");
         return;
       }

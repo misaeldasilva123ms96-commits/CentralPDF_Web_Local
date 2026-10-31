@@ -23,6 +23,9 @@ def jwt(aal):
  encode=lambda value:base64.urlsafe_b64encode(json.dumps(value).encode()).decode().rstrip('=')
  return encode({'alg':'HS256','typ':'JWT'})+'.'+encode({'sub':'80000000-0000-4000-8000-000000000001','aal':aal,'role':'authenticated','exp':int(time.time())+3600,'iat':int(time.time()),'session_id':'90000000-0000-4000-8000-000000000001','iss':PROJECT+'/auth/v1'})+'.fixture'
 def session(aal):return {'access_token':jwt(aal),'token_type':'bearer','expires_in':3600,'expires_at':int(time.time())+3600,'refresh_token':'browser-fixture-not-a-real-refresh-token','user':{'id':'80000000-0000-4000-8000-000000000001','aud':'authenticated','role':'authenticated','email':'admin@example.invalid','app_metadata':{'provider':'email'},'user_metadata':{},'created_at':'2026-10-30T12:00:00Z','factors':[{'id':'70000000-0000-4000-8000-000000000001','factor_type':'totp','status':'verified','friendly_name':'Test authenticator'}]}}
+def request_aal(req):
+ payload=req.headers['authorization'].split('.')[1]
+ return json.loads(base64.urlsafe_b64decode(payload+'='*(-len(payload)%4)))['aal']
 try:
  with sync_playwright() as p:
   for engine in ['chromium','firefox']:
@@ -38,7 +41,7 @@ try:
       path=url.split('/api/',1)[1].split('?')[0]
       if path=='config':respond({'environment':'staging','authConfigured':True,'adminReady':True,'supabaseUrl':PROJECT,'publishableKey':'sb_publishable_browser_fixture'});return
       if not req.headers.get('authorization'):respond({'error':'authentication_required'},401);return
-      if path=='session':respond({'administrator':True,'mfaRequired':not state['mfa']});return
+      if path=='session':respond({'administrator':True,'mfaRequired':request_aal(req)!='aal2'});return
       if path=='overview':respond({'metrics':state['metrics'],'activeSessions':None,'collectionEnabled':False});return
       if path=='history':respond(state['history']);return
       if path=='diagnostics':respond({'connected':False,'url':'https://omni-nt.sentry.io/issues/'});return
@@ -59,7 +62,7 @@ try:
        state['mfa']=False;respond(session('aal1'));return
       if path=='user':
        if req.method=='PUT':
-        if state['enrolled'] and not state['mfa']:
+        if state['enrolled'] and request_aal(req)!='aal2':
          respond({'code':'insufficient_aal','message':'AAL2 required to update password when MFA is enabled'},401);return
         state['password']=req.post_data_json
        user=session('aal2' if state['mfa'] else 'aal1')['user']
@@ -85,6 +88,20 @@ try:
     page.get_by_role('button',name='Voltar ao acesso').click();page.locator('#email').fill('admin@example.invalid');page.locator('#password').fill('BrowserFixturePassword!2026');page.get_by_role('button',name='Entrar',exact=True).click()
     page.get_by_role('heading',name='Verificação em duas etapas').wait_for();page.get_by_role('button',name='Configurar ou confirmar segundo fator').click();page.get_by_role('img',name='QR code para cadastrar o CentralPDF no autenticador').wait_for();page.wait_for_function('document.querySelector(".mfa-qr img")?.naturalWidth>0');page.locator('#code').fill('654321');page.get_by_role('button',name='Confirmar código').click()
     page.get_by_role('heading',name='Visão geral',exact=True).wait_for();page.get_by_text('Sem dados de utilização neste período.',exact=False).wait_for();assert page.get_by_role('button',name='Exportar resumo').is_disabled()
+    # SDK events cross tabs, but sessions deliberately live in sessionStorage.
+    # Signing out another tab must not hide this tab's still-valid session.
+    other=context.new_page();other.on('pageerror',lambda e:errors.append(str(e)))
+    other.goto(origin);other.locator('#email').fill('admin@example.invalid');other.locator('#password').fill('BrowserFixturePassword!2026');other.get_by_role('button',name='Entrar',exact=True).click()
+    other.get_by_role('heading',name='Verificação em duas etapas').wait_for();other.get_by_role('button',name='Configurar ou confirmar segundo fator').click();other.locator('#code').fill('654321');other.get_by_role('button',name='Confirmar código').click()
+    other.get_by_role('heading',name='Visão geral',exact=True).wait_for()
+    if width<800:other.get_by_role('button',name='Abrir menu').click()
+    other.get_by_role('button',name='Sair da conta').click();other.get_by_role('heading',name='Acesso do administrador').wait_for()
+    page.get_by_role('heading',name='Visão geral',exact=True).wait_for(timeout=5000)
+    other.get_by_role('button',name='Esqueci minha senha').click();other.locator('#email').fill('admin@example.invalid');other.get_by_role('button',name='Enviar instruções').click();other.get_by_text('Se houver uma conta habilitada',exact=False).wait_for()
+    other.goto(origin+'/auth/callback?code=fixture-recovery-code')
+    other.get_by_role('heading',name='Verificação em duas etapas').wait_for()
+    page.get_by_role('heading',name='Visão geral',exact=True).wait_for(timeout=5000)
+    other.close();state['logout']=0
     def nav(key,label):
      if width<800:page.get_by_role('button',name='Abrir menu').click()
      page.locator(f'nav a[href="#{key}"]').click();page.get_by_role('heading',name=label,exact=True).wait_for()
@@ -146,6 +163,7 @@ try:
     assert not outbound,outbound;assert not errors,errors
     context.close()
    browser.close()
+   print(f'PASS: {engine} desktop/mobile, including independent tab sign-out and recovery MFA',flush=True)
  print('PASS: Chromium/Firefox desktop/mobile, login→MFA gate, recovery, current-password change, session revocation, private drafts/publish, history, empty metrics, themes, no external requests')
 finally:
  server.shutdown();TMP.cleanup()
