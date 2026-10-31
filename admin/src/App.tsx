@@ -289,8 +289,7 @@ export function App() {
         </header>
         <main>
           <div className="demo-banner">
-            Homologação · dados deste ambiente · o site público permanece
-            independente
+            Homologação · estatísticas opcionais e avisos · documentos no dispositivo
           </div>
           {page === "overview" ? (
             <Metrics client={client} />
@@ -305,7 +304,7 @@ export function App() {
           ) : page === "history" ? (
             <History client={client} />
           ) : (
-            <Settings />
+            <Settings client={client} />
           )}
         </main>
       </div>

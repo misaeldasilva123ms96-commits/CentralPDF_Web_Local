@@ -1,6 +1,6 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v2.0.1-pages-42';
+const CACHE_VERSION = 'centralpdf-v2.0.1-pages-43';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
@@ -25,8 +25,8 @@ const CORE_ASSETS = [
   './assets/js/pdf-native-text.js?v=2.0.1-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=2.0.1-editor5', './assets/js/ux-enhancements.js?v=2.0.1-ui3',
   './assets/js/ocr-0.16.js?v=2.0.1-names1', './assets/js/compare-0.17.js?v=2.0.1-names1', './assets/js/redaction-0.17.js?v=2.0.1-names1',
   './assets/js/forms-signatures-0.18.js?v=0.18.2', './assets/js/conversions-0.19.js?v=2.0.1-names1',
-  './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/app.js?v=2.0.1-ui16', './assets/js/tool-quality-1.2.0.js?v=2.0.1-signatures1',
-  './assets/js/layout-controls.js?v=2.0.1-ui1', './assets/js/foundation.js?v=2.0.1-ux1', './assets/js/experience-0.15.js',
+  './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/admin-bridge.js?v=2.0.1-admin-pilot1', './assets/js/app.js?v=2.0.1-admin-pilot1', './assets/js/tool-quality-1.2.0.js?v=2.0.1-signatures1',
+  './assets/js/layout-controls.js?v=2.0.1-ui1', './assets/js/foundation.js?v=2.0.1-admin-pilot1', './assets/js/experience-0.15.js',
   './assets/js/diagnostics-config.js?v=2.0.1-tracing1', './assets/js/diagnostics-telemetry.js?v=2.0.1-tracing2',
   './assets/js/stable-1.0.js', './assets/js/header-settings-1.0.3.js?v=2.0.1-settings1',
   './assets/js/product-redesign-2.0.js?v=2.0.9',
@@ -65,6 +65,8 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const request = event.request;
   const url = new URL(request.url);
+  // API state and announcements must never enter the offline/runtime cache.
+  if (url.hostname === 'centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev' && url.pathname.startsWith('/api/')) return;
 
   if (url.origin === self.location.origin) {
     const networkFirst = url.pathname.endsWith('/vendor/offline-status.js')

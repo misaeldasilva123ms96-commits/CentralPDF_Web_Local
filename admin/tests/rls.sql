@@ -11,6 +11,8 @@ set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"80000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal2","session_id":"90000000-0000-4000-8000-000000000002","user_metadata":{"admin":true}}',true);
 do $$begin
  if public.admin_membership() or public.admin_access() then raise exception 'ordinary user got admin rights';end if;
+ begin perform public.admin_usage_settings();raise exception 'ordinary user read settings';exception when insufficient_privilege then null;end;
+ begin perform public.admin_usage_status();raise exception 'ordinary user read usage';exception when insufficient_privilege then null;end;
  if exists(select 1 from public.admin_notices) then raise exception 'ordinary user read private notices';end if;
  begin
  insert into public.admin_notices(title,message) values('Forbidden','Forbidden');
@@ -18,10 +20,19 @@ do $$begin
  exception when insufficient_privilege then null;end;
 end$$;
 select set_config('request.jwt.claims','{"sub":"80000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1","session_id":"90000000-0000-4000-8000-000000000001"}',true);
-do $$begin if not public.admin_membership() or public.admin_access() then raise exception 'MFA gate failed';end if;end$$;
+do $$begin if not public.admin_membership() or public.admin_access() then raise exception 'MFA gate failed';end if;
+ begin perform public.admin_usage_settings(false,1);raise exception 'MFA bypass for settings';exception when insufficient_privilege then null;end;
+end$$;
 select set_config('request.jwt.claims','{"sub":"80000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal2","session_id":"90000000-0000-4000-8000-000000000001"}',true);
 do $$declare saved public.admin_notices;begin
  if not public.admin_access() then raise exception 'verified admin denied';end if;
+ declare settings jsonb; before_count integer;begin
+ settings:=public.admin_usage_settings();
+ select count(*) into before_count from public.admin_audit;
+ perform public.admin_usage_settings(not (settings->>'enabled')::boolean,(settings->>'revision')::integer);
+ if (select count(*) from public.admin_audit)<>before_count+1 then raise exception 'settings audit missing';end if;
+ begin perform public.admin_usage_settings(true,(settings->>'revision')::integer);raise exception 'stale settings revision accepted';exception when sqlstate 'PT409' then null;end;
+ end;
  select * into saved from public.save_admin_notice(null,'Fixture draft','Fixture message','info','draft',now(),null,null);
  perform set_config('test.notice_id',saved.id::text,true);
  if saved.revision<>1 then raise exception 'incorrect first revision';end if;
@@ -56,6 +67,8 @@ do $$begin if exists(select 1 from public.published_notices() where id=current_s
 reset role;
 delete from auth.sessions where id='90000000-0000-4000-8000-000000000001';
 set local role authenticated;
-do $$begin if public.admin_access() then raise exception 'revoked session retained access';end if;if exists(select 1 from public.admin_audit) then raise exception 'revoked session read audit';end if;end$$;
+do $$begin if public.admin_access() then raise exception 'revoked session retained access';end if;if exists(select 1 from public.admin_audit) then raise exception 'revoked session read audit';end if;
+ begin perform public.admin_usage_status();raise exception 'revoked session read usage';exception when insufficient_privilege then null;end;
+end$$;
 rollback;
 select 'PASS: ordinary account, forged metadata, MFA, anonymous reads, draft privacy, published projection, revision conflict, withdrawal, atomic audit, revoked session; fixtures rolled back' as result;

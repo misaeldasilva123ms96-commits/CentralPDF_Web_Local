@@ -514,7 +514,9 @@
         </div></div>
         <div class="foundation-card"><div class="foundation-card-head"><div><h3>Ambiente</h3><p>Recursos disponíveis na forma atual de abertura.</p></div><span class="foundation-status-pill ${data.localServer ? 'ok' : 'warn'}">${escapeHtml(protocolText)}</span></div><div class="foundation-metric-row"><div class="foundation-metric"><small>Service worker</small><strong>${data.swReady ? 'Ativo' : 'Inativo'}</strong></div><div class="foundation-metric"><small>Recuperação</small><strong>${data.recoveryAvailable ? 'Disponível' : 'Indisponível'}</strong></div><div class="foundation-metric"><small>Protocolo</small><strong>${escapeHtml(location.protocol)}</strong></div></div></div>
         <div class="foundation-card full"><div class="foundation-card-head"><div><h3>Capacidade estimada</h3><p>Informações aproximadas fornecidas pelo navegador. Arquivos com muitas imagens podem exigir mais memória.</p></div></div><div class="foundation-metric-row"><div class="foundation-metric"><small>Processadores lógicos</small><strong>${escapeHtml(data.hardwareConcurrency)}</strong></div><div class="foundation-metric"><small>Memória informada</small><strong>${escapeHtml(data.deviceMemory)}</strong></div><div class="foundation-metric"><small>Armazenamento local</small><strong>${formatBytes(data.storageUsage)} / ${formatBytes(data.storageQuota)}</strong></div></div></div>
+        <div class="foundation-card full" id="cpAdminAccess"></div>
       </div>`;
+    window.CentralPDFAdminBridge?.mount(document.getElementById('cpAdminAccess'));
   }
 
   function diagnosticRow(icon, title, ok, detail) {

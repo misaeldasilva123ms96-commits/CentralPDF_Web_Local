@@ -14,6 +14,8 @@
 
 O processamento de PDFs e imagens acontece no navegador, sem upload dos documentos para um servidor da aplicação. Use o site ou um servidor local no computador. Os erros técnicos são compartilhados automaticamente com Sentry e podem ser desativados em cada navegador. O envio usa apenas categorias previstas, sem documentos; compartilhar tempos de processamento exige uma autorização adicional.
 
+O link **Administração** no rodapé abre o [painel privado](https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/), com senha e TOTP. Em **Compatibilidade e modo offline → Área do administrador**, cada navegador pode ativar **Permitir estatísticas de uso (opcional)**. Somente operações posteriores à autorização entram nos indicadores, com cobertura parcial e sem documentos ou nomes de arquivos. Avisos publicados aparecem nos clientes online. Detalhes de limites, retenção, pausa global e leitura do Sentry estão no [guia administrativo](admin/README.md).
+
 > **Estado da documentação — 25/10/2026.** O site usa a aplicação da raiz (`index.html` + `assets/`). A migração React/TypeScript em [`app/`](app/README.md) é separada e ainda não substitui o produto publicado. O número da versão continua **2.0.1**; a `main` contém melhorias posteriores à release Windows de mesmo número. Consulte o [histórico](CHANGELOG.md) e a data da release antes de comparar as distribuições.
 
 **Nesta página:** [Começar](#começar) · [Editor](#editor-pdf) · [Ferramentas](#as-34-ferramentas) · [Projetos](#projetos-e-continuidade) · [Privacidade](#privacidade-e-diagnósticos) · [Suporte](#solução-de-problemas) · [Desenvolvimento](#desenvolvimento)

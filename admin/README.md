@@ -2,7 +2,8 @@
 
 Implementação separada do site público, iniciada após aprovação do plano em
 30/10/2026. Mantém o sistema visual do exemplo aprovado. O projeto Omni não é
-reutilizado e nenhuma publicação de produção é feita por esta pasta.
+reutilizado. Em 31/10/2026, o responsável autorizou integrar e publicar o piloto no
+site público após os testes. O painel continua na origem de homologação.
 
 **Homologação:** <https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/>
 
@@ -17,9 +18,9 @@ reutilizado e nenhuma publicação de produção é feita por esta pasta.
 | Conta e segurança | Alteração com senha atual e encerramento de outras sessões |
 | Avisos | Rascunho, confirmação de publicação, retirada, revisão e auditoria transacionais |
 | Histórico | Consulta de alterações de avisos; registros de autenticação ficam no Auth |
-| Métricas de utilização | Consulta e estados vazios implementados; ingestão não habilitada |
-| Sentry | Link privado limitado ao projeto CentralPDF; API de leitura ainda não configurada |
-| Ajustes remotos e cartão no app público | Reservados para etapa de piloto; site público permanece igual |
+| Métricas de utilização | Piloto com consentimento próprio, quotas, deduplicação e retenção |
+| Sentry | Leitura sanitizada por API; exige segredo `SENTRY_READ_TOKEN` com `event:read` |
+| Ajustes e acesso no site | Pausa global auditada, atalho e avisos publicados |
 
 `ADMIN_READY=true` está ativo somente em homologação desde 31/10/2026, após
 conferir as políticas, URLs, identidade convidada e permissão privada. O ambiente
@@ -30,8 +31,9 @@ Auth e RLS continuam obrigatórios em toda requisição privada.
 
 - Cloudflare Workers com Static Assets. Apenas `/api` e `/api/*` executam o Worker
   antes do fallback de SPA; APIs desconhecidas nunca retornam o HTML do painel.
-- Supabase Auth e PostgreSQL. O Worker usa **somente chave publicável** e o token
-  de quem fez o pedido. Não há chave `service_role`, senha ou token Sentry no bundle.
+- Supabase Auth e PostgreSQL. APIs privadas usam chave publicável e token do usuário.
+  Somente ingestão e limpeza usam `SUPABASE_METRICS_KEY` como segredo no Worker.
+  Não há chave `service_role`, senha ou token Sentry no bundle do navegador.
 - Cada pedido privado valida o usuário no Auth e a permissão no banco. A tabela
   `private.administrators` é provisionada por operador autorizado, sem cadastro
   administrativo público e sem confiar em `user_metadata`.
@@ -45,7 +47,8 @@ Auth e RLS continuam obrigatórios em toda requisição privada.
 - CSP estrita, ausência de HTML arbitrário, `no-store`, `no-referrer` e bloqueio
   de enquadramento. Logs de invocação desativados e query strings redigidas no Worker.
 - Não recebemos documentos, nomes de arquivos ou textos das ferramentas públicas.
-  Não há ingestão aberta, censo de pessoas, uploads ou reprodução de sessões.
+  A ingestão pública aceita apenas o contrato técnico fechado, sem autenticar pessoas.
+  Não há censo de pessoas, uploads ou reprodução de sessões.
 
 ## Primeiro acesso — configuração e validação
 
@@ -107,9 +110,47 @@ Após salvar ou retirar, a lista volta à primeira página para mostrar o aviso 
 Abas antigas que consultam a lista sem parâmetro `page` continuam recebendo o
 formato de resposta anterior até serem recarregadas.
 
-Publicar nesta homologação **não muda o site dos colegas**. A ligação do app aos
-avisos e a coleta mínima de métricas serão validadas no piloto. Publicação de
-código continua por PR e pelo processo atual do repositório.
+Clientes online com `admin-bridge.js` consultam os avisos publicados a cada dois
+minutos. Retirar o aviso remove a projeção na próxima consulta bem-sucedida;
+clientes offline podem manter a mensagem já exibida até retomar a conexão.
+Publicação de código continua por PR e pelo processo atual do repositório.
+
+## Piloto de utilização e Sentry
+
+O rodapé do site oferece **Administração**. Em Compatibilidade e modo offline,
+o cartão Área do administrador também oferece o acesso e **Permitir estatísticas
+de uso (opcional)**. Essa escolha começa desativada e é independente dos erros e
+tempos enviados ao Sentry. Operações anteriores não são reconstruídas.
+
+A coleta envia UUID aleatório de aba em memória, IDs aleatórios dos eventos,
+ferramenta e conclusão/falha. Não recebe documentos, nomes ou textos. Atividade é
+uma estimativa de abas vistas nos últimos três minutos. Indicadores têm cobertura
+parcial; não representam pessoas ou todos os usos. A API pública pode receber
+eventos forjados: CORS não é autenticação. Não usar os números para faturamento.
+
+Limites: dez eventos/pedido, 720 pedidos/aba/dia e 5.000 pedidos globais/dia,
+contados no banco. Filas locais têm no máximo vinte eventos, sem persistência.
+Desativar descarta pendentes e interrompe o envio; agregados anteriores permanecem.
+Ajustes permite pausar globalmente com revisão e auditoria atômicas.
+Limpeza diária às 05:17 UTC: deduplicação por sete dias, abas até o dia anterior,
+orçamento por sete dias, agregados por noventa dias e auditoria por 180 dias.
+Não se inclui o corpo dos pedidos nos logs. O provedor observa os metadados
+normais da conexão, como IP. O service worker não armazena respostas dessa API.
+
+`SUPABASE_METRICS_KEY` é uma chave privilegiada do projeto dedicado, cadastrada
+apenas via segredo do Worker. O RPC de ingestão/limpeza não é executável por
+`anon` ou `authenticated`. As funções privadas de consulta/ajuste exigem sessão
+viva e MFA; wrappers públicos usam `security invoker`.
+
+Para a leitura Sentry, criar token com **somente `event:read`**, cadastrar localmente
+`npx.cmd wrangler secret put SENTRY_READ_TOKEN --env staging` e conferir Diagnósticos.
+Não enviar o token em chat nem salvá-lo no repositório. O Worker fixa projeto
+CentralPDF `4512284680060928`, janela de sete dias e até 25 grupos. Retorna apenas
+categoria prevista, contagem, horário e link construído; descarta títulos, stacks,
+usuários e outros projetos. Falha de leitura não vira lista vazia de sucesso.
+Sem segredo, a interface informa Leitura não conectada. O DSN público não concede
+consulta. A coleta de erros já existente continua com sua preferência própria.
+O piloto suporta a origem GitHub Pages configurada; cópias locais não enviam uso.
 
 ## Desenvolvimento e testes
 
@@ -134,6 +175,9 @@ local para `/api`; para validar tudo junto, use Wrangler após o build.
   por fixtures. Exercita login → MFA, recuperação, senha atual, revogação, avisos,
   histórico, temas e ausência de chamadas externas. **Não comprova entrega de e-mail
   ou entrada da conta real.** Capturas opcionais: `CENTRALPDF_ADMIN_QA`.
+- `tests/integrations.test.ts` e `../tests/admin-bridge.test.js`: contrato fechado,
+  consentimento, CORS, filtragem Sentry e ausência de conteúdo sensível.
+- `tests/usage.sql`: deduplicação, quotas, pausa e retenção com rollback.
 - `tests/rls.sql`: teste transacional no banco de homologação com fixtures que
   fazem rollback. Verifica conta comum, MFA, metadados adulterados, rascunhos,
   projeção publicada, revisão, auditoria e sessão revogada.
@@ -162,8 +206,8 @@ do provedor não comprova entrega na caixa de entrada. Consulte as
 Cloudflare, usando o bundle validado e o protocolo oficial de upload de assets.
 As implantações de 31/10/2026 usam Wrangler autenticado; `preview_urls=false`
 está explícito para preservar o bloqueio das URLs de prévia a cada publicação.
-Não existe deploy automático por merge. A produção depende de revisão e aprovação
-posteriores, conforme o plano.
+O Worker exige deploy explícito; o site público mantém seu workflow GitHub Pages.
+O responsável autorizou merge/publicação deste piloto após aprovação dos testes.
 
 Rollback: manter `ADMIN_READY=false` se o acesso não estiver validado e reverter
 apenas a versão do Worker novo. Não apagar banco ou dados sem análise e aprovação.

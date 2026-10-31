@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { summarize, toolNames, csvCell, useData, type Overview } from "./data";
 import { Empty, Heading, Message } from "./ui";
@@ -16,6 +16,7 @@ export function Metrics({
     "overview?period=" + period,
   );
   const rows = summarize(data?.metrics || []);
+  useEffect(()=>{const timer=setInterval(()=>{if(!document.hidden)reload();},60000);return()=>clearInterval(timer);},[client,period]);
   const totals = rows.reduce(
     (t, r) => ({
       completed: t.completed + r.completed,
@@ -55,6 +56,7 @@ export function Metrics({
         }
       >
         <div className="button-row">
+          <button onClick={reload} disabled={loading}>Atualizar indicadores</button>
           <select
             aria-label="Período"
             value={period}
@@ -80,8 +82,8 @@ export function Metrics({
           <>
             {!data.collectionEnabled && (
               <Message>
-                A coleta de utilização ainda não foi habilitada nesta
-                homologação. Os indicadores mostrarão apenas registros
+                A coleta de utilização está pausada ou não foi habilitada neste
+                ambiente. Os indicadores mostrarão apenas registros
                 efetivamente recebidos.
               </Message>
             )}
