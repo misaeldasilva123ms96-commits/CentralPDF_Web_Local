@@ -60,6 +60,15 @@
   que entrou pela rota de callback. A regressão de saída falhou antes da correção.
   Na repetição real, a sessão principal permaneceu na Conta e segurança mesmo
   após revogação e saída local da outra aba.
+- Alteração autenticada realizada pelo responsável com senha atual; a interface
+  confirmou sucesso e encerramento das outras sessões. Em seguida, o responsável
+  recebeu o e-mail real de recuperação e concluiu outra redefinição. TOTP permaneceu
+  cadastrado e a sessão foi encerrada ao concluir a recuperação. O novo login
+  abriu a Visão geral, com carregamento da API privada e sessão AAL2 confirmados.
+  O agente não leu nem preencheu senhas, QR code ou códigos TOTP.
+- CI completa da revisão de código `bc0efe5` aprovada, incluindo a regressão de
+  duas abas em Chromium/Firefox. O bundle final publicado corresponde ao build
+  local, e as URLs de prévia continuam desativadas.
 
 ### Dependências que permanecem explícitas
 
@@ -67,7 +76,8 @@
 |---|---|
 | Convite, definição da senha e login real com MFA | Confirmados pelo responsável, banco e navegador real |
 | Encerramento de outras sessões | Duas sessões reais → uma; segunda recusada, sessão principal preservada |
-| Recuperação/alteração de senha | Contrato de navegador aprovado; exercício pessoal real em andamento |
+| Alteração de senha | Realizada pessoalmente com senha atual; sucesso conferido na interface |
+| Recuperação | E-mail recebido, senha redefinida pessoalmente e novo login com TOTP confirmados |
 | Anônimo, conta comum, sessão revogada, rascunhos e auditoria | API real anônima e teste transacional no banco aprovados; fixtures revertidas |
 | Sentry | API de leitura sem credencial disponível; link privado limitado ao projeto CentralPDF. DSN de ingestão não autoriza consulta |
 | Métricas | Ingestão desativada; sem contadores inventados. Piloto depende de consentimento separado, limites, retenção e origem de teste |

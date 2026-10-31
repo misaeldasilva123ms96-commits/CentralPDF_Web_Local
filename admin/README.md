@@ -12,7 +12,7 @@ reutilizado e nenhuma publicação de produção é feita por esta pasta.
 |---|---|
 | Novo projeto Supabase Free e Worker independente | Criados para homologação |
 | React/Vite/TypeScript e Static Assets | Build e entrega na Cloudflare |
-| Login, PKCE e recuperação | Convite, definição pessoal de senha e entrada com TOTP confirmados; recuperação real ainda em validação |
+| Login, PKCE e recuperação | Convite, entrada com TOTP e recuperação real concluídos; novo login após redefinição confirmado |
 | Segundo fator TOTP | Cadastro/desafio implementados; obrigatório para dados e ações privadas |
 | Conta e segurança | Alteração com senha atual e encerramento de outras sessões |
 | Avisos | Rascunho, confirmação de publicação, retirada, revisão e auditoria transacionais |
@@ -55,8 +55,10 @@ configurar e reler o Auth do projeto exclusivo. O convite foi aceito pelo proved
 sem reenvio ou senha padrão, e a identidade conferida foi provisionada na tabela
 privada. O responsável recebeu o convite, definiu a senha e entrou com TOTP;
 o banco confirmou e-mail validado, fator verificado e sessão AAL2. A entrada na
-Visão geral foi conferida no navegador real. Recuperação e alteração autenticada
-de senha são exercícios separados do aceite do convite.
+Visão geral foi conferida no navegador real. A alteração com senha atual teve
+sucesso confirmado na interface. O e-mail de recuperação também foi recebido,
+e o responsável concluiu a redefinição pessoal. O novo login abriu a Visão geral,
+e o banco confirmou novamente a sessão AAL2 com o TOTP preservado.
 Procedimento para conferência ou recuperação operacional:
 
 1. Em [URL Configuration](https://supabase.com/dashboard/project/alszupfnwerwtkyczzkw/auth/url-configuration), definir Site URL como a origem exata de homologação.
