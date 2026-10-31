@@ -1,0 +1,424 @@
+{
+  "scenario": "local Chromium contexts; merge 3+2 pages; PDFLib and PDF.js validation",
+  "cpuQuota": "2 CPU",
+  "memoryLimitGiB": 8,
+  "http": {
+    "requests": 2405,
+    "bytes": 0,
+    "failures": 0
+  },
+  "batches": [
+    {
+      "sessions": 2,
+      "success": 2,
+      "seconds": 2.85,
+      "processP50Ms": 334.1,
+      "processMaxMs": 334.1,
+      "loadMaxMs": 1001.8,
+      "results": [
+        {
+          "id": "2-00",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1735,
+          "processMs": 334.09999999403954,
+          "loadMs": 1001.8,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "2-01",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1735,
+          "processMs": 289.90000000596046,
+          "loadMs": 990.5,
+          "pageErrors": [],
+          "ok": true
+        }
+      ]
+    },
+    {
+      "sessions": 5,
+      "success": 5,
+      "seconds": 5.57,
+      "processP50Ms": 620.7,
+      "processMaxMs": 662.5,
+      "loadMaxMs": 1903.2,
+      "results": [
+        {
+          "id": "5-00",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1736,
+          "processMs": 662.5,
+          "loadMs": 1903.2,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "5-01",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1736,
+          "processMs": 602,
+          "loadMs": 1801.2,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "5-02",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1736,
+          "processMs": 620.7000000029802,
+          "loadMs": 1802.2,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "5-03",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1736,
+          "processMs": 448.19999998807907,
+          "loadMs": 1823.5,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "5-04",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1736,
+          "processMs": 649.7999999970198,
+          "loadMs": 1822.3,
+          "pageErrors": [],
+          "ok": true
+        }
+      ]
+    },
+    {
+      "sessions": 10,
+      "success": 10,
+      "seconds": 10.59,
+      "processP50Ms": 1004.2,
+      "processMaxMs": 1396.7,
+      "loadMaxMs": 3614.0,
+      "results": [
+        {
+          "id": "10-00",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1739,
+          "processMs": 1271.1000000089407,
+          "loadMs": 3218.3,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-01",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1739,
+          "processMs": 1396.7000000029802,
+          "loadMs": 3573.1,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-02",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1744,
+          "processMs": 860.3000000119209,
+          "loadMs": 3596.1,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-03",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1744,
+          "processMs": 863.2999999970198,
+          "loadMs": 3539.4,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-04",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1744,
+          "processMs": 434.09999999403954,
+          "loadMs": 3477.0,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-05",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1743,
+          "processMs": 1087.6000000089407,
+          "loadMs": 3614.0,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-06",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1744,
+          "processMs": 1132.2000000029802,
+          "loadMs": 3585.8,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-07",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1744,
+          "processMs": 620.0999999940395,
+          "loadMs": 3590.7,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-08",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1744,
+          "processMs": 1004.1999999880791,
+          "loadMs": 3522.2,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "10-09",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1744,
+          "processMs": 643.6000000089407,
+          "loadMs": 3506.9,
+          "pageErrors": [],
+          "ok": true
+        }
+      ]
+    },
+    {
+      "sessions": 20,
+      "success": 20,
+      "seconds": 21.3,
+      "processP50Ms": 1040.5,
+      "processMaxMs": 1623.1,
+      "loadMaxMs": 6778.3,
+      "results": [
+        {
+          "id": "20-00",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1740,
+          "processMs": 532,
+          "loadMs": 6674.6,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-01",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 814.2999999970198,
+          "loadMs": 6764.7,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-02",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1740,
+          "processMs": 892.4000000059605,
+          "loadMs": 6778.3,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-03",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 933.3999999910593,
+          "loadMs": 6770.8,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-04",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1086.3999999910593,
+          "loadMs": 6709.4,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-05",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 709.2999999970198,
+          "loadMs": 6337.1,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-06",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1600.2999999970198,
+          "loadMs": 6115.4,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-07",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1421.5999999940395,
+          "loadMs": 6589.2,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-08",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 938.5999999940395,
+          "loadMs": 6401.2,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-09",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1605.7000000029802,
+          "loadMs": 6674.1,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-10",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1740,
+          "processMs": 1077.1000000089407,
+          "loadMs": 6688.7,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-11",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1018.5999999940395,
+          "loadMs": 5897.3,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-12",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1623.1000000089407,
+          "loadMs": 5972.7,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-13",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1046.2999999970198,
+          "loadMs": 6736.9,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-14",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 607.7000000029802,
+          "loadMs": 6370.0,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-15",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 996.9000000059605,
+          "loadMs": 6627.7,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-16",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1515,
+          "loadMs": 6256.8,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-17",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1365.7000000029802,
+          "loadMs": 6652.6,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-18",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 1040.5,
+          "loadMs": 6619.4,
+          "pageErrors": [],
+          "ok": true
+        },
+        {
+          "id": "20-19",
+          "pages": 5,
+          "ownText": true,
+          "bytes": 1745,
+          "processMs": 805.4000000059605,
+          "loadMs": 6627.2,
+          "pageErrors": [],
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "assessmentDate": "2026-10-30",
+  "scopeNote": "Local synthetic evaluation, not a production hosting limit or a count of colleagues."
+}
