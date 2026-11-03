@@ -1,6 +1,7 @@
 /** Stateless API: Auth + live-session/membership/MFA RLS on every private request.
  * Private calls use the caller's token. Metrics ingestion alone uses a server secret.
  * No documents, cookies or caller-selected user IDs. */
+import release from "../shared/catalog.json";
 export type WorkerEnv = Env;
 import { usagePayload, sentryIssues } from './integrations';
 export class ApiError extends Error {
@@ -201,7 +202,11 @@ async function handleInternal(
       return json({
         status: "available",
         environment: env.ENVIRONMENT,
-        version: "0.1.0",
+        version: release.adminVersion,
+        appVersion: release.applicationVersion,
+        appRevision: release.applicationRevision,
+        toolCount: release.tools.length,
+        officeEngineVersion: release.officeEngineVersion,
       });
     if (!ready(env)) throw new ApiError(503, "configuration_required");
     if (path === "/api/public/notices" && request.method === "GET")

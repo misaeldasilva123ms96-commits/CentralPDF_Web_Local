@@ -82,42 +82,7 @@ export function summarize(metrics: Metric[]) {
     (a, b) => b.completed + b.failed - (a.completed + a.failed),
   );
 }
-export const toolNames: Record<string, string> = {
-  organize: "Organizar PDF",
-  editPdf: "Editar PDF",
-  merge: "Juntar PDFs",
-  split: "Dividir PDF",
-  extract: "Extrair ou remover páginas",
-  rotate: "Girar páginas",
-  watermark: "Marca-d’água avançada",
-  pageNumbers: "Numerar páginas avançado",
-  imagesToPdf: "Imagens para PDF avançado",
-  imageConvert: "Converter imagens",
-  compress: "Comprimir PDF avançado",
-  pdfToImage: "PDF para imagens avançado",
-  crop: "Recortar PDF avançado",
-  metadata: "Limpar metadados",
-  normalize: "Normalizar PDF",
-  pdfToText: "Extrair texto do PDF",
-  ocr: "OCR e PDF pesquisável",
-  compare: "Comparar PDFs",
-  redact: "Censura definitiva",
-  formBuilder: "Criar formulário preenchível",
-  signPdf: "Assinar e rubricar PDF",
-  pdfToOffice: "PDF para Office",
-  documentsToPdf: "Documentos para PDF",
-  extractImages: "Extrair imagens do PDF",
-  archivePdf: "Preparar para arquivamento",
-  documentAssistant: "Assistente documental",
-  structuredExtraction: "Extração estruturada",
-  documentAudit: "Auditoria documental",
-  classifyRename: "Classificar e renomear",
-  protect: "Proteger PDF",
-  unlock: "Remover senha",
-  diagnose: "Diagnosticar PDF",
-  repairAdvanced: "Recuperar PDF",
-  flattenForms: "Fixar formulários",
-};
+export { toolNames } from "./catalog";
 
 export function csvCell(value: string) {
   const safe = /^[=+@\-\t\r]/.test(value) ? "'" + value : value;

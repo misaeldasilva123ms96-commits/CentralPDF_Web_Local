@@ -114,13 +114,30 @@ try:
      if width<800:page.get_by_role('button',name='Abrir menu').click()
      page.locator(f'nav a[href="#{key}"]').click();page.get_by_role('heading',name=label,exact=True).wait_for()
      assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
+    release=page.get_by_role('region',name='Versão do CentralPDF')
+    release.get_by_text('2.0.1',exact=True).wait_for();release.get_by_text('0.2.0',exact=True).wait_for()
+    release.get_by_text('34 ferramentas',exact=True).wait_for()
     page.screenshot(path=str(OUT/f'overview-{engine}-{width}.png'),full_page=True)
     state['metrics']=[{'day':'2026-10-30','tool':'merge','completed':5,'failed':1}]
     nav('tools','Ferramentas');page.get_by_role('combobox',name='Período').select_option('today')
     page.get_by_role('cell',name='Juntar PDFs',exact=True).wait_for()
+    assert page.locator('tbody tr').count()==34
+    office=page.locator('tbody tr').filter(has=page.get_by_role('cell',name='Office para PDF',exact=True))
+    office.get_by_role('cell',name='Sem registros',exact=True).wait_for()
+    search=page.get_by_role('searchbox',name='Buscar ferramenta')
+    search.fill('Word para PDF');assert page.locator('tbody tr').count()==2
+    search.fill('ODS');page.get_by_role('cell',name='Office para PDF',exact=True).wait_for();assert page.locator('tbody tr').count()==1
+    search.fill('');assert page.locator('tbody tr').count()==34
+    page.screenshot(path=str(OUT/f'tools-{engine}-{width}.png'),full_page=True)
     with page.expect_download() as download:page.get_by_role('button',name='Exportar resumo').click()
     assert download.value.suggested_filename=='CentralPDF — resumo de utilização.csv'
-    assert '"Juntar PDFs";5;1' in Path(download.value.path()).read_text('utf-8-sig')
+    csv=Path(download.value.path()).read_text('utf-8-sig')
+    assert '"Juntar PDFs";5;1' in csv and 'Office para PDF' not in csv
+    state['metrics'].append({'day':'2026-10-30','tool':'documentsToPdf','completed':2,'failed':1})
+    page.get_by_role('button',name='Atualizar indicadores').click()
+    office.get_by_role('cell',name='3',exact=True).wait_for()
+    with page.expect_download() as download:page.get_by_role('button',name='Exportar resumo').click()
+    assert '"Office para PDF";2;1' in Path(download.value.path()).read_text('utf-8-sig')
     nav('account','Conta e segurança')
     for dark in [False,True]:
      switch=page.get_by_role('switch',name='Tema escuro')

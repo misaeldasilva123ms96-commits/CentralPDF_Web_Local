@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { AppRelease } from "./AppRelease";
 import { useData } from "./data";
 import { Empty, Heading, Message } from "./ui";
 import { useState } from 'react';
@@ -127,6 +128,7 @@ export function Settings({client}:{client:SupabaseClient}) {
         title="Ajustes"
         description="Configuração do ambiente e limites de operação."
       />
+      <AppRelease detailed />
       {(error||failure)&&<Message error>{error||failure}</Message>}
       <section className="panel">
         <div className="panel-head">
