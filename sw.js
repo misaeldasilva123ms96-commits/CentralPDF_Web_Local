@@ -30,7 +30,7 @@ const CORE_ASSETS = [
   './assets/js/intelligence-0.20.js?v=2.0.1-names1', './assets/js/admin-bridge.js?v=2.0.1-admin-pilot2', './assets/js/app.js?v=2.0.1-office2', './assets/js/tool-quality-1.2.0.js?v=2.0.1-office1',
   './assets/js/layout-controls.js?v=2.0.1-ui1', './assets/js/foundation.js?v=2.0.1-admin-pilot1', './assets/js/experience-0.15.js?v=2.0.1-shortcuts1',
   './assets/js/diagnostics-config.js?v=2.0.1-tracing1', './assets/js/diagnostics-telemetry.js?v=2.0.1-tracing2',
-  './assets/js/stable-1.0.js', './assets/js/header-settings-1.0.3.js?v=2.0.1-settings1',
+  './assets/js/stable-1.0.js?v=2.0.1-shortcuts1', './assets/js/header-settings-1.0.3.js?v=2.0.1-settings1',
   './assets/js/product-redesign-2.0.js?v=2.0.11',
   './vendor/libpdf-core.mjs', './vendor/jszip.min.js', './vendor/pptxgen.min.js',
   './vendor/pdfjs-manifest.js', './vendor/offline-status.js', './manifest.webmanifest', './assets/icons/icon-192.png',

@@ -61,6 +61,7 @@ with sync_playwright() as p:
                 assert page.locator('.tool-card:not(.hidden)').count() > 0, (name, query)
             page.locator('#toolSearch').fill('')
             assert page.locator('.tool-card').count() == 39
+            assert page.locator('.hero-stats strong').first.inner_text() == '39'
             assert not page.locator('.tool-card > strong').filter(has_text='Office').count()
             for label, family, field, value in [
                 ('PDF para Word','pdfToOffice','officeExportFormat','docx'),
@@ -81,6 +82,13 @@ with sync_playwright() as p:
                 if family == 'pdfToOffice':
                     assert not page.locator('#officeExportFormat').is_visible()
                 page.locator('#homeBrand').click()
+            if not page.locator('#allToolsMenuButton').is_visible():
+                page.locator('#mobileProductMenuButton').click()
+            page.locator('#allToolsMenuButton').click()
+            page.locator('#allToolsMegaMenu button').filter(has=page.get_by_text('PDF para Excel',exact=True)).click()
+            assert page.locator('#operationTitle').inner_text() == 'PDF para Excel'
+            assert page.locator('#officeExportFormat').input_value() == 'xlsx'
+            page.locator('#homeBrand').click()
             excel=page.locator('.tool-card[data-shortcut="PDF para Excel"]')
             excel.locator('.cp15-star').click()
             assert excel.locator('.cp15-star').get_attribute('aria-pressed') == 'true'

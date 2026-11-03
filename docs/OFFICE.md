@@ -2,7 +2,11 @@
 
 As conversões ficam em **Converter PDF**, ao lado de **Todas as ferramentas**.
 O menu separa Word, Excel e PowerPoint em duas colunas: **Converter em PDF** e
-**Converter de PDF**. Os dez atalhos usam o catálogo existente de 34 ferramentas.
+**Converter de PDF**. A página inicial e o menu lateral também oferecem Word, Excel e PowerPoint
+individualmente, nos dois sentidos. Texto e HTML permanecem em um atalho próprio.
+São 39 atalhos visíveis; os indicadores mantêm as 34 famílias existentes, sem
+duplicar o histórico de Office por formato. Favoritos e recentes identificam cada
+atalho individual.
 A busca aceita palavras em outra ordem, acentos e nomes como “Word para PDF”,
 “Excel para PDF”, “PDF para Word” e “Office para PDF”.
 
