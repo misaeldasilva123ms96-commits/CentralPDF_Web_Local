@@ -28,6 +28,7 @@ const value = {
   applicationRevision: revision,
   adminVersion: JSON.parse(read('admin/package.json')).version,
   officeEngineVersion: office,
+  shortcutCount: [...read('index.html').matchAll(/<button\b[^>]*class="[^"]*\btool-card\b/g)].length,
   tools,
 };
 const output = JSON.stringify(value, null, 2) + '\n';

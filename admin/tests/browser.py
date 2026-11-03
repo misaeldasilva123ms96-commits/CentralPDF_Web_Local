@@ -116,7 +116,7 @@ try:
      assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
     release=page.get_by_role('region',name='Versão do CentralPDF')
     release.get_by_text('2.0.1',exact=True).wait_for();release.get_by_text('0.2.0',exact=True).wait_for()
-    release.get_by_text('34 ferramentas',exact=True).wait_for()
+    release.get_by_text('39 atalhos',exact=True).wait_for()
     page.screenshot(path=str(OUT/f'overview-{engine}-{width}.png'),full_page=True)
     state['metrics']=[{'day':'2026-10-30','tool':'merge','completed':5,'failed':1}]
     nav('tools','Ferramentas');page.get_by_role('combobox',name='Período').select_option('today')

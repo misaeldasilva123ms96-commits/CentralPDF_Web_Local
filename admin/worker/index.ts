@@ -206,6 +206,7 @@ async function handleInternal(
         appVersion: release.applicationVersion,
         appRevision: release.applicationRevision,
         toolCount: release.tools.length,
+        shortcutCount: release.shortcutCount,
         officeEngineVersion: release.officeEngineVersion,
       });
     if (!ready(env)) throw new ApiError(503, "configuration_required");

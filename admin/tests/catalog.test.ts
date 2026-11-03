@@ -32,5 +32,5 @@ it("reports admin and application versions separately without requiring credenti
   const env = {APP_ORIGIN:"https://admin.example.test",ENVIRONMENT:"staging"} as Env;
   const response = await handle(new Request(env.APP_ORIGIN + "/api/health"), env);
   expect(response.status).toBe(200);
-  expect(await response.json()).toEqual({status:"available",environment:"staging",version:release.adminVersion,appVersion:release.applicationVersion,appRevision:release.applicationRevision,toolCount:34,officeEngineVersion:release.officeEngineVersion});
+  expect(await response.json()).toEqual({status:"available",environment:"staging",version:release.adminVersion,appVersion:release.applicationVersion,appRevision:release.applicationRevision,toolCount:34,shortcutCount:39,officeEngineVersion:release.officeEngineVersion});
 });

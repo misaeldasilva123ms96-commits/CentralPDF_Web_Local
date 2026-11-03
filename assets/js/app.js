@@ -622,7 +622,9 @@
 
   window.addEventListener?.('central-editor-progress', event => setProgress(Number(event.detail || 0)));
 
-  document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => selectTool(button.dataset.tool)));
+  document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => {
+    if (selectTool(button.dataset.tool)) window.CentralPDFConversionShortcuts?.apply(button.dataset.shortcut);
+  }));
   $('#backToTools')?.addEventListener('click', showHome);
   $('#homeBrand').addEventListener('click', showHome);
   let completionReturnFocus = null;
@@ -789,8 +791,8 @@
   }
 
   function selectTool(tool) {
-    if (state.processing) { setStatus('Aguarde a operação terminar ou cancele antes de trocar de ferramenta.', 'warning'); return; }
-    if (!toolConfig[tool]) return;
+    if (state.processing) { setStatus('Aguarde a operação terminar ou cancele antes de trocar de ferramenta.', 'warning'); return false; }
+    if (!toolConfig[tool]) return false;
     fileIngestSession += 1;
     state.tool = tool;
     if(tool==='merge') $('#mergePageView').value='covers';
@@ -809,7 +811,7 @@
     homeView.classList.add('hidden');
     toolWorkspace.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    document.querySelectorAll('.tool').forEach(button => button.classList.toggle('active', button.dataset.tool === tool));
+    document.querySelectorAll('.tool').forEach(button => button.classList.toggle('active', button.dataset.tool === tool && !button.dataset.shortcut));
     const config = toolConfig[tool];
     setCompletionState(false);
     window.CentralPDFUX?.renderTool(tool, config);
@@ -854,6 +856,7 @@
     try { localStorage.setItem(HOME_STORAGE_KEY, tool); } catch (_) {}
     window.dispatchEvent(new CustomEvent('centralpdf-tool-selected', { detail: { tool, title: config.title } }));
     notifyFilesChanged('tool-selected');
+    return true;
   }
 
   function showHome() {
@@ -872,7 +875,7 @@
       const matchesCategory = activeCategory === 'all' || card.dataset.category === activeCategory;
       const haystack = `${card.dataset.search || ''} ${card.textContent || ''}`.toLocaleLowerCase('pt-BR');
       const matchesSearch = window.CentralPDFToolSearch
-        ? window.CentralPDFToolSearch.matches(query, card.dataset.tool, haystack)
+        ? window.CentralPDFToolSearch.matches(query, card.dataset.shortcut || card.dataset.tool, haystack)
         : !query || haystack.includes(query);
       const show = matchesCategory && matchesSearch;
       card.classList.toggle('hidden', !show);

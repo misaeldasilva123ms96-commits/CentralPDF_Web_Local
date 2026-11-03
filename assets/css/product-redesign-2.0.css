@@ -591,3 +591,11 @@ body[data-pdf-editor-mode="simple"] [data-editor-tool="cover"] { display: none !
 #editorNativeFeedback { margin: 6px 0; font-size: 12px; overflow-wrap: anywhere; }
 .editor-native-popover small { display: block; margin-top: 8px; font-size: 11px; }
 .editor-native-popover .small-button { background: #f1f0ff; color: #302781; border-color: #b7afff; }
+
+.tool-card.featured .tool-card-icon.office-word { background: #dfeaff; color: #285bb4; font-weight: 800; }
+.tool-card.featured .tool-card-icon.office-sheet { background: #daf2e3; color: #216d40; font-weight: 800; }
+.tool-card.featured .tool-card-icon.office-slides { background: #ffe4d8; color: #a84221; font-weight: 800; }
+.tool-card.featured .tool-card-icon.office-text { font-size: 12px; font-weight: 800; }
+body[data-theme='dark'] .tool-card.featured .tool-card-icon.office-word { background: #243b64 !important; color: #b5d2ff !important; box-shadow: none; }
+body[data-theme='dark'] .tool-card.featured .tool-card-icon.office-sheet { background: #1b4436 !important; color: #a1edbe !important; box-shadow: none; }
+body[data-theme='dark'] .tool-card.featured .tool-card-icon.office-slides { background: #542f29 !important; color: #ffb797 !important; box-shadow: none; }

@@ -11,6 +11,11 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Atalhos Office individuais — 03/11/2026
+
+- Substitui os cartões agrupados por Word, Excel e PowerPoint nos dois sentidos, com seleção do formato, busca, favoritos e recentes independentes.
+- Mantém texto e HTML acessíveis e sincroniza a contagem de 39 atalhos no catálogo e no admin, preservando os 34 identificadores históricos de métricas.
+
 ### Conversões Office — 03/11/2026
 
 - Separa Word, Excel e PowerPoint em um menu de duas colunas, ao lado de Todas as ferramentas; busca por palavras e sinônimos nas duas direções.

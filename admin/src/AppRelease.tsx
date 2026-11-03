@@ -5,7 +5,7 @@ export function AppRelease({ detailed = false }: { detailed?: boolean }) {
     <dl className="release-versions">
       <div><dt>Aplicativo</dt><dd>{release.applicationVersion}</dd></div>
       <div><dt>Painel administrativo</dt><dd>{release.adminVersion}</dd></div>
-      <div><dt>Catálogo</dt><dd>{release.tools.length} ferramentas</dd></div>
+      <div><dt>Catálogo</dt><dd>{release.shortcutCount} atalhos</dd></div>
       <div><dt>Pacote Office</dt><dd>WASM {release.officeEngineVersion}</dd></div>
     </dl>
     <p>Word, Excel e PowerPoint nos dois sentidos, com atalhos separados em Converter PDF. Office para PDF aceita ODS, ODT e ODP e renderiza o layout pelo LibreOffice no dispositivo.</p>

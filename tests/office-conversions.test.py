@@ -60,6 +60,41 @@ with sync_playwright() as p:
                 page.locator('#toolSearch').fill(query)
                 assert page.locator('.tool-card:not(.hidden)').count() > 0, (name, query)
             page.locator('#toolSearch').fill('')
+            assert page.locator('.tool-card').count() == 39
+            assert not page.locator('.tool-card > strong').filter(has_text='Office').count()
+            for label, family, field, value in [
+                ('PDF para Word','pdfToOffice','officeExportFormat','docx'),
+                ('PDF para Excel','pdfToOffice','officeExportFormat','xlsx'),
+                ('PDF para PowerPoint','pdfToOffice','officeExportFormat','pptx'),
+                ('Word para PDF','documentsToPdf','fileInput','.docx,.doc,.odt'),
+                ('Excel para PDF','documentsToPdf','fileInput','.xlsx,.xls,.ods,.csv'),
+                ('PowerPoint para PDF','documentsToPdf','fileInput','.pptx,.ppt,.odp'),
+                ('Texto e HTML para PDF','documentsToPdf','fileInput','.html,.htm,.txt,.md,.markdown,.rtf'),
+            ]:
+                page.locator(f'.tool-card[data-shortcut="{label}"]').click()
+                assert page.locator('#operationTitle').inner_text() == label
+                assert page.evaluate('CentralPDFApp.getActiveTool()') == family
+                actual = page.locator('#'+field).get_attribute('accept') if field == 'fileInput' else page.locator('#'+field).input_value()
+                assert actual == value, (label, actual)
+                assert page.locator('#workspaceToolNav .tool.active').count() == 1
+                assert page.locator('#workspaceToolNav .tool.active').get_attribute('data-shortcut') == label
+                if family == 'pdfToOffice':
+                    assert not page.locator('#officeExportFormat').is_visible()
+                page.locator('#homeBrand').click()
+            excel=page.locator('.tool-card[data-shortcut="PDF para Excel"]')
+            excel.locator('.cp15-star').click()
+            assert excel.locator('.cp15-star').get_attribute('aria-pressed') == 'true'
+            assert page.locator('.tool-card[data-shortcut="PDF para Word"] .cp15-star').get_attribute('aria-pressed') == 'false'
+            page.locator('#cp15FavRail button').filter(has_text='PDF para Excel').click()
+            assert page.locator('#operationTitle').inner_text() == 'PDF para Excel'
+            assert page.locator('#officeExportFormat').input_value() == 'xlsx'
+            page.locator('#homeBrand').click()
+            if directory := os.environ.get('CENTRALPDF_QA_SCREENSHOTS'):
+                Path(directory).mkdir(parents=True, exist_ok=True)
+                page.locator('#toolSearch').fill('office')
+                assert page.locator('.tool-card:not(.hidden)').count() == 6
+                page.locator('#toolGrid').screenshot(path=str(Path(directory) / f'office-cards-{name}-{width}.png'))
+                page.locator('#toolSearch').fill('')
             if not page.locator('#converterMenuButton').is_visible():
                 page.locator('#mobileProductMenuButton').click()
             page.locator('#converterMenuButton').click()
@@ -77,6 +112,10 @@ with sync_playwright() as p:
             if page.locator('body').get_attribute('data-theme') != 'dark':
                 page.locator('#cp101ThemeToggle').click()
             page.keyboard.press('Escape')
+            if directory:
+                page.locator('#toolSearch').fill('office')
+                page.locator('#toolGrid').screenshot(path=str(Path(directory) / f'office-cards-{name}-{width}-dark.png'))
+                page.locator('#toolSearch').fill('')
             if not page.locator('#converterMenuButton').is_visible():
                 page.locator('#mobileProductMenuButton').click()
             page.locator('#converterMenuButton').click()

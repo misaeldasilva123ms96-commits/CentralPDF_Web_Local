@@ -22,7 +22,7 @@ O link **Administração** no rodapé abre o [painel privado](https://centralpdf
 
 ## Conversões Office
 
-O menu **Converter PDF**, ao lado de **Todas as ferramentas**, separa Word, Excel e PowerPoint nas duas direções. **Office para PDF** usa LibreOffice WebAssembly no computador para preservar cabeçalhos, tabelas e imagens e aceitar ODS/ODT/ODP. O motor é carregado automaticamente ao converter; os documentos não são enviados. Fontes e impressão ainda devem ser conferidas. [Uso, preparação, licença e limitações](docs/OFFICE.md).
+A página inicial, o menu lateral e **Converter PDF**, ao lado de **Todas as ferramentas**, separam Word, Excel e PowerPoint nas duas direções, com o formato já selecionado. Texto e HTML têm um atalho próprio. **Office para PDF** usa LibreOffice WebAssembly no computador para preservar cabeçalhos, tabelas e imagens e aceitar ODS/ODT/ODP. O motor é carregado automaticamente ao converter; os documentos não são enviados. Fontes e impressão ainda devem ser conferidas. [Uso, preparação, licença e limitações](docs/OFFICE.md).
 
 ## Começar
 

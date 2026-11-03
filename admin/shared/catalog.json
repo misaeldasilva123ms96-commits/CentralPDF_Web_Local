@@ -1,8 +1,9 @@
 {
   "applicationVersion": "2.0.1",
-  "applicationRevision": "centralpdf-v2.0.1-pages-45",
+  "applicationRevision": "centralpdf-v2.0.1-pages-46",
   "adminVersion": "0.2.0",
   "officeEngineVersion": "2.7.2",
+  "shortcutCount": 39,
   "tools": [
     {
       "id": "organize",

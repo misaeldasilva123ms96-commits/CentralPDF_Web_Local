@@ -46,7 +46,7 @@ expected = {
 }
 
 assert len(expected) == 34
-assert len(soup.select(".tool-card[data-tool]")) == 34
+assert len(soup.select(".tool-card[data-tool]")) == 39
 assert soup.select_one(".panel-heading #clearButton") is None
 completion = soup.select_one("#completionActions")
 assert completion is not None and "hidden" in completion.get("class", [])
