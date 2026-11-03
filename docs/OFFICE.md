@@ -15,10 +15,6 @@ A busca aceita palavras em outra ordem, acentos e nomes como “Word para PDF”
    permita a abertura para este site e clique em converter novamente. A janela
    mostra apenas o progresso e se fecha ao concluir.
 
-O primeiro uso carrega cerca de 240 MB de código e recursos públicos. Esse é um
-registro técnico para manutenção, não um aviso ou uma etapa de download na
-interface do usuário. Operações seguintes reutilizam o cache disponível.
-
 O motor é o LibreOffice compilado para WebAssembly. Processamento e arquivos de
 trabalho ficam na memória do navegador. Não há servidor de conversão, login,
 upload de documentos, instalação de aplicativos ou permissão para ler o disco.
@@ -102,11 +98,15 @@ documentos a um serviço alternativo.
 
 `tests/office-conversions.test.py` cobre busca, menu, teclado, atalhos e recusa de
 ODS no modo texto, em Chromium/Firefox e 1440×1000/390×844. Com `--engine` e site
-preparado, converte um DOCX sintético com cabeçalho e tabela no motor real e
+preparado, executa o motor real em Chromium e Firefox, converte um DOCX
+sintético com cabeçalho e tabela e
 valida o PDF com PDF.js. Também confere a preservação de páginas Word visuais,
 sem margens extras, em retorno pelo LibreOffice. A CI usa apenas arquivos
 sintéticos. Os cinco arquivos reais fornecidos para o diagnóstico permanecem
-fora do repositório, dos artefatos públicos e da telemetria.
+fora do repositório, dos artefatos públicos e da telemetria. A regressão offline
+não usa interceptação de rede do Playwright: no Firefox, ela impede a navegação
+em uma nova janela pelo Service Worker mesmo com o conteúdo em cache. O
+bloqueio de telemetria do executor de testes permanece ativo.
 
 ### Revisão visual
 

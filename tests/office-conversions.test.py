@@ -48,7 +48,10 @@ with sync_playwright() as p:
             context = browser.new_context(viewport={'width': width, 'height': height})
             writes = []
             context.on('request', lambda request: writes.append(request.method) if request.method != 'GET' else None)
-            context.route('https://**/*', lambda route: route.abort())
+            # Firefox routing bypasses Service Worker navigation offline.
+            # Prepared engine runs rely on the runner's fetch telemetry guard.
+            if not args.engine:
+                context.route('https://**/*', lambda route: route.abort())
             page = context.new_page()
             page.goto(url)
             page.wait_for_function('window.CentralPDFApp && window.CentralPDFToolSearch')
@@ -116,7 +119,7 @@ with sync_playwright() as p:
             rejection = page.evaluate('''async()=>{document.querySelector('#docToPdfEngine').value='text';try{await CentralPDFConversions.processDocumentsToPdf({files:[new File(['PK\\x03\\x04'],'teste.ods')]});return '';}catch(e){return e.message;}}''')
             assert 'requer' in rejection
             evidence.append({'browser': name, 'width': width, 'navigation': 'passed', 'search': 'passed'})
-            if args.engine and name == 'chromium' and width == 1440:
+            if args.engine and width == 1440:
                 data = synthetic_docx()
                 page.locator('#fileInput').set_input_files({'name': 'Teste com acentuação.docx', 'mimeType': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'buffer': data})
                 page.wait_for_function('CentralPDFApp.getFiles().length===1')
@@ -129,7 +132,7 @@ with sync_playwright() as p:
                 assert result['pages'] == 1
                 assert 'CABECALHO PRESERVADO QA' in result['text'], result
                 assert 'ITEM QA' in result['text'] and 'VALOR QA' in result['text'], result
-                evidence.append({'engine': 'LibreOffice WASM 2.7.2', 'header': 'preserved', 'table_text': 'preserved', 'filename': 'Unicode preserved'})
+                evidence.append({'browser': name, 'engine': 'LibreOffice WASM 2.7.2', 'header': 'preserved', 'table_text': 'preserved', 'filename': 'Unicode preserved'})
                 visual = page.evaluate('''async()=>{
                   const pages=[];
                   for (const [width,height] of [[300,420],[500,300]]) {
@@ -191,8 +194,11 @@ with sync_playwright() as p:
                         page.locator('#processButton').click()
                 except Exception:
                     for current in context.pages:
-                        print('DIAGNOSTIC', current.url, current.locator('body').inner_text()[-5000:], flush=True)
-                        print('CACHE', current.evaluate('async()=>Object.fromEntries(await Promise.all((await caches.keys()).map(async key=>[key,(await (await caches.open(key)).keys()).length])))'), flush=True)
+                        try:
+                            print('DIAGNOSTIC', current.url, current.locator('body').inner_text()[-5000:], flush=True)
+                            print('CACHE', current.evaluate('async()=>Object.fromEntries(await Promise.all((await caches.keys()).map(async key=>[key,(await (await caches.open(key)).keys()).length])))'), flush=True)
+                        except Exception as diagnostic_error:
+                            print('DIAGNOSTIC unavailable:', type(diagnostic_error).__name__, flush=True)
                     raise
                 assert offline_download.value.suggested_filename == 'Teste com acentuação.pdf'
                 evidence.append({'offline_reactivation': 'process button automatically prepares conversion and downloads PDF without network'})
