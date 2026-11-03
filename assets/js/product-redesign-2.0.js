@@ -6,6 +6,8 @@
   const allToolsButton = document.querySelector('#allToolsMenuButton');
   const allToolsToggle = document.querySelector('#allToolsMenuToggle');
   const mobileButton = document.querySelector('#mobileProductMenuButton');
+  const converterButton = document.querySelector('#converterMenuButton');
+  const converterMenu = document.querySelector('#converterMenu');
   if (!nav || !megaMenu || !allToolsButton || !allToolsToggle || !mobileButton) return;
 
   const categoryLabels = {
@@ -23,6 +25,104 @@
       || sourceNavigation?.querySelector(`[data-tool="${CSS.escape(tool)}"]`);
     source?.click();
     closeMenus();
+  }
+
+  function openConversion(item) {
+    let selected = false;
+    const markSelected = event => { if (event.detail?.tool === item.tool) selected = true; };
+    window.addEventListener('centralpdf-tool-selected', markSelected);
+    openTool(item.tool);
+    window.removeEventListener('centralpdf-tool-selected', markSelected);
+    if (!selected) return;
+    for (const [id, value] of Object.entries(item.settings || {})) {
+      const field = document.getElementById(id);
+      if (!field) continue;
+      field.value = value;
+      field.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (item.accept) {
+      document.querySelector('#fileInput').accept = item.accept;
+      document.querySelector('#acceptedTypes').textContent = item.accept.replace(/\./g, '').toUpperCase().split(',').join(' · ');
+    }
+    document.querySelector('#operationTitle').textContent = item.label;
+    window.dispatchEvent(new Event('centralpdf-settings-changed'));
+  }
+
+  function buildConverterMenu() {
+    if (!converterButton || !converterMenu) return;
+    const groups = [
+      ['Converter em PDF', [
+        { label: 'JPG para PDF', tool: 'imagesToPdf', icon: 'JPG', color: 'image' },
+        { label: 'Word para PDF', tool: 'documentsToPdf', icon: 'W', color: 'word', accept: '.docx,.doc,.odt', settings: { docToPdfEngine: 'layout' } },
+        { label: 'PowerPoint para PDF', tool: 'documentsToPdf', icon: 'P', color: 'slides', accept: '.pptx,.ppt,.odp', settings: { docToPdfEngine: 'layout' } },
+        { label: 'Excel para PDF', tool: 'documentsToPdf', icon: 'X', color: 'sheet', accept: '.xlsx,.xls,.ods,.csv', settings: { docToPdfEngine: 'layout' } },
+        { label: 'HTML para PDF', tool: 'documentsToPdf', icon: 'HTML', color: 'image', accept: '.html,.htm', settings: { docToPdfEngine: 'layout' } }
+      ]],
+      ['Converter de PDF', [
+        { label: 'PDF para JPG', tool: 'pdfToImage', icon: 'JPG', color: 'image', settings: { pdfImageFormat: 'image/jpeg' } },
+        { label: 'PDF para Word', tool: 'pdfToOffice', icon: 'W', color: 'word', settings: { officeExportFormat: 'docx', officeDocxMode: 'image' } },
+        { label: 'PDF para PowerPoint', tool: 'pdfToOffice', icon: 'P', color: 'slides', settings: { officeExportFormat: 'pptx' } },
+        { label: 'PDF para Excel', tool: 'pdfToOffice', icon: 'X', color: 'sheet', settings: { officeExportFormat: 'xlsx' } },
+        { label: 'Preparar para arquivamento', tool: 'archivePdf', icon: 'PDF', color: 'pdf' }
+      ]]
+    ];
+    for (const [title, items] of groups) {
+      const section = document.createElement('section');
+      const heading = document.createElement('h2');
+      heading.textContent = title;
+      section.append(heading);
+      for (const item of items) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.conversion = item.label;
+        const icon = document.createElement('span');
+        icon.className = `cp2-format-icon ${item.color}`;
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = item.icon;
+        const label = document.createElement('span');
+        label.textContent = item.label;
+        button.append(icon, label);
+        button.addEventListener('click', () => openConversion(item));
+        section.append(button);
+      }
+      converterMenu.append(section);
+    }
+    const position = () => {
+      if (converterMenu.hidden) return;
+      const box = converterButton.getBoundingClientRect();
+      const width = Math.min(540, window.innerWidth - 24);
+      converterMenu.style.left = `${Math.max(12, Math.min(box.left + box.width / 2 - width / 2, window.innerWidth - width - 12))}px`;
+      converterMenu.style.top = `${box.bottom + 10}px`;
+      converterMenu.style.maxHeight = `${Math.max(120, window.innerHeight - box.bottom - 24)}px`;
+    };
+    converterButton.addEventListener('click', () => {
+      const show = converterMenu.hidden;
+      allToolsToggle.checked = false;
+      syncMegaMenuState();
+      converterMenu.hidden = !show;
+      converterButton.setAttribute('aria-expanded', String(show));
+      position();
+    });
+    window.addEventListener('resize', position);
+    window.addEventListener('scroll', position, { passive: true });
+    document.addEventListener('click', event => {
+      if (converterMenu.contains(event.target) || converterButton.contains(event.target)) return;
+      converterMenu.hidden = true;
+      converterButton.setAttribute('aria-expanded', 'false');
+      if (!nav.contains(event.target) && !mobileButton.contains(event.target)) closeMenus();
+    }, true);
+    converterButton.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (converterMenu.hidden) converterButton.click();
+        converterMenu.querySelector('button')?.focus();
+      }
+    });
+    document.addEventListener('focusin', event => {
+      if (converterMenu.hidden || converterMenu.contains(event.target) || converterButton.contains(event.target)) return;
+      converterMenu.hidden = true;
+      converterButton.setAttribute('aria-expanded', 'false');
+    });
   }
 
   function buildMegaMenu() {
@@ -85,9 +185,15 @@
 
   function syncMegaMenuState() {
     allToolsButton.setAttribute('aria-expanded', String(allToolsToggle.checked));
+    if (allToolsToggle.checked && converterMenu) {
+      converterMenu.hidden = true;
+      converterButton?.setAttribute('aria-expanded', 'false');
+    }
   }
 
   function closeMenus() {
+    if (converterMenu) converterMenu.hidden = true;
+    converterButton?.setAttribute('aria-expanded', 'false');
     allToolsToggle.checked = false;
     syncMegaMenuState();
     document.body.classList.remove('cp2-mobile-nav-open');
@@ -95,6 +201,7 @@
   }
 
   buildMegaMenu();
+  buildConverterMenu();
   const expectedToolCount = 34;
   const catalogueStatus = '34 ferramentas';
   allToolsButton.setAttribute('aria-label', `Todas as ferramentas — ${catalogueStatus}`);
@@ -130,10 +237,18 @@
     }
   });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') closeMenus();
+    if (event.key === 'Escape') {
+      const converterWasOpen = converterMenu && !converterMenu.hidden;
+      if (converterWasOpen) {
+        converterMenu.hidden = true;
+        converterButton.setAttribute('aria-expanded', 'false');
+        converterButton.focus();
+      } else closeMenus();
+    }
   });
   window.addEventListener('centralpdf-tool-selected', event => {
     const activeTool = event.detail?.tool;
+    converterButton?.classList.toggle('active', ['pdfToImage', 'imagesToPdf', 'documentsToPdf', 'pdfToOffice', 'archivePdf'].includes(activeTool));
     document.querySelectorAll('[data-nav-tool]').forEach(button => {
       const active = button.dataset.navTool === activeTool;
       button.classList.toggle('active', active);
@@ -142,6 +257,7 @@
     });
   });
   document.querySelector('#homeBrand')?.addEventListener('click', () => {
+    converterButton?.classList.remove('active');
     document.querySelectorAll('[data-nav-tool]').forEach(button => {
       button.classList.remove('active');
       button.removeAttribute('aria-current');

@@ -27,6 +27,9 @@ run=r'''async(tool)=>{
  const f=auditFixtures;const inputs=tool==='unlock'?[f.encrypted]:['merge','compare'].includes(tool)?[f.pdf,f.second]:['imagesToPdf','imageConvert','ocr'].includes(tool)?[f.image]:tool==='documentsToPdf'?[f.docx]:tool==='flattenForms'?[f.form]:['extractImages','compress'].includes(tool)?[f.scan]:[f.pdf];
  await CentralPDFApp.openFilesInTool(inputs,tool);
  const set=(id,value)=>{const e=document.getElementById(id);if(!e)return;if(e.type==='checkbox')e.checked=!!value;else e.value=value;e.dispatchEvent(new Event('change',{bubbles:true}));};
+ // This broad suite covers the explicit text profile; the packaged WASM engine
+ // and header preservation are exercised by office-conversions.test.py --engine.
+ if(tool==='documentsToPdf')set('docToPdfEngine','text');
  if(tool==='editPdf')await PDFVisualEditor.addImages([f.image]);
  if(tool==='watermark')set('watermarkText','AUDITORIA');
  if(tool==='split')set('splitMode','pages');

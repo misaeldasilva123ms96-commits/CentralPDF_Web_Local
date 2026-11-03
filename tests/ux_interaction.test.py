@@ -42,7 +42,7 @@ with sync_playwright() as p:
  assert page.locator('#operationTitle').inner_text()=='PDF para Office'
  assert page.locator('#settingsTitle').inner_text()=='Formato e fidelidade'
  page.locator('#workspaceToolNav [data-tool="documentsToPdf"]').click()
- assert page.locator('#operationTitle').inner_text()=='Documentos para PDF'
+ assert page.locator('#operationTitle').inner_text()=='Office para PDF'
  page.locator('#workspaceToolNav [data-tool="extractImages"]').click()
  assert page.locator('#operationTitle').inner_text()=='Extrair imagens do PDF'
  page.locator('#workspaceToolNav [data-tool="archivePdf"]').click()

@@ -149,9 +149,9 @@
     },
     documentsToPdf: {
       category: 'Converter', complexity: 'Documentos e imagens', input: 'Office, HTML, texto ou imagens', capability: 'Criar PDFs limpos', output: 'PDF ou ZIP',
-      steps: ['Adicione DOCX, XLSX, PPTX, HTML, TXT, CSV, Markdown ou imagens.', 'Escolha papel, tamanho de texto e combinação.', 'Gere e confira a nova cópia em PDF.'],
-      tip: 'Arquivos Office são convertidos pela estrutura textual interna; para fidelidade visual absoluta, exporte pelo aplicativo Office original.',
-      attention: 'Gráficos, fórmulas, caixas flutuantes e layouts avançados podem ser simplificados.',
+      steps: ['Adicione Word, Excel, PowerPoint, ODS, ODT, ODP ou imagens.', 'Revise a formatação e a área de impressão.', 'Converta e confira fontes, páginas e área de impressão.'],
+      tip: 'Use Preservar layout para manter cabeçalhos, tabelas e imagens. Seus documentos continuam neste computador.',
+      attention: 'Fontes ausentes podem ser substituídas. O modo somente texto não preserva o layout.',
       inspectorTitle: 'Conversão para PDF', inspectorDescription: 'Defina papel, tamanho e combinação dos arquivos.',
       dropSubtitle: 'Arraste documentos Office, texto, HTML, HEIC, TIFF ou imagens.', badges: ['Office', 'HEIC/TIFF', 'Local']
     },
@@ -371,7 +371,9 @@
     const query = ($('#workspaceToolSearch')?.value || '').trim().toLocaleLowerCase('pt-BR');
     let visible = 0;
     document.querySelectorAll('#workspaceToolNav .tool').forEach(button => {
-      const show = !query || button.textContent.toLocaleLowerCase('pt-BR').includes(query);
+      const show = window.CentralPDFToolSearch
+        ? window.CentralPDFToolSearch.matches(query, button.dataset.tool, button.textContent)
+        : !query || button.textContent.toLocaleLowerCase('pt-BR').includes(query);
       button.classList.toggle('hidden', !show);
       if (show) visible += 1;
     });

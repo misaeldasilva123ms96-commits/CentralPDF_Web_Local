@@ -11,6 +11,14 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Conversões Office — 03/11/2026
+
+- Separa Word, Excel e PowerPoint em um menu de duas colunas, ao lado de Todas as ferramentas; busca por palavras e sinônimos nas duas direções.
+- Adiciona LibreOffice WASM 2.7.2, carregado automaticamente no computador, sem upload de documentos; suporta ODS/ODT/ODP e preserva cabeçalhos, imagens, tabelas e impressão.
+- Fixa integridade, licença e preparação dos binários no pacote Pages/local; aplica mitigação documentada upstream para o pool de threads, com cancelamento e limites.
+- Corrige o Word visual para manter dimensões de página sem títulos e margens extras; PowerPoint segue a proporção da primeira página. Modos editáveis recusam PDF sem texto.
+- Mantém texto simplificado como escolha explícita, rejeita ODS nesse modo e combina PDFs já convertidos na ordem de entrada.
+
 ### Melhorias integradas após a release 2.0.1
 
 Estas entradas descrevem a evolução da `main`; não indicam uma nova release Windows. O site e os pacotes locais têm ciclos de distribuição próprios.

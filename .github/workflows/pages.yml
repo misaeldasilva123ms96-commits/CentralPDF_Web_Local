@@ -33,7 +33,8 @@ jobs:
             vendor/tesseract
             vendor/tesseract-core
             vendor/tessdata
-          key: ${{ runner.os }}-centralpdf-engines-${{ hashFiles('scripts/prepare-offline.ps1') }}
+            vendor/office
+          key: ${{ runner.os }}-centralpdf-engines-${{ hashFiles('scripts/prepare-offline.ps1', 'scripts/prepare-office-engine.py') }}
 
       - name: Download and verify browser engines
         shell: pwsh
@@ -44,7 +45,8 @@ jobs:
         run: |
           mkdir _site
           cp index.html manifest.webmanifest sw.js _site/
-          cp -R assets vendor _site/
+          python3 scripts/prepare-office-engine.py
+          cp -R assets vendor office _site/
           touch _site/.nojekyll
 
       - name: Validate static assets, cache revisions and engine hashes
@@ -78,6 +80,7 @@ jobs:
           python scripts/run-browser-test.py tests/tool-regression-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/tools.json"
           python scripts/run-browser-test.py tests/offline-tools-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/offline.json"
           python scripts/run-browser-test.py tests/editor-cross-browser-real.py --site _site --report "${{ runner.temp }}/stabilization-evidence/editor.json"
+          python scripts/run-browser-test.py tests/office-conversions.test.py --site _site --engine --report "${{ runner.temp }}/stabilization-evidence/office.json"
 
       - name: Preserve synthetic regression evidence
         if: always()

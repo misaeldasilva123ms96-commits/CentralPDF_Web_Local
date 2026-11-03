@@ -9,7 +9,7 @@ required = [
     "pull_request:",
     "./scripts/prepare-offline.ps1",
     "cp index.html manifest.webmanifest sw.js _site/",
-    "cp -R assets vendor _site/",
+    "cp -R assets vendor office _site/",
     "vendor/pdfjs",
     "vendor/pdfjs-manifest.js",
     "test -f _site/vendor/pdfjs/pdf.min.mjs",
