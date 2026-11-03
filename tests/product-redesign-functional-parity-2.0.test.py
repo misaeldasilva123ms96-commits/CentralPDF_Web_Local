@@ -18,8 +18,10 @@ assert "assets/js/product-redesign-2.0.js" in scripts
 nav = soup.select_one("#primaryProductNav")
 assert nav is not None
 assert {button.get("data-nav-tool") for button in nav.select("[data-nav-tool]")} >= {
-    "merge", "split", "compress", "pdfToImage", "organize", "editPdf"
+    "merge", "split", "compress", "organize", "editPdf"
 }
+assert nav.select_one('#converterMenuButton[aria-controls="converterMenu"]') is not None
+assert nav.select_one('#converterMenu[hidden]') is not None
 mobile_menu = soup.select_one("#mobileProductMenuButton")
 assert mobile_menu is not None
 assert mobile_menu.get("aria-controls") == "primaryProductNav"

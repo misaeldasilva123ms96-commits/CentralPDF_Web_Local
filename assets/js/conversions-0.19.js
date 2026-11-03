@@ -106,23 +106,49 @@
     return `<w:p><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${rId}" name="${escapeXml(name)}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="0" name="${escapeXml(name)}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="rId${rId}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
   }
 
+  function visualDocxSection(page) {
+    const width = Number(page.pageWidth) || 595.28;
+    const height = Number(page.pageHeight) || width * page.imageHeight / page.imageWidth;
+    const scale = Math.min(1, 1584 / Math.max(width, height));
+    return { width: width * scale, height: height * scale,
+      xml: `<w:sectPr><w:type w:val="nextPage"/><w:pgSz w:w="${Math.round(width * scale * 20)}" w:h="${Math.round(height * scale * 20)}"/><w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr>` };
+  }
+
+  function anchoredDocxImage(id, cx, cy, name) {
+    return docxImage(id, cx, cy, name)
+      .replace('<w:p>', '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="1" w:lineRule="exact"/></w:pPr>')
+      .replace('<wp:inline ', '<wp:anchor simplePos="0" relativeHeight="0" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" ')
+      .replace('<wp:extent', '<wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionV><wp:extent')
+      .replace('<wp:docPr', '<wp:wrapNone/><wp:docPr')
+      .replace('</wp:inline>', '</wp:anchor>');
+  }
+
   async function buildDocx({title,pages,mode}) {
     if(!window.JSZip) throw new Error('JSZip não está disponível.');
     const zip=new JSZip(); const rels=[]; const body=[]; let rid=1;
     for(let i=0;i<pages.length;i++){
-      const p=pages[i]; body.push(docxParagraph(`Página ${p.pageNumber}`,true,28));
+      const p=pages[i]; if(mode!=='image')body.push(docxParagraph(`Página ${p.pageNumber}`,true,28));
       if((mode==='image'||mode==='hybrid')&&p.imageBlob){
         const data=await p.imageBlob.arrayBuffer(); zip.file(`word/media/page-${i+1}.png`,data); rels.push(`<Relationship Id="rId${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/page-${i+1}.png"/>`);
-        const ratio=p.imageWidth/p.imageHeight; const maxCx=5486400,maxCy=7315200; let cx=maxCx,cy=Math.round(cx/ratio); if(cy>maxCy){cy=maxCy;cx=Math.round(cy*ratio);} body.push(docxImage(rid,cx,cy,`Página ${p.pageNumber}`)); rid++;
+        if (mode === 'image') {
+          const section = visualDocxSection(p);
+          body.push(anchoredDocxImage(rid, Math.round(section.width * 12700), Math.round(section.height * 12700), `Página ${p.pageNumber}`));
+        } else {
+          const ratio=p.imageWidth/p.imageHeight; const maxCx=5486400,maxCy=7315200; let cx=maxCx,cy=Math.round(cx/ratio); if(cy>maxCy){cy=maxCy;cx=Math.round(cy*ratio);} body.push(docxImage(rid,cx,cy,`Página ${p.pageNumber}`));
+        }
+        rid++;
       }
       if((mode==='text'||mode==='hybrid')&&p.text){for(const line of p.text.split(/\r?\n/)){body.push(docxParagraph(line||' ',false,21));}}
-      if(i<pages.length-1) body.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+      if(i<pages.length-1) body.push(mode==='image'
+        ? `<w:p><w:pPr>${visualDocxSection(p).xml}<w:spacing w:before="0" w:after="0" w:line="1" w:lineRule="exact"/></w:pPr></w:p>`
+        : '<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
     }
     zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`);
     zip.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`);
     zip.file('word/_rels/document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels.join('')}</Relationships>`);
     zip.file('word/styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="22"/></w:rPr></w:style></w:styles>`);
-    zip.file('word/document.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720"/></w:sectPr></w:body></w:document>`);
+    const finalSection = mode==='image' && pages.length ? visualDocxSection(pages[pages.length-1]).xml : '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720"/></w:sectPr>';
+    zip.file('word/document.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}${finalSection}</w:body></w:document>`);
     const now=new Date().toISOString();
     zip.file('docProps/core.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${escapeXml(title)}</dc:title><dc:creator>Central PDF &amp; Imagem 1.0</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created></cp:coreProperties>`);
     zip.file('docProps/app.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Central PDF &amp; Imagem</Application></Properties>`);
@@ -155,13 +181,14 @@
 
   async function buildPptx({title,pages}) {
     if(!window.PptxGenJS) throw new Error('O motor de PowerPoint não carregou.');
-    const pptx=new PptxGenJS(); pptx.layout='LAYOUT_WIDE'; pptx.author='Central PDF & Imagem'; pptx.subject='Conversão local de PDF'; pptx.title=title; pptx.company='Central PDF';
-    for(const p of pages){const slide=pptx.addSlide();slide.background={color:'FFFFFF'};const data=await dataUrlFromBlob(p.imageBlob);const sw=13.333,sh=7.5,ratio=(p.imageWidth||1)/(p.imageHeight||1);let w=sw,h=w/ratio;if(h>sh){h=sh;w=h*ratio;}slide.addImage({data,x:(sw-w)/2,y:(sh-h)/2,w,h});if(p.text&&slide.addNotes)slide.addNotes(`Página ${p.pageNumber}\n${p.text}`);}
+    const pptx=new PptxGenJS(); const first=pages[0]; const ratio=(first?.imageWidth||16)/(first?.imageHeight||9); const sw=first?.pageWidth?Math.min(first.pageWidth/72,56,56*ratio):10,sh=sw/ratio;
+    pptx.defineLayout({name:'PDF_PAGE',width:sw,height:sh});pptx.layout='PDF_PAGE';pptx.author='Central PDF & Imagem'; pptx.subject='Conversão local de PDF'; pptx.title=title; pptx.company='Central PDF';
+    for(const p of pages){const slide=pptx.addSlide();slide.background={color:'FFFFFF'};const data=await dataUrlFromBlob(p.imageBlob);const ratio=(p.imageWidth||1)/(p.imageHeight||1);let w=sw,h=w/ratio;if(h>sh){h=sh;w=h*ratio;}slide.addImage({data,x:(sw-w)/2,y:(sh-h)/2,w,h});if(p.text&&slide.addNotes)slide.addNotes(`Página ${p.pageNumber}\n${p.text}`);}
     const result=await pptx.write({outputType:'blob',compression:true}); return result instanceof Blob?result:new Blob([result],{type:MIME.pptx});
   }
 
   async function processPdfToOffice({files,progress,cancelled}) {
-    await ensurePdfJsWorker(); const format=$('#officeExportFormat')?.value||'docx'; const mode=$('#officeDocxMode')?.value||'text'; const dpi=Number($('#officeExportDpi')?.value||144); const pageText=$('#officeExportPages')?.value||'all'; const outputs=[];
+    await ensurePdfJsWorker(); const format=$('#officeExportFormat')?.value||'docx'; const mode=$('#officeDocxMode')?.value||'image'; const dpi=Number($('#officeExportDpi')?.value||200); const pageText=$('#officeExportPages')?.value||'all'; const outputs=[];
     for(let fi=0;fi<files.length;fi++){
       if(cancelled?.()) throw new Error('Operação cancelada pelo usuário.');
       const file=files[fi]; const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise; const pages=[];
@@ -170,9 +197,13 @@
         for(let pi=0;pi<indexes.length;pi++){
           const idx=indexes[pi]; const page=await pdf.getPage(idx+1); const text=(format==='xlsx'||mode!=='image'||format==='pptx')?await extractPdfPageText(page):''; const rows=format==='xlsx'?await extractPdfPageRows(page):[]; let imageBlob=null,imageWidth=0,imageHeight=0;
           if(format==='pptx'||mode==='image'||mode==='hybrid'){const rendered=await renderPdfPage(pdf,idx,dpi,'image/png');imageBlob=rendered.blob;imageWidth=rendered.canvas.width;imageHeight=rendered.canvas.height;}
-          pages.push({pageNumber:idx+1,text,rows,imageBlob,imageWidth,imageHeight}); progress?.(10+Math.round(((fi+(pi+1)/indexes.length)/files.length)*75));
+          const viewport=page.getViewport({scale:1});
+          pages.push({pageNumber:idx+1,text,rows,imageBlob,imageWidth,imageHeight,pageWidth:viewport.width,pageHeight:viewport.height}); progress?.(10+Math.round(((fi+(pi+1)/indexes.length)/files.length)*75));
         }
       }finally{await pdf.destroy();}
+      if ((format==='xlsx'||(format==='docx'&&mode==='text')) && pages.every(page=>!page.text)) {
+        throw new Error('Este PDF não contém texto extraível. Execute OCR antes de gerar texto ou tabelas editáveis; para Word visual, use Aparência preservada como imagem.');
+      }
       let blob,filename;
       if(format==='docx'){blob=await buildDocx({title:baseName(file.name),pages,mode});filename=`${baseName(file.name)}.docx`;}
       else if(format==='pptx'){blob=await buildPptx({title:baseName(file.name),pages});filename=`${baseName(file.name)}.pptx`;}
@@ -210,18 +241,36 @@
   async function buildImagePdf(images,title,pageMode='image',margin=18){const pdf=await PDFLib.PDFDocument.create();pdf.setTitle(title);pdf.setProducer('Central PDF & Imagem 1.0 - Imagens para PDF');for(const item of images){const bytes=await item.blob.arrayBuffer();const image=await pdf.embedPng(bytes);let pageW,pageH;if(pageMode==='a4'){pageW=595.28;pageH=841.89;}else{pageW=image.width+margin*2;pageH=image.height+margin*2;}const page=pdf.addPage([pageW,pageH]);const scale=Math.min((pageW-margin*2)/image.width,(pageH-margin*2)/image.height,1);const w=image.width*scale,h=image.height*scale;page.drawImage(image,{x:(pageW-w)/2,y:(pageH-h)/2,width:w,height:h});}return new Blob([await pdf.save({useObjectStreams:true})],{type:MIME.pdf});}
 
   async function processDocumentsToPdf({files,progress,cancelled}){
-    const combine=$('#docToPdfCombine')?.checked;const pageSize=$('#docToPdfPageSize')?.value||'a4';const fontSize=Number($('#docToPdfFontSize')?.value||11);const imagePage=$('#docToPdfImagePage')?.value||'image';const outputs=[];const combinedTexts=[];const combinedImages=[];
+    const engine = $('#docToPdfEngine')?.value || 'layout';
+    const combine=$('#docToPdfCombine')?.checked;const pageSize=$('#docToPdfPageSize')?.value||'a4';const fontSize=Number($('#docToPdfFontSize')?.value||11);const imagePage=$('#docToPdfImagePage')?.value||'image';const outputs=[];
     for(let i=0;i<files.length;i++){
       if(cancelled?.())throw new Error('Operação cancelada pelo usuário.');const file=files[i],e=ext(file.name);let blob;
       if(['png','jpg','jpeg','webp','bmp','gif','tif','tiff','heic','heif'].includes(e)){
-        const images=await decodeImageFile(file);if(combine)combinedImages.push(...images);else blob=await buildImagePdf(images,baseName(file.name),imagePage);
+        const images=await decodeImageFile(file);blob=await buildImagePdf(images,baseName(file.name),imagePage);
       }else{
-        let text='';if(e==='docx')text=await parseDocx(file);else if(e==='xlsx')text=await parseXlsx(file);else if(e==='pptx')text=await parsePptx(file);else{const raw=await file.text();text=['html','htm'].includes(e)?htmlToText(raw):raw;}
-        if(combine)combinedTexts.push(`# ${baseName(file.name)}\n\n${text}`);else blob=await buildTextPdf({title:baseName(file.name),text,pageSize,fontSize});
+        const office = ['doc','docx','odt','xls','xlsx','ods','ppt','pptx','odp','rtf','html','htm','csv'].includes(e);
+        if (engine === 'layout' && office) {
+          if (!window.CentralPDFOfficeEngine) throw new Error('O módulo Office não foi carregado. Atualize o aplicativo.');
+          blob = await window.CentralPDFOfficeEngine.convert(file, cancelled);
+        } else {
+          if (!['docx','xlsx','pptx','html','htm','txt','csv','md','markdown'].includes(e)) throw new Error('Este formato requer o modo Preservar layout.');
+          let text='';if(e==='docx')text=await parseDocx(file);else if(e==='xlsx')text=await parseXlsx(file);else if(e==='pptx')text=await parsePptx(file);else{const raw=await file.text();text=['html','htm'].includes(e)?htmlToText(raw):raw;}
+          blob=await buildTextPdf({title:baseName(file.name),text,pageSize,fontSize});
+        }
       }
       if(blob)outputs.push({blob,filename:`${baseName(file.name)}.pdf`});progress?.(10+Math.round(((i+1)/files.length)*75));
     }
-    if(combine){if(combinedTexts.length&&combinedImages.length)throw new Error('Para combinar em um único PDF, use somente documentos de texto ou somente imagens.');if(combinedTexts.length)outputs.push({blob:await buildTextPdf({title:'Documentos_convertidos',text:combinedTexts.join('\n\n'),pageSize,fontSize}),filename:'Documentos_convertidos.pdf'});else if(combinedImages.length)outputs.push({blob:await buildImagePdf(combinedImages,'Imagens_convertidas',imagePage),filename:'Imagens_convertidas.pdf'});}
+    if(combine){
+      if (outputs.length) {
+        const merged = await PDFLib.PDFDocument.create();
+        for (const output of outputs) {
+          if (cancelled?.()) throw new Error('Operação cancelada pelo usuário.');
+          const source = await PDFLib.PDFDocument.load(await output.blob.arrayBuffer());
+          for (const page of await merged.copyPages(source, source.getPageIndices())) merged.addPage(page);
+        }
+        outputs.splice(0, outputs.length, { blob: new Blob([await merged.save()], { type: MIME.pdf }), filename:'Documentos convertidos.pdf' });
+      }
+    }
     progress?.(95);return{outputs,message:`${outputs.length} PDF(s) criado(s).`};
   }
 
@@ -277,14 +326,24 @@
     if(outputs.length===1&&!includeManifest)return{outputs,message:'Cópia de arquivamento criada.'};zip.file('manifesto_geral.json',JSON.stringify({geradoEm:new Date().toISOString(),documentos:reports},null,2));const archive=await zip.generateAsync({type:'blob',mimeType:MIME.zip,compression:'DEFLATE'});progress?.(95);return{outputs:[{blob:archive,filename:'pacote_de_arquivamento.zip'}],message:`Pacote de arquivamento criado para ${files.length} documento(s).`};
   }
 
-  function toolPlanText(tool,files){const total=files.reduce((s,f)=>s+(f.size||0),0);const map={pdfToOffice:['Conversão para Office','DOCX, XLSX ou PPTX'],documentsToPdf:['Documentos para PDF','DOCX, XLSX, PPTX, HTML, TXT, CSV, Markdown e imagens'],extractImages:['Extração de imagens','Imagens internas e/ou páginas renderizadas'],archivePdf:['Arquivamento','PDF normalizado ou cópia rasterizada com manifesto']};const [title,result]=map[tool]||['Conversão','Resultado local'];return `<strong>${title}</strong><p>${files.length?`${files.length} arquivo(s), ${formatBytes(total)}. ${result}.`:'Adicione arquivos para calcular o plano.'}</p>`;}
+  function toolPlanText(tool,files){const total=files.reduce((s,f)=>s+(f.size||0),0);const map={pdfToOffice:['Conversão para Office','DOCX, XLSX ou PPTX'],documentsToPdf:['Office para PDF','Word, Excel, PowerPoint, ODS, textos e imagens'],extractImages:['Extração de imagens','Imagens internas e/ou páginas renderizadas'],archivePdf:['Arquivamento','PDF normalizado ou cópia rasterizada com manifesto']};const [title,result]=map[tool]||['Conversão','Resultado local'];return `<strong>${title}</strong><p>${files.length?`${files.length} arquivo(s), ${formatBytes(total)}. ${result}.`:'Adicione arquivos para calcular o plano.'}</p>`;}
 
   function updatePlan(tool,files){const el=$(`#${tool}Plan`);if(el)el.innerHTML=toolPlanText(tool,files||[]);state.lastPlans.set(tool,{files:(files||[]).length});}
   function bindChange(tool){if(state.bound.has(tool))return;state.bound.add(tool);document.querySelectorAll(`#settingsContent [id^="office"],#settingsContent [id^="docToPdf"],#settingsContent [id^="extractImage"],#settingsContent [id^="archive"]`).forEach(el=>el.addEventListener('change',()=>window.dispatchEvent(new Event('centralpdf-settings-changed'))));
     const format=$('#officeExportFormat');if(format)format.addEventListener('change',()=>{const f=format.value;$('#officeDocxOptions')?.classList.toggle('hidden',f!=='docx');$('#officeXlsxOptions')?.classList.toggle('hidden',f!=='xlsx');});
     const archive=$('#archiveMode');if(archive)archive.addEventListener('change',()=>$('#archiveRasterOptions')?.classList.toggle('hidden',archive.value!=='raster'));
   }
-  function mount(tool){bindChange(tool);}
+  function mount(tool){
+    state.bound.delete(tool);bindChange(tool);
+    if(tool==='documentsToPdf'){
+      window.CentralPDFOfficeEngine?.mount();
+      const select=$('#docToPdfEngine');
+      const update=()=>{
+        $('#docToPdfTextOptions')?.classList.toggle('hidden',select?.value!=='text');
+      };
+      select?.addEventListener('change',update);update();
+    }
+  }
 
   window.CentralPDFConversions={mount,updatePlan,processPdfToOffice,processDocumentsToPdf,processExtractImages,processArchivePdf,parseDocx,parseXlsx,parsePptx,buildDocx,buildXlsx,buildPptx,detectPdfArchiveSignals};
 })();
