@@ -31,7 +31,21 @@ async function start() {
   if (registration?.scope !== new URL('./', location.href).href || !registration.active) {
     registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
   } else if (navigator.onLine) registration.update().catch(() => {});
-  await navigator.serviceWorker.ready;
+  // ready may already resolve to the application's broader registration.
+  // Wait for this scope's worker before reloading for isolation headers.
+  if (!registration.active) {
+    await new Promise((resolve, reject) => {
+      const worker = registration.installing || registration.waiting;
+      if (!worker) { reject(new Error('Office Service Worker unavailable')); return; }
+      const timer = setTimeout(() => reject(new Error('Office Service Worker activation timed out')), 30000);
+      const check = () => {
+        if (worker.state === 'activated') { clearTimeout(timer); resolve(); }
+        else if (worker.state === 'redundant') { clearTimeout(timer); reject(new Error('Office Service Worker failed')); }
+      };
+      worker.addEventListener('statechange', check);
+      check();
+    });
+  }
   if (stopped) return;
   if (!crossOriginIsolated || !navigator.serviceWorker.controller) {
     const retries = Number(sessionStorage.getItem('office-isolation-retry') || 0);
