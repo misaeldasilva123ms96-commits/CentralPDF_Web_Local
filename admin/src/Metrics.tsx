@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { summarize, toolNames, csvCell, useData, type Overview } from "./data";
+import { catalogueRows, matchesTool } from "./catalog";
+import { AppRelease } from "./AppRelease";
 import { Empty, Heading, Message } from "./ui";
 export function Metrics({
   client,
@@ -16,6 +18,7 @@ export function Metrics({
     "overview?period=" + period,
   );
   const rows = summarize(data?.metrics || []);
+  const displayed = (tools ? catalogueRows(rows) : rows.map(row => ({...row, recorded: true}))).filter(row => matchesTool(row.tool, search));
   useEffect(()=>{const timer=setInterval(()=>{if(!document.hidden)reload();},60000);return()=>clearInterval(timer);},[client,period]);
   const totals = rows.reduce(
     (t, r) => ({
@@ -70,6 +73,7 @@ export function Metrics({
           </button>
         </div>
       </Heading>
+      {!tools && <AppRelease />}
       {error && (
         <Message error>
           {error} <button onClick={reload}>Tentar novamente</button>
@@ -132,9 +136,10 @@ export function Metrics({
                   </label>
                 </div>
               )}
-              {!rows.length ? (
+              {tools && <p className="hint">Catálogo completo. “Sem registros” indica ausência de dados recebidos; não significa que a ferramenta não foi usada. Atalhos Word, Excel e PowerPoint compartilham os indicadores de Office para PDF ou PDF para Office.</p>}
+              {!displayed.length ? (
                 <Empty>
-                  Sem dados de utilização neste período.
+                  {tools ? "Nenhuma ferramenta encontrada." : "Sem dados de utilização neste período."}
                   <br />
                   <small>Isso não significa que ninguém utilizou o site.</small>
                 </Empty>
@@ -150,18 +155,13 @@ export function Metrics({
                       </tr>
                     </thead>
                     <tbody>
-                      {rows
-                        .filter((r) =>
-                          (toolNames[r.tool] || r.tool)
-                            .toLocaleLowerCase("pt-BR")
-                            .includes(search.toLocaleLowerCase("pt-BR")),
-                        )
+                      {displayed
                         .map((r) => (
                           <tr key={r.tool}>
                             <td>{toolNames[r.tool] || r.tool}</td>
-                            <td>{r.completed + r.failed}</td>
-                            <td>{r.completed}</td>
-                            <td>{r.failed}</td>
+                            <td>{r.recorded ? r.completed + r.failed : "Sem registros"}</td>
+                            <td>{r.recorded ? r.completed : "—"}</td>
+                            <td>{r.recorded ? r.failed : "—"}</td>
                           </tr>
                         ))}
                     </tbody>

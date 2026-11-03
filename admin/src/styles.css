@@ -1263,3 +1263,13 @@ dialog .switch-row {
     margin-left: auto;
   }
 }
+
+.app-release { margin-bottom: 24px; }
+.release-versions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 20px 0; }
+.release-versions div { min-width: 0; border-left: 3px solid var(--accent); padding-left: 12px; }
+.release-versions dt { color: var(--muted); font-size: 12px; }
+.release-versions dd { margin: 5px 0 0; font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
+.release-details { padding-left: 20px; }
+.release-details li { margin: 6px 0; }
+.app-release code { overflow-wrap: anywhere; }
+@media (max-width: 800px) { .release-versions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -20,8 +20,11 @@
   const sourceCards = [...document.querySelectorAll('.tool-card[data-tool]')];
   const sourceNavigation = document.querySelector('#workspaceToolNav');
 
-  function openTool(tool) {
-    const source = sourceCards.find(card => card.dataset.tool === tool)
+  const shortcutPresets = new Map([['Texto e HTML para PDF', {label:'Texto e HTML para PDF', tool:'documentsToPdf', accept:'.html,.htm,.txt,.md,.markdown,.rtf', settings:{docToPdfEngine:'layout'}}]]);
+
+  function openTool(tool, shortcut) {
+    const source = sourceCards.find(card => card.dataset.tool === tool && card.dataset.shortcut === shortcut)
+      || sourceCards.find(card => card.dataset.tool === tool)
       || sourceNavigation?.querySelector(`[data-tool="${CSS.escape(tool)}"]`);
     source?.click();
     closeMenus();
@@ -31,13 +34,18 @@
     let selected = false;
     const markSelected = event => { if (event.detail?.tool === item.tool) selected = true; };
     window.addEventListener('centralpdf-tool-selected', markSelected);
-    openTool(item.tool);
+    openTool(item.tool, item.sourceLabel || item.label);
     window.removeEventListener('centralpdf-tool-selected', markSelected);
     if (!selected) return;
+    applyConversion(item);
+  }
+
+  function applyConversion(item) {
     for (const [id, value] of Object.entries(item.settings || {})) {
       const field = document.getElementById(id);
       if (!field) continue;
       field.value = value;
+      if (id === 'officeExportFormat') field.dataset.shortcutValue = value;
       field.dispatchEvent(new Event('change', { bubbles: true }));
     }
     if (item.accept) {
@@ -45,6 +53,31 @@
       document.querySelector('#acceptedTypes').textContent = item.accept.replace(/\./g, '').toUpperCase().split(',').join(' · ');
     }
     document.querySelector('#operationTitle').textContent = item.label;
+    const card = sourceCards.find(card => card.dataset.shortcut === item.label);
+    const description = item.description || card?.querySelector('p')?.textContent;
+    if (description) document.querySelector('#operationDescription').textContent = description;
+    document.querySelectorAll('#workspaceToolNav .tool').forEach(button => button.classList.toggle('active', button.dataset.shortcut ? button.dataset.shortcut === item.label : button.dataset.tool === item.tool));
+    const format = document.querySelector('#officeExportFormat');
+    if (format && item.settings?.officeExportFormat) {
+      format.closest('.field').classList.add('hidden');
+      if (!format.dataset.shortcutBound) {
+        format.dataset.shortcutBound = 'true';
+        format.addEventListener('change', () => {
+          if (format.value === format.dataset.shortcutValue) return;
+          const target = [...shortcutPresets.values()].find(preset => preset.settings?.officeExportFormat === format.value);
+          if (target) applyConversion(target);
+        });
+      }
+    }
+    const banner = document.querySelector('.conversion-engine-banner strong');
+    if (banner) banner.textContent = item.label;
+    const shortcut = item.sourceLabel || item.label;
+    if (sourceCards.some(card => card.dataset.shortcut === shortcut)) window.dispatchEvent(new CustomEvent('centralpdf-shortcut-selected', {detail:{tool:item.tool,shortcut}}));
+    if (['pdfToOffice','documentsToPdf'].includes(item.tool)) {
+      document.querySelector('#uxInput').textContent = item.accept ? item.accept.replace(/\./g, '').toUpperCase().split(',').join(' / ') : 'PDF';
+      document.querySelector('#uxOutput').textContent = item.settings?.officeExportFormat?.toUpperCase() || 'PDF';
+      window.CentralPDFConversions?.updatePlan(item.tool, window.CentralPDFApp?.getFiles() || []);
+    }
     window.dispatchEvent(new Event('centralpdf-settings-changed'));
   }
 
@@ -56,7 +89,7 @@
         { label: 'Word para PDF', tool: 'documentsToPdf', icon: 'W', color: 'word', accept: '.docx,.doc,.odt', settings: { docToPdfEngine: 'layout' } },
         { label: 'PowerPoint para PDF', tool: 'documentsToPdf', icon: 'P', color: 'slides', accept: '.pptx,.ppt,.odp', settings: { docToPdfEngine: 'layout' } },
         { label: 'Excel para PDF', tool: 'documentsToPdf', icon: 'X', color: 'sheet', accept: '.xlsx,.xls,.ods,.csv', settings: { docToPdfEngine: 'layout' } },
-        { label: 'HTML para PDF', tool: 'documentsToPdf', icon: 'HTML', color: 'image', accept: '.html,.htm', settings: { docToPdfEngine: 'layout' } }
+        { label: 'HTML para PDF', sourceLabel: 'Texto e HTML para PDF', description: 'Converta arquivos HTML em PDF no seu computador.', tool: 'documentsToPdf', icon: 'HTML', color: 'image', accept: '.html,.htm', settings: { docToPdfEngine: 'layout' } }
       ]],
       ['Converter de PDF', [
         { label: 'PDF para JPG', tool: 'pdfToImage', icon: 'JPG', color: 'image', settings: { pdfImageFormat: 'image/jpeg' } },
@@ -72,6 +105,7 @@
       heading.textContent = title;
       section.append(heading);
       for (const item of items) {
+        shortcutPresets.set(item.label, item);
         const button = document.createElement('button');
         button.type = 'button';
         button.dataset.conversion = item.label;
@@ -133,14 +167,15 @@
       grouped.get(category).push({
         id: card.dataset.tool,
         title: card.querySelector('strong')?.textContent?.trim() || card.dataset.tool,
-        description: card.querySelector('p')?.textContent?.trim() || 'Abrir ferramenta'
+        description: card.querySelector('p')?.textContent?.trim() || 'Abrir ferramenta',
+        source: card
       });
     });
 
     const toolbar = document.createElement('div');
     toolbar.className = 'cp2-mega-toolbar';
     const summary = document.createElement('strong');
-    summary.textContent = '34 ferramentas locais';
+    summary.textContent = `${sourceCards.length} atalhos locais`;
     const close = document.createElement('label');
     close.htmlFor = 'allToolsMenuToggle';
     close.className = 'cp2-mega-close';
@@ -175,7 +210,7 @@
         const description = document.createElement('small');
         description.textContent = tool.description;
         button.append(title, description);
-        button.addEventListener('click', () => openTool(tool.id));
+        button.addEventListener('click', () => { tool.source.click(); closeMenus(); });
         list.append(button);
       });
       section.append(list);
@@ -202,11 +237,12 @@
 
   buildMegaMenu();
   buildConverterMenu();
+  window.CentralPDFConversionShortcuts = Object.freeze({apply(label) { const item=shortcutPresets.get(label); if(item && window.CentralPDFApp?.getActiveTool()===item.tool) applyConversion(item); }});
   const expectedToolCount = 34;
-  const catalogueStatus = '34 ferramentas';
+  const catalogueStatus = `${sourceCards.length} atalhos`;
   allToolsButton.setAttribute('aria-label', `Todas as ferramentas — ${catalogueStatus}`);
   syncMegaMenuState();
-  if (sourceCards.length !== expectedToolCount) {
+  if (new Set(sourceCards.map(card => card.dataset.tool)).size !== expectedToolCount) {
     console.error(`Catálogo incompleto: esperadas ${expectedToolCount} ferramentas, encontradas ${sourceCards.length}.`);
   }
   document.querySelectorAll('[data-nav-tool]').forEach(button => {

@@ -10,7 +10,9 @@ stable = (root/'assets/js/stable-1.0.js').read_text(encoding='utf-8')
 sw = (root/'sw.js').read_text(encoding='utf-8')
 soup = BeautifulSoup(index, 'html.parser')
 
-tools = [node.get('data-tool') for node in soup.select('.tool-card[data-tool]')]
+cards = soup.select('.tool-card[data-tool]')
+assert len(cards) == 39
+tools = list(dict.fromkeys(node.get('data-tool') for node in cards))
 assert len(tools) == 34
 assert len(set(tools)) == 34
 

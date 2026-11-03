@@ -290,7 +290,7 @@
       if (!meta) return;
       const footer = document.createElement('div');
       footer.className = 'tool-card-meta';
-      footer.innerHTML = meta.badges.map(item => `<span>${item}</span>`).join('');
+      footer.innerHTML = (card.dataset.cardBadges ? card.dataset.cardBadges.split('|') : meta.badges).map(item => `<span>${item}</span>`).join('');
       const open = card.querySelector('.open-tool');
       if (open) card.insertBefore(footer, open);
       else card.appendChild(footer);
@@ -372,7 +372,7 @@
     let visible = 0;
     document.querySelectorAll('#workspaceToolNav .tool').forEach(button => {
       const show = window.CentralPDFToolSearch
-        ? window.CentralPDFToolSearch.matches(query, button.dataset.tool, button.textContent)
+        ? window.CentralPDFToolSearch.matches(query, button.dataset.shortcut || button.dataset.tool, button.textContent)
         : !query || button.textContent.toLocaleLowerCase('pt-BR').includes(query);
       button.classList.toggle('hidden', !show);
       if (show) visible += 1;

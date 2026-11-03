@@ -4,17 +4,19 @@ import re
 root=Path(__file__).resolve().parents[1]
 html=(root/'index.html').read_text(encoding='utf-8')
 css=(root/'assets/css/styles.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/ux-redesign.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/layout-controls.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/ocr-0.16.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/professional-0.17.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/forms-signatures-0.18.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/conversions-0.19.css').read_text(encoding='utf-8')+'\n'+(root/'assets/css/intelligence-0.20.css').read_text(encoding='utf-8')
+# Keep legacy controls in this fixture; the production-layout tests cover their replacement.
+css+='\n.cp2-mega-menu { display: none; }'
 html=re.sub(r'\s*<link rel="stylesheet" href="[^"]+"\s*/?>','',html)
 html=html.replace('</head>',f'<style>{css}</style></head>')
 html=re.sub(r'\s*<script src="[^"]+"></script>','',html)
-scripts='\n'.join((root/n).read_text(encoding='utf-8') for n in ['assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ocr-0.16.js','assets/js/compare-0.17.js','assets/js/redaction-0.17.js','assets/js/forms-signatures-0.18.js','assets/js/conversions-0.19.js','assets/js/intelligence-0.20.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/layout-controls.js'])
+scripts='\n'.join((root/n).read_text(encoding='utf-8') for n in ['assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ocr-0.16.js','assets/js/compare-0.17.js','assets/js/redaction-0.17.js','assets/js/forms-signatures-0.18.js','assets/js/conversions-0.19.js','assets/js/intelligence-0.20.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/layout-controls.js','assets/js/product-redesign-2.0.js'])
 html=html.replace('</body>',f'<script>{scripts}</script></body>')
 with sync_playwright() as p:
  b=p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
  page=b.new_page(viewport={'width':1440,'height':900})
  errors=[]; page.on('pageerror',lambda e:errors.append(str(e)))
  page.set_content(html, wait_until='domcontentloaded')
- assert page.locator('.tool-card').count()==34
+ assert page.locator('.tool-card').count()==39
  page.fill('#toolSearch','dividir')
  page.wait_for_timeout(50)
  assert page.locator('.tool-card:not(.hidden)').count()==1
@@ -38,11 +40,11 @@ with sync_playwright() as p:
  assert page.locator('#operationTitle').inner_text()=='OCR e PDF pesquisável'
  assert page.locator('#settingsTitle').inner_text()=='Reconhecimento e qualidade'
  assert 'pesquisável' in page.locator('#uxCapability').inner_text().lower()
- page.locator('#workspaceToolNav [data-tool="pdfToOffice"]').click()
- assert page.locator('#operationTitle').inner_text()=='PDF para Office'
+ page.locator('#workspaceToolNav [data-shortcut="PDF para Word"]').click()
+ assert page.locator('#operationTitle').inner_text()=='PDF para Word'
  assert page.locator('#settingsTitle').inner_text()=='Formato e fidelidade'
- page.locator('#workspaceToolNav [data-tool="documentsToPdf"]').click()
- assert page.locator('#operationTitle').inner_text()=='Office para PDF'
+ page.locator('#workspaceToolNav [data-shortcut="Texto e HTML para PDF"]').click()
+ assert page.locator('#operationTitle').inner_text()=='Texto e HTML para PDF'
  page.locator('#workspaceToolNav [data-tool="extractImages"]').click()
  assert page.locator('#operationTitle').inner_text()=='Extrair imagens do PDF'
  page.locator('#workspaceToolNav [data-tool="archivePdf"]').click()

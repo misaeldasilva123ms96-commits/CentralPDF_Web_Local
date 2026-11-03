@@ -1,15 +1,17 @@
 {
   "name": "centralpdf-admin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run check:catalog && tsc --noEmit && vite build",
     "test": "vitest run",
     "types": "wrangler types",
     "dev:worker": "wrangler dev",
-    "deploy:staging": "npm run build && wrangler deploy --env staging"
+    "deploy:staging": "npm run build && wrangler deploy --env staging",
+    "sync:catalog": "node ../scripts/sync-admin-catalog.mjs",
+    "check:catalog": "node ../scripts/sync-admin-catalog.mjs --check"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",

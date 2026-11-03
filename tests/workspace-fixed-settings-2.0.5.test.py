@@ -18,8 +18,8 @@ css = "\n".join(
     if path.startswith("assets/css/")
 )
 
-assert len(soup.select(".sidebar .tool[data-tool]")) == 34
-assert "product-redesign-2.0.css?v=2.0.19" in index
+assert len(soup.select(".sidebar .tool[data-tool]")) == 39
+assert "product-redesign-2.0.css?v=2.0.20" in index
 assert re.search(
     r"body\[data-workspace-open='true'\] \.settings-panel > \*\s*\{[^}]*flex-shrink:\s*0",
     css,
