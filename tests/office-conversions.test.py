@@ -96,6 +96,10 @@ with sync_playwright() as p:
             page.locator('#cp15FavRail button').filter(has_text='PDF para Excel').click()
             assert page.locator('#operationTitle').inner_text() == 'PDF para Excel'
             assert page.locator('#officeExportFormat').input_value() == 'xlsx'
+            # Existing saved presets may choose a different Office output.
+            page.evaluate("CentralPDFApp.applySettings({officeExportFormat:'pptx'})")
+            assert page.locator('#operationTitle').inner_text() == 'PDF para PowerPoint'
+            assert page.locator('#officeExportFormat').input_value() == 'pptx'
             page.locator('#homeBrand').click()
             if directory := os.environ.get('CENTRALPDF_QA_SCREENSHOTS'):
                 Path(directory).mkdir(parents=True, exist_ok=True)

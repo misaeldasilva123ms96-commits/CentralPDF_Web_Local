@@ -45,6 +45,7 @@
       const field = document.getElementById(id);
       if (!field) continue;
       field.value = value;
+      if (id === 'officeExportFormat') field.dataset.shortcutValue = value;
       field.dispatchEvent(new Event('change', { bubbles: true }));
     }
     if (item.accept) {
@@ -57,7 +58,17 @@
     if (description) document.querySelector('#operationDescription').textContent = description;
     document.querySelectorAll('#workspaceToolNav .tool').forEach(button => button.classList.toggle('active', button.dataset.shortcut ? button.dataset.shortcut === item.label : button.dataset.tool === item.tool));
     const format = document.querySelector('#officeExportFormat');
-    if (format && item.settings?.officeExportFormat) format.closest('.field').classList.add('hidden');
+    if (format && item.settings?.officeExportFormat) {
+      format.closest('.field').classList.add('hidden');
+      if (!format.dataset.shortcutBound) {
+        format.dataset.shortcutBound = 'true';
+        format.addEventListener('change', () => {
+          if (format.value === format.dataset.shortcutValue) return;
+          const target = [...shortcutPresets.values()].find(preset => preset.settings?.officeExportFormat === format.value);
+          if (target) applyConversion(target);
+        });
+      }
+    }
     const banner = document.querySelector('.conversion-engine-banner strong');
     if (banner) banner.textContent = item.label;
     const shortcut = item.sourceLabel || item.label;
