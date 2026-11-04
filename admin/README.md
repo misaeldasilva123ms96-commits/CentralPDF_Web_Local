@@ -7,6 +7,29 @@ site público após os testes. O painel continua na origem de homologação.
 
 **Homologação:** <https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/>
 
+## Atualização 0.2.0 — CentralPDF com Office local
+
+O painel acompanha o CentralPDF **2.0.1**, revisão `pages-47`, com o pacote
+LibreOffice WASM **2.7.2**. A Visão geral mostra as versões; Ajustes detalha os
+recursos e limites. Esta é a versão de referência da entrega, não um inventário
+remoto das abas da equipe: clientes offline podem estar em outra revisão.
+
+A referência do aplicativo informa 39 atalhos. Ferramentas apresenta as 34
+famílias de indicadores, mesmo sem métricas, mantendo as conversões Office
+consolidadas para não duplicar as contagens históricas. Busca por Word,
+Excel, PowerPoint e ODS encontra as conversões. “Sem registros” é ausência de
+dados recebidos, sem estimar usos ou pessoas. O CSV continua exportando somente
+indicadores recebidos, preservando espaços e acentos. Os atalhos Office usam os
+mesmos IDs anteriores; contagens históricas e o contrato de ingestão permanecem.
+
+`admin/shared/catalog.json` é gerado a partir do catálogo público e das versões
+dos pacotes. Após mudar ferramentas ou versões, execute
+`npm run sync:catalog --prefix admin`. O build executa a conferência e recusa
+catálogo desatualizado. A API `/api/health` distingue `version` do painel de
+`appVersion`, `appRevision`, `toolCount` e `officeEngineVersion`.
+
+Não há alterações de Auth, banco de dados, consentimento ou coleta de documentos.
+
 ## Estado desta entrega
 
 | Parte | Estado |

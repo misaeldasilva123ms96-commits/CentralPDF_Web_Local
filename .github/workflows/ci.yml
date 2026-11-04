@@ -58,6 +58,8 @@ jobs:
         run: |
           find assets/js -maxdepth 1 -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
           node --check sw.js
+          node --check office/engine.js
+          node --check office/sw.js
 
       - name: Run JavaScript tests
         shell: bash

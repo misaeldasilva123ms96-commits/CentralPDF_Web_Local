@@ -5,8 +5,8 @@ root=Path(__file__).resolve().parents[1]
 html=(root/'index.html').read_text(encoding='utf-8')
 app=(root/'assets/js/app.js').read_text(encoding='utf-8')
 soup=BeautifulSoup(html,'html.parser')
-assert len(soup.select('.tool-card[data-tool]')) == 34
-assert len(soup.select('.sidebar .tool[data-tool]')) == 34
+assert len(soup.select('.tool-card[data-tool]')) == 39
+assert len(soup.select('.sidebar .tool[data-tool]')) == 39
 scripts=[tag.get('src').split('?', 1)[0] if tag.get('src') else None for tag in soup.find_all('script')]
 assert scripts.index('assets/js/advanced-planner.js') < scripts.index('assets/js/app.js')
 assert scripts.index('assets/js/pdf-editor.js') < scripts.index('assets/js/app.js')
@@ -32,7 +32,7 @@ assert (root/'assets/css/stable-1.0.css').exists()
 assert (root/'assets/js/tool-quality-1.2.0.js').exists()
 assert (root/'assets/css/tool-quality-1.2.0.css').exists()
 assert 'Web local ' in html
-assert '<strong>34</strong> ferramentas' in html
+assert '<strong>39</strong> atalhos' in html
 required_ids=['editorObjectX','editorObjectY','editorObjectRotation','editorRotateLeft','editorRotateRight','editorResetRotation','editorObjectLockAspect','editorBringForward','editorSendBackward','editorDuplicateObject','pdfEditorSection','editorTextValue','editorFontFamily','editorBrushColor','editorHighlightColor','editorApplyCrop','mergePlanPreview','extractMode','extractPlanPreview','rotateMode','rotateBehavior','watermarkType','watermarkPattern','numberScope','numberTotalMode','imageOutputMode','imageFit','compressionMode','compressionScope','pdfImageOutputMode','pdfImageColumns','cropMode','cropBehavior','ocrOutputMode','ocrLanguage','ocrDpi','ocrPlan','ocrReviewButton','formFieldType','formStartPlacement','signatureSource','signaturePad','signaturePrepare','officeExportFormat','docToPdfCombine','extractImageMode','archiveMode','intelligenceQuestion','extractionProfile','auditProfile','renameTemplate']
 for item in required_ids:
     assert item in app, item
