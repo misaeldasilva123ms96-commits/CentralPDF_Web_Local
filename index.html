@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Central local com 34 ferramentas para organizar, editar, converter, proteger, pesquisar e auditar PDFs e imagens." />
+  <meta name="description" content="Central local com 39 atalhos para organizar, editar, converter, proteger, pesquisar e auditar PDFs e imagens." />
   <title>Central PDF & Imagem</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
   <link rel="stylesheet" href="assets/css/ux-redesign.css" />
@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="assets/css/quality-logs-1.1.2.css" />
   <link rel="stylesheet" href="assets/css/tool-quality-1.2.0.css" />
   <link rel="stylesheet" href="assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3" />
-  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.18" />
+  <link rel="stylesheet" href="assets/css/product-redesign-2.0.css?v=2.0.20" />
   <link rel="stylesheet" href="assets/css/split-interactive.css?v=2.0.1-split1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#5b43ff" />
@@ -88,12 +88,13 @@
         <button class="cp2-nav-tool" data-nav-tool="merge" type="button">Juntar PDF</button>
         <button class="cp2-nav-tool" data-nav-tool="split" type="button">Dividir PDF</button>
         <button class="cp2-nav-tool" data-nav-tool="compress" type="button">Comprimir PDF</button>
-        <button id="converterMenuButton" class="cp2-nav-tool" data-nav-tool="pdfToImage" type="button">Converter PDF</button>
         <button class="cp2-nav-tool" data-nav-tool="organize" type="button">Organizar PDF</button>
         <button class="cp2-nav-tool" data-nav-tool="editPdf" type="button">Editar PDF</button>
+        <button id="converterMenuButton" class="cp2-nav-tool cp2-converter-trigger" type="button" aria-expanded="false" aria-controls="converterMenu">Converter PDF <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div id="converterMenu" class="cp2-converter-menu" aria-label="Conversões de arquivos" hidden></div>
         <input id="allToolsMenuToggle" class="cp2-menu-toggle" type="checkbox" aria-hidden="true" tabindex="-1" />
-        <label id="allToolsMenuButton" class="cp2-nav-menu" for="allToolsMenuToggle" role="button" tabindex="0" aria-controls="allToolsMegaMenu">Todas as ferramentas <small>34</small> <span aria-hidden="true">⌄</span></label>
-        <div id="allToolsMegaMenu" class="cp2-mega-menu" aria-label="Todas as 34 ferramentas"></div>
+        <label id="allToolsMenuButton" class="cp2-nav-menu" for="allToolsMenuToggle" role="button" tabindex="0" aria-controls="allToolsMegaMenu">Todas as ferramentas <small>39</small> <span aria-hidden="true">⌄</span></label>
+        <div id="allToolsMegaMenu" class="cp2-mega-menu" aria-label="Todos os 39 atalhos"></div>
       </nav>
       <div class="top-actions">
         <div id="workspaceLayoutActions" class="workspace-layout-actions" aria-label="Controles de layout">
@@ -109,7 +110,7 @@
         <div class="hero-copy">
           <h1>Documentos prontos, sem complicação.</h1>
           <p>Escolha a tarefa e siga um fluxo guiado. Cada ferramenta mostra apenas os controles necessários e preserva o arquivo original.</p>
-          <div class="hero-stats"><span><strong>34</strong> ferramentas</span><span><strong>Local</strong> no navegador</span><span><strong>Guiado</strong> passo a passo</span></div>
+          <div class="hero-stats"><span><strong>39</strong> atalhos</span><span><strong>Local</strong> no navegador</span><span><strong>Guiado</strong> passo a passo</span></div>
         </div>
         <div class="search-box">
           <svg><use href="#i-search"/></svg>
@@ -139,7 +140,7 @@
       </div>
 
       <div class="tool-section-heading">
-        <div><h2>Ferramentas</h2><p id="toolResultCount">34 opções disponíveis</p></div>
+        <div><h2>Ferramentas</h2><p id="toolResultCount">39 opções disponíveis</p></div>
         <span class="home-keyboard-tip">Use <kbd>Ctrl K</kbd> para buscar</span>
       </div>
       <section id="toolGrid" class="tool-grid" aria-label="Ferramentas disponíveis">
@@ -197,8 +198,13 @@
         <button class="tool-card featured" data-tool="ocr" data-category="convert" data-search="ocr reconhecer texto pdf escaneado imagem pesquisável português" type="button">
           <span class="tool-card-icon"><svg><use href="#i-ocr"/></svg></span><strong>OCR e PDF pesquisável</strong><p>Reconheça textos em digitalizações e gere PDF pesquisável, TXT e relatório.</p><span class="open-tool">Abrir ferramenta →</span>
         </button>
-        <button class="tool-card featured" data-tool="pdfToOffice" data-category="convert" data-search="pdf word docx excel xlsx powerpoint pptx office converter" type="button"><span class="tool-card-icon"><svg><use href="#i-office"/></svg></span><strong>PDF para Office</strong><p>Converta para Word, Excel ou PowerPoint em modos locais controlados.</p><span class="open-tool">Abrir ferramenta →</span></button>
-        <button class="tool-card featured" data-tool="documentsToPdf" data-category="convert" data-search="docx xlsx pptx html txt csv markdown heic tiff para pdf" type="button"><span class="tool-card-icon"><svg><use href="#i-convert"/></svg></span><strong>Documentos para PDF</strong><p>Converta Office, HTML, texto, HEIC, TIFF e imagens para PDF.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="pdfToOffice" data-shortcut="PDF para Word" data-category="convert" data-search="word docx office ofice pdf" data-card-badges="DOCX|Local|Páginas" type="button"><span class="tool-card-icon office-word" aria-hidden="true">W</span><strong>PDF para Word</strong><p>Exporte páginas para Word visual ou texto editável simplificado.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="pdfToOffice" data-shortcut="PDF para Excel" data-category="convert" data-search="excel xlsx planilha office ofice pdf" data-card-badges="XLSX|Tabelas|Local" type="button"><span class="tool-card-icon office-sheet" aria-hidden="true">X</span><strong>PDF para Excel</strong><p>Extraia texto e tabelas do PDF para uma planilha Excel.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="pdfToOffice" data-shortcut="PDF para PowerPoint" data-category="convert" data-search="powerpoint pptx slides office ofice pdf" data-card-badges="PPTX|Slides|Local" type="button"><span class="tool-card-icon office-slides" aria-hidden="true">P</span><strong>PDF para PowerPoint</strong><p>Transforme cada página em um slide, preservando a aparência.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="documentsToPdf" data-shortcut="Word para PDF" data-category="convert" data-search="word doc docx odt office ofice pdf" data-card-badges="DOC/DOCX|ODT|Local" type="button"><span class="tool-card-icon office-word" aria-hidden="true">W</span><strong>Word para PDF</strong><p>Converta documentos Word e ODT com cabeçalhos, imagens e layout.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="documentsToPdf" data-shortcut="Excel para PDF" data-category="convert" data-search="excel xls xlsx ods csv planilha office ofice pdf" data-card-badges="XLS/XLSX|ODS|Local" type="button"><span class="tool-card-icon office-sheet" aria-hidden="true">X</span><strong>Excel para PDF</strong><p>Converta planilhas Excel e ODS respeitando a configuração de impressão.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="documentsToPdf" data-shortcut="PowerPoint para PDF" data-category="convert" data-search="powerpoint ppt pptx odp office ofice pdf" data-card-badges="PPT/PPTX|ODP|Local" type="button"><span class="tool-card-icon office-slides" aria-hidden="true">P</span><strong>PowerPoint para PDF</strong><p>Converta apresentações PowerPoint e ODP em páginas PDF.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-tool="documentsToPdf" data-shortcut="Texto e HTML para PDF" data-category="convert" data-search="html htm txt texto markdown md rtf pdf" data-card-badges="HTML/TXT|Markdown|Local" type="button"><span class="tool-card-icon office-text" aria-hidden="true">TXT</span><strong>Texto e HTML para PDF</strong><p>Crie PDFs a partir de HTML, texto, Markdown e RTF.</p><span class="open-tool">Abrir ferramenta →</span></button>
         <button class="tool-card featured" data-tool="extractImages" data-category="convert" data-search="extrair imagens internas pdf fotos figuras recursos" type="button"><span class="tool-card-icon"><svg><use href="#i-image"/></svg></span><strong>Extrair imagens</strong><p>Recupere imagens internas ou exporte páginas completas com manifesto.</p><span class="open-tool">Abrir ferramenta →</span></button>
         <button class="tool-card featured" data-tool="archivePdf" data-category="organize" data-search="arquivamento pdfa normalizar rasterizar hash manifesto preservar" type="button"><span class="tool-card-icon"><svg><use href="#i-archive"/></svg></span><strong>Preparar para arquivamento</strong><p>Crie cópia normalizada ou rasterizada com hashes e relatório técnico.</p><span class="open-tool">Abrir ferramenta →</span></button>
         <button class="tool-card featured" data-tool="documentAssistant" data-category="convert" data-search="assistente documental perguntar pdf resumir contrato cláusula localizar evidência" type="button"><span class="tool-card-icon"><svg><use href="#i-search"/></svg></span><span class="recommended">Inteligência local</span><strong>Assistente documental</strong><p>Resuma, pesquise e responda perguntas com evidências por página.</p><span class="open-tool">Abrir ferramenta →</span></button>
@@ -259,8 +265,13 @@
           <button class="tool" data-tool="normalize" type="button"><svg><use href="#i-rotate"/></svg><span><b>Normalizar PDF</b><small>Compatibilidade</small></span></button>
           <button class="tool" data-tool="pdfToText" type="button"><svg><use href="#i-text"/></svg><span><b>Extrair texto</b><small>PDF para TXT</small></span></button>
           <button class="tool" data-tool="ocr" type="button"><svg><use href="#i-ocr"/></svg><span><b>OCR pesquisável</b><small>Digitalizações</small></span></button>
-          <button class="tool" data-tool="pdfToOffice" type="button"><svg><use href="#i-office"/></svg><span><b>PDF para Office</b><small>DOCX, XLSX e PPTX</small></span></button>
-          <button class="tool" data-tool="documentsToPdf" type="button"><svg><use href="#i-convert"/></svg><span><b>Documentos para PDF</b><small>Office, HTML e imagens</small></span></button>
+          <button class="tool" data-tool="pdfToOffice" data-shortcut="PDF para Word" type="button"><svg><use href="#i-office"/></svg><span><b>PDF para Word</b><small>DOCX · Local · Páginas</small></span></button>
+          <button class="tool" data-tool="pdfToOffice" data-shortcut="PDF para Excel" type="button"><svg><use href="#i-office"/></svg><span><b>PDF para Excel</b><small>XLSX · Tabelas · Local</small></span></button>
+          <button class="tool" data-tool="pdfToOffice" data-shortcut="PDF para PowerPoint" type="button"><svg><use href="#i-office"/></svg><span><b>PDF para PowerPoint</b><small>PPTX · Slides · Local</small></span></button>
+          <button class="tool" data-tool="documentsToPdf" data-shortcut="Word para PDF" type="button"><svg><use href="#i-office"/></svg><span><b>Word para PDF</b><small>DOC/DOCX · ODT · Local</small></span></button>
+          <button class="tool" data-tool="documentsToPdf" data-shortcut="Excel para PDF" type="button"><svg><use href="#i-office"/></svg><span><b>Excel para PDF</b><small>XLS/XLSX · ODS · Local</small></span></button>
+          <button class="tool" data-tool="documentsToPdf" data-shortcut="PowerPoint para PDF" type="button"><svg><use href="#i-office"/></svg><span><b>PowerPoint para PDF</b><small>PPT/PPTX · ODP · Local</small></span></button>
+          <button class="tool" data-tool="documentsToPdf" data-shortcut="Texto e HTML para PDF" type="button"><svg><use href="#i-office"/></svg><span><b>Texto e HTML para PDF</b><small>HTML/TXT · Markdown · Local</small></span></button>
           <button class="tool" data-tool="extractImages" type="button"><svg><use href="#i-image"/></svg><span><b>Extrair imagens</b><small>Imagens internas</small></span></button>
           <button class="tool" data-tool="archivePdf" type="button"><svg><use href="#i-archive"/></svg><span><b>Arquivamento</b><small>Hashes e manifesto</small></span></button>
 
@@ -609,24 +620,26 @@
   <script src="assets/js/organizer-planner.js"></script>
   <script src="assets/js/pdf-native-text.js?v=2.0.1-cid1"></script>
   <script src="assets/js/pdf-editor.js?v=2.0.1-editor5"></script>
-  <script src="assets/js/ux-enhancements.js?v=2.0.1-ui3"></script>
+  <script src="assets/js/tool-search.js?v=1"></script>
+  <script src="assets/js/ux-enhancements.js?v=2.0.1-ui5"></script>
   <script src="assets/js/ocr-0.16.js?v=2.0.1-names1"></script>
   <script src="assets/js/compare-0.17.js?v=2.0.1-names1"></script>
   <script src="assets/js/redaction-0.17.js?v=2.0.1-names1"></script>
   <script src="assets/js/forms-signatures-0.18.js?v=0.18.2"></script>
-  <script src="assets/js/conversions-0.19.js?v=2.0.1-names1"></script>
+  <script src="assets/js/office-engine.js?v=1"></script>
+  <script src="assets/js/conversions-0.19.js?v=2.0.1-office2"></script>
   <script src="assets/js/intelligence-0.20.js?v=2.0.1-names1"></script>
   <script src="assets/js/admin-bridge.js?v=2.0.1-admin-pilot2"></script>
-  <script src="assets/js/app.js?v=2.0.1-admin-pilot1"></script>
-  <script src="assets/js/tool-quality-1.2.0.js?v=2.0.1-signatures1"></script>
+  <script src="assets/js/app.js?v=2.0.1-office2"></script>
+  <script src="assets/js/tool-quality-1.2.0.js?v=2.0.1-office1"></script>
   <script src="assets/js/layout-controls.js?v=2.0.1-ui1"></script>
   <script src="assets/js/foundation.js?v=2.0.1-admin-pilot1"></script>
-  <script src="assets/js/experience-0.15.js"></script>
+  <script src="assets/js/experience-0.15.js?v=2.0.1-shortcuts1"></script>
   <script src="assets/js/diagnostics-config.js?v=2.0.1-tracing1"></script>
   <script src="assets/js/diagnostics-telemetry.js?v=2.0.1-tracing2"></script>
-  <script src="assets/js/stable-1.0.js"></script>
+  <script src="assets/js/stable-1.0.js?v=2.0.1-shortcuts1"></script>
   <script src="assets/js/header-settings-1.0.3.js?v=2.0.1-settings1"></script>
-  <script src="assets/js/product-redesign-2.0.js?v=2.0.9"></script>
+  <script src="assets/js/product-redesign-2.0.js?v=2.0.11"></script>
   <script src="assets/js/workspace-modernization.js?v=2.0.1-ux1"></script>
 </body>
 </html>

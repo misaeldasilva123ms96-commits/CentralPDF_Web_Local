@@ -35,6 +35,10 @@ def validate(root: Path, require_engines=False):
     if errors:return {'ok':False,'references':0,'errors':errors}
     parser=References();parser.feed((root/'index.html').read_text(encoding='utf-8'))
     for url in parser.urls:check(url,version=True)
+    if (root/'office/index.html').is_file():
+        office=References();office.feed((root/'office/index.html').read_text(encoding='utf-8'))
+        for url in office.urls:check(url,'office/index.html')
+        check('./sw.js','office/index.html')
     sw=(root/'sw.js').read_text(encoding='utf-8')
     match=re.search(r'const CORE_ASSETS\s*=\s*\[(.*?)\n\];',sw,re.S)
     if not match:errors.append('Cannot locate CORE_ASSETS')
@@ -49,6 +53,18 @@ def validate(root: Path, require_engines=False):
     for path,queries in versions.items():
         if len(queries)>1:errors.append(f'inconsistent asset revisions: {path}: {sorted(queries)}')
     if require_engines:
+        office_manifest=root/'vendor/office/manifest.json'
+        if not office_manifest.is_file():errors.append('missing prepared Office engine manifest')
+        else:
+            office=json.loads(office_manifest.read_text())
+            expected={'browser.js','browser.worker.global.js','soffice.js','soffice.worker.js','soffice.wasm','soffice.data'}
+            if office.get('version')!='2.7.2' or set(office.get('files',{}))!=expected:errors.append('unexpected Office runtime manifest')
+            for name in expected:
+                entry=office.get('files',{}).get(name,{})
+                file=root/'vendor/office'/name
+                if not file.is_file() or file.stat().st_size!=entry.get('bytes') or hashlib.sha256(file.read_bytes()).hexdigest()!=entry.get('sha256'):
+                    errors.append(f'invalid prepared Office runtime: {name}')
+            if not (root/'vendor/office/LICENSE.txt').is_file():errors.append('missing Office MPL license')
         spec=(SOURCE/'scripts/prepare-offline.ps1').read_text(encoding='utf-8')
         items=re.findall(r"Path = '([^']+)'; MinBytes = (\d+); Sha256 = '([a-f0-9]{64})'",spec)
         for path,size,digest in items:

@@ -383,21 +383,22 @@
       accept: 'application/pdf,.pdf', multiple: true, typeLabel: 'PDF', button: 'Converter para Office', outputExt: 'auto', outputBase: 'arquivos_Office',
       settings: `<div class="conversion-engine-banner"><span class="conversion-mark">OFF</span><div><strong>Conversão local para Office</strong><p>Escolha entre texto editável simplificado, páginas como imagens ou apresentação visual. Nenhum documento é enviado.</p></div></div>
         <div class="field"><label for="officeExportFormat">Formato de saída</label><select id="officeExportFormat"><option value="docx">Word DOCX</option><option value="xlsx">Excel XLSX</option><option value="pptx">PowerPoint PPTX</option></select></div>
-        <div id="officeDocxOptions"><div class="field"><label for="officeDocxMode">Modo do Word</label><select id="officeDocxMode"><option value="text">Texto editável simplificado</option><option value="image">Aparência preservada como imagem</option><option value="hybrid">Imagem + texto extraído</option></select></div></div>
+        <div id="officeDocxOptions"><div class="field"><label for="officeDocxMode">Modo do Word</label><select id="officeDocxMode"><option value="image">Aparência preservada como imagem — sem edição do texto</option><option value="text">Texto editável simplificado — sem layout</option><option value="hybrid">Imagem + texto extraído</option></select></div></div>
         <div id="officeXlsxOptions" class="hidden"><div class="field"><label for="officeXlsxSheets">Organização do Excel</label><select id="officeXlsxSheets"><option value="page">Uma planilha por página</option><option value="document">Uma planilha por documento</option></select></div></div>
-        <div class="field-row"><div class="field"><label for="officeExportPages">Páginas</label><input id="officeExportPages" value="all" placeholder="all ou 1-3,5"></div><div class="field"><label for="officeExportDpi">Qualidade visual</label><select id="officeExportDpi"><option value="110">110 DPI — leve</option><option value="144" selected>144 DPI — recomendado</option><option value="200">200 DPI — detalhado</option></select></div></div>
+        <div class="field-row"><div class="field"><label for="officeExportPages">Páginas</label><input id="officeExportPages" value="all" placeholder="all ou 1-3,5"></div><div class="field"><label for="officeExportDpi">Qualidade visual</label><select id="officeExportDpi"><option value="110">110 DPI — leve</option><option value="144">144 DPI — leve</option><option value="200" selected>200 DPI — detalhado</option></select></div></div>
         <div id="pdfToOfficePlan" class="notice-card conversion-plan"><strong>Conversão para Office</strong><p>Adicione PDFs para calcular o plano.</p></div>
-        <div class="notice-card warning"><strong>Fidelidade controlada</strong><p>Word e Excel priorizam conteúdo editável, não reprodução perfeita do layout. PowerPoint preserva a aparência de cada página como um slide.</p></div>`
+        <div class="notice-card warning"><strong>Fidelidade controlada</strong><p>Word visual e PowerPoint preservam páginas como imagens. Para editar texto no Word, escolha o modo simplificado. Excel extrai texto e tabelas; não recupera fórmulas e estilos.</p></div>`
     },
     documentsToPdf: {
-      title: 'Documentos para PDF', description: 'Converta DOCX, XLSX, PPTX, HTML, TXT, CSV, Markdown, HEIC, TIFF e imagens para PDF.',
-      accept: '.docx,.xlsx,.pptx,.html,.htm,.txt,.csv,.md,.markdown,image/*,.png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff,.heic,.heif', multiple: true, typeLabel: 'Documento ou imagem', button: 'Criar PDF(s)', outputExt: 'auto', outputBase: 'documentos_convertidos',
-      settings: `<div class="conversion-engine-banner"><span class="conversion-mark">PDF</span><div><strong>Conversão local de documentos</strong><p>Extrai o texto de arquivos Office e cria um PDF limpo. Imagens são incorporadas preservando a proporção.</p></div></div>
+      title: 'Office para PDF', description: 'Converta Word, Excel, PowerPoint, ODS, ODT, ODP e outros documentos em PDF no seu computador.',
+      accept: '.docx,.doc,.odt,.xlsx,.xls,.ods,.pptx,.ppt,.odp,.rtf,.html,.htm,.txt,.csv,.md,.markdown,image/*,.png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff,.heic,.heif', multiple: true, typeLabel: 'Documento ou imagem', button: 'Criar PDF(s)', outputExt: 'auto', outputBase: 'documentos_convertidos',
+      settings: `<div class="conversion-engine-banner"><span class="conversion-mark">PDF</span><div><strong>Office para PDF no seu computador</strong><p>Preserve imagens, tabelas, cabeçalhos e configuração de impressão, sem enviar seus documentos.</p></div></div>
+        <div class="field"><label for="docToPdfEngine">Modo de conversão</label><select id="docToPdfEngine"><option value="layout">Preservar layout</option><option value="text">Somente texto (simplificado)</option></select></div>
         <label class="toggle-row"><input id="docToPdfCombine" type="checkbox"><span>Combinar todos os arquivos em um único PDF</span></label>
-        <div class="field-row"><div class="field"><label for="docToPdfPageSize">Papel para documentos</label><select id="docToPdfPageSize"><option value="a4">A4</option><option value="letter">Carta</option></select></div><div class="field"><label for="docToPdfFontSize">Tamanho do texto</label><input id="docToPdfFontSize" type="number" min="8" max="18" value="11"></div></div>
+        <div id="docToPdfTextOptions" class="field-row"><div class="field"><label for="docToPdfPageSize">Papel para documentos</label><select id="docToPdfPageSize"><option value="a4">A4</option><option value="letter">Carta</option></select></div><div class="field"><label for="docToPdfFontSize">Tamanho do texto</label><input id="docToPdfFontSize" type="number" min="8" max="18" value="11"></div></div>
         <div class="field"><label for="docToPdfImagePage">Página para imagens</label><select id="docToPdfImagePage"><option value="image">Ajustar ao tamanho da imagem</option><option value="a4">Colocar em página A4</option></select></div>
         <div id="documentsToPdfPlan" class="notice-card conversion-plan"><strong>Documentos para PDF</strong><p>Adicione documentos ou imagens para calcular o plano.</p></div>
-        <div class="notice-card"><strong>Office em modo texto</strong><p>DOCX, XLSX e PPTX são convertidos pela estrutura textual interna. Elementos complexos, gráficos, fórmulas e layouts avançados podem ser simplificados.</p></div>`
+        <div class="notice-card"><strong>Confira o resultado</strong><p>O modo de layout usa as fontes disponíveis no motor. Fontes ausentes podem ser substituídas. Papel e texto acima se aplicam somente ao modo simplificado; a conversão respeita o documento e a área de impressão. Para ODS, use Preservar layout.</p></div>`
     },
     extractImages: {
       title: 'Extrair imagens do PDF', description: 'Extraia imagens internas reais, páginas completas ou ambas, com filtros e manifesto.',
@@ -621,7 +622,9 @@
 
   window.addEventListener?.('central-editor-progress', event => setProgress(Number(event.detail || 0)));
 
-  document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => selectTool(button.dataset.tool)));
+  document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => {
+    if (selectTool(button.dataset.tool)) window.CentralPDFConversionShortcuts?.apply(button.dataset.shortcut);
+  }));
   $('#backToTools')?.addEventListener('click', showHome);
   $('#homeBrand').addEventListener('click', showHome);
   let completionReturnFocus = null;
@@ -788,8 +791,8 @@
   }
 
   function selectTool(tool) {
-    if (state.processing) { setStatus('Aguarde a operação terminar ou cancele antes de trocar de ferramenta.', 'warning'); return; }
-    if (!toolConfig[tool]) return;
+    if (state.processing) { setStatus('Aguarde a operação terminar ou cancele antes de trocar de ferramenta.', 'warning'); return false; }
+    if (!toolConfig[tool]) return false;
     fileIngestSession += 1;
     state.tool = tool;
     if(tool==='merge') $('#mergePageView').value='covers';
@@ -808,7 +811,7 @@
     homeView.classList.add('hidden');
     toolWorkspace.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    document.querySelectorAll('.tool').forEach(button => button.classList.toggle('active', button.dataset.tool === tool));
+    document.querySelectorAll('.tool').forEach(button => button.classList.toggle('active', button.dataset.tool === tool && !button.dataset.shortcut));
     const config = toolConfig[tool];
     setCompletionState(false);
     window.CentralPDFUX?.renderTool(tool, config);
@@ -853,6 +856,7 @@
     try { localStorage.setItem(HOME_STORAGE_KEY, tool); } catch (_) {}
     window.dispatchEvent(new CustomEvent('centralpdf-tool-selected', { detail: { tool, title: config.title } }));
     notifyFilesChanged('tool-selected');
+    return true;
   }
 
   function showHome() {
@@ -870,7 +874,9 @@
     document.querySelectorAll('.tool-card').forEach(card => {
       const matchesCategory = activeCategory === 'all' || card.dataset.category === activeCategory;
       const haystack = `${card.dataset.search || ''} ${card.textContent || ''}`.toLocaleLowerCase('pt-BR');
-      const matchesSearch = !query || haystack.includes(query);
+      const matchesSearch = window.CentralPDFToolSearch
+        ? window.CentralPDFToolSearch.matches(query, card.dataset.shortcut || card.dataset.tool, haystack)
+        : !query || haystack.includes(query);
       const show = matchesCategory && matchesSearch;
       card.classList.toggle('hidden', !show);
       if (show) visible += 1;
@@ -1065,7 +1071,8 @@
         return;
       }
     }
-    const inspected = await inspectIncomingFiles(files, config, queuedTool, sessionIsActive, options.source);
+    const inputConfig = queuedTool === 'documentsToPdf' ? { ...config, accept: fileInput.accept } : config;
+    const inspected = await inspectIncomingFiles(files, inputConfig, queuedTool, sessionIsActive, options.source);
     if (!inspected || abortInactiveSession()) return;
     const valid = inspected.valid;
     const rejected = inspected.rejected;
@@ -1509,7 +1516,7 @@
       ? `<img src="${preview.dataUrl}" alt="Capa de ${escapeHtml(file.name)}" class="file-cover-image" draggable="false" /><div class="file-cover-badge floating">${escapeHtml(extension)}</div><span class="cover-expand-hint">Ampliar</span>`
       : `<div class="file-cover-placeholder"><div class="file-cover-badge">${escapeHtml(extension)}</div><strong>${escapeHtml(extension)}</strong><span>Prévia indisponível</span></div>`;
     const pages = card.querySelector('.file-page-count');
-    pages.textContent = preview.pageCount ? `${preview.pageCount} ${preview.pageCount === 1 ? 'página' : 'páginas'}` : 'Imagem';
+    pages.textContent = preview.pageCount ? `${preview.pageCount} ${preview.pageCount === 1 ? 'página' : 'páginas'}` : file.type.startsWith('image/') ? 'Imagem' : 'Documento';
   }
 
   async function buildPdfCoverData(file, extension) {
