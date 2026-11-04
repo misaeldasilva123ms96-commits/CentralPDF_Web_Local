@@ -61,7 +61,7 @@ with sync_playwright() as p:
                 assert page.locator('.tool-card:not(.hidden)').count() > 0, (name, query)
             page.locator('#toolSearch').fill('')
             assert page.locator('.tool-card').count() == 39
-            assert page.locator('.hero-stats strong').first.inner_text() == '39'
+            assert page.locator('#allToolsMenuButton small').inner_text() == '39'
             assert not page.locator('.tool-card > strong').filter(has_text='Office').count()
             for label, family, field, value in [
                 ('PDF para Word','pdfToOffice','officeExportFormat','docx'),

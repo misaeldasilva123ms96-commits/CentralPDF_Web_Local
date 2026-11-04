@@ -32,7 +32,9 @@ assert (root/'assets/css/stable-1.0.css').exists()
 assert (root/'assets/js/tool-quality-1.2.0.js').exists()
 assert (root/'assets/css/tool-quality-1.2.0.css').exists()
 assert 'Web local ' in html
-assert '<strong>39</strong> atalhos' in html
+assert 'Todas as ferramentas <small>39</small>' in html
+assert 'class="hero-stats"' not in html
+assert 'class="guidance-strip"' not in html
 required_ids=['editorObjectX','editorObjectY','editorObjectRotation','editorRotateLeft','editorRotateRight','editorResetRotation','editorObjectLockAspect','editorBringForward','editorSendBackward','editorDuplicateObject','pdfEditorSection','editorTextValue','editorFontFamily','editorBrushColor','editorHighlightColor','editorApplyCrop','mergePlanPreview','extractMode','extractPlanPreview','rotateMode','rotateBehavior','watermarkType','watermarkPattern','numberScope','numberTotalMode','imageOutputMode','imageFit','compressionMode','compressionScope','pdfImageOutputMode','pdfImageColumns','cropMode','cropBehavior','ocrOutputMode','ocrLanguage','ocrDpi','ocrPlan','ocrReviewButton','formFieldType','formStartPlacement','signatureSource','signaturePad','signaturePrepare','officeExportFormat','docToPdfCombine','extractImageMode','archiveMode','intelligenceQuestion','extractionProfile','auditProfile','renameTemplate']
 for item in required_ids:
     assert item in app, item
