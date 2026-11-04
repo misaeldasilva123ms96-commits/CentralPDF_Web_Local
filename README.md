@@ -101,7 +101,7 @@ A edição original depende da estrutura e das fontes do PDF. Digitalizações n
 
 ### Conversão, extração e otimização
 
-9. Imagens para PDF
+9. Imagens para PDF — botões de giro de 90° para esquerda/direita em cada miniatura; prévia e PDF seguem o mesmo ângulo. A orientação do papel é ajustada separadamente.
 10. Converter imagens
 11. Comprimir PDF
 12. PDF para imagens
@@ -209,6 +209,8 @@ python -m http.server 8765 --bind 127.0.0.1
 ```
 
 Abra `http://127.0.0.1:8765/`. Motores locais completos exigem a preparação offline; o comando Python não os baixa. Para instalar dependências de teste, validar o código ou trabalhar na migração React, siga [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Os ícones das ferramentas são vetores locais, disponíveis também offline. Para alterar o conjunto, edite `scripts/data/tool-icons.json`, execute `python scripts/sync-tool-icons.py` e confira com `python scripts/sync-tool-icons.py --check`.
 
 ### Atualizações técnicas avaliadas
 

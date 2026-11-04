@@ -19,7 +19,7 @@ css = "\n".join(
 )
 
 assert len(soup.select(".sidebar .tool[data-tool]")) == 39
-assert "product-redesign-2.0.css?v=2.0.20" in index
+assert "product-redesign-2.0.css?v=2.0.21" in index
 assert re.search(
     r"body\[data-workspace-open='true'\] \.settings-panel > \*\s*\{[^}]*flex-shrink:\s*0",
     css,

@@ -81,6 +81,11 @@
     window.dispatchEvent(new Event('centralpdf-settings-changed'));
   }
 
+  function cardIcon(tool, shortcut) {
+    return sourceCards.find(card => card.dataset.tool === tool && card.dataset.shortcut === shortcut)
+      || sourceCards.find(card => card.dataset.tool === tool);
+  }
+
   function buildConverterMenu() {
     if (!converterButton || !converterMenu) return;
     const groups = [
@@ -112,7 +117,10 @@
         const icon = document.createElement('span');
         icon.className = `cp2-format-icon ${item.color}`;
         icon.setAttribute('aria-hidden', 'true');
-        icon.textContent = item.icon;
+        const source = cardIcon(item.tool, item.sourceLabel || item.label);
+        const svg = source?.querySelector('.tool-card-icon svg');
+        if (svg) icon.append(svg.cloneNode(true));
+        icon.dataset.iconTone = source?.dataset.iconTone || 'violet';
         const label = document.createElement('span');
         label.textContent = item.label;
         button.append(icon, label);
@@ -209,7 +217,16 @@
         title.textContent = tool.title;
         const description = document.createElement('small');
         description.textContent = tool.description;
-        button.append(title, description);
+        const icon = document.createElement('span');
+        icon.className = 'tool-menu-icon';
+        icon.dataset.iconTone = tool.source.dataset.iconTone || 'violet';
+        icon.setAttribute('aria-hidden','true');
+        const svg = tool.source.querySelector('.tool-card-icon svg');
+        if (svg) icon.append(svg.cloneNode(true));
+        const copy = document.createElement('span');
+        copy.className = 'cp2-mega-copy';
+        copy.append(title, description);
+        button.append(icon, copy);
         button.addEventListener('click', () => { tool.source.click(); closeMenus(); });
         list.append(button);
       });

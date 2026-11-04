@@ -1,6 +1,6 @@
 {
   "applicationVersion": "2.0.1",
-  "applicationRevision": "centralpdf-v2.0.1-pages-46",
+  "applicationRevision": "centralpdf-v2.0.1-pages-47",
   "adminVersion": "0.2.0",
   "officeEngineVersion": "2.7.2",
   "shortcutCount": 39,
@@ -48,7 +48,7 @@
     {
       "id": "imagesToPdf",
       "title": "Imagens para PDF avançado",
-      "description": "Controle página, orientação, margens, encaixe e saída combinada ou separada."
+      "description": "Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada."
     },
     {
       "id": "imageConvert",

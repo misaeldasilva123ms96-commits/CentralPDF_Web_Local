@@ -11,6 +11,12 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Rotação de imagens e ícones — 04/11/2026
+
+- Adiciona giro de 90° para os dois lados em cada miniatura de Imagens para PDF, com ângulo visível e prévia atualizada.
+- Aplica o giro ao PDF combinado ou individual e preserva a orientação ao reordenar e salvar/restaurar projetos locais; respeita a orientação EXIF de fotos de celular.
+- Unifica os 39 atalhos com pictogramas SVG locais, cores por família e suporte aos temas claro/escuro nos cartões, menus, navegação, favoritos e recentes.
+
 ### Atalhos Office individuais — 03/11/2026
 
 - Substitui os cartões agrupados por Word, Excel e PowerPoint nos dois sentidos, com seleção do formato, busca, favoritos e recentes independentes.
