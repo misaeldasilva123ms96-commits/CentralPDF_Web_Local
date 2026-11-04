@@ -222,13 +222,13 @@
         <label class="toggle-row"><input id="numberBackground" type="checkbox" /><span>Adicionar fundo branco discreto atrás do número</span></label>`
     },
     imagesToPdf: {
-      title: 'Imagens para PDF avançado', description: 'Controle página, orientação, margens, encaixe e saída combinada ou separada.',
+      title: 'Imagens para PDF avançado', description: 'Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada.',
       accept: 'image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp', multiple: true, typeLabel: 'JPG, PNG ou WEBP', button: 'Criar PDF(s)', outputExt: 'auto', outputBase: 'imagens_convertidas',
       settings: `
         <div class="field"><label for="imageOutputMode">Resultado</label><select id="imageOutputMode"><option value="combined">Um PDF com todas as imagens</option><option value="separate">Um PDF para cada imagem</option></select></div>
         <div class="field"><label for="imagePageMode">Tamanho da página</label><select id="imagePageMode"><option value="image">Ajustar à imagem</option><option value="a4">A4</option><option value="letter">Carta</option><option value="custom">Personalizado</option></select></div>
         <div id="imageCustomPagePanel" class="hidden"><div class="field-row"><div class="field"><label for="imageCustomWidth">Largura (mm)</label><input id="imageCustomWidth" type="number" min="20" value="210" /></div><div class="field"><label for="imageCustomHeight">Altura (mm)</label><input id="imageCustomHeight" type="number" min="20" value="297" /></div></div></div>
-        <div class="field-row"><div class="field"><label for="imageOrientation">Orientação</label><select id="imageOrientation"><option value="auto">Automática</option><option value="portrait">Retrato</option><option value="landscape">Paisagem</option></select></div><div class="field"><label for="imageMargin">Margem (mm)</label><input id="imageMargin" type="number" min="0" value="10" /></div></div>
+        <div class="field-row"><div class="field"><label for="imageOrientation">Orientação da página</label><select id="imageOrientation"><option value="auto">Automática</option><option value="portrait">Retrato</option><option value="landscape">Paisagem</option></select></div><div class="field"><label for="imageMargin">Margem (mm)</label><input id="imageMargin" type="number" min="0" value="10" /></div></div>
         <div class="field"><label for="imageFit">Encaixe</label><select id="imageFit"><option value="contain">Conter imagem inteira</option><option value="cover">Preencher e cortar excesso</option><option value="stretch">Esticar para preencher</option></select></div>
         <div class="field-row"><div class="field"><label for="imageAlign">Alinhamento</label><select id="imageAlign"><option value="center">Centro</option><option value="top">Topo</option><option value="bottom">Rodapé</option></select></div><div class="field"><label for="imageBackground">Fundo</label><input id="imageBackground" type="color" value="#ffffff" /></div></div>
         <label class="toggle-row"><input id="imageNoUpscale" type="checkbox" checked /><span>Não ampliar imagens menores</span></label>`
@@ -559,6 +559,7 @@
     organizerInsertIndex: null,
     previewCache: new Map(),
     filePreviewCache: new Map(),
+    imageRotations: new Map(),
     selectedFileKeys: new Set(),
     dragPageIndex: null,
     dragFileIndex: null,
@@ -798,6 +799,7 @@
     if(tool==='merge') $('#mergePageView').value='covers';
     document.body.dataset.activeTool = tool;
     state.files = [];
+    state.imageRotations.clear();
     state.splitPageCount = 0;
     state.splitPlan = [];
     state.splitVisualToken += 1;
@@ -907,6 +909,7 @@
     setCompletionState(false);
     state.files = [];
     state.filePreviewCache.clear();
+    state.imageRotations.clear();
     state.selectedFileKeys.clear();
     state.outputNameTouched = false;
     state.splitPageCount = 0;
@@ -1335,6 +1338,7 @@
             <div class="file-name" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</div>
             <div class="file-card-meta-row"><span class="file-meta">${formatBytes(file.size)}</span><span class="file-page-count">Carregando...</span></div>
           </div>
+          ${state.tool === 'imagesToPdf' ? `<div class="image-rotation-controls"><span>Girar imagem</span><div><button type="button" class="image-rotate-left small-button" aria-label="Girar imagem 90 graus para a esquerda"><svg aria-hidden="true"><use href="#i-rotate-ccw"/></svg>90°</button><output aria-label="Rotação aplicada">${imageRotation(file)}°</output><button type="button" class="image-rotate-right small-button" aria-label="Girar imagem 90 graus para a direita"><svg aria-hidden="true"><use href="#i-rotate-cw"/></svg>90°</button></div></div>` : ''}
           <div class="file-card-actions">
             <button class="icon-button move-up" type="button" aria-label="Mover para a esquerda" ${index === 0 ? 'disabled' : ''}>←</button>
             <span>Arraste para ordenar</span>
@@ -1346,6 +1350,13 @@
         card.querySelector('.move-down').addEventListener('click', event => { event.stopPropagation(); moveFile(index, 1); });
         card.querySelector('.file-card-remove').addEventListener('click', event => { event.stopPropagation(); removeFile(index); });
         card.querySelector('.file-card-cover').addEventListener('click', () => openFilePreview(file));
+        for (const [selector, angle] of [['.image-rotate-left', 270], ['.image-rotate-right', 90]]) {
+          card.querySelector(selector)?.addEventListener('click', event => {
+            event.stopPropagation();
+            rotateImage(file, angle);
+            fileList.querySelector(`.file-card[data-index="${index}"] ${selector}`)?.focus();
+          });
+        }
         card.addEventListener('dragstart', event => {
           if (event.target.closest('button, input, label')) { event.preventDefault(); return; }
           state.dragFileIndex = index;
@@ -1414,7 +1425,7 @@
     state.organizerPreviewActive = 0;
     const file = state.files[index];
     if (state.tool === 'split') { state.splitPageCount = 0; state.splitPlan = []; }
-    if (file) state.selectedFileKeys.delete(getFileCacheKey(file));
+    if (file) { state.selectedFileKeys.delete(getFileCacheKey(file)); state.imageRotations.delete(getFileCacheKey(file)); }
     state.files.splice(index, 1);
     if (!state.files.length) state.toolPageCount = 0;
     if (state.tool === 'merge' && file) removeMergeFilePages(file);
@@ -1462,6 +1473,7 @@
     state.organizerPreviewActive = 0;
     const removedFiles = state.files.filter(file => state.selectedFileKeys.has(getFileCacheKey(file)));
     state.files = state.files.filter(file => !state.selectedFileKeys.has(getFileCacheKey(file)));
+    removedFiles.forEach(file => state.imageRotations.delete(getFileCacheKey(file)));
     if (state.tool === 'merge') removedFiles.forEach(removeMergeFilePages);
     state.selectedFileKeys.clear();
     renderFiles();
@@ -1485,14 +1497,33 @@
     return `${file.name}-${file.size}-${file.lastModified}`;
   }
 
+  function imageRotation(file) {
+    return state.tool === 'imagesToPdf' ? state.imageRotations.get(getFileCacheKey(file)) || 0 : 0;
+  }
+
+  function filePreviewKey(file) {
+    return getFileCacheKey(file) + (state.tool === 'imagesToPdf' ? `|rotation:${imageRotation(file)}` : '');
+  }
+
+  function rotateImage(file, angle) {
+    if (state.processing || state.tool !== 'imagesToPdf' || !state.files.includes(file)) return;
+    setCompletionState(false);
+    processButton.disabled = false;
+    state.imageRotations.set(getFileCacheKey(file), (imageRotation(file) + angle) % 360);
+    renderFiles();
+    setStatus('Imagem girada. A prévia e o PDF usarão esta orientação.');
+    notifyFilesChanged('image-rotated');
+  }
+
   async function renderFileCardPreview(file, card, extension) {
     if (!card) return;
-    const key = getFileCacheKey(file);
+    const key = filePreviewKey(file);
+    const rotation = imageRotation(file);
     let preview = state.filePreviewCache.get(key);
     try {
       if (!preview) {
         if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) preview = await buildPdfCoverData(file, extension);
-        else if (file.type.startsWith('image/')) preview = await buildImageCoverData(file, extension);
+        else if (file.type.startsWith('image/')) preview = await buildImageCoverData(file, extension, rotation);
         if (!preview) throw new Error('sem miniatura');
         state.filePreviewCache.set(key, preview);
       }
@@ -1540,19 +1571,21 @@
     }
   }
 
-  async function buildImageCoverData(file, extension) {
+  async function buildImageCoverData(file, extension, rotation = 0) {
     const bitmap = await createImageBitmap(file);
     try {
       const scale = Math.min(220 / bitmap.width, 290 / bitmap.height, 1);
       const width = Math.max(1, Math.round(bitmap.width * scale));
       const height = Math.max(1, Math.round(bitmap.height * scale));
       const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = rotation % 180 ? height : width;
+      canvas.height = rotation % 180 ? width : height;
       const context = canvas.getContext('2d');
       context.fillStyle = '#fff';
-      context.fillRect(0, 0, width, height);
-      context.drawImage(bitmap, 0, 0, width, height);
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.translate(canvas.width / 2, canvas.height / 2);
+      context.rotate(rotation * Math.PI / 180);
+      context.drawImage(bitmap, -width / 2, -height / 2, width, height);
       return { dataUrl: canvas.toDataURL('image/jpeg', .9), pageCount: null, type: extension };
     } finally {
       bitmap.close();
@@ -1560,7 +1593,7 @@
   }
 
   async function openFilePreview(file) {
-    const preview = state.filePreviewCache.get(getFileCacheKey(file));
+    const preview = state.filePreviewCache.get(filePreviewKey(file));
     if (!preview?.dataUrl) {
       setStatus('A prévia ampliada não está disponível para este arquivo.', 'error');
       return;
@@ -3219,27 +3252,73 @@
     return { message: outputMode === 'combined' ? `${state.files.length} imagem(ns) reunida(s) em um PDF.` : `${outputs.length} PDFs individuais gerados.` };
   }
 
+  function jpegOrientation(bytes) {
+    const view = new DataView(bytes);
+    if (view.byteLength < 4 || view.getUint16(0) !== 0xffd8) return 1;
+    let offset = 2;
+    while (offset + 4 <= view.byteLength && view.getUint8(offset) === 0xff) {
+      const marker = view.getUint8(offset + 1), length = view.getUint16(offset + 2);
+      if (marker === 0xda || marker === 0xd9 || length < 2 || offset + 2 + length > view.byteLength) break;
+      if (marker === 0xe1 && length >= 16 && view.getUint32(offset + 4) === 0x45786966 && view.getUint16(offset + 8) === 0) {
+        const start = offset + 10, end = offset + 2 + length;
+        const order = view.getUint16(start), little = order === 0x4949;
+        if (![0x4949,0x4d4d].includes(order) || view.getUint16(start + 2, little) !== 42) return 1;
+        const directory = start + view.getUint32(start + 4, little);
+        if (directory < start || directory + 2 > end) return 1;
+        const count = view.getUint16(directory, little);
+        for (let i=0;i<count && directory+2+(i+1)*12<=end;i++) {
+          const entry = directory + 2 + i*12;
+          if (view.getUint16(entry,little) === 274 && view.getUint16(entry+2,little) === 3 && view.getUint32(entry+4,little) === 1) {
+            const orientation = view.getUint16(entry+8,little);
+            return orientation >= 1 && orientation <= 8 ? orientation : 1;
+          }
+        }
+      }
+      offset += 2 + length;
+    }
+    return 1;
+  }
+
   async function addImagePage(output, file) {
-    const normalized = await normalizeImage(file, 'image/jpeg', .94);
+    let normalized = await normalizeImage(file, 'image/jpeg', .94);
+    let exifOrientation = normalized.mime === 'image/jpeg' ? jpegOrientation(normalized.bytes) : 1;
+    // Mirrored EXIF orientations are decoded losslessly to PNG. Standard JPEG
+    // orientations keep the original compressed pixels and use a PDF transform.
+    if ([2,4,5,7].includes(exifOrientation)) {
+      const bitmap = await createImageBitmap(new Blob([normalized.bytes], {type:normalized.mime}));
+      try {
+        const canvas = document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
+        canvas.getContext('2d').drawImage(bitmap,0,0);
+        normalized = {bytes:await (await canvasToBlob(canvas,'image/png')).arrayBuffer(),mime:'image/png'};
+        exifOrientation = 1;
+      } finally {bitmap.close();}
+    }
     const image = normalized.mime === 'image/png' ? await output.embedPng(normalized.bytes) : await output.embedJpg(normalized.bytes);
+    const rotation = (imageRotation(file) + ({3:180,6:90,8:270}[exifOrientation] || 0)) % 360;
+    const width = rotation % 180 ? image.height : image.width;
+    const height = rotation % 180 ? image.width : image.height;
     const pageMode = $('#imagePageMode')?.value || 'image'; const orientation = $('#imageOrientation')?.value || 'auto';
     const margin = mmToPoints(Math.max(0, Number($('#imageMargin')?.value || 0))); const fit = $('#imageFit')?.value || 'contain';
     let pageWidth, pageHeight;
-    if (pageMode === 'image') { pageWidth = image.width + margin * 2; pageHeight = image.height + margin * 2; }
+    if (pageMode === 'image') { pageWidth = width + margin * 2; pageHeight = height + margin * 2; }
     else if (pageMode === 'letter') { pageWidth = 612; pageHeight = 792; }
     else if (pageMode === 'custom') { pageWidth = mmToPoints(Number($('#imageCustomWidth')?.value || 210)); pageHeight = mmToPoints(Number($('#imageCustomHeight')?.value || 297)); }
     else { pageWidth = 595.28; pageHeight = 841.89; }
-    const shouldLandscape = orientation === 'landscape' || (orientation === 'auto' && image.width > image.height && pageMode !== 'image');
+    const shouldLandscape = orientation === 'landscape' || (orientation === 'auto' && width > height && pageMode !== 'image');
     if (shouldLandscape && pageHeight > pageWidth) [pageWidth,pageHeight] = [pageHeight,pageWidth];
     if (orientation === 'portrait' && pageWidth > pageHeight) [pageWidth,pageHeight] = [pageHeight,pageWidth];
     const page = output.addPage([pageWidth,pageHeight]); const bg = hexToRgb($('#imageBackground')?.value || '#ffffff');
     page.drawRectangle({ x:0,y:0,width:pageWidth,height:pageHeight,color:PDFLib.rgb(bg.r,bg.g,bg.b) });
     const boxW = Math.max(1,pageWidth-margin*2); const boxH = Math.max(1,pageHeight-margin*2);
-    let drawW=image.width, drawH=image.height;
+    let drawW=width, drawH=height;
     if (fit === 'stretch') { drawW=boxW; drawH=boxH; }
-    else { let scale = fit === 'cover' ? Math.max(boxW/image.width,boxH/image.height) : Math.min(boxW/image.width,boxH/image.height); if ($('#imageNoUpscale')?.checked && scale>1) scale=1; drawW=image.width*scale; drawH=image.height*scale; }
+    else { let scale = fit === 'cover' ? Math.max(boxW/width,boxH/height) : Math.min(boxW/width,boxH/height); if ($('#imageNoUpscale')?.checked && scale>1) scale=1; drawW=width*scale; drawH=height*scale; }
     const align=$('#imageAlign')?.value||'center'; const x=(pageWidth-drawW)/2; let y=(pageHeight-drawH)/2; if(align==='top') y=pageHeight-margin-drawH; if(align==='bottom') y=margin;
-    page.drawImage(image,{x,y,width:drawW,height:drawH});
+    const placement = rotation === 90 ? {x,y:y+drawH,width:drawH,height:drawW}
+      : rotation === 180 ? {x:x+drawW,y:y+drawH,width:drawW,height:drawH}
+      : rotation === 270 ? {x:x+drawW,y,width:drawH,height:drawW}
+      : {x,y,width:drawW,height:drawH};
+    page.drawImage(image,{...placement,rotate:PDFLib.degrees((360-rotation)%360)});
   }
 
   async function imageConvert() {
@@ -4134,6 +4213,7 @@
       settings: collectSettingsValues(),
       files: state.files.map((file, index) => registerFile(file, projectFileId(file, index))),
       savedAt: new Date().toISOString(),
+      imageRotations: state.tool === 'imagesToPdf' ? state.files.map((file,index) => ({fileId: registerFile(file, projectFileId(file,index)), angle: imageRotation(file)})) : [],
       organizer: null,
       editor: null,
       forms: null,
@@ -4215,6 +4295,13 @@
     } else {
       await addFiles(projectFiles, { source: 'project' });
     }
+    if (snapshot.tool === 'imagesToPdf' && Array.isArray(snapshot.imageRotations)) {
+      for (const item of snapshot.imageRotations) {
+        const file = filesById.get(item?.fileId);
+        if (file && [0,90,180,270].includes(item.angle)) state.imageRotations.set(getFileCacheKey(file), item.angle);
+      }
+      renderFiles();
+    }
     applySettingsValues(snapshot.settings || {});
     syncOutputName();
     setStatus('Projeto restaurado. Confira os arquivos e as configurações antes de exportar.', 'success');
@@ -4231,7 +4318,7 @@
       fileCount: state.files.length,
       pageCount,
       outputName: $('#outputFileName')?.value || '',
-      fileSignature: state.files.map(getFileCacheKey).join('|'),
+      fileSignature: state.files.map(file => getFileCacheKey(file) + (state.tool === 'imagesToPdf' ? `:rotation=${imageRotation(file)}` : '')).join('|'),
       settings: collectSettingsValues(),
       organizerSignature: ['organize','merge'].includes(state.tool) ? state.organizerPages.map(page => `${page.id}:${page.sourceKey}:${page.sourceIndex}:${page.rotation}`).join('|') : '',
       editorSignature: editorSummary.signature || '',

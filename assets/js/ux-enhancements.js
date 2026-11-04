@@ -68,7 +68,7 @@
     },
     imagesToPdf: {
       category: 'Converter', complexity: 'Layout configurável', input: '1 ou mais imagens', capability: 'Montar páginas', output: 'PDF ou ZIP',
-      steps: ['Adicione JPG, PNG ou WEBP.', 'Ordene as imagens e escolha tamanho, orientação, margem e encaixe.', 'Gere um único PDF ou arquivos separados.'],
+      steps: ['Adicione JPG, PNG ou WEBP.', 'Gire nas miniaturas, ordene as imagens e escolha papel, margem e encaixe.', 'Gere um único PDF ou arquivos separados.'],
       tip: 'Use “encaixar sem cortar” para preservar toda a imagem.',
       attention: 'O modo preencher pode cortar bordas. Confira imagens com textos próximos às extremidades.',
       inspectorTitle: 'Layout das páginas', inspectorDescription: 'Defina formato do papel, margens, fundo e encaixe.',
