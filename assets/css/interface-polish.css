@@ -90,6 +90,9 @@ body[data-theme] .cp15-personal { gap: 22px; margin-block: 8px 28px; }
 body[data-theme] .cp15-personal > div { padding: 18px 0 0; border: 0 !important; border-top: 1px solid var(--finish-edge) !important; border-radius: 0; background: none !important; box-shadow: none; }
 body[data-theme] .cp15-rail { gap: 12px; }
 body[data-theme] .cp15-rail button { padding: 12px; border-radius: 16px; border-color: var(--finish-edge) !important; background: var(--finish-surface) !important; }
+body[data-theme] .cp15-rail svg { box-sizing: content-box; width: 18px; height: 18px; padding: 8px; }
+body[data-theme] .cp15-rail strong { font-size: 12px; }
+body[data-theme] .cp15-rail small { font-size: 9px; }
 body[data-theme] .cp15-personal header > button { min-height: 32px; padding-inline: 10px; font-size: 11px; }
 
 /* The same finish for navigation and tools, without changing workspace layout. */
