@@ -38,3 +38,6 @@ app/coverage/
 
 # Optional, reproducible PDF compatibility corpus (downloaded/generated on demand)
 tests/pdf-corpus/cache/
+
+# Pinned, verified Office WASM binaries are prepared during packaging.
+vendor/office/

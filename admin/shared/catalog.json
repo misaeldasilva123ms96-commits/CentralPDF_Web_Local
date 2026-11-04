@@ -1,0 +1,179 @@
+{
+  "applicationVersion": "2.0.1",
+  "applicationRevision": "centralpdf-v2.0.1-pages-47",
+  "adminVersion": "0.2.0",
+  "officeEngineVersion": "2.7.2",
+  "shortcutCount": 39,
+  "tools": [
+    {
+      "id": "organize",
+      "title": "Organizar PDF",
+      "description": "Edite cada página: reordene, gire, exclua, duplique e adicione páginas de PDFs, imagens ou páginas em branco."
+    },
+    {
+      "id": "editPdf",
+      "title": "Editar PDF",
+      "description": "Edite visualmente cada página com textos formatados, imagens, pincel, marcador, cobertura de áreas e recorte."
+    },
+    {
+      "id": "merge",
+      "title": "Juntar PDFs",
+      "description": "Adicione os documentos e organize todas as páginas em uma única área visual. A sequência das miniaturas será a sequência exata do PDF final."
+    },
+    {
+      "id": "split",
+      "title": "Dividir PDF",
+      "description": "Veja as páginas, escolha os intervalos e confira cada arquivo antes de dividir."
+    },
+    {
+      "id": "extract",
+      "title": "Extrair ou remover páginas",
+      "description": "Extraia páginas em um ou vários PDFs, remova páginas ou separe pares e ímpares."
+    },
+    {
+      "id": "rotate",
+      "title": "Girar páginas",
+      "description": "Gire páginas específicas, pares, ímpares ou páginas detectadas pela orientação."
+    },
+    {
+      "id": "watermark",
+      "title": "Marca-d’água avançada",
+      "description": "Use texto ou imagem, posição livre, repetição, cor, rotação e seleção de páginas."
+    },
+    {
+      "id": "pageNumbers",
+      "title": "Numerar páginas avançado",
+      "description": "Defina escopo, formato personalizado, páginas iniciais ignoradas e posição alternada."
+    },
+    {
+      "id": "imagesToPdf",
+      "title": "Imagens para PDF avançado",
+      "description": "Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada."
+    },
+    {
+      "id": "imageConvert",
+      "title": "Converter imagens",
+      "description": "Converta, reduza ou redimensione várias imagens de uma vez."
+    },
+    {
+      "id": "compress",
+      "title": "Comprimir PDF avançado",
+      "description": "Analise o conteúdo e comprima somente páginas com imagens relevantes, preservando texto e vetores quando possível."
+    },
+    {
+      "id": "pdfToImage",
+      "title": "PDF para imagens avançado",
+      "description": "Converta páginas selecionadas para JPG, PNG ou WEBP, com DPI, cor e organização configuráveis."
+    },
+    {
+      "id": "crop",
+      "title": "Recortar PDF avançado",
+      "description": "Recorte por milímetros, percentual ou tamanho central e escolha entre recorte visual e reconstrução."
+    },
+    {
+      "id": "metadata",
+      "title": "Limpar metadados",
+      "description": "Remova título, autor, assunto, palavras-chave, programa criador e produtor."
+    },
+    {
+      "id": "normalize",
+      "title": "Normalizar PDF",
+      "description": "Regrave a estrutura do PDF para corrigir inconsistências simples e melhorar compatibilidade."
+    },
+    {
+      "id": "pdfToText",
+      "title": "Extrair texto do PDF",
+      "description": "Extraia o texto selecionável de todas as páginas para TXT, sem enviar o documento."
+    },
+    {
+      "id": "ocr",
+      "title": "OCR e PDF pesquisável",
+      "description": "Reconheça texto em PDFs escaneados e imagens, preserve páginas digitais e gere PDF pesquisável, TXT e relatório de confiança."
+    },
+    {
+      "id": "compare",
+      "title": "Comparar PDFs",
+      "description": "Compare duas versões página por página e gere um relatório com diferenças visuais e textuais."
+    },
+    {
+      "id": "redact",
+      "title": "Censura definitiva",
+      "description": "Remova permanentemente áreas sensíveis reconstruindo as páginas afetadas, com relatório de auditoria."
+    },
+    {
+      "id": "formBuilder",
+      "title": "Criar formulário preenchível",
+      "description": "Adicione campos de texto, data, número, CPF, CNPJ, moeda, caixas, listas e opções diretamente nas páginas."
+    },
+    {
+      "id": "signPdf",
+      "title": "Assinar e rubricar PDF",
+      "description": "Adicione assinatura visual desenhada, digitada ou por imagem, com data, nome do assinante e rubrica em várias páginas."
+    },
+    {
+      "id": "pdfToOffice",
+      "title": "PDF para Office",
+      "description": "Converta PDFs para Word, Excel ou PowerPoint em modos controlados e totalmente locais."
+    },
+    {
+      "id": "documentsToPdf",
+      "title": "Office para PDF",
+      "description": "Converta Word, Excel, PowerPoint, ODS, ODT, ODP e outros documentos em PDF no seu computador."
+    },
+    {
+      "id": "extractImages",
+      "title": "Extrair imagens do PDF",
+      "description": "Extraia imagens internas reais, páginas completas ou ambas, com filtros e manifesto."
+    },
+    {
+      "id": "archivePdf",
+      "title": "Preparar para arquivamento",
+      "description": "Crie uma cópia normalizada ou rasterizada, com hashes e manifesto técnico."
+    },
+    {
+      "id": "documentAssistant",
+      "title": "Assistente documental",
+      "description": "Resuma documentos, localize cláusulas e responda perguntas com evidências por página."
+    },
+    {
+      "id": "structuredExtraction",
+      "title": "Extração estruturada",
+      "description": "Extraia CNPJ, CPF, datas, valores, notas, contratos, códigos e validades para CSV e JSON."
+    },
+    {
+      "id": "documentAudit",
+      "title": "Auditoria documental",
+      "description": "Cruze documentos e destaque divergências de CNPJ, códigos, valores, datas e certidões."
+    },
+    {
+      "id": "classifyRename",
+      "title": "Classificar e renomear",
+      "description": "Classifique documentos, sugira nomes e detecte possíveis páginas vazias ou duplicadas."
+    },
+    {
+      "id": "protect",
+      "title": "Proteger PDF",
+      "description": "Criptografe um ou vários PDFs com AES-256 e uma senha para abertura."
+    },
+    {
+      "id": "unlock",
+      "title": "Remover senha",
+      "description": "Abra PDFs protegidos usando a senha conhecida e salve uma cópia sem criptografia."
+    },
+    {
+      "id": "diagnose",
+      "title": "Diagnosticar PDF",
+      "description": "Gere um relatório técnico sobre estrutura, criptografia, permissões, formulários e assinaturas."
+    },
+    {
+      "id": "repairAdvanced",
+      "title": "Recuperar PDF",
+      "description": "Use análise tolerante para reconstruir PDFs com índice ou referências inconsistentes."
+    },
+    {
+      "id": "flattenForms",
+      "title": "Fixar formulários",
+      "description": "Converta campos editáveis preenchidos em conteúdo estático nas páginas."
+    }
+  ]
+}

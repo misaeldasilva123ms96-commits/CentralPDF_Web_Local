@@ -7,8 +7,8 @@ html = (root / "index.html").read_text(encoding="utf-8")
 soup = BeautifulSoup(html, "html.parser")
 
 # O redesign deve envolver a aplicação publicada, sem substituir o catálogo real.
-assert len(soup.select(".tool-card[data-tool]")) == 34
-assert len(soup.select(".sidebar .tool[data-tool]")) == 34
+assert len(soup.select(".tool-card[data-tool]")) == 39
+assert len(soup.select(".sidebar .tool[data-tool]")) == 39
 
 styles = [link.get("href", "").split("?", 1)[0] for link in soup.select('link[rel="stylesheet"]')]
 scripts = [script.get("src", "").split("?", 1)[0] for script in soup.select("script[src]")]
@@ -18,8 +18,10 @@ assert "assets/js/product-redesign-2.0.js" in scripts
 nav = soup.select_one("#primaryProductNav")
 assert nav is not None
 assert {button.get("data-nav-tool") for button in nav.select("[data-nav-tool]")} >= {
-    "merge", "split", "compress", "pdfToImage", "organize", "editPdf"
+    "merge", "split", "compress", "organize", "editPdf"
 }
+assert nav.select_one('#converterMenuButton[aria-controls="converterMenu"]') is not None
+assert nav.select_one('#converterMenu[hidden]') is not None
 mobile_menu = soup.select_one("#mobileProductMenuButton")
 assert mobile_menu is not None
 assert mobile_menu.get("aria-controls") == "primaryProductNav"
@@ -43,7 +45,7 @@ redesign = (root / "assets/js/product-redesign-2.0.js").read_text(encoding="utf-
 header_settings = (root / "assets/js/header-settings-1.0.3.js").read_text(encoding="utf-8")
 assert "tool-card[data-tool]" in redesign
 assert "workspaceToolNav" in redesign
-assert "34 ferramentas" in redesign
+assert "sourceCards.length} atalhos" in redesign
 assert "group('Personalização', ['layoutSettingsButton','cp15PresetsBtn'])" in header_settings
 
 print("product-redesign-functional-parity-2.0: passed")

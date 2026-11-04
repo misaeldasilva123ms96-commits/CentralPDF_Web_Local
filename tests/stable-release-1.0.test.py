@@ -32,8 +32,8 @@ with sync_playwright() as p:
     page.wait_for_timeout(900)
     assert 'Web local 2.0.1' in page.locator('.brand-copy small').inner_text()
     assert page.locator('.cp10-stable-badge').count()==1
-    assert page.locator('.tool-card[data-tool]').count()==34
-    assert '34' in page.locator('.hero-stats').inner_text()
+    assert page.locator('.tool-card[data-tool]').count()==39
+    assert '39' in page.locator('.hero-stats').inner_text()
     assert page.locator('#cp10QualityButton').count()==1
 
     page.keyboard.press('Alt+a')

@@ -67,7 +67,19 @@ $requiredOfflineFiles = @(
     'vendor/tesseract-core/tesseract-core-relaxedsimd-lstm.wasm.js',
     'vendor/tessdata/4.0.0/por.traineddata.gz',
     'vendor/UTIF.js',
-    'vendor/heic2any.min.js'
+    'vendor/heic2any.min.js',
+    'vendor/office/soffice.wasm',
+    'vendor/office/soffice.data',
+    'vendor/office/browser.js',
+    'vendor/office/browser.worker.global.js',
+    'vendor/office/soffice.js',
+    'vendor/office/soffice.worker.js',
+    'vendor/office/manifest.json',
+    'vendor/office/LICENSE.txt',
+    'office/index.html',
+    'office/engine.js',
+    'office/engine.css',
+    'office/sw.js'
 )
 foreach ($relativePath in $requiredOfflineFiles) {
     if (-not (Test-Path -LiteralPath (Join-Path $projectRoot $relativePath))) {
@@ -80,7 +92,7 @@ $packageName = "CentralPDF_Web_Local_v$Version"
 $packageRoot = Join-Path $outputPath $packageName
 New-Item -ItemType Directory -Path $packageRoot | Out-Null
 
-foreach ($directory in @('assets', 'docs', 'scripts', 'vendor')) {
+foreach ($directory in @('assets', 'docs', 'scripts', 'vendor', 'office')) {
     Copy-Item -LiteralPath (Join-Path $projectRoot $directory) -Destination $packageRoot -Recurse
 }
 foreach ($file in @(

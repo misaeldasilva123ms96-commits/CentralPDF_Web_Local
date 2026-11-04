@@ -10,7 +10,9 @@ stable = (root/'assets/js/stable-1.0.js').read_text(encoding='utf-8')
 sw = (root/'sw.js').read_text(encoding='utf-8')
 soup = BeautifulSoup(index, 'html.parser')
 
-tools = [node.get('data-tool') for node in soup.select('.tool-card[data-tool]')]
+cards = soup.select('.tool-card[data-tool]')
+assert len(cards) == 39
+tools = list(dict.fromkeys(node.get('data-tool') for node in cards))
 assert len(tools) == 34
 assert len(set(tools)) == 34
 
@@ -45,7 +47,7 @@ assert 'Auditoria das ferramentas' in stable
 assert 'assets/css/tool-quality-1.2.0.css' in index
 assert 'assets/js/tool-quality-1.2.0.js' in index
 assert './assets/css/tool-quality-1.2.0.css' in sw
-assert './assets/js/tool-quality-1.2.0.js?v=2.0.1-signatures1' in sw
+assert './assets/js/tool-quality-1.2.0.js?v=2.0.1-office1' in sw
 assert 'Web local 2.0.1' in index
 assert "const VERSION='2.0.1';" in stable
 print('tool-quality-2.0.1: passed')
