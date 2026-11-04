@@ -9,6 +9,7 @@ import base64,json,time
 from urllib.parse import urlparse,parse_qs
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
+RELEASE=json.loads((ROOT/'shared/catalog.json').read_text())
 TMP=TemporaryDirectory(prefix='centralpdf-admin-ui-')
 OUT=Path(environ.get('CENTRALPDF_ADMIN_QA') or TMP.name);OUT.mkdir(parents=True,exist_ok=True)
 PROJECT='https://alszupfnwerwtkyczzkw.supabase.co'
@@ -115,7 +116,7 @@ try:
      page.locator(f'nav a[href="#{key}"]').click();page.get_by_role('heading',name=label,exact=True).wait_for()
      assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
     release=page.get_by_role('region',name='Versão do CentralPDF')
-    release.get_by_text('2.0.1',exact=True).wait_for();release.get_by_text('0.3.0',exact=True).wait_for()
+    release.get_by_text(RELEASE['applicationVersion'],exact=True).wait_for();release.get_by_text(RELEASE['adminVersion'],exact=True).wait_for()
     release.get_by_text('39 atalhos',exact=True).wait_for()
     page.screenshot(path=str(OUT/f'overview-{engine}-{width}.png'),full_page=True)
     state['metrics']=[{'day':'2026-10-30','tool':'merge','completed':5,'failed':1}]
@@ -177,7 +178,13 @@ try:
     page.get_by_text('Página 1',exact=True).wait_for()
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
     nav('diagnostics','Diagnósticos');page.get_by_text('Leitura não conectada',exact=True).wait_for()
-    nav('settings','Ajustes');page.get_by_role('button',name='Pausar estatísticas',exact=True).click()
+    nav('settings','Ajustes')
+    release=page.get_by_role('region',name='Versão do CentralPDF')
+    release.get_by_text(RELEASE['sitePdfJsVersion'],exact=True).wait_for()
+    release.get_by_text(RELEASE['reactPdfJsVersion'],exact=True).wait_for()
+    release.get_by_text(RELEASE['applicationRevision'],exact=True).wait_for()
+    page.screenshot(path=str(OUT/f'settings-{engine}-{width}.png'),full_page=True)
+    page.get_by_role('button',name='Pausar estatísticas',exact=True).click()
     page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).wait_for();assert state['enabled'] is False
     page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).click()
     page.get_by_role('button',name='Pausar estatísticas',exact=True).wait_for();assert state['enabled'] is True
