@@ -115,7 +115,7 @@ try:
      page.locator(f'nav a[href="#{key}"]').click();page.get_by_role('heading',name=label,exact=True).wait_for()
      assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
     release=page.get_by_role('region',name='Versão do CentralPDF')
-    release.get_by_text('2.0.1',exact=True).wait_for();release.get_by_text('0.2.0',exact=True).wait_for()
+    release.get_by_text('2.0.1',exact=True).wait_for();release.get_by_text('0.3.0',exact=True).wait_for()
     release.get_by_text('39 atalhos',exact=True).wait_for()
     page.screenshot(path=str(OUT/f'overview-{engine}-{width}.png'),full_page=True)
     state['metrics']=[{'day':'2026-10-30','tool':'merge','completed':5,'failed':1}]
@@ -124,6 +124,15 @@ try:
     assert page.locator('tbody tr').count()==34
     office=page.locator('tbody tr').filter(has=page.get_by_role('cell',name='Office para PDF',exact=True))
     office.get_by_role('cell',name='Sem registros',exact=True).wait_for()
+    catalogue=page.locator('.shortcut-catalogue')
+    catalogue.locator('summary').click()
+    assert catalogue.locator('.shortcut-list li').count()==39
+    catalogue_search=page.get_by_role('searchbox',name='Buscar atalho do site')
+    catalogue_search.fill('PowerPoint');assert catalogue.locator('.shortcut-list li').count()==2
+    catalogue.get_by_text('PowerPoint para PDF',exact=True).wait_for();catalogue.get_by_text('PDF para PowerPoint',exact=True).wait_for()
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
+    page.screenshot(path=str(OUT/f'catalogue-{engine}-{width}.png'),full_page=True)
+    catalogue_search.fill('');catalogue.locator('summary').click()
     search=page.get_by_role('searchbox',name='Buscar ferramenta')
     search.fill('Word para PDF');assert page.locator('tbody tr').count()==2
     search.fill('ODS');page.get_by_role('cell',name='Office para PDF',exact=True).wait_for();assert page.locator('tbody tr').count()==1

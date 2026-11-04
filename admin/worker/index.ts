@@ -208,6 +208,8 @@ async function handleInternal(
         toolCount: release.tools.length,
         shortcutCount: release.shortcutCount,
         officeEngineVersion: release.officeEngineVersion,
+        sitePdfJsVersion: release.sitePdfJsVersion,
+        reactPdfJsVersion: release.reactPdfJsVersion,
       });
     if (!ready(env)) throw new ApiError(503, "configuration_required");
     if (path === "/api/public/notices" && request.method === "GET")

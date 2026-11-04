@@ -1273,3 +1273,38 @@ dialog .switch-row {
 .release-details li { margin: 6px 0; }
 .app-release code { overflow-wrap: anywhere; }
 @media (max-width: 800px) { .release-versions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* 0.3 — visual finish shared with the current CentralPDF interface. */
+button, input, select, textarea { border-radius: 12px; }
+.nav-link { border-radius: 14px; }
+.demo-banner { padding: 0 0 18px; border: 0; border-radius: 0; background: none; color: var(--muted); }
+.panel { border-radius: 24px; border-color: color-mix(in srgb, var(--border) 65%, transparent); box-shadow: var(--shadow); }
+.metrics { gap: 18px; }
+.metric { border-radius: 20px; }
+.page-heading { margin-bottom: 26px; }
+.release-versions div { border: 0; padding: 0; }
+.release-versions { gap: 24px; margin-block: 24px; }
+.release-versions dd { font-size: 20px; }
+.release-engines { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding-block: 16px; border-block: 1px solid var(--border); }
+.release-engines div { min-width: 0; }
+.release-engines dt { color: var(--muted); font-size: 12px; }
+.release-engines dd { margin: 7px 0 0; font-weight: 650; overflow-wrap: anywhere; }
+.shortcut-catalogue { margin-bottom: 24px; }
+.shortcut-catalogue > summary { cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 17px; font-weight: 650; border-radius: 12px; }
+.shortcut-catalogue summary small { display: inline-block; margin-left: 10px; color: var(--muted); font-size: 12px; font-weight: 500; }
+.shortcut-catalogue summary > span:last-child { color: var(--accent); font-size: 12px; }
+.shortcut-catalogue .search { margin-top: 18px; max-width: 540px; }
+.shortcut-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-block: 24px; }
+.shortcut-list li { min-width: 0; padding-left: 14px; border-left: 2px solid var(--border); }
+.shortcut-list strong { display: block; margin-top: 6px; font-size: 14px; }
+.shortcut-category { font-size: 10px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
+.shortcut-list p { color: var(--muted); font-size: 12px; margin: 7px 0 0; line-height: 1.6; }
+@media (max-width: 1050px) { .shortcut-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 800px) {
+  .panel { border-radius: 20px; }
+  .release-engines, .shortcut-list { grid-template-columns: 1fr; }
+  .shortcut-catalogue > summary { align-items: flex-start; }
+  .shortcut-catalogue summary small { display: block; margin: 4px 0 0; }
+  .shortcut-catalogue summary > span:last-child { max-width: 100px; text-align: right; }
+  .release-versions { gap: 18px; }
+}

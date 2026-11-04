@@ -19,6 +19,25 @@ const tools = entries.map((entry, index) => {
 if (!tools.length || new Set(tools.map(tool => tool.id)).size !== tools.length)
   throw new Error('Invalid tool catalogue');
 const version = JSON.parse(read('app/package.json')).version;
+const decode = value => value.replace(/&(?:amp|lt|gt|quot|apos|#39);/g, entity =>
+  ({'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&apos;':"'",'&#39;':"'"})[entity]);
+const shortcuts = [...read('index.html').matchAll(/<button\b[^>]*class="[^"]*\btool-card\b[^>]*>[\s\S]*?<\/button>/g)].map(([html]) => {
+  const attribute = name => decode(html.match(new RegExp(`\\b${name}="([^"]*)"`))?.[1] || '');
+  const text = tag => decode(html.match(new RegExp(`<${tag}>([^<]+)</${tag}>`))?.[1] || '');
+  const familyId = attribute('data-tool');
+  const title = text('strong');
+  const description = text('p');
+  const category = attribute('data-category');
+  const shortcut = attribute('data-shortcut');
+  if (!title || !description || !category || !tools.some(tool => tool.id === familyId)) throw new Error('Invalid public shortcut');
+  return {id: shortcut ? `shortcut:${shortcut}` : familyId, familyId, title,
+    description, category, searchTerms: attribute('data-search')};
+});
+if (!shortcuts.length || new Set(shortcuts.map(shortcut => shortcut.id)).size !== shortcuts.length)
+  throw new Error('Invalid public shortcuts');
+const sitePdfJsVersion = read('assets/js/engine-loader.js').match(/const PDFJS_VERSION = '([^']+)'/)?.[1];
+const reactPdfJsVersion = JSON.parse(read('app/package-lock.json')).packages['node_modules/pdfjs-dist']?.version;
+if (!sitePdfJsVersion || !reactPdfJsVersion) throw new Error('Missing PDF.js release metadata');
 const revision = read('sw.js').match(/const CACHE_VERSION = '([^']+)'/)?.[1];
 const office = read('scripts/prepare-office-engine.py').match(/^VERSION = '([^']+)'/m)?.[1];
 if (!revision || !office || !revision.startsWith(`centralpdf-v${version}-`))
@@ -28,7 +47,10 @@ const value = {
   applicationRevision: revision,
   adminVersion: JSON.parse(read('admin/package.json')).version,
   officeEngineVersion: office,
-  shortcutCount: [...read('index.html').matchAll(/<button\b[^>]*class="[^"]*\btool-card\b/g)].length,
+  sitePdfJsVersion,
+  reactPdfJsVersion,
+  shortcutCount: shortcuts.length,
+  shortcuts,
   tools,
 };
 const output = JSON.stringify(value, null, 2) + '\n';

@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { summarize, toolNames, csvCell, useData, type Overview } from "./data";
 import { catalogueRows, matchesTool } from "./catalog";
 import { AppRelease } from "./AppRelease";
+import { ShortcutCatalogue } from "./ShortcutCatalogue";
 import { Empty, Heading, Message } from "./ui";
 export function Metrics({
   client,
@@ -74,6 +75,7 @@ export function Metrics({
         </div>
       </Heading>
       {!tools && <AppRelease />}
+      {tools && <ShortcutCatalogue />}
       {error && (
         <Message error>
           {error} <button onClick={reload}>Tentar novamente</button>
@@ -122,7 +124,7 @@ export function Metrics({
             )}
             <section className="panel">
               <div className="panel-head">
-                <h2>Processamentos por ferramenta</h2>
+                <h2>{tools ? "Indicadores por família" : "Processamentos por ferramenta"}</h2>
               </div>
               {tools && (
                 <div className="toolbar">

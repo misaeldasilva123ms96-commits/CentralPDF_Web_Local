@@ -7,15 +7,16 @@ site público após os testes. O painel continua na origem de homologação.
 
 **Homologação:** <https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/>
 
-## Atualização 0.2.0 — CentralPDF com Office local
+## Atualização 0.3.0 — compatibilidade com o CentralPDF atual
 
 O painel acompanha o CentralPDF **2.0.1**, revisão `pages-48`, com o pacote
-LibreOffice WASM **2.7.2**. A Visão geral mostra as versões; Ajustes detalha os
+LibreOffice WASM **2.7.2**. O painel diferencia o PDF.js do site/pacote local
+(**6.2.108**) daquele usado na interface React (**6.4.299**). A Visão geral mostra as versões; Ajustes detalha os
 recursos e limites. Esta é a versão de referência da entrega, não um inventário
 remoto das abas da equipe: clientes offline podem estar em outra revisão.
 
-A referência do aplicativo informa 39 atalhos. Ferramentas apresenta as 34
-famílias de indicadores, mesmo sem métricas, mantendo as conversões Office
+A referência do aplicativo informa 39 atalhos. Ferramentas oferece o catálogo
+pesquisável dos mesmos atalhos do site e, separadamente, as 34 famílias de indicadores, mesmo sem métricas, mantendo as conversões Office
 consolidadas para não duplicar as contagens históricas. Busca por Word,
 Excel, PowerPoint e ODS encontra as conversões. “Sem registros” é ausência de
 dados recebidos, sem estimar usos ou pessoas. O CSV continua exportando somente
@@ -25,8 +26,14 @@ mesmos IDs anteriores; contagens históricas e o contrato de ingestão permanece
 `admin/shared/catalog.json` é gerado a partir do catálogo público e das versões
 dos pacotes. Após mudar ferramentas ou versões, execute
 `npm run sync:catalog --prefix admin`. O build executa a conferência e recusa
-catálogo desatualizado. A API `/api/health` distingue `version` do painel de
-`appVersion`, `appRevision`, `toolCount` e `officeEngineVersion`.
+catálogo desatualizado. O gerador valida os IDs dos atalhos e seus vínculos com
+as famílias existentes. A API `/api/health` distingue `version` do painel de
+`appVersion`, `appRevision`, `toolCount`, `shortcutCount`, `officeEngineVersion`,
+`sitePdfJsVersion` e `reactPdfJsVersion`. Os campos existentes foram preservados.
+
+A Visão geral e Ajustes apresentam também o giro por imagem, os ícones vetoriais e
+o layout móvel atualizado. O acabamento visual do painel acompanha a interface
+pública, com cantos suaves, menos molduras e catálogo adaptado a telas pequenas.
 
 Não há alterações de Auth, banco de dados, consentimento ou coleta de documentos.
 

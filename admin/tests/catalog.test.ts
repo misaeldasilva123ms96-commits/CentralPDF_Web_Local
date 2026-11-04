@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import applicationPackage from "../../app/package.json";
 import adminPackage from "../package.json";
-import { release, toolNames, catalogueRows, matchesTool } from "../src/catalog";
+import { release, toolNames, catalogueRows, matchesTool, shortcuts, matchesShortcut } from "../src/catalog";
 import { handle } from "../worker/index";
 
 it("uses the current public catalogue and preserves the stable Office metric identifier", () => {
@@ -32,5 +32,15 @@ it("reports admin and application versions separately without requiring credenti
   const env = {APP_ORIGIN:"https://admin.example.test",ENVIRONMENT:"staging"} as Env;
   const response = await handle(new Request(env.APP_ORIGIN + "/api/health"), env);
   expect(response.status).toBe(200);
-  expect(await response.json()).toEqual({status:"available",environment:"staging",version:release.adminVersion,appVersion:release.applicationVersion,appRevision:release.applicationRevision,toolCount:34,shortcutCount:39,officeEngineVersion:release.officeEngineVersion});
+  expect(await response.json()).toEqual({status:"available",environment:"staging",version:release.adminVersion,appVersion:release.applicationVersion,appRevision:release.applicationRevision,toolCount:34,shortcutCount:39,officeEngineVersion:release.officeEngineVersion,sitePdfJsVersion:release.sitePdfJsVersion,reactPdfJsVersion:release.reactPdfJsVersion});
+});
+it("exposes the 39 public shortcuts without splitting historical metric families", () => {
+  expect(shortcuts).toHaveLength(39);
+  expect(new Set(shortcuts.map(shortcut => shortcut.id)).size).toBe(39);
+  expect(shortcuts.every(shortcut => shortcut.familyId in toolNames)).toBe(true);
+  for (const title of ["Word para PDF", "Excel para PDF", "PowerPoint para PDF", "PDF para Word", "PDF para Excel", "PDF para PowerPoint", "Texto e HTML para PDF"])
+    expect(shortcuts.some(shortcut => shortcut.title === title)).toBe(true);
+  expect(shortcuts.filter(shortcut => matchesShortcut(shortcut, "PowerPoint"))).toHaveLength(2);
+  expect(shortcuts.find(shortcut => shortcut.id === "imagesToPdf")?.searchTerms).toContain("girar");
+  expect(catalogueRows([{tool:"documentsToPdf",completed:3,failed:1}]).reduce((total,row)=>total+row.completed+row.failed,0)).toBe(4);
 });
