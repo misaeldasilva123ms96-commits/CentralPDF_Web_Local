@@ -219,7 +219,7 @@ Estas são **versões adotadas no repositório**, não uma afirmação sobre a �
 | Componente | Referência atual |
 | --- | --- |
 | Produto e pacote React | `2.0.1`; distribuições podem apontar para commits diferentes |
-| PDF.js | `6.2.108`, legacy ESM com Worker, fontes, CMaps e WASM |
+| PDF.js | Site/pacotes locais: `6.2.108`, legacy ESM com Worker, fontes, CMaps e WASM; interface React em `/app`: `6.4.299` |
 | pdf-lib | `1.17.1` |
 | Tesseract.js / core | `7.0.0`, com idiomas português e inglês na preparação offline |
 | Go | CI e compilação reproduzível em `1.26.10`; `go.mod` declara `1.23` |

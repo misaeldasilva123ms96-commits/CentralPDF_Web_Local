@@ -25,7 +25,7 @@ Proteger PDF e PDF para imagens têm testes unitários/contratuais, mas não uma
 
 ## Executar e validar
 
-Com Node.js 22, da raiz do repositório:
+Com Node.js 22.13 ou superior (ou Node.js 24), da raiz do repositório:
 
 ```bash
 npm ci --prefix app
@@ -63,3 +63,5 @@ Testes também ficam junto aos módulos. `legacy/` e o adaptador via iframe desc
 - [Estrutura e distribuição atuais](../docs/reference/ESTRUTURA_DO_PROJETO.md).
 - [ADR-0001](../docs/architecture/ADR-0001-arquitetura-2.0.md): decisão histórica e direção da migração.
 - [Componentes de terceiros](../THIRD_PARTY_NOTICES.md).
+
+As dependências revisadas desta interface incluem PDF.js `6.4.299`, Zustand `5.0.16` e tipagens Node `26.6.6`. As tipagens não exigem Node.js 26 para executar o projeto. O motor PDF.js do site publicado na raiz tem fixação e verificação de integridade próprias; esta atualização de `/app` não altera seus binários.
