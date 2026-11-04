@@ -11,6 +11,11 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Dependências da interface React — 04/11/2026
+
+- Reúne as atualizações revisadas de PDF.js para 6.4.299, Zustand para 5.0.16 e tipagens Node para 26.6.6 em `/app`.
+- Preserva a fixação e os hashes do motor PDF.js do site na raiz, que possui preparação e distribuição próprias.
+
 ### Interface mais leve — 04/11/2026
 
 - Remove os selos de apresentação e a faixa de três passos da página inicial, aproximando a busca e as ferramentas.
