@@ -77,6 +77,11 @@
     prefs.settingsCollapsed = !prefs.settingsCollapsed;
     persist();
     applyPreferences();
+    if (window.matchMedia('(max-width: 980px)').matches) {
+      const target = prefs.settingsCollapsed ? $('#settingsPanelToggleTop') : $('#settingsPanelCloseButton');
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    }
   }
 
   function toggleFocusMode(force) {

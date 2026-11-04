@@ -9,7 +9,7 @@ site público após os testes. O painel continua na origem de homologação.
 
 ## Atualização 0.2.0 — CentralPDF com Office local
 
-O painel acompanha o CentralPDF **2.0.1**, revisão `pages-47`, com o pacote
+O painel acompanha o CentralPDF **2.0.1**, revisão `pages-48`, com o pacote
 LibreOffice WASM **2.7.2**. A Visão geral mostra as versões; Ajustes detalha os
 recursos e limites. Esta é a versão de referência da entrega, não um inventário
 remoto das abas da equipe: clientes offline podem estar em outra revisão.

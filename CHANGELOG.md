@@ -11,6 +11,13 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Interface mais leve — 04/11/2026
+
+- Remove os selos de apresentação e a faixa de três passos da página inicial, aproximando a busca e as ferramentas.
+- Suaviza cartões, categorias, menus e controles nos temas claro e escuro; troca molduras aninhadas por espaçamento e reduz as caixas no resumo das ferramentas e em usados recentemente.
+- Coloca as configurações abaixo da área de trabalho no celular/tablet, corrige seu recolhimento e mantém fechar/reabrir acessíveis, evitando sobreposição com páginas e controles.
+- Mantém busca, favoritos, atalhos Office, entrada de arquivos e opções de acessibilidade, com conferência em computador, tablet e celular.
+
 ### Rotação de imagens e ícones — 04/11/2026
 
 - Adiciona giro de 90° para os dois lados em cada miniatura de Imagens para PDF, com ângulo visível e prévia atualizada.

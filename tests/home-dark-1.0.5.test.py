@@ -29,18 +29,22 @@ with sync_playwright() as p:
         recentBg: css('.cp15-personal > div').backgroundImage,
         recentStrongColor: css('.cp15-rail strong').color,
         cardBg: css('.tool-card').backgroundImage,
+        cardColor: css('.tool-card').backgroundColor,
+        recentBorder: css('.cp15-personal > div').borderRightWidth,
         chipBg: css('.tool-card-meta span').backgroundColor,
         searchBg: css('.search-box').backgroundImage,
         homeVersion: one('.brand-copy small').textContent.trim(),
       };
     }""")
-    assert 'gradient' in values['heroBg']
-    assert values['heroRadius'] == '26px'
-    assert 'gradient' in values['recentBg']
+    assert values['heroBg'] == 'none'
+    assert values['heroRadius'] == '0px'
+    assert values['recentBg'] == 'none'
+    assert values['recentBorder'] == '0px'
     assert values['recentStrongColor'] == 'rgb(235, 240, 251)'
-    assert 'gradient' in values['cardBg']
+    assert values['cardBg'] == 'none'
+    assert values['cardColor'] == 'rgb(17, 27, 43)'
     assert values['chipBg'] == 'rgb(26, 36, 64)'
-    assert 'gradient' in values['searchBg']
+    assert values['searchBg'] == 'none'
     assert values['homeVersion'] == 'Web local 2.0.1'
     print('home-dark-1.0.5: passed')
     browser.close()

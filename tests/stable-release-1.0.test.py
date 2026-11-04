@@ -33,7 +33,7 @@ with sync_playwright() as p:
     assert 'Web local 2.0.1' in page.locator('.brand-copy small').inner_text()
     assert page.locator('.cp10-stable-badge').count()==1
     assert page.locator('.tool-card[data-tool]').count()==39
-    assert '39' in page.locator('.hero-stats').inner_text()
+    assert page.locator('.hero-stats, .guidance-strip').count() == 0
     assert page.locator('#cp10QualityButton').count()==1
 
     page.keyboard.press('Alt+a')

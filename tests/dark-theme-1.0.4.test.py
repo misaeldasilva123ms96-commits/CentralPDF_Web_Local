@@ -38,6 +38,8 @@ with sync_playwright() as p:
         titleColor: css('.panel-heading h1').color,
         titleBg: css('.main-panel').backgroundColor,
         cardBg: css('.tool-experience-strip article').backgroundImage,
+        cardColor: css('.tool-experience-strip article').backgroundColor,
+        cardBorder: css('.tool-experience-strip article').borderTopWidth,
         emptyBg: css('.settings-empty-state').backgroundColor,
         dockBg: css('.action-dock').backgroundImage,
       };
@@ -50,7 +52,10 @@ with sync_playwright() as p:
     assert values['navOverflowX'] == 'hidden'
     assert values['titleColor'] == 'rgb(243, 246, 255)'
     assert values['titleBg'] == 'rgb(16, 24, 39)'
-    assert 'linear-gradient' in values['cardBg']
+    # The shared summary now uses an unframed surface in the simplified UI.
+    assert values['cardBg'] == 'none'
+    assert values['cardColor'] == 'rgba(0, 0, 0, 0)'
+    assert values['cardBorder'] == '0px'
     assert values['emptyBg'] == 'rgb(18, 28, 44)'
     assert 'linear-gradient' in values['dockBg']
 

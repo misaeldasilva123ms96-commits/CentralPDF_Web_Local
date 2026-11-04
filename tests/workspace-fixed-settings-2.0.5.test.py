@@ -105,6 +105,20 @@ with sync_playwright() as playwright:
     assert abs(after["top"] - before["top"]) <= 1, (before, after)
     assert abs(after["bottom"] - before["bottom"]) <= 1, (before, after)
     assert page.locator(".settings-heading").evaluate("el => getComputedStyle(el).position") == "static"
+    # Narrow viewports place settings after the work area and follow their state, rather than
+    # intercepting the work area after the user has collapsed it.
+    for width in (900, 390):
+        page.set_viewport_size({"width": width, "height": 844})
+        for theme in ("light", "dark"):
+            page.locator("body").evaluate("(el, theme) => { el.dataset.theme = theme; el.classList.remove('settings-collapsed'); }", theme)
+            assert page.locator(".settings-panel").is_visible()
+            rect = page.locator(".settings-panel").bounding_box()
+            main = page.locator(".main-panel").bounding_box()
+            assert rect["y"] >= main["y"] + main["height"] - 1, (main, rect)
+            assert page.locator(".settings-panel").evaluate("el => getComputedStyle(el).position") == "static"
+            page.locator("body").evaluate("el => el.classList.add('settings-collapsed')")
+            assert page.locator(".settings-panel").is_hidden()
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
     browser.close()
 
 print("workspace-fixed-settings-2.0.5: passed")
