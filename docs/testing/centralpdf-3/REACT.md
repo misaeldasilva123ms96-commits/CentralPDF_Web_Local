@@ -38,3 +38,8 @@ experimentais continuam experimentais; não se promove o catálogo parcial.
 
 Rollback: reverter estilo 3.0, marca e apresentação/preferência do tema; não
 apagar os arquivos do usuário ou o estado do produto principal.
+
+A revisão visual detectou contraste baixo no botão primário do tema escuro.
+O seletor foi alinhado ao componente real `.cp-btn--primary`, preservando o
+texto claro sobre degradê escuro. Build e teste de navegador com a fusão real
+foram repetidos com sucesso; as capturas desta pasta mostram a correção final.
