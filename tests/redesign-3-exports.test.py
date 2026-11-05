@@ -54,6 +54,7 @@ try:
   b=p.chromium.launch();page=b.new_page(viewport={'width':1440,'height':1000});page.route('https://**/*',lambda r:r.abort());page.goto(f'http://127.0.0.1:{server.server_port}/test');page.wait_for_function('window.testReady')
   page.evaluate("""async()=>{window.fixtures={};for(const [name,prefix,count] of [['a','A',2],['b','B',3],['six','P',6],['four','P',4]]){const d=await PDFLib.PDFDocument.create();for(let i=1;i<=count;i++)d.addPage([420,595]).drawText(prefix+i,{x:30,y:500});fixtures[name]=new File([await d.save()],name+'.pdf',{type:'application/pdf'});}}""")
   def export(label):
+   page.screenshot(path=str(out/(label+'.png')))
    with page.expect_download() as e:page.locator('#processButton').click()
    data=Path(e.value.path()).read_bytes();records.append({'case':label,'filename':e.value.suggested_filename,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)})
    return data

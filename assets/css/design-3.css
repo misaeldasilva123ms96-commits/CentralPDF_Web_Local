@@ -157,3 +157,4 @@ body[data-design='3'] :is(.settings-empty-state,.foundation-list-row,.foundation
 body[data-design='3'] :is(.cp15-rail strong,dialog h2,dialog h3) {color:var(--cd-tx)}
 body[data-design='3'] .foundation-button.primary {background:linear-gradient(135deg,#5b4bff,#7951dd)!important;color:#fff}
 body[data-design='3'] dialog :is(h2,h3) {color:var(--cd-tx)!important}
+body[data-design='3'][data-theme] .foundation-dialog :is(h2,h3) {color:var(--cd-tx)!important}

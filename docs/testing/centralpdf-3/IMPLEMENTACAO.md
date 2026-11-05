@@ -50,3 +50,12 @@ As suítes restantes e a matriz visual continuam em verificação. Testes concor
 ## Rollback
 
 Reverter cada commit de apresentação e seu ajuste de cache/URLs como unidade; não apagar localStorage/IndexedDB, projetos, dados ou migrations. Admin e React têm seus próprios estilos e SVGs; podem ser revertidos independentemente. Não há transformação de dados ou credenciais.
+
+### Compatibilidade dos testes visuais históricos
+
+Três fixtures substituíam literalmente `<body>` para ativar o modo escuro. A
+camada escopada acrescentou `data-design`, por isso as fixtures passaram a
+preservar atributos ao selecionar o tema por regex. As assertivas de layout,
+barra recolhida e overflow foram mantidas; cores, cartões com borda e gradientes
+foram atualizados para o desenho aprovado. A inspeção encontrou e alinhou as
+superfícies secundárias do diagnóstico, incluindo cabeçalho com precedência antiga.
