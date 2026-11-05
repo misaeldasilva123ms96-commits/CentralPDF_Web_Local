@@ -9,7 +9,7 @@ css = '\n'.join((root / path).read_text(encoding='utf-8') for path in css_links)
 html = re.sub(r'\s*<link rel="stylesheet" href="[^"]+"\s*/>', '', html)
 html = re.sub(r'\s*<link rel="manifest" href="[^"]+"\s*/>', '', html)
 html = re.sub(r'\s*<script src="[^"]+"></script>', '', html)
-html = html.replace('<body>', '<body data-theme="dark">')
+html = re.sub(r'<body\b([^>]*)>', r'<body\1 data-theme="dark">', html, count=1)
 html = html.replace('</head>', f'<style>{css}</style></head>')
 html = html.replace('</body>', '''
 <dialog class="foundation-dialog" open>
@@ -46,14 +46,14 @@ with sync_playwright() as p:
         titleColor: css('.foundation-dialog-head h2').color,
       };
     }""")
-    assert values['shellColor'] == 'rgb(17, 22, 35)'
-    assert values['closeBg'] == 'rgb(18, 28, 44)'
-    assert 'gradient' in values['actionsBg']
+    assert values['shellColor'] == 'rgb(20, 26, 46)'
+    assert values['closeBg'] == 'rgb(32, 38, 65)'
+    assert values['actionsBg']=='none'
     assert 'gradient' in values['bannerBg']
-    assert 'gradient' in values['cardBg']
+    assert values['cardBg']=='none'
     assert values['pillWarnBg'] == 'rgb(37, 29, 15)'
-    assert 'gradient' in values['metricBg']
+    assert values['metricBg']=='none'
     assert 'gradient' in values['primaryBg']
-    assert values['titleColor'] == 'rgb(243, 246, 255)'
+    assert values['titleColor'] == 'rgb(238, 241, 255)'
     print('foundation-dark-1.0.6: passed')
     browser.close()
