@@ -963,7 +963,9 @@
       const focusAtClose = document.activeElement;
       requestAnimationFrame(() => {
         // A quick edit may start before this frame. Preserve the user's focus.
-        if (state.taskCompleted || document.activeElement !== focusAtClose) return;
+        // Hiding the dialog can move focus to the document during layout.
+        const active = document.activeElement;
+        if (state.taskCompleted || (active !== focusAtClose && active !== document.body && active !== document.documentElement)) return;
         const target = returnFocus?.isConnected && !returnFocus.disabled ? returnFocus : dropzone;
         target.focus({ preventScroll: true });
       });

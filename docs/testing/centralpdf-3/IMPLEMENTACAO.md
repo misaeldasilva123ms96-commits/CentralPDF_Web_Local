@@ -59,3 +59,14 @@ preservar atributos ao selecionar o tema por regex. As assertivas de layout,
 barra recolhida e overflow foram mantidas; cores, cartões com borda e gradientes
 foram atualizados para o desenho aprovado. A inspeção encontrou e alinhou as
 superfícies secundárias do diagnóstico, incluindo cabeçalho com precedência antiga.
+
+### Continuidade do foco no novo layout
+
+A suíte integral também encontrou um caso de foco: ao esconder a tela de
+resultado, o navegador pode mover o elemento ativo do botão oculto para o corpo
+somente durante o layout. A proteção existente interpretava isso como escolha
+de outro controle e não devolvia o foco ao botão de processamento. O ajuste é
+restrito a esse tratamento visual: aceita o retorno ao corpo/documento e continua
+respeitando outro campo selecionado pelo usuário. O teste de retorno normal e o
+teste de digitação rápida/exportação sem margem são repetidos, sem retries ou
+remoção das assertivas. Não altera processamento, formatos ou estado dos arquivos.

@@ -158,3 +158,7 @@ body[data-design='3'] :is(.cp15-rail strong,dialog h2,dialog h3) {color:var(--cd
 body[data-design='3'] .foundation-button.primary {background:linear-gradient(135deg,#5b4bff,#7951dd)!important;color:#fff}
 body[data-design='3'] dialog :is(h2,h3) {color:var(--cd-tx)!important}
 body[data-design='3'][data-theme] .foundation-dialog :is(h2,h3) {color:var(--cd-tx)!important}
+body[data-design='3'] .step b {display:block;font-size:10px;letter-spacing:0;white-space:nowrap}
+body[data-design='3'] .dropzone p {font-size:13px;line-height:1.5}
+body[data-design='3'] .dropzone strong {font-size:15px}
+@media(max-width:360px) {body[data-design='3'] .stepper {gap:6px}body[data-design='3'] .step b {font-size:9px}}
