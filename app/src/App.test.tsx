@@ -83,3 +83,23 @@ describe('App (shell 3.0)', () => {
     expect(toolsButton).toHaveAttribute('aria-expanded', 'false');
   });
 });
+
+describe('identidade 3.0 da migração parcial', () => {
+  it('alterna o tema sem perder a ferramenta selecionada e restaura a preferência', async () => {
+    localStorage.removeItem('centralpdf-react-theme');
+    const user = userEvent.setup();
+    const view = render(<App />);
+    await user.click(screen.getByRole('button', { name: 'Juntar PDFs' }));
+    const active = useAppStore.getState().activeToolId;
+    await user.click(screen.getByRole('switch', { name: 'Tema escuro' }));
+    expect(document.documentElement.dataset.reactTheme).toBe('dark');
+    expect(useAppStore.getState().activeToolId).toBe(active);
+    view.unmount();
+    render(<App />);
+    expect(screen.getByRole('switch', { name: 'Tema escuro' })).toHaveAttribute('aria-checked', 'true');
+    await user.keyboard('{Tab}');
+    await user.click(screen.getByRole('switch', { name: 'Tema escuro' }));
+    expect(document.documentElement.dataset.reactTheme).toBe('light');
+    localStorage.removeItem('centralpdf-react-theme');
+  });
+});
