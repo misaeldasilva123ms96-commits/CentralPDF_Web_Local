@@ -1,3 +1,4 @@
+import { Brand } from "./Brand";
 import { useEffect, useRef, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { api, createAuth, HttpError, type Config } from "./auth";
@@ -180,10 +181,11 @@ export function App() {
   if (failure)
     return (
       <div className="access-screen">
+        <div className="access-theme"><Theme /></div>
         <section className="access-card">
           <div className="login-logo">
-            <span className="logo">P</span>
-            <b>CentralPDF</b>
+            <Brand />
+            <b>Central PDF</b>
           </div>
           <h1>
             {callbackIntent.current
@@ -204,7 +206,11 @@ export function App() {
   if (!config || !client)
     return (
       <div className="access-screen">
-        <Message>Carregando ambiente de homologação…</Message>
+        <div className="access-theme"><Theme /></div>
+        <section className="access-card" aria-label="Carregando administração">
+          <div className="login-logo"><Brand /><b>Central PDF</b></div>
+          <Message>Carregando ambiente de homologação…</Message>
+        </section>
       </div>
     );
   if (state !== "ready")
@@ -226,9 +232,9 @@ export function App() {
       />
       <aside className="sidebar" id="sidebar">
         <a className="brand" href="#overview">
-          <span className="logo">P</span>
+          <Brand />
           <div>
-            <b>CentralPDF</b>
+            <b>Central PDF</b>
             <span>Administração</span>
           </div>
         </a>

@@ -17,7 +17,7 @@ class Handler(SimpleHTTPRequestHandler):
  def log_message(self,*args):pass
  def do_GET(self):
   if self.path=='/favicon.ico':self.send_response(204);self.end_headers();return
-  if not self.path.startswith('/assets/') and not self.path.startswith('/api/'):self.path='/index.html'
+  if not self.path.startswith('/assets/') and not self.path.startswith('/api/') and self.path!='/centralpdf-logo.svg':self.path='/index.html'
   super().do_GET()
 server=ThreadingHTTPServer(('127.0.0.1',0),partial(Handler,directory=str(ROOT/'dist')))
 Thread(target=server.serve_forever,daemon=True).start();origin=f'http://127.0.0.1:{server.server_port}'
@@ -88,14 +88,14 @@ try:
      if url.startswith(origin+'/'):route.continue_();return
      outbound.append(url);route.abort()
     context.route('**/*',intercept)
-    page.goto(origin);page.get_by_role('heading',name='Acesso do administrador').wait_for()
+    page.goto(origin);page.get_by_role('heading',name='Acesso do administrador').wait_for();page.wait_for_function('document.querySelector(".centralpdf-brand")?.naturalWidth>0');page.screenshot(path=str(OUT/f'login-{engine}-{width}.png'))
     page.get_by_role('button',name='Esqueci minha senha').click();page.locator('#email').fill('admin@example.invalid');page.get_by_role('button',name='Enviar instruções').click()
     try:page.get_by_text('Se houver uma conta habilitada',exact=False).wait_for(timeout=5000)
     except Exception:
      print('FAILURE',engine,width,state['recovery'],page.locator('body').inner_text(),errors,flush=True);page.screenshot(path=str(OUT/'failure.png'));raise
     assert state['recovery']==1
     page.get_by_role('button',name='Voltar ao acesso').click();page.locator('#email').fill('admin@example.invalid');page.locator('#password').fill('BrowserFixturePassword!2026');page.get_by_role('button',name='Entrar',exact=True).click()
-    page.get_by_role('heading',name='Verificação em duas etapas').wait_for();page.get_by_role('button',name='Configurar ou confirmar segundo fator').click();page.get_by_role('img',name='QR code para cadastrar o CentralPDF no autenticador').wait_for();page.wait_for_function('document.querySelector(".mfa-qr img")?.naturalWidth>0');page.locator('#code').fill('654321');page.get_by_role('button',name='Confirmar código').click()
+    page.get_by_role('heading',name='Verificação em duas etapas').wait_for();page.screenshot(path=str(OUT/f'mfa-{engine}-{width}.png'));page.get_by_role('button',name='Configurar ou confirmar segundo fator').click();page.get_by_role('img',name='QR code para cadastrar o CentralPDF no autenticador').wait_for();page.wait_for_function('document.querySelector(".mfa-qr img")?.naturalWidth>0');page.locator('#code').fill('654321');page.get_by_role('button',name='Confirmar código').click()
     page.get_by_role('heading',name='Visão geral',exact=True).wait_for();page.get_by_text('Sem dados de utilização neste período.',exact=False).wait_for();assert page.get_by_role('button',name='Exportar resumo').is_disabled()
     # SDK events cross tabs, but sessions deliberately live in sessionStorage.
     # Signing out another tab must not hide this tab's still-valid session.
@@ -188,8 +188,16 @@ try:
     page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).wait_for();assert state['enabled'] is False
     page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).click()
     page.get_by_role('button',name='Pausar estatísticas',exact=True).wait_for();assert state['enabled'] is True
+    if width>=800:
+     page.set_viewport_size({'width':1366,'height':768})
+     logout=page.get_by_role('button',name='Sair da conta')
+     logout.scroll_into_view_if_needed(timeout=5000)
+     bounds=logout.bounding_box()
+     assert bounds and bounds['y']>=0 and bounds['y']+bounds['height']<=768,('short desktop logout clipped',bounds)
+     page.locator('#sidebar').screenshot(path=str(OUT/f'short-desktop-sidebar-{engine}.png'))
     if width<800:page.get_by_role('button',name='Abrir menu').click()
     page.get_by_role('button',name='Sair da conta').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
+    page.set_viewport_size({'width':width,'height':height})
     # Provider invitations do not initiate browser PKCE: test the fixed invite callback.
     state['enrolled']=False  # A newly invited identity has no verified factor yet.
     invite=origin+('/auth/invite' if width==1440 else '/')+'#access_token='+jwt('aal1')+'&refresh_token=fixture-refresh-token&expires_in=3600&token_type=bearer&type=invite'
@@ -198,6 +206,7 @@ try:
     try:page.get_by_role('heading',name='Definir nova senha').wait_for(timeout=10000)
     except Exception:
      print('INVITE FAILURE',engine,width,page.locator('body').inner_text(),errors,flush=True);raise
+    page.screenshot(path=str(OUT/f'invite-{engine}-{width}.png'))
     assert 'access_token' not in page.url
     page.locator('#password').fill('InvitationFixturePassword!2026');page.locator('#confirm').fill('InvitationFixturePassword!2026')
     with page.expect_navigation():page.get_by_role('button',name='Salvar nova senha').click()
@@ -215,13 +224,14 @@ try:
     assert not page.get_by_role('img',name='QR code para cadastrar o CentralPDF no autenticador').count()
     page.locator('#code').fill('654321');page.get_by_role('button',name='Confirmar código').click()
     page.get_by_role('heading',name='Definir nova senha').wait_for()
+    page.screenshot(path=str(OUT/f'reset-{engine}-{width}.png'))
     assert 'code=' not in page.url
     page.locator('#password').fill('RecoveryFixturePassword!2026');page.locator('#confirm').fill('RecoveryFixturePassword!2026')
     with page.expect_navigation():page.get_by_role('button',name='Salvar nova senha').click()
     page.get_by_role('heading',name='Acesso do administrador').wait_for()
     page.get_by_text('Senha atualizada. Entre novamente para continuar.',exact=True).wait_for()
     page.goto(origin+'/auth/callback?code=used-or-expired-code')
-    page.get_by_role('heading',name='Acesso não confirmado').wait_for()
+    page.get_by_role('heading',name='Acesso não confirmado').wait_for();page.screenshot(path=str(OUT/f'access-failure-{engine}-{width}.png'))
     page.get_by_role('button',name='Voltar ao acesso').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
     assert not outbound,outbound;assert not errors,errors
     context.close()

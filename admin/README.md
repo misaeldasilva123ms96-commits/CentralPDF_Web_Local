@@ -7,6 +7,14 @@ site público após os testes. O painel continua na origem de homologação.
 
 **Homologação:** <https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/>
 
+## Sistema visual 3.0 — em revisão
+
+Esta branch aplica marca, tokens, temas, formulários, tabelas, modais e estados
+comuns a todas as páginas do painel e aos fluxos de acesso. A autenticação,
+PKCE, MFA, autorização, API e dados não foram alterados. A versão técnica
+continua 0.3.0. A revisão abaixo é a referência do código desta branch;
+não confirma atualização do Worker em homologação. Não houve deploy.
+
 ## Atualização 0.3.0 — compatibilidade com o CentralPDF atual
 
 A referência do código nesta branch acompanha o CentralPDF **3.0.0**, revisão `pages-50`, com o pacote
