@@ -56,14 +56,7 @@ export function Theme() {
       aria-checked={dark}
       onClick={() => setDark(!dark)}
     >
-      <span>
-        <Icon name="moon" />
-        Escuro
-      </span>
-      <span>
-        <Icon name="sun" />
-        Claro
-      </span>
+      <Icon name={dark ? "sun" : "moon"} />
     </button>
   );
 }

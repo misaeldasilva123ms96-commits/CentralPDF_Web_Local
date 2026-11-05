@@ -1,3 +1,4 @@
+import { Brand } from "./Brand";
 import { useState, type FormEvent } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { strongPassword, totpImageSource, type Config } from "./auth";
@@ -137,8 +138,8 @@ export function Access({
       </div>
       <section className="access-card">
         <div className="login-logo">
-          <span className="logo">P</span>
-          <b>CentralPDF</b>
+          <Brand />
+          <b>Central PDF</b>
         </div>
         <h1>{title}</h1>
         <p className="section-intro">

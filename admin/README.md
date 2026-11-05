@@ -7,9 +7,17 @@ site público após os testes. O painel continua na origem de homologação.
 
 **Homologação:** <https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/>
 
+## Sistema visual 3.0 — em revisão
+
+Esta branch aplica marca, tokens, temas, formulários, tabelas, modais e estados
+comuns a todas as páginas do painel e aos fluxos de acesso. A autenticação,
+PKCE, MFA, autorização, API e dados não foram alterados. A versão técnica
+continua 0.3.0. A revisão abaixo é a referência do código desta branch;
+não confirma atualização do Worker em homologação. Não houve deploy.
+
 ## Atualização 0.3.0 — compatibilidade com o CentralPDF atual
 
-O painel acompanha o CentralPDF **2.0.1**, revisão `pages-49`, com o pacote
+O painel acompanha o CentralPDF **2.0.1**, revisão `pages-50`, com o pacote
 LibreOffice WASM **2.7.2**. O painel diferencia o PDF.js do site/pacote local
 (**6.2.108**) daquele usado na interface React (**6.4.299**). A Visão geral mostra as versões; Ajustes detalha os
 recursos e limites. Esta é a versão de referência da entrega, não um inventário
