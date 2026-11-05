@@ -1,10 +1,10 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v3.0.0-pages-51';
+const CACHE_VERSION = 'centralpdf-v3.0.0-pages-52';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
-  './assets/css/design-3.css?v=1', './assets/js/design-3.js?v=1', './assets/icons/centralpdf-logo.svg',
+  './assets/css/design-3.css?v=2', './assets/js/design-3.js?v=2', './assets/icons/centralpdf-logo.svg',
   './office/index.html', './office/engine.js', './office/engine.css', './office/sw.js',
   './assets/css/settings-modern.css?v=3.0.0-settings1',
   './assets/css/workspace-modernization.css?v=3.0.0-ux4', './assets/js/workspace-modernization.js?v=3.0.0-ux1',
