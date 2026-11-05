@@ -15,11 +15,20 @@ try:
   for width in [320,390,768,1440]:
    c=browser.new_context(viewport={'width':width,'height':1000},reduced_motion='reduce');c.route('https://**/*',lambda r:r.abort());page=c.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(f'http://127.0.0.1:{s.server_port}/')
    page.wait_for_function('document.querySelector(".app-brand-mark img")?.naturalWidth>0')
+   contrasts={}
    for theme in ['light','dark']:
     toggle=page.get_by_role('switch',name='Tema escuro')
     if toggle.get_attribute('aria-checked')!=str(theme=='dark').lower():toggle.click()
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),(width,theme)
     assert 'linear-gradient' in page.locator('h1').evaluate('e=>getComputedStyle(e).backgroundImage')
+    contrast=page.locator('.cp-home__privacy').evaluate(r'''el=>{
+     const lum=value=>{const c=value.match(/[\d.]+/g).slice(0,3).map(Number).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
+     const ratio=(a,b)=>(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+     const text=getComputedStyle(el.querySelector('p')),icon=getComputedStyle(el.querySelector(':scope>span'));
+     return {text:ratio(lum(text.color),lum(getComputedStyle(el).backgroundColor)),icon:ratio(lum(icon.color),lum(icon.backgroundColor))};
+    }''')
+    contrasts[theme]=contrast
+    assert contrast['text']>=4.5 and contrast['icon']>=3,(width,theme,contrast)
     if width in [390,1440]:page.screenshot(path=str(OUT/f'react-home-{width}-{theme}.png'))
    page.get_by_role('button',name='OCR e PDF pesquisável',exact=True).click()
    assert 'linear-gradient' in page.locator('h1').evaluate('el=>getComputedStyle(el).backgroundImage')
@@ -36,7 +45,7 @@ try:
    assert sizes==[201,202,301,302,303],sizes
    assert not errors,errors
    if width in [390,1440]:page.screenshot(path=str(OUT/f'react-result-{width}-dark.png'),full_page=True)
-   rows.append({'width':width,'themes':2,'pages':5,'widths':sizes,'sha256':hashlib.sha256(data).hexdigest()})
+   rows.append({'width':width,'contrast':contrasts,'themes':2,'pages':5,'widths':sizes,'sha256':hashlib.sha256(data).hexdigest()})
    c.close()
   browser.close()
 finally:s.shutdown()

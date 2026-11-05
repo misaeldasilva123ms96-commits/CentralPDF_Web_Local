@@ -29,3 +29,9 @@ html[data-react-theme='dark'] :is(.cp-file-item__order,.cp-btn:not(.cp-btn--prim
 a.cp-btn {text-decoration:none}
 .cp-btn--primary:hover:not(:disabled) {background:linear-gradient(135deg,#4837df,#6742c6);color:#fff}
 .cp-toggle input:checked {background:#5b4bff}
+
+/* Privacy text and icon follow the same theme colors as their surfaces. */
+.cp-home__privacy {--privacy-foreground:#116b48}
+html[data-react-theme='dark'] .cp-home__privacy {--privacy-foreground:var(--cp-color-success)}
+.cp-home__privacy p {color:var(--privacy-foreground)}
+.cp-home__privacy>span {background:var(--cp-color-success-soft);color:var(--privacy-foreground)}
