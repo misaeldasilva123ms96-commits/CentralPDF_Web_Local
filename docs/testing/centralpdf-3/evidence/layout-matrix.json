@@ -1,0 +1,86 @@
+[
+  {
+    "browser": "chromium",
+    "width": 320,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "chromium",
+    "width": 360,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "chromium",
+    "width": 390,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "chromium",
+    "width": 768,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "chromium",
+    "width": 1024,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "chromium",
+    "width": 1440,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "firefox",
+    "width": 320,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "firefox",
+    "width": 360,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "firefox",
+    "width": 390,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "firefox",
+    "width": 768,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "firefox",
+    "width": 1024,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  },
+  {
+    "browser": "firefox",
+    "width": 1440,
+    "themes": 2,
+    "workspaces": 34,
+    "shortcuts": 39
+  }
+]

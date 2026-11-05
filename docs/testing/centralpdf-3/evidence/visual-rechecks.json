@@ -1,0 +1,14 @@
+[
+  {
+    "check": "dark-theme-1.0.4",
+    "exit": 0
+  },
+  {
+    "check": "home-dark-1.0.5",
+    "exit": 0
+  },
+  {
+    "check": "foundation-dark-1.0.6",
+    "exit": 0
+  }
+]
