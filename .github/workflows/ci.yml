@@ -43,6 +43,10 @@ jobs:
 
       - name: Install Python test dependencies
         run: |
+          # The Azure mirror has stalled browser dependency downloads until the
+          # entire job timed out. Use Ubuntu's official HTTPS archive instead.
+          sudo find /etc/apt -maxdepth 2 -type f \( -name '*.list' -o -name '*.sources' \) \
+            -exec sed -i -E 's@https?://azure.archive.ubuntu.com/ubuntu/?@https://archive.ubuntu.com/ubuntu/@g' {} +
           python -m pip install --upgrade pip
           python -m pip install -r requirements-test.txt
           python -m playwright install --with-deps chromium firefox
