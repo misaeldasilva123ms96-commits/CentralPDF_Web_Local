@@ -59,3 +59,54 @@ preservar atributos ao selecionar o tema por regex. As assertivas de layout,
 barra recolhida e overflow foram mantidas; cores, cartões com borda e gradientes
 foram atualizados para o desenho aprovado. A inspeção encontrou e alinhou as
 superfícies secundárias do diagnóstico, incluindo cabeçalho com precedência antiga.
+
+### Continuidade do foco no novo layout
+
+A suíte integral também encontrou um caso de foco: ao esconder a tela de
+resultado, o navegador pode mover o elemento ativo do botão oculto para o corpo
+somente durante o layout. A proteção existente interpretava isso como escolha
+de outro controle e não devolvia o foco ao botão de processamento. O ajuste é
+restrito a esse tratamento visual: aceita o retorno ao corpo/documento e continua
+respeitando outro campo selecionado pelo usuário. O teste de retorno normal e o
+teste de digitação rápida/exportação sem margem são repetidos, sem retries ou
+remoção das assertivas. Não altera processamento, formatos ou estado dos arquivos.
+
+## Resultado acumulado e PRs
+
+1. [PR #80 — aplicativo original](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/80)
+2. [PR #81 — Admin/acesso](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/81), empilhada sobre #80
+3. [PR #82 — React parcial](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/82), empilhada sobre #81
+
+Todas são rascunhos; nenhuma autorizada para merge ou deploy nesta execução.
+
+| Verificação executada | Resultado / evidência |
+| --- | --- |
+| 34 módulos com motores reais, antes/depois | 34/34 em ambas; `baseline-34.json`, `after-34.json` |
+| Casos adicionais de OCR, Office e compressão | PASS nos mesmos relatórios |
+| 3 exportações prioritárias e hashes | PASS, `reference-exports.json` e PNGs de união/divisão/organização |
+| Layout de 34 workspaces / 39 atalhos | PASS, 12 combinações navegador/largura e dois temas, `layout-matrix.json` |
+| Editor real | PASS, 6 combinações Chromium/Firefox e desktop/tablet/celular, `editor-browsers.json` |
+| Recarga offline + união real de 5 páginas | PASS, `offline.json`; zero telemetria enviada |
+| JavaScript da raiz e sintaxe | PASS |
+| Integridade estática, ícones e catálogo | PASS |
+| Suíte Python da raiz | 84 arquivos executados; 3 falhas iniciais registradas em `suite-initial.json` e corrigidas, com repetições em `final-rechecks.json` |
+| React parcial | 241 testes, tipos e build PASS; navegador real em 4 larguras e 2 temas PASS |
+| Admin | 27 testes, tipos/build e navegador Chromium/Firefox desktop/celular PASS, com fixtures e sem requisições externas |
+| Go local | NÃO EXECUTADO neste ambiente; conferir os passos Go na CI da revisão final |
+| SQL/RLS em banco real / login pessoal / e-mail real | NÃO EXECUTADOS; nenhuma operação remota de administração |
+
+Os relatórios parciais preservam falhas iniciais; as repetições mostram quais
+problemas foram corrigidos. Screenshots em `evidence/before/`, `evidence/after/`
+e nas entregas separadas do Admin e React. Gerador de capturas do site:
+`CAPTURE_PHASE=after python scripts/run-browser-test.py scripts/capture-design-3.py`.
+
+A revisão de tela identificou e corrigiu contraste de ações primárias no tema
+escuro React, ícones vetoriais e o posicionamento móvel dos menus. O texto dos
+passos continua visível no celular. Não foi introduzida transmissão adicional de
+documentos, nova dependência remota obrigatória ou credencial no frontend.
+
+**Decisão de entrega: manter em rascunho para revisão.** Os resultados de CI de
+cada HEAD devem ser conferidos nas PRs; resultados de commits anteriores não
+substituem os da revisão final. Permanecem aceite visual humano, leitor de tela,
+zoom real de 200% e testes em aparelho físico. Não se declara o redesign
+homologado/publicado nem se autoriza produção com base somente nesta automação.

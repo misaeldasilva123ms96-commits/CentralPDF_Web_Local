@@ -1,0 +1,10 @@
+[
+  {
+    "check": "workspace-completion-actions-2.0.6",
+    "exit": 0
+  },
+  {
+    "check": "image-rotation-icons",
+    "exit": 0
+  }
+]
