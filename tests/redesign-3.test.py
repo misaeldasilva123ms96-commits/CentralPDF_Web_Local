@@ -30,9 +30,27 @@ try:
      page.locator('#cp101SettingsButton').click();assert page.locator('#cp101SettingsPanel .cp101-settings-action').count()==8
      page.keyboard.press('Escape');assert page.locator('#cp101SettingsPanel').is_hidden()
      assert page.locator('#cp101SettingsButton').evaluate('e=>e===document.activeElement')
-     page.locator('#converterMenuButton').click();page.locator('#converterMenu').wait_for(state='visible');page.keyboard.press('Escape');assert page.locator('#converterMenu').is_hidden()
+     page.locator('#converterMenuButton').click();page.locator('#converterMenu').wait_for(state='visible')
+     assert page.locator('#converterMenu button').count()==16
+     assert page.locator('#converterMenu h2').inner_text()=='Converter PDF e arquivos'
+     panel=page.locator('#converterMenu').bounding_box()
+     assert panel['x']>=0 and panel['x']+panel['width']<=width+1,(width,panel)
+     page.keyboard.press('Escape');assert page.locator('#converterMenu').is_hidden()
      page.locator('#allToolsMenuButton').scroll_into_view_if_needed();page.locator('#allToolsMenuButton').click();assert page.locator('#allToolsMegaMenu button[data-mega-tool]').count()==39
+     panel=page.locator('#allToolsMegaMenu').bounding_box()
+     assert panel['width']<=820 and panel['x']>=0 and panel['x']+panel['width']<=width+1,(engine,width,panel)
+     columns=page.locator('#allToolsMegaMenu').evaluate('e=>getComputedStyle(e).gridTemplateColumns.split(" ").length')
+     assert columns==(2 if width<=680 else 4),(width,columns)
      page.keyboard.press('Escape')
+     page.locator('#allToolsMenuButton').focus();page.keyboard.press('Enter')
+     panel=page.locator('#allToolsMegaMenu').bounding_box()
+     assert panel['x']>=0 and panel['x']+panel['width']<=width+1,(width,'keyboard menu',panel)
+     assert page.locator('#allToolsMegaMenu').evaluate('e=>e.scrollWidth<=e.clientWidth+1')
+     page.locator('#allToolsMegaMenu button[data-mega-tool]').first.focus();page.keyboard.press('Escape')
+     page.wait_for_function('document.activeElement.id==="allToolsMenuButton"')
+     page.locator('#homeBrand').click()
+     assert page.locator('.hero-copy h1').bounding_box()['width']<=760
+     assert 'linear-gradient' in page.locator('#homeImportButton').evaluate('e=>getComputedStyle(e).backgroundImage')
     assert not errors,errors
     results.append({'browser':engine,'width':width,'themes':2,'workspaces':34,'shortcuts':39})
     c.close()

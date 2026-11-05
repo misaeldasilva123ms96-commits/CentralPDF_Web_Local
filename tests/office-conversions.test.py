@@ -111,8 +111,8 @@ with sync_playwright() as p:
                 page.locator('#mobileProductMenuButton').click()
             page.locator('#converterMenuButton').click()
             assert page.locator('#converterMenu').is_visible()
-            assert page.locator('#converterMenu section').count() == 2
-            assert page.locator('#converterMenu button').count() == 10
+            assert page.locator('#converterMenu h2').inner_text() == 'Converter PDF e arquivos'
+            assert page.locator('#converterMenu button').count() == 16
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
             if width == 1440:
                 assert page.locator('#converterMenuButton').bounding_box()['x'] < page.locator('#allToolsMenuButton').bounding_box()['x']
