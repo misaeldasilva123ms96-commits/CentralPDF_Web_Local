@@ -1,3 +1,11 @@
+## 3.0.0 — identidade unificada e revisão de acessibilidade
+
+- Atualiza a versão atual em interface, PWA, relatórios, telemetria, servidor local, pacote React e catálogo do Admin.
+- Mantém dados, projetos e preferências existentes; renova o cache e preserva a atualização de caches anteriores.
+- Inclui o redesign completo e as correções revisadas de navegação em telas baixas e contraste no tema escuro.
+- Recompila o servidor Windows com o mesmo Go 1.26.10 e as flags reproduzíveis; atualiza o checksum.
+- Não cria tag nem publica um pacote Windows automaticamente.
+
 ## 2.0.1 — workspace renovado e entrega verificável
 
 ### Auditoria de estabilização de 25/10/2026

@@ -138,7 +138,7 @@ describe('ToolLayout — ciclo de vida (unmount e cancelamento)', () => {
     await startRun(user);
     await screen.findByRole('button', { name: 'Cancelar' });
 
-    await user.click(screen.getByRole('button', { name: /CentralPDF 2\.0/ }));
+    await user.click(screen.getByRole('button', { name: /Central PDF 3\.0/ }));
     unmount();
 
     render(<App />);

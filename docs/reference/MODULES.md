@@ -1,6 +1,6 @@
 # Referência das 34 ferramentas
 
-Catálogo da aplicação estática da raiz, revisado em **21/10/2026**, versão declarada **2.0.1**. [Documentação](../README.md) · [Guia do usuário](../guides/GUIA_DO_USUARIO_1.0.md)
+Catálogo da aplicação estática da raiz, revisado em **21/10/2026**, versão declarada **3.0.0**. [Documentação](../README.md) · [Guia do usuário](../guides/GUIA_DO_USUARIO_1.0.md)
 
 Os nomes resumidos abaixo facilitam a consulta; a interface pode usar títulos mais descritivos. A migração React tem um [catálogo próprio e parcial](../../app/README.md).
 

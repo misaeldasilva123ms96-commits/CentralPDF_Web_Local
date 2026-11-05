@@ -1,6 +1,6 @@
-# CentralPDF 2.0 — migração React
+# CentralPDF 3.0 — migração React
 
-Interface em **React 19, TypeScript e Vite 7**, com versão de pacote **2.0.1**. Estado conferido em **21/10/2026**.
+Interface em **React 19, TypeScript e Vite 7**, com versão de pacote **3.0.0**. Atualizado em **05/11/2026**.
 
 > A aplicação publicada no GitHub Pages e no pacote Windows continua na raiz do repositório. Este diretório tem build próprio; não oferece automaticamente as 34 ferramentas do produto atual. [Voltar ao projeto](../README.md).
 

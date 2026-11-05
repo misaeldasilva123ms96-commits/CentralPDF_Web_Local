@@ -45,6 +45,6 @@ with sync_playwright() as p:
     assert values['cardColor'] == 'rgb(20, 26, 46)'
     assert values['chipBg'] == 'rgb(32, 38, 65)'
     assert values['searchBg'] == 'none'
-    assert values['homeVersion'] == 'Web local 2.0.1'
+    assert values['homeVersion'] == 'Web local 3.0.0'
     print('home-dark-1.0.5: passed')
     browser.close()

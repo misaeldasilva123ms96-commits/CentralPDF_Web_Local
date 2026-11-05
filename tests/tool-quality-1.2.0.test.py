@@ -47,7 +47,7 @@ assert 'Auditoria das ferramentas' in stable
 assert 'assets/css/tool-quality-1.2.0.css' in index
 assert 'assets/js/tool-quality-1.2.0.js' in index
 assert './assets/css/tool-quality-1.2.0.css' in sw
-assert './assets/js/tool-quality-1.2.0.js?v=2.0.1-office1' in sw
-assert 'Web local 2.0.1' in index
-assert "const VERSION='2.0.1';" in stable
-print('tool-quality-2.0.1: passed')
+assert './assets/js/tool-quality-1.2.0.js?v=3.0.0-office1' in sw
+assert 'Web local 3.0.0' in index
+assert "const VERSION='3.0.0';" in stable
+print('tool-quality-3.0.0: passed')

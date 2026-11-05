@@ -147,7 +147,7 @@ anterior; um evento já recebido não pode ser recolhido.
 
 No projeto privado Sentry, use a visualização **Traces** (ou Performance, conforme
 a versão do painel) e filtre por `transaction:tool.merge`, `environment` e
-`release:centralpdf@2.0.1-tracing1`. A amostragem e os limites impedem usar esses
+`release:centralpdf@3.0.0-tracing1`. A amostragem e os limites impedem usar esses
 dados como contagem exata de operações ou pessoas. A confirmação de ingestão e a
 consulta no projeto exigem autenticação Sentry; o DSN público não dá acesso de
 leitura.
