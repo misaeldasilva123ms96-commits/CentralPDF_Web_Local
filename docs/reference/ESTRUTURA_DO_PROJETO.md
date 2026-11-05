@@ -1,6 +1,6 @@
 # Estrutura e distribuição do projeto
 
-Estado revisado em **25/10/2026**, versão declarada **2.0.1**. [Documentação](../README.md) · [Desenvolvimento](../../CONTRIBUTING.md)
+Estado revisado em **25/10/2026**, versão declarada **3.0.0**. [Documentação](../README.md) · [Desenvolvimento](../../CONTRIBUTING.md)
 
 ## Duas interfaces, uma publicação atual
 
@@ -59,7 +59,7 @@ Os nomes JavaScript da tabela pertencem a `assets/js/`, salvo o manifesto indica
 2. **Pages** prepara motores verificados e copia somente os arquivos estáticos da raiz para o site. `app/dist/`, executável, fontes Go e testes não integram esse pacote. Em PR não há deploy; eventos elegíveis na `main` publicam pelo workflow.
 3. **Release** usa tag estável e notas em `docs/releases/`, prepara o pacote Windows e produz ZIP, executável, manifesto SHA-256 e atestações.
 
-CI e Pages são workflows separados. Publicar a `main` não atualiza uma release Windows já criada. O número `2.0.1` sozinho não identifica todos os patches: confira commit, data e notas da distribuição.
+CI e Pages são workflows separados. Publicar a `main` não atualiza uma release Windows já criada. O número `3.0.0` sozinho não identifica todos os patches: confira commit, data e notas da distribuição.
 
 ## Organização da documentação
 

@@ -1,9 +1,9 @@
 {
   "name": "centralpdf-app",
   "private": true,
-  "version": "2.0.1",
+  "version": "3.0.0",
   "type": "module",
-  "description": "CentralPDF 2.0 — plataforma documental local-first (Vite + React + TypeScript)",
+  "description": "CentralPDF 3.0 — plataforma documental local-first (Vite + React + TypeScript)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

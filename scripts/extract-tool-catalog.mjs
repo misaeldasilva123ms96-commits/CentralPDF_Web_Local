@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 
 const appJs = readFileSync(resolve(import.meta.dirname, '../assets/js/app.js'), 'utf8').replace(/\r\n/g, '\n');
 
+const applicationVersion = JSON.parse(readFileSync(resolve(import.meta.dirname, '../app/package.json'), 'utf8')).version;
+
 const start = appJs.indexOf('const toolConfig = {');
 const endMarker = appJs.indexOf('\n  };', start);
 if (start < 0 || endMarker < 0) throw new Error('toolConfig block not found');
@@ -45,7 +47,7 @@ writeFileSync(
   resolve(import.meta.dirname, '../docs/architecture/_CATALOGO_RAW.md'),
   `# Catálogo de ferramentas (gerado)
 
-Gerado por \`scripts/extract-tool-catalog.mjs\` a partir de \`assets/js/app.js\` (toolConfig, v2.0.1).
+Gerado por \`scripts/extract-tool-catalog.mjs\` a partir de \`assets/js/app.js\` (toolConfig, v${applicationVersion}).
 
 | id | título | múltiplo | tipo | aceita | saída | professional | settings chars | n. settings ids |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n` +

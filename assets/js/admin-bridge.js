@@ -2,7 +2,7 @@
 (() => {
  'use strict';
  const BASE='https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev';
- const KEY='centralpdf-usage-consent-v1',RELEASE='2.0.1-admin-pilot2';
+ const KEY='centralpdf-usage-consent-v1',RELEASE='3.0.0-admin-pilot2';
  const tools=new Set('organize editPdf merge split extract rotate watermark pageNumbers imagesToPdf imageConvert compress pdfToImage crop metadata normalize pdfToText ocr compare redact formBuilder signPdf pdfToOffice documentsToPdf extractImages archivePdf documentAssistant structuredExtraction documentAudit classifyRename protect unlock diagnose repairAdvanced flattenForms'.split(' '));
  let allowed=false,queue=[],busy=false,timer=null,tab=null,generation=0,paused=0,lastResult='idle',requests=0,controller=null,day=new Date().toISOString().slice(0,10);
  // A saved opt-out always wins; an unreadable preference stays disabled.
