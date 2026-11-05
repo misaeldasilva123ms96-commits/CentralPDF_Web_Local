@@ -11,6 +11,12 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Sistema visual 3.0 — em revisão, sem publicação
+
+- Aplica uma camada visual reversível à aplicação original: marca vetorial local, degradês no próprio texto, cartões por categoria e componentes compartilhados nos workspaces e diálogos.
+- Move o tema para o topo e preserva as oito ações de configurações. Mantém 34 módulos, 39 atalhos e o processamento existente.
+- Registra evidências e pendências em `docs/testing/centralpdf-3/IMPLEMENTACAO.md`; esta mudança não altera a versão de release.
+
 ### Retorno à edição — 05/11/2026
 
 - Preserva o foco do campo que o usuário selecionou antes do quadro de retorno da tela de resultado, evitando perda de digitação e exportação com margem padrão no Firefox.

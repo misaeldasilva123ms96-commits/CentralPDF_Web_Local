@@ -57,7 +57,7 @@
     panel.hidden = false;
     trigger.setAttribute('aria-expanded', 'true');
     backdrop?.removeAttribute('hidden');
-    $('#cp101ThemeToggle')?.focus();
+    $('#cp101SettingsBody button')?.focus();
   }
 
   function toggleMenu() {
@@ -141,7 +141,7 @@
     menu.className = 'cp101-settings-menu';
     menu.innerHTML = `
       <button id="cp101SettingsButton" class="cp101-settings-trigger" type="button" aria-haspopup="dialog" aria-controls="cp101SettingsPanel" aria-expanded="false" title="Abrir painel de configurações rápidas">
-        <svg><use href="#i-layout"></use></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-1 3-3 1v4l-2 1 2 2v3l3 1 1 3h6l1-3 3-1v-3l2-2-2-1V7l-3-1-1-3Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
         <span>Configurações</span>
       </button>
       <div id="cp101SettingsPanel" class="cp101-settings-panel" role="dialog" aria-labelledby="cp101SettingsTitle" hidden>
@@ -157,7 +157,9 @@
     topActions.insertBefore(menu, helpButton || null);
 
     const body = $('#cp101SettingsBody');
-    body.appendChild(appearanceSection());
+    const themeSection = appearanceSection();
+    const themeToggle = themeSection.querySelector('#cp101ThemeToggle');
+    topActions.append(helpButton, themeToggle, menu);
     body.appendChild(group('Personalização', ['layoutSettingsButton','cp15PresetsBtn']));
     body.appendChild(group('Projetos e tarefas', ['foundationProjectsButton','cp15ResultsBtn','foundationQueueButton','cp15FlowsBtn']));
     body.appendChild(group('Sistema e suporte', ['foundationDiagnosticsButton','cp10QualityButton']));

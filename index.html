@@ -37,8 +37,9 @@
   <meta name="theme-color" content="#5b43ff" />
   <link rel="stylesheet" href="assets/css/workspace-modernization.css?v=2.0.1-ux4" />
   <link rel="stylesheet" href="assets/css/settings-modern.css?v=2.0.1-settings1" />
+  <link rel="stylesheet" href="assets/css/design-3.css?v=1" />
 </head>
-<body>
+<body data-design="3">
   <svg class="icon-sprite" aria-hidden="true">
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
     <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/><path d="M4 12V4h8"/></symbol>
@@ -127,8 +128,8 @@
   <div class="app-shell">
     <header class="topbar">
       <button id="homeBrand" class="brand-button" type="button" aria-label="Voltar para início">
-        <span class="brand-mark">P</span>
-        <span class="brand-copy"><strong>Central PDF & Imagem</strong><small>Web local 2.0.1</small></span>
+        <span class="brand-mark"><img src="assets/icons/centralpdf-logo.svg" alt="" width="48" height="48" /></span>
+        <span class="brand-copy"><strong>Central PDF</strong><small>Web local 2.0.1</small></span>
       </button>
       <button id="mobileProductMenuButton" class="cp2-mobile-menu" type="button" aria-expanded="false" aria-controls="primaryProductNav"><span aria-hidden="true">☰</span><span>Menu</span></button>
       <nav id="primaryProductNav" class="cp2-primary-nav" aria-label="Ferramentas principais">
@@ -148,7 +149,7 @@
           <button id="sidebarToggleTop" class="layout-icon-button" type="button" aria-label="Alternar barra lateral" title="Alternar barra lateral (F9)"><svg><use href="#i-panel-left"/></svg></button>
         </div>
         <div class="privacy-indicator"><span></span> Processamento no computador</div>
-        <button id="helpButton" class="top-button" type="button"><svg><use href="#i-help"/></svg> Ajuda</button>
+        <button id="helpButton" aria-label="Ajuda" title="Ajuda" class="top-button" type="button"><svg><use href="#i-help"/></svg> Ajuda</button>
       </div>
     </header>
 
@@ -676,8 +677,9 @@
   <script src="assets/js/diagnostics-config.js?v=2.0.1-tracing1"></script>
   <script src="assets/js/diagnostics-telemetry.js?v=2.0.1-tracing2"></script>
   <script src="assets/js/stable-1.0.js?v=2.0.1-shortcuts1"></script>
-  <script src="assets/js/header-settings-1.0.3.js?v=2.0.1-settings1"></script>
+  <script src="assets/js/header-settings-1.0.3.js?v=2.0.1-design3"></script>
   <script src="assets/js/product-redesign-2.0.js?v=2.0.12"></script>
   <script src="assets/js/workspace-modernization.js?v=2.0.1-ux1"></script>
+  <script src="assets/js/design-3.js?v=1"></script>
 </body>
 </html>
