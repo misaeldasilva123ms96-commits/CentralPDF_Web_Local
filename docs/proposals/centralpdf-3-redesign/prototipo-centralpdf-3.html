@@ -1,0 +1,845 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Central PDF</title><style>*{box-sizing:border-box}body{margin:0}/* Central PDF — camada de design 3.0 (carregar POR ÚLTIMO no index.html) */
+:root{--cd-bg:#f6f7fb;--cd-sf:#fff;--cd-bd:#e5e8f0;--cd-tx:#12172b;--cd-mu:#667089;--cd-ac:#5b4bff;--cd-ac2:#9b5cff;--cd-r:16px;--cd-sh:0 1px 2px rgba(20,25,60,.05),0 10px 30px rgba(20,25,60,.07);--cd-shh:0 2px 4px rgba(20,25,60,.06),0 18px 44px rgba(60,50,200,.16)}
+body[data-theme='dark']{--cd-bg:#0b0f1d;--cd-sf:#141a2e;--cd-bd:#27304a;--cd-tx:#eef1ff;--cd-mu:#97a2c0;--cd-sh:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);--cd-shh:0 2px 4px rgba(0,0,0,.4),0 18px 44px rgba(91,75,255,.28)}
+.icon-sprite{position:absolute;width:0;height:0;overflow:hidden}
+body{background:var(--cd-bg);color:var(--cd-tx);font-family:Inter,"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{background-image:radial-gradient(900px 380px at 15% -10%,rgba(91,75,255,.10),transparent 60%),radial-gradient(700px 320px at 90% -5%,rgba(155,92,255,.09),transparent 60%);background-attachment:fixed}
+
+/* Topo */
+body .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:18px;padding:12px clamp(16px,3vw,32px);background:color-mix(in srgb,var(--cd-sf) 82%,transparent);backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--cd-bd)}
+body .brand-button{display:flex;align-items:center;gap:11px;background:none;border:0;color:inherit;cursor:pointer;text-align:left;font:inherit}
+body .brand-mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--cd-ac),var(--cd-ac2));box-shadow:0 6px 16px rgba(91,75,255,.4)}
+body .brand-copy strong{display:block;font-size:15px;letter-spacing:-.01em}
+body .brand-copy small{color:var(--cd-mu);font-size:11px}
+body .cp2-primary-nav{display:flex;align-items:center;gap:4px;margin-left:8px}
+body .cp2-primary-nav>button,body .cp2-primary-nav>label{padding:8px 13px;border-radius:10px;border:0;background:none;color:var(--cd-mu);font-weight:600;font-size:13.5px;font-family:inherit;cursor:pointer;transition:.15s}
+body .cp2-primary-nav>button:hover,body .cp2-primary-nav>label:hover{background:color-mix(in srgb,var(--cd-ac) 10%,transparent);color:var(--cd-ac)}
+body .top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+body .privacy-indicator{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#12805a;background:rgba(18,160,110,.12);padding:7px 12px;border-radius:99px}
+body .privacy-indicator span{width:7px;height:7px;border-radius:50%;background:#18b27a;box-shadow:0 0 0 4px rgba(24,178,122,.2)}
+body .top-button{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;border:1px solid var(--cd-bd);background:var(--cd-sf);color:var(--cd-tx);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer}
+body .top-button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+
+/* Hero */
+body .home-view{max-width:1180px;margin:0 auto;padding:0 clamp(16px,3vw,32px) 60px}
+body .home-hero{display:block;text-align:center;padding:64px 0 28px;background:none;border:0}
+body .home-hero h1{margin:0 auto 14px;max-width:760px;font-size:clamp(34px,5.4vw,58px);line-height:1.05;letter-spacing:-.035em;font-weight:800;background:linear-gradient(120deg,var(--cd-tx) 30%,var(--cd-ac) 70%,var(--cd-ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+body .home-hero p{margin:0 auto 28px;max-width:560px;color:var(--cd-mu);font-size:17px;line-height:1.55}
+body .search-box{position:relative;display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto;padding:6px 14px;background:var(--cd-sf);border:1px solid var(--cd-bd);border-radius:18px;box-shadow:var(--cd-sh);transition:.2s}
+body .search-box:focus-within{border-color:var(--cd-ac);box-shadow:0 0 0 4px rgba(91,75,255,.15),var(--cd-sh)}
+body .search-box svg{width:20px;height:20px;fill:none;stroke:var(--cd-mu);stroke-width:1.8;flex:none}
+body .search-box input{flex:1;border:0;outline:0;background:none;padding:13px 0;font-weight:500;font-size:16px;font-family:inherit;color:var(--cd-tx)}
+body .search-box kbd,body .home-keyboard-tip kbd{font-weight:600;font-size:11px;font-family:inherit;color:var(--cd-mu);border:1px solid var(--cd-bd);border-bottom-width:2px;border-radius:7px;padding:3px 7px;background:var(--cd-bg)}
+
+/* Importar arquivos */
+body .home-import-entry{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:6px auto 30px;padding:14px 18px;max-width:640px;border:1.5px dashed color-mix(in srgb,var(--cd-ac) 45%,var(--cd-bd));border-radius:var(--cd-r);background:color-mix(in srgb,var(--cd-ac) 5%,var(--cd-sf));color:var(--cd-mu);font-size:13.5px}
+body .home-import-entry .small-button{border:0;cursor:pointer;color:#fff;font-weight:700;font-size:13.5px;font-family:inherit;padding:10px 16px;border-radius:11px;background:linear-gradient(135deg,var(--cd-ac),var(--cd-ac2));box-shadow:0 6px 16px rgba(91,75,255,.35);transition:.15s}
+body .home-import-entry .small-button:hover{transform:translateY(-1px)}
+
+/* Categorias */
+body .home-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+body .category-tabs{display:flex;gap:6px;padding:5px;background:var(--cd-sf);border:1px solid var(--cd-bd);border-radius:14px;box-shadow:var(--cd-sh)}
+body .category-tab{border:0;background:none;color:var(--cd-mu);padding:8px 16px;border-radius:10px;font-weight:600;font-size:13.5px;font-family:inherit;cursor:pointer;transition:.15s}
+body .category-tab:hover{color:var(--cd-tx)}
+body .category-tab.active{color:#fff;background:linear-gradient(135deg,var(--cd-ac),var(--cd-ac2));box-shadow:0 4px 12px rgba(91,75,255,.35)}
+body .offline-note{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cd-mu)}
+body .offline-note svg{width:18px;height:18px;fill:none;stroke:#18b27a;stroke-width:1.8}
+body .offline-note strong{display:block;color:var(--cd-tx);font-size:12.5px}
+body .tool-section-heading{display:flex;align-items:end;justify-content:space-between;margin:8px 0 16px}
+body .tool-section-heading h2{margin:0;font-size:24px;letter-spacing:-.02em}
+body .tool-section-heading p{margin:2px 0 0;color:var(--cd-mu);font-size:13px}
+body .home-keyboard-tip{color:var(--cd-mu);font-size:12.5px}
+
+/* Cards */
+body .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+body .tool-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:20px;min-height:176px;text-align:left;color:var(--cd-tx);font-family:inherit;background:var(--cd-sf);border:1px solid color-mix(in srgb,var(--tone,#5b4bff) 35%,var(--cd-bd));border-radius:var(--cd-r);box-shadow:var(--cd-sh);cursor:pointer;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+body .tool-card::before{content:"";position:absolute;inset:0;background:radial-gradient(320px 120px at 0 0,color-mix(in srgb,var(--tone,#5b4bff) 14%,transparent),transparent 70%);opacity:0;transition:.25s;pointer-events:none}
+body .tool-card:hover{transform:translateY(-4px);box-shadow:var(--cd-shh);border-color:color-mix(in srgb,var(--tone,#5b4bff) 50%,var(--cd-bd))}
+body .tool-card:hover::before{opacity:1}
+body .tool-card:focus-visible{outline:3px solid rgba(91,75,255,.45);outline-offset:2px}
+body .tool-card strong{font-size:16px;letter-spacing:-.01em;margin-top:6px}
+body .tool-card p{margin:0;color:var(--cd-mu);font-size:13px;line-height:1.5;flex:1}
+body .tool-card-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--tone,#5b4bff),color-mix(in srgb,var(--tone,#5b4bff) 55%,#fff));box-shadow:0 8px 18px color-mix(in srgb,var(--tone,#5b4bff) 38%,transparent)}
+body .tool-card-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body .tool-card .open-tool{font-size:12.5px;font-weight:700;color:var(--tone,#5b4bff);opacity:.0;transform:translateX(-6px);transition:.2s}
+body .tool-card:hover .open-tool{opacity:1;transform:none}
+body .tool-card .recommended{position:absolute;top:16px;right:16px;font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:4px 9px;border-radius:99px;color:var(--cd-ac);background:color-mix(in srgb,var(--cd-ac) 12%,transparent)}
+body .tool-card.featured{border-color:color-mix(in srgb,var(--tone,#5b4bff) 35%,var(--cd-bd))}
+body .tool-card[data-icon-tone=violet]{--tone:#6a4cff}body .tool-card[data-icon-tone=blue]{--tone:#2f7df6}
+body .tool-card[data-icon-tone=teal]{--tone:#0ea5a0}body .tool-card[data-icon-tone=green]{--tone:#16a368}
+body .tool-card[data-icon-tone=orange]{--tone:#f08a1c}body .tool-card[data-icon-tone=rose]{--tone:#e8456b}
+
+@media (max-width:860px){body .privacy-indicator{display:none}body .home-hero{padding-top:40px}}
+@media (prefers-reduced-motion:reduce){body *{transition:none!important}}
+
+/* Correções do topo (ícones, menus auxiliares, quebra de linha) */
+body [hidden]{display:none!important}
+body .topbar svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8}
+body .brand-button{flex:none}
+body .brand-copy{white-space:nowrap}
+body .cp2-primary-nav{flex:1;min-width:0}
+body .cp2-primary-nav>button{display:inline-flex;align-items:center;white-space:nowrap;flex:none}
+body:not([data-workspace-open='true']) .workspace-layout-actions{display:none}
+body .layout-icon-button{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--cd-bd);border-radius:10px;background:var(--cd-sf);color:var(--cd-tx);cursor:pointer}
+body .privacy-indicator,body .top-button{white-space:nowrap;flex:none}
+@media (max-width:1440px){body .privacy-indicator{display:none}}
+@media (max-width:1100px){body .cp2-primary-nav>button{padding:8px 9px;font-size:13px}body .brand-copy small{display:none}}
+@media (max-width:560px){
+body .topbar{gap:8px;padding:10px 14px}
+body .brand-copy small{display:none}
+body .brand-copy strong{font-size:13.5px}
+body .brand-mark{width:34px;height:34px;flex:none}
+body .brand-button{flex:0 1 auto;min-width:0}
+body .brand-copy{min-width:0;overflow:hidden;text-overflow:ellipsis}
+body .top-button{padding:8px 10px}
+body #helpButton{font-size:0;gap:0}
+body .home-toolbar{flex-direction:column;align-items:stretch}
+body .category-tabs{overflow-x:auto;max-width:100%;scrollbar-width:none}
+body .category-tab{flex:none;padding:8px 13px}
+body .home-keyboard-tip,body .search-box kbd{display:none}
+body .tool-grid{grid-template-columns:1fr}
+}
+
+/* Redesign 3.0 — ações compactas e menu de configuração */
+body .top-actions{gap:8px}
+body .top-button.icon-only{width:38px;height:38px;padding:0;justify-content:center;gap:0;flex:none}
+body .top-button.icon-only svg{width:19px;height:19px;stroke-linecap:round;stroke-linejoin:round}
+body .top-button.icon-only:hover,body .settings-close:hover,body .settings-item:hover{border-color:color-mix(in srgb,var(--cd-ac) 50%,var(--cd-bd));background:color-mix(in srgb,var(--cd-ac) 8%,var(--cd-sf));color:var(--cd-ac)}
+body .top-button.icon-only:focus-visible,body .settings-panel button:focus-visible{outline:3px solid color-mix(in srgb,var(--cd-ac) 45%,transparent);outline-offset:2px}
+body .settings-host{position:relative;flex:none}
+body .settings-panel{position:absolute;right:0;top:calc(100% + 12px);z-index:60;width:min(400px,calc(100vw - 24px));max-height:min(82vh,650px);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--cd-bd);border-radius:22px;background:linear-gradient(180deg,color-mix(in srgb,var(--cd-sf) 98%,transparent),color-mix(in srgb,var(--cd-bg) 35%,var(--cd-sf)));color:var(--cd-tx);box-shadow:var(--cd-shh)}
+body .settings-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 22px 16px;border-bottom:1px solid color-mix(in srgb,var(--cd-bd) 88%,transparent)}
+body .settings-panel-header strong{display:block;font-size:17px;letter-spacing:-.02em}
+body .settings-panel-header p{margin:7px 0 0;color:var(--cd-mu);font-size:13px;line-height:1.45}
+body .settings-close{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--cd-bd);border-radius:10px;background:transparent;color:var(--cd-mu);cursor:pointer;flex:none}
+body .settings-close svg{width:15px;height:15px}
+body .settings-panel-body{overflow:auto;padding:10px 10px 0 22px;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--cd-ac) 45%,var(--cd-bd)) transparent}
+body .settings-panel-body::-webkit-scrollbar{width:10px}
+body .settings-panel-body::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--cd-ac) 32%,var(--cd-bd));border-radius:99px;border:3px solid transparent;background-clip:padding-box}
+body .settings-section{padding:12px 12px 16px 0;border-top:1px solid color-mix(in srgb,var(--cd-bd) 85%,transparent)}
+body .settings-section:first-child{padding-top:4px;border-top:0}
+body .settings-section-title{margin:0 0 12px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cd-mu)}
+body .settings-list{display:grid;gap:6px}
+body .settings-item{width:100%;display:grid;grid-template-columns:40px minmax(0,1fr) 18px;align-items:center;gap:13px;border:1px solid transparent;border-radius:14px;padding:10px 12px;background:transparent;color:inherit;text-align:left;font-family:inherit;cursor:pointer;transition:.15s}
+body .settings-item:hover{transform:translateY(-1px)}
+body .settings-item[data-tone="violet"]{--settings-tone:#6a4cff}
+body .settings-item[data-tone="blue"]{--settings-tone:#2f7df6}
+body .settings-item[data-tone="teal"]{--settings-tone:#0ea5a0}
+body .settings-item[data-tone="green"]{--settings-tone:#16a368}
+body .settings-item[data-tone="orange"]{--settings-tone:#f08a1c}
+body .settings-item[data-tone="rose"]{--settings-tone:#e8456b}
+body .settings-item-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,var(--settings-tone,#5b4bff),color-mix(in srgb,var(--settings-tone,#5b4bff) 60%,#fff));color:#fff;box-shadow:0 8px 18px color-mix(in srgb,var(--settings-tone,#5b4bff) 30%,transparent)}
+body .settings-item-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+body .settings-item-copy strong{display:block;font-size:14px;letter-spacing:-.01em;color:var(--cd-tx)}
+body .settings-item-copy small{display:block;margin-top:3px;color:var(--cd-mu);font-size:12.5px;line-height:1.35}
+body .settings-item-meta{display:inline-flex;align-items:center;justify-content:flex-end;gap:8px;color:var(--cd-mu);font-size:12px;font-weight:700}
+body .settings-item-meta svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+body .settings-panel-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 18px;border-top:1px solid color-mix(in srgb,var(--cd-bd) 88%,transparent);background:color-mix(in srgb,var(--cd-bg) 35%,var(--cd-sf));font-size:11.5px;color:var(--cd-mu)}
+body .settings-panel-footer kbd{font-weight:700;font-size:11px;font-family:inherit;color:var(--cd-mu);border:1px solid var(--cd-bd);border-bottom-width:2px;border-radius:7px;padding:2px 7px;background:var(--cd-bg)}
+@media (max-width:560px){body .topbar{gap:6px}body .top-actions{gap:5px}body .top-button.icon-only{width:35px;height:35px}body .brand-button{gap:7px}body .brand-copy{max-width:calc(100vw - 180px)}body .brand-copy strong{overflow:hidden;text-overflow:ellipsis}body .settings-panel{right:-6px;width:min(100vw - 18px,400px);max-height:78vh}body .settings-panel-header{padding:18px 18px 14px}body .settings-panel-body{padding-left:18px}body .settings-item{grid-template-columns:34px minmax(0,1fr) 14px;padding:9px 10px}body .settings-item-icon{width:34px;height:34px;border-radius:11px}body .settings-item-icon svg{width:18px;height:18px}}
+
+/* Navegação por nomes, sem botão Menu ou listas suspensas. */
+body .topbar{gap:12px}
+body .cp2-primary-nav{
+  display:flex;align-items:center;gap:2px;flex:1;min-width:0;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;
+  margin-left:5px;
+}
+body .cp2-primary-nav::-webkit-scrollbar{display:none}
+body .cp2-primary-nav>button{display:inline-flex!important;white-space:nowrap;padding:8px 10px;flex:none}
+body .cp2-primary-nav>button:focus-visible{outline:2px solid var(--cd-ac);outline-offset:-2px}
+@media (max-width:980px){
+  body .topbar{flex-wrap:wrap;row-gap:7px}
+  body .brand-button{order:1}
+  body .top-actions{order:2;margin-left:auto}
+  body .cp2-primary-nav{order:3;flex:0 0 100%;width:100%;margin-left:0;padding-bottom:2px}
+}
+
+/* Setas discretas apenas nos dois nomes que abrem listas suspensas. */
+body .cp2-primary-nav>button.cp2-dropdown-trigger{gap:6px}
+body .cp2-primary-nav .cp2-down-chevron{width:13px;height:13px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;transition:transform .18s;flex:none}
+body .cp2-primary-nav .cp2-dropdown-trigger[aria-expanded="true"]{color:var(--cd-ac);background:color-mix(in srgb,var(--cd-ac) 9%,transparent)}
+body .cp2-primary-nav .cp2-dropdown-trigger[aria-expanded="true"] .cp2-down-chevron{transform:rotate(180deg)}
+body .cp2-dropdown-panel{position:fixed;z-index:90;width:max-content;max-width:calc(100vw - 24px);min-width:300px;max-height:min(68vh,560px);overflow-y:auto;overscroll-behavior:contain;padding:16px;background:var(--cd-sf);color:var(--cd-tx);border:1px solid var(--cd-bd);border-radius:16px;box-shadow:var(--cd-shh)}
+body .cp2-dropdown-panel[hidden]{display:none!important}
+body .cp2-dropdown-title{font-size:12px;font-weight:800;letter-spacing:.02em;color:var(--cd-mu);margin:0 0 12px}
+body .cp2-dropdown-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;min-width:min(480px,calc(100vw - 58px))}
+body .cp2-dropdown-all{width:min(820px,calc(100vw - 24px))}
+body .cp2-dropdown-all .cp2-dropdown-grid{grid-template-columns:repeat(4,minmax(0,1fr));min-width:0;align-items:start;gap:16px}
+body .cp2-dropdown-group{min-width:0}
+body .cp2-dropdown-group h3{font-size:12px;font-weight:800;color:var(--cd-ac);margin:0 0 8px}
+body .cp2-dropdown-link{display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border:0;background:transparent;border-radius:9px;color:var(--cd-tx);font:inherit;font-size:12.5px;font-weight:550;line-height:1.3;text-align:left;cursor:pointer}
+/* Ícones compactos dos menus: mesmos símbolos e tons dos cartões da página. */
+body .cp2-dropdown-link[data-icon-tone="violet"]{--tone:#6a4cff}
+body .cp2-dropdown-link[data-icon-tone="blue"]{--tone:#2f7df6}
+body .cp2-dropdown-link[data-icon-tone="teal"]{--tone:#0ea5a0}
+body .cp2-dropdown-link[data-icon-tone="green"]{--tone:#16a368}
+body .cp2-dropdown-link[data-icon-tone="orange"]{--tone:#f08a1c}
+body .cp2-dropdown-link[data-icon-tone="rose"]{--tone:#e8456b}
+body .cp2-dropdown-icon{display:grid;place-items:center;flex:0 0 21px;width:21px;height:21px;border-radius:7px;background:linear-gradient(135deg,var(--tone,#5b4bff),color-mix(in srgb,var(--tone,#5b4bff) 65%,#fff));color:#fff}
+body .cp2-dropdown-icon svg{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body .cp2-dropdown-label{min-width:0}
+body .cp2-dropdown-link:hover,body .cp2-dropdown-link:focus-visible{background:color-mix(in srgb,var(--cd-ac) 11%,var(--cd-sf));color:var(--cd-ac);outline:none}
+@media (max-width:680px){body .cp2-dropdown-all .cp2-dropdown-grid{grid-template-columns:repeat(2,minmax(0,1fr))}body .cp2-dropdown-grid{grid-template-columns:1fr;min-width:0}body .cp2-dropdown-panel{min-width:min(300px,calc(100vw - 24px))}}
+
+/* Logo exclusivo Central PDF: documentos em camadas, com contraste adaptável aos dois temas. */
+body .brand-mark{width:50px;height:50px;flex:none;display:grid;place-items:center;background:none;box-shadow:none;border-radius:0;overflow:visible}
+body .topbar .brand-logo{display:block;width:50px;height:50px;overflow:visible;filter:drop-shadow(0 3px 5px rgba(44,58,138,.12));transition:filter .2s ease}
+body[data-theme='dark'] .brand-logo .brand-paper{fill:url(#brand-paper-dark);stroke:#a2b3e4}
+body[data-theme='dark'] .brand-logo{filter:drop-shadow(0 2px 6px rgba(90,90,255,.28))}
+body .brand-button:hover .brand-logo{filter:drop-shadow(0 5px 9px rgba(91,75,255,.28))}
+@media(max-width:560px){body .brand-mark,body .topbar .brand-logo{width:41px;height:41px}}
+
+
+/* Workspaces de ferramentas — Juntar, Dividir e Organizar */
+body .workspace-view{max-width:none;padding:0;display:none}
+body[data-workspace-open='true'] .workspace-view{display:block}
+body[data-workspace-open='true'] .home-view{display:none}
+body .workspace-shell{display:grid;grid-template-columns:minmax(0,1fr) 350px;min-height:calc(100vh - 72px);border-top:1px solid var(--cd-bd)}
+body .workspace-main{padding:20px 28px 28px;background:linear-gradient(180deg,color-mix(in srgb,var(--cd-bg) 82%,transparent),color-mix(in srgb,var(--cd-ac) 3%,var(--cd-bg)))}
+body .workspace-sidebar{padding:16px 16px 18px;border-left:1px solid var(--cd-bd);background:linear-gradient(180deg,color-mix(in srgb,var(--cd-sf) 94%,transparent),color-mix(in srgb,var(--cd-bg) 48%,var(--cd-sf)));display:flex;flex-direction:column;gap:14px}
+body[data-sidebar-collapsed='true'] .workspace-shell{grid-template-columns:minmax(0,1fr) 0px}
+body[data-sidebar-collapsed='true'] .workspace-sidebar{width:0;padding:0;border-left:0;overflow:hidden}
+body .workspace-screen{display:none}
+body .workspace-screen.active{display:grid;grid-template-columns:minmax(0,1fr) 350px}
+body .workspace-screen.active .workspace-main,body .workspace-screen.active .workspace-sidebar{display:flex}
+body .workspace-screen .workspace-main{display:flex;flex-direction:column}
+body .workspace-screen .workspace-sidebar{display:flex}
+body .workspace-progress{display:flex;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+body .workspace-step{display:flex;align-items:center;gap:10px;color:var(--cd-mu);font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;min-width:0}
+body .workspace-step-badge{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--cd-ac) 20%,var(--cd-sf));color:var(--cd-ac);font-size:12px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--cd-ac) 22%,transparent)}
+body .workspace-step-line{height:1px;width:120px;background:color-mix(in srgb,var(--cd-bd) 90%,transparent)}
+body .workspace-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+body .workspace-tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:color-mix(in srgb,var(--cd-ac) 12%,var(--cd-sf));color:var(--cd-ac);font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+body .workspace-tag.muted{background:color-mix(in srgb,var(--cd-bd) 55%,var(--cd-sf));color:var(--cd-mu)}
+body .workspace-heading h1{margin:0 0 10px;width:fit-content;max-width:100%;font-size:clamp(34px,4vw,52px);letter-spacing:-.035em;line-height:1.05;font-weight:800;background:linear-gradient(120deg,var(--cd-tx) 30%,var(--cd-ac) 70%,var(--cd-ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+body .workspace-heading p{margin:0;max-width:820px;color:var(--cd-mu);font-size:16px;line-height:1.6}
+body .workspace-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:28px 0 20px}
+body .workspace-stat{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--cd-bd);border-radius:16px;background:color-mix(in srgb,var(--cd-sf) 82%,transparent);box-shadow:var(--cd-sh)}
+body .workspace-stat-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cd-ac),var(--cd-ac2));color:#fff;box-shadow:0 8px 18px rgba(91,75,255,.25)}
+body .workspace-stat-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body .workspace-stat small{display:block;color:var(--cd-mu);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+body .workspace-stat strong{display:block;margin-top:3px;font-size:15px;letter-spacing:-.01em}
+body .workspace-helpbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;padding:14px 16px;border:1px solid var(--cd-bd);border-radius:16px;background:color-mix(in srgb,var(--cd-sf) 78%,transparent);color:var(--cd-mu);font-size:13px;box-shadow:var(--cd-sh)}
+body .workspace-helpbar strong{display:inline-flex;align-items:center;gap:8px;color:var(--cd-tx);font-size:13.5px}
+body .workspace-helpbar svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+body .workspace-dropzone{display:grid;place-items:center;min-height:295px;padding:30px;border:1.5px dashed color-mix(in srgb,var(--cd-ac) 34%,var(--cd-bd));border-radius:28px;background:linear-gradient(180deg,color-mix(in srgb,var(--cd-ac) 4%,var(--cd-sf)),color-mix(in srgb,var(--cd-ac2) 3%,var(--cd-bg)));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--cd-ac) 8%,transparent)}
+body .workspace-drop-inner{text-align:center;max-width:480px}
+body .workspace-drop-icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;margin:0 auto 18px;background:linear-gradient(135deg,var(--cd-ac),var(--cd-ac2));color:#fff;box-shadow:0 12px 28px rgba(91,75,255,.28)}
+body .workspace-drop-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8}
+body .workspace-drop-inner h2{margin:0 0 8px;font-size:31px;letter-spacing:-.03em}
+body .workspace-drop-inner p{margin:0 0 16px;color:var(--cd-mu);font-size:14px;line-height:1.5}
+body .workspace-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border-radius:12px;border:0;background:linear-gradient(135deg,var(--cd-ac),var(--cd-ac2));color:#fff;font:inherit;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 12px 28px rgba(91,75,255,.28)}
+body .workspace-file-pill{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--cd-bd);background:var(--cd-sf);color:var(--cd-mu);font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+body .workspace-subpanel{margin-top:14px;padding:20px;border:1px solid var(--cd-bd);border-radius:24px;background:color-mix(in srgb,var(--cd-sf) 80%,transparent);box-shadow:var(--cd-sh)}
+body .workspace-subpanel-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+body .workspace-subpanel-header h3{margin:0;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--cd-mu)}
+body .workspace-subpanel-header .counter{padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--cd-ac) 12%,transparent);color:var(--cd-ac);font-size:13px;font-weight:800}
+body .workspace-subpanel-empty{padding:12px 0 4px;color:var(--cd-tx)}
+body .workspace-subpanel-empty strong{display:block;margin-bottom:6px;font-size:16px}
+body .workspace-subpanel-empty p{margin:0;color:var(--cd-mu);font-size:13px}
+body .workspace-sidebar-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+body .workspace-sidebar-top small{display:block;color:var(--cd-ac);font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:11px;margin-bottom:4px}
+body .workspace-sidebar-top h2{margin:0;font-size:17px;letter-spacing:-.02em}
+body .workspace-sidebar-top p{margin:6px 0 0;color:var(--cd-mu);font-size:13px;line-height:1.45}
+body .workspace-sidebar-toggle{width:40px;height:40px;border:1px solid var(--cd-bd);border-radius:12px;background:var(--cd-sf);display:grid;place-items:center;color:var(--cd-tx);cursor:pointer}
+body .workspace-sidebar-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
+body .workspace-alert{display:flex;gap:10px;padding:14px;border:1px solid rgba(240,138,28,.28);border-radius:16px;background:color-mix(in srgb,#f08a1c 12%,var(--cd-sf));color:var(--cd-tx)}
+body .workspace-alert .icon{width:28px;height:28px;border-radius:10px;display:grid;place-items:center;background:rgba(240,138,28,.18);color:#c27b10;flex:none}
+body .workspace-alert .icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+body .workspace-alert strong{display:block;margin-bottom:3px;font-size:13px}
+body .workspace-alert p{margin:0;color:var(--cd-mu);font-size:12.5px;line-height:1.45}
+body .workspace-sidecard{border:1px solid var(--cd-bd);border-radius:18px;padding:20px;background:color-mix(in srgb,var(--cd-sf) 82%,transparent);box-shadow:var(--cd-sh)}
+body .workspace-sidecard.empty{display:grid;place-items:center;min-height:190px;text-align:center}
+body .workspace-sidecard.empty .workspace-drop-icon{margin-bottom:14px;width:42px;height:42px}
+body .workspace-sidecard.empty h3{margin:0 0 6px;font-size:22px;letter-spacing:-.03em}
+body .workspace-sidecard.empty p{margin:0;color:var(--cd-mu);font-size:13px;line-height:1.45}
+body .workspace-sidebar input{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--cd-bd);background:color-mix(in srgb,var(--cd-sf) 78%,transparent);color:var(--cd-tx);font:inherit}
+body .workspace-sidebar .primary-action{width:100%;padding:16px 18px;border-radius:16px;border:0;background:color-mix(in srgb,var(--cd-ac) 24%,var(--cd-sf));color:color-mix(in srgb,var(--cd-ac) 80%,var(--cd-tx));font:inherit;font-size:14px;font-weight:800;cursor:pointer}
+body .workspace-sidebar .footer-note{margin-top:auto;color:var(--cd-mu);font-size:11.5px;line-height:1.45}
+body .cp2-primary-nav>button.is-active{color:var(--cd-ac);background:color-mix(in srgb,var(--cd-ac) 12%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--cd-ac) 25%,transparent)}
+@media (max-width:1200px){body .workspace-shell,body .workspace-screen.active{grid-template-columns:minmax(0,1fr) 320px}body .workspace-step-line{width:92px}}
+@media (max-width:980px){body .workspace-shell,body .workspace-screen.active{grid-template-columns:1fr}body .workspace-sidebar{border-left:0;border-top:1px solid var(--cd-bd)}body[data-sidebar-collapsed='true'] .workspace-shell{grid-template-columns:1fr}body[data-sidebar-collapsed='true'] .workspace-sidebar{width:auto;display:none}body .workspace-stats{grid-template-columns:1fr}body .workspace-main{padding:18px 16px 22px}}
+</style></head><body data-theme="light">  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/><path d="M4 12V4h8"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="m14 4 6 6-9 9H5v-6l9-9Z"/><path d="M5 19c-1.5 0-2.5.8-2.5 2 1.3-.6 2.5-.3 3.5-1"/></symbol>
+    <symbol id="i-merge" viewBox="0 0 24 24"><path d="M7 3v5a4 4 0 0 0 4 4h6"/><path d="m14 9 3 3-3 3"/><path d="M7 21v-5a4 4 0 0 1 4-4"/></symbol>
+    <symbol id="i-split" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M8 7 4 3"/><path d="m8 17-4 4"/><path d="m16 7 4-4"/><path d="m16 17 4 4"/></symbol>
+    <symbol id="i-extract" viewBox="0 0 24 24"><path d="M14 3h7v7"/><path d="m21 3-9 9"/><path d="M11 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+    <symbol id="i-watermark" viewBox="0 0 24 24"><path d="M4 5h16"/><path d="m6 8 3 11 3-8 3 8 3-11"/></symbol>
+    <symbol id="i-number" viewBox="0 0 24 24"><path d="M10 3 8 21"/><path d="M16 3 14 21"/><path d="M4 9h16"/><path d="M3 15h16"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></symbol>
+    <symbol id="i-convert" viewBox="0 0 24 24"><path d="M7 7h11l-3-3"/><path d="m18 7-3 3"/><path d="M17 17H6l3 3"/><path d="m6 17 3-3"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-ocr" viewBox="0 0 24 24"><path d="M7 3H4a1 1 0 0 0-1 1v3"/><path d="M17 3h3a1 1 0 0 1 1 1v3"/><path d="M7 21H4a1 1 0 0 1-1-1v-3"/><path d="M17 21h3a1 1 0 0 0 1-1v-3"/><path d="M7 8h10"/><path d="M7 12h7"/><path d="M7 16h9"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 17v3h16v-3"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.7 2c-.9.6-1.5 1-1.5 2"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.9 13.1A9 9 0 0 1 10.9 3.1 9 9 0 1 0 20.9 13.1Z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M10 2h4l.6 2.6a8 8 0 0 1 1.8.8l2.3-1.2 2.8 2.8-1.2 2.3a8 8 0 0 1 .8 1.8L23 12v.1l-2.6.6a8 8 0 0 1-.8 1.8l1.2 2.3-2.8 2.8-2.3-1.2a8 8 0 0 1-1.8.8L14 22h-4l-.6-2.6a8 8 0 0 1-1.8-.8l-2.3 1.2-2.8-2.8 1.2-2.3a8 8 0 0 1-.8-1.8L1 12v-.1l2.6-.6a8 8 0 0 1 .8-1.8L3.2 7.2 6 4.4l2.3 1.2a8 8 0 0 1 1.8-.8L10 2Z" transform="translate(0 0) scale(.96) translate(.5 .5)"/><circle cx="12" cy="12" r="3"/></symbol>
+
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7h.01"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-select" viewBox="0 0 24 24"><path d="m5 3 12 9-6 1 3 6-3 1-3-6-4 4z"/></symbol>
+    <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 5h14"/><path d="M12 5v14"/><path d="M8 19h8"/></symbol>
+    <symbol id="i-highlighter" viewBox="0 0 24 24"><path d="m14 4 6 6-8 8H6v-6z"/><path d="M4 20h12"/></symbol>
+    <symbol id="i-cover" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8v8H8z"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M7 3v14a2 2 0 0 0 2 2h12"/><path d="M3 7h14a2 2 0 0 1 2 2v12"/></symbol>
+    <symbol id="i-panel-left" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="m15 9-3 3 3 3"/></symbol>
+    <symbol id="i-panel-right" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/><path d="m9 9 3 3-3 3"/></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M16 21h5v-5"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M9 10v10"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></symbol>
+    <symbol id="i-office" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h5"/><path d="M8 12h8"/><path d="M8 16h6"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M10 16h4"/></symbol>
+    <!-- TOOL_ICONS_START -->
+    <symbol id="t-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="14" y="3" width="7" height="8" rx="2"/><rect x="3" y="14" width="8" height="7" rx="2"/><path d="M14 15h7m-4-2 4 2-4 2m4 4h-7"/></symbol>
+    <symbol id="t-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m8 17 1-4 5-5 3 3-5 5-4 1Z"/></symbol>
+    <symbol id="t-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h5v4c0 3 2 4 5 4h7M3 20h5v-4c0-3 2-4 5-4m3-4 4 4-4 4"/></symbol>
+    <symbol id="t-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9m0 3L5 5m7 7 7-7M4 10V4h6m4 0h6v6"/></symbol>
+    <symbol id="t-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M9 13h12m-4-4 4 4-4 4"/></symbol>
+    <symbol id="t-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7a8 8 0 1 0 1 10M20 3v5h-5"/><rect x="8" y="8" width="7" height="10" rx="1.5" transform="rotate(-18 11.5 13)"/></symbol>
+    <symbol id="t-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-2 4-7 7-7 11a7 7 0 0 0 14 0c0-4-5-7-7-11Z"/><path d="M9 14h6m-3-3v6"/></symbol>
+    <symbol id="t-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m10 10-1 8m6-8-1 8M8 13h9m-9 3h9"/></symbol>
+    <symbol id="t-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8" cy="9" r="1.5"/><path d="m4 17 5-5 4 4 3-3 5 5"/><path d="m17 2 4 4-4 4"/></symbol>
+    <symbol id="t-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8" cy="9" r="1.5"/><path d="m4 17 5-5 4 4 3-3 5 5"/><path d="M2 2h6M2 2v6m20 14h-6m6 0v-6"/></symbol>
+    <symbol id="t-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m8 10 3 3-3 3m8-6-3 3 3 3"/></symbol>
+    <symbol id="t-11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><rect x="8" y="10" width="13" height="10" rx="2"/><path d="m9 18 4-4 3 3 2-2 3 3"/></symbol>
+    <symbol id="t-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v14a2 2 0 0 0 2 2h12M3 7h14a2 2 0 0 1 2 2v12M11 3h10v10"/></symbol>
+    <symbol id="t-13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8 11h6m-6 4h3"/><path d="m13 18 4-4 4 4-3 3h-5Z"/></symbol>
+    <symbol id="t-14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m8 14 3 3 6-7"/></symbol>
+    <symbol id="t-15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8 11h8m-8 4h8m-8 3h5"/></symbol>
+    <symbol id="t-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H4a1 1 0 0 0-1 1v4m13-5h4a1 1 0 0 1 1 1v4M3 16v4a1 1 0 0 0 1 1h4m8 0h4a1 1 0 0 0 1-1v-4M8 8h8m-4 0v9m-3 0h6"/></symbol>
+    <symbol id="t-17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="8" height="16" rx="2"/><rect x="14" y="4" width="8" height="16" rx="2"/><path d="M5 9h2m10 0h2M8 14h8m-2-2 2 2-2 2"/></symbol>
+    <symbol id="t-18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8 11h8m-8 7h5"/><rect x="8" y="14" width="8" height="2" rx=".7" fill="currentColor"/></symbol>
+    <symbol id="t-19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><rect x="8" y="11" width="3" height="3" rx=".5"/><path d="M14 12h3M8 18h9"/></symbol>
+    <symbol id="t-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m8 17 4-8 3 1-4 8-3 1Zm-1 3h11"/></symbol>
+    <symbol id="t-21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8 11h8M8 15h8M8 18h5"/></symbol>
+    <symbol id="t-22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m10 11-3 3 3 3m4-6 3 3-3 3"/></symbol>
+    <symbol id="t-23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8" cy="9" r="1.5"/><path d="m4 17 5-5 4 4 3-3 5 5"/><path d="M12 2v8m-3-3 3 3 3-3"/></symbol>
+    <symbol id="t-24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="5" rx="1.5"/><path d="M5 8v12h14V8m-10 4h6m-3 0v5m-2-2 2 2 2-2"/></symbol>
+    <symbol id="t-25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h12v10H9l-4 4V3Zm4 4h5"/><path d="m18 15 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/></symbol>
+    <symbol id="t-26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><rect x="8" y="10" width="13" height="10" rx="2"/><path d="M8 14h13m-8-4v10m4-10v10"/></symbol>
+    <symbol id="t-27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><circle cx="15" cy="15" r="4"/><path d="m18 18 4 4m-9-7 1 1 2-2"/></symbol>
+    <symbol id="t-28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h8l3 3-8 11-5-5 2-9Z"/><circle cx="7" cy="11" r="1"/><path d="M13 3h8v8m-5-5h5"/></symbol>
+    <symbol id="t-29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 8 4v6c0 5-5 8-8 10-3-2-8-5-8-10V6l8-4Z"/><rect x="9" y="10" width="6" height="6" rx="1"/><path d="M10 10V8a2 2 0 0 1 4 0v2"/></symbol>
+    <symbol id="t-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M9 10V7a4 4 0 0 1 8-3m-5 11v2"/></symbol>
+    <symbol id="t-31" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M8 14h2l2-4 2 7 2-3h3"/></symbol>
+    <symbol id="t-32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m8 17 5-5m0-3a3 3 0 0 0 4 4l4-4-2-2-4 4a3 3 0 0 0-2-2Z"/></symbol>
+    <symbol id="t-33" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5m-18 5 9 5 9-5"/></symbol>
+    <symbol id="t-34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h10l4 4v14H3zM13 3v5h4"/><path d="m7 11 1 6 2-4 2 4 1-6"/><path d="M23 10h-5m2-2-2 2 2 2"/></symbol>
+    <symbol id="t-35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h10l4 4v14H3zM13 3v5h4"/><path d="m7 11 1 6 2-4 2 4 1-6"/><path d="M18 10h5m-2-2 2 2-2 2"/></symbol>
+    <symbol id="t-36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h10l4 4v14H3zM13 3v5h4"/><path d="M7 11h8v7H7zM7 14h8m-5-3v7"/><path d="M23 10h-5m2-2-2 2 2 2"/></symbol>
+    <symbol id="t-37" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h10l4 4v14H3zM13 3v5h4"/><path d="M7 11h8v7H7zM7 14h8m-5-3v7"/><path d="M18 10h5m-2-2 2 2-2 2"/></symbol>
+    <symbol id="t-38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h10l4 4v14H3zM13 3v5h4"/><rect x="7" y="11" width="8" height="6" rx="1"/><path d="M11 17v3m-3 0h6"/><path d="M23 10h-5m2-2-2 2 2 2"/></symbol>
+    <symbol id="t-39" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h10l4 4v14H3zM13 3v5h4"/><rect x="7" y="11" width="8" height="6" rx="1"/><path d="M11 17v3m-3 0h6"/><path d="M18 10h5m-2-2 2 2-2 2"/></symbol>
+    <symbol id="t-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="m10 11-3 3 3 3m4-6 3 3-3 3"/></symbol>
+    <symbol id="i-rotate-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8a8 8 0 1 0 1 8M20 3v6h-6"/></symbol>
+    <symbol id="i-rotate-ccw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 1 1-1 8M4 3v6h6"/></symbol>
+    <!-- TOOL_ICONS_END -->
+  </svg>
+
+    <header class="topbar">
+      <button id="homeBrand" class="brand-button" type="button" aria-label="Voltar para início">
+        <span class="brand-mark"><svg class="brand-logo" viewBox="0 0 100 100" width="50" height="50" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brand-back-violet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b99aff"/><stop offset=".46" stop-color="#7954e8"/><stop offset="1" stop-color="#4434b5"/></linearGradient>
+    <linearGradient id="brand-back-blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#66ddff"/><stop offset=".42" stop-color="#2495ee"/><stop offset="1" stop-color="#2359c5"/></linearGradient>
+    <linearGradient id="brand-paper-light" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".64" stop-color="#f1f5ff"/><stop offset="1" stop-color="#d5dfff"/></linearGradient>
+    <linearGradient id="brand-paper-dark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f5ff"/><stop offset=".55" stop-color="#dae3ff"/><stop offset="1" stop-color="#a8bee9"/></linearGradient>
+    <linearGradient id="brand-badge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a461ff"/><stop offset=".48" stop-color="#6145e8"/><stop offset="1" stop-color="#3b35af"/></linearGradient>
+    <linearGradient id="brand-line" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#31c5f7"/><stop offset="1" stop-color="#1e65df"/></linearGradient>
+    <linearGradient id="brand-orbit" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a84bff"/><stop offset=".52" stop-color="#5753f5"/><stop offset="1" stop-color="#1dd6f4"/></linearGradient>
+    <filter id="brand-shadow" x="-25%" y="-25%" width="150%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#182364" flood-opacity=".23"/></filter>
+  </defs>
+  <g filter="url(#brand-shadow)">
+    <path d="M44 11Q48 7 54 10L88 28Q92 30 91 37L77 79Q76 84 70 83L31 74Q26 72 27 67L38 17Q39 13 44 11Z" fill="url(#brand-back-violet)" stroke="#6d4ed4" stroke-width="1.2"/>
+    <path d="M14 28Q14 23 19 21L53 12Q59 11 61 17L75 69Q76 75 70 77L27 90Q22 91 20 85L10 35Q9 30 14 28Z" fill="url(#brand-back-blue)" stroke="#1675d0" stroke-width="1.3"/>
+    <path d="M35 21H61L81 42V81Q81 87 75 87H35Q29 87 29 81V27Q29 21 35 21Z" class="brand-paper" fill="url(#brand-paper-light)" stroke="#d0daf5" stroke-width="1.35"/>
+    <path d="M61 21V36Q61 42 67 42H81Z" fill="#dce6fa" stroke="#c2d0eb" stroke-width="1.2"/>
+    <rect x="17" y="40" width="48" height="23" rx="7" fill="url(#brand-badge)" stroke="#b6a1ff" stroke-width="1.5"/>
+    <text x="41" y="56" fill="#fff" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="900" letter-spacing=".25">PDF</text>
+    <rect x="41" y="68" width="31" height="4.5" rx="2.25" fill="url(#brand-line)"/>
+    <rect x="41" y="77" width="27" height="4.5" rx="2.25" fill="url(#brand-line)" opacity=".82"/>
+  </g>
+  <path d="M12 81C30 92 70 96 92 76" fill="none" stroke="url(#brand-orbit)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+</svg></span>
+        <span class="brand-copy"><strong>Central PDF</strong><small>Web local 2.0.1</small></span>
+      </button>
+      <nav id="primaryProductNav" class="cp2-primary-nav" aria-label="Ferramentas principais">
+        <button class="cp2-nav-tool" data-nav-tool="merge" type="button">Juntar PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="split" type="button">Dividir PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="compress" type="button">Comprimir PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="organize" type="button">Organizar PDF</button>
+        <button class="cp2-nav-tool" data-nav-tool="editPdf" type="button">Editar PDF</button>
+        <button id="converterMenuButton" class="cp2-nav-tool cp2-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="converterMenuPanel">Converter PDF <svg class="cp2-down-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button id="allToolsMenuButton" class="cp2-nav-tool cp2-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="allToolsMenuPanel">Todas as ferramentas <svg class="cp2-down-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+      </nav>
+      <div class="top-actions">
+        <div id="workspaceLayoutActions" class="workspace-layout-actions" aria-label="Controles de layout">
+          <button id="sidebarToggleTop" class="layout-icon-button" type="button" aria-label="Alternar barra lateral" title="Alternar barra lateral (F9)"><svg><use href="#i-panel-left"/></svg></button>
+        </div>
+        <div class="privacy-indicator"><span></span> Processamento no computador</div>
+        <button id="helpButton" class="top-button icon-only" type="button" aria-label="Ajuda" title="Ajuda"><svg aria-hidden="true"><use href="#i-help"/></svg></button>
+        <button id="themeToggleButton" class="top-button icon-only" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro"><svg aria-hidden="true"><use id="themeToggleIcon" href="#i-moon"/></svg></button>
+        <div class="settings-host">
+          <button id="settingsButton" class="top-button icon-only" type="button" aria-label="Configurações" title="Configurações" aria-controls="settingsPanel" aria-expanded="false" aria-haspopup="true"><svg aria-hidden="true"><use href="#i-settings"/></svg></button>
+          <section id="settingsPanel" class="settings-panel" aria-label="Configurações" hidden>
+            <div class="settings-panel-header">
+              <div>
+                <strong>Configurações</strong>
+                <p>Seu espaço de trabalho, do seu jeito.</p>
+              </div>
+              <button id="settingsCloseButton" class="settings-close" type="button" aria-label="Fechar configurações" title="Fechar"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+            </div>
+            <div class="settings-panel-body">
+              <section class="settings-section" aria-labelledby="settingsPersonalizacaoTitle">
+                <h2 id="settingsPersonalizacaoTitle" class="settings-section-title">Personalização</h2>
+                <div class="settings-list">
+                  <button class="settings-item" data-tone="violet" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-17"/></svg></span>
+                    <span class="settings-item-copy"><strong>Interface e painéis</strong><small>Organize a área de trabalho</small></span>
+                    <span class="settings-item-meta"><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                  <button class="settings-item" data-tone="blue" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-19"/></svg></span>
+                    <span class="settings-item-copy"><strong>Predefinições</strong><small>Reutilize os ajustes das ferramentas</small></span>
+                    <span class="settings-item-meta"><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                </div>
+              </section>
+              <section class="settings-section" aria-labelledby="settingsProjectsTitle">
+                <h2 id="settingsProjectsTitle" class="settings-section-title">Projetos e tarefas</h2>
+                <div class="settings-list">
+                  <button class="settings-item" data-tone="teal" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-15"/></svg></span>
+                    <span class="settings-item-copy"><strong>Projetos salvos</strong><small>Salve e continue seu trabalho</small></span>
+                    <span class="settings-item-meta"><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                  <button class="settings-item" data-tone="green" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-24"/></svg></span>
+                    <span class="settings-item-copy"><strong>Resultados</strong><small>Acesse os arquivos processados</small></span>
+                    <span class="settings-item-meta"><span>0</span><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                  <button class="settings-item" data-tone="orange" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-33"/></svg></span>
+                    <span class="settings-item-copy"><strong>Fila de tarefas</strong><small>Acompanhe os processamentos</small></span>
+                    <span class="settings-item-meta"><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                  <button class="settings-item" data-tone="blue" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-2"/></svg></span>
+                    <span class="settings-item-copy"><strong>Fluxos de trabalho</strong><small>Combine etapas de processamento</small></span>
+                    <span class="settings-item-meta"><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                </div>
+              </section>
+              <section class="settings-section" aria-labelledby="settingsSupportTitle">
+                <h2 id="settingsSupportTitle" class="settings-section-title">Sistema e suporte</h2>
+                <div class="settings-list">
+                  <button class="settings-item" data-tone="rose" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-29"/></svg></span>
+                    <span class="settings-item-copy"><strong>Sistema e modo offline</strong><small>Verifique os motores e a conexão</small></span>
+                    <span class="settings-item-meta"><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                  <button class="settings-item" data-tone="teal" type="button">
+                    <span class="settings-item-icon"><svg aria-hidden="true"><use href="#t-31"/></svg></span>
+                    <span class="settings-item-copy"><strong>Diagnóstico e erros</strong><small>Consulte os logs e o compartilhamento</small></span>
+                    <span class="settings-item-meta"><svg aria-hidden="true"><use href="#i-chevron-right"/></svg></span>
+                  </button>
+                </div>
+              </section>
+            </div>
+            <div class="settings-panel-footer">
+              <span>CentralPDF • 2.0.1</span>
+              <span><kbd>Esc</kbd> para fechar</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </header>
+    <section id="converterMenuPanel" class="cp2-dropdown-panel" aria-label="Conversões disponíveis" hidden></section>
+    <section id="allToolsMenuPanel" class="cp2-dropdown-panel cp2-dropdown-all" aria-label="Todas as ferramentas disponíveis" hidden></section>
+
+    <main id="homeView" class="home-view">
+      <section class="home-hero">
+        <div class="hero-copy">
+          <h1>Documentos prontos, sem complicação.</h1>
+          <p>Escolha a tarefa e siga um fluxo guiado. Cada ferramenta mostra apenas os controles necessários e preserva o arquivo original.</p>
+        </div>
+        <div class="search-box">
+          <svg><use href="#i-search"/></svg>
+          <input id="toolSearch" type="search" placeholder="Buscar uma ferramenta ou ação..." autocomplete="off" />
+          <kbd>Ctrl K</kbd>
+        </div>
+      </section>
+
+        <div class="home-import-entry"><button id="homeImportButton" class="small-button primary-soft" type="button">＋ Abrir arquivos</button><span>Ou arraste documentos para esta página e escolha uma ferramenta.</span><input id="homeImportInput" type="file" accept=".pdf,image/*,.txt,.docx,.pptx,.xlsx" multiple hidden /></div>
+      <div class="home-toolbar">
+        <div class="category-tabs" role="tablist" aria-label="Categorias">
+          <button class="category-tab active" data-category="all" type="button">Todas</button>
+          <button class="category-tab" data-category="organize" type="button">Organizar</button>
+          <button class="category-tab" data-category="edit" type="button">Editar</button>
+          <button class="category-tab" data-category="convert" type="button">Converter</button>
+          <button class="category-tab" data-category="security" type="button">Segurança</button>
+        </div>
+        <div class="offline-note"><svg><use href="#i-lock"/></svg><span><strong>Privacidade local</strong><small>Seus documentos não são enviados por esta ferramenta.</small></span></div>
+      </div>
+
+      <div class="tool-section-heading">
+        <div><h2>Ferramentas</h2><p id="toolResultCount">39 opções disponíveis</p></div>
+        <span class="home-keyboard-tip">Use <kbd>Ctrl K</kbd> para buscar</span>
+      </div>
+      <section id="toolGrid" class="tool-grid" aria-label="Ferramentas disponíveis">
+        <button class="tool-card featured" data-icon-tone="violet" data-tool="organize" data-category="organize" data-search="organizar reordenar excluir girar páginas pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-0"/></svg></span><span class="recommended">Recomendado</span>
+          <strong>Organizar PDF</strong><p>Veja as páginas, arraste para reordenar, gire ou exclua.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card featured editor-featured" data-icon-tone="blue" data-tool="editPdf" data-category="edit" data-search="editar pdf texto fonte cor imagem pincel marcador desenhar cobrir cortar página" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-1"/></svg></span>
+          <strong>Editar PDF</strong><p>Adicione e formate textos, imagens, pincel, marcador, coberturas e recortes.</p><span class="open-tool">Abrir editor →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="violet" data-tool="merge" data-category="organize" data-search="juntar unir combinar mesclar pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-2"/></svg></span><strong>Juntar PDFs</strong><p>Una vários documentos na ordem desejada.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="violet" data-tool="split" data-category="organize" data-search="dividir separar páginas pdf zip" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-3"/></svg></span><strong>Dividir PDF</strong><p>Divida por intervalos, partes iguais, quantidade de páginas ou pontos de corte.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="violet" data-tool="extract" data-category="organize" data-search="extrair selecionar páginas pdf intervalo" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-4"/></svg></span><strong>Extrair páginas</strong><p>Monte um novo PDF apenas com as páginas escolhidas.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="blue" data-tool="rotate" data-category="edit" data-search="girar rotacionar virar páginas pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-5"/></svg></span><strong>Girar páginas</strong><p>Corrija a orientação de todas ou apenas algumas páginas.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="blue" data-tool="watermark" data-category="edit" data-search="marca água texto confidencial pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-6"/></svg></span><strong>Marca-d’água</strong><p>Adicione um texto transparente sobre o documento.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="blue" data-tool="pageNumbers" data-category="edit" data-search="numerar número páginas rodapé cabeçalho pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-7"/></svg></span><strong>Numerar páginas</strong><p>Escolha formato, posição e número inicial.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="teal" data-tool="imagesToPdf" data-category="convert" data-search="imagem foto jpg png webp girar rodar rotacionar para pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-8"/></svg></span><strong>JPG/PNG para PDF</strong><p>Gire, organize e transforme fotos e imagens em PDF.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="teal" data-tool="imageConvert" data-category="convert" data-search="converter redimensionar reduzir imagem jpg png webp" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-9"/></svg></span><strong>Converter imagens</strong><p>Altere formato, dimensões e qualidade de várias imagens.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+
+        <button class="tool-card" data-icon-tone="teal" data-tool="compress" data-category="convert" data-search="comprimir reduzir tamanho pdf leve recomendada extrema" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-10"/></svg></span><strong>Comprimir PDF</strong><p>Reduza o tamanho com três níveis e compare antes e depois.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="teal" data-tool="pdfToImage" data-category="convert" data-search="pdf para jpg png imagem converter páginas" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-11"/></svg></span><strong>PDF para JPG/PNG</strong><p>Converta páginas em imagens com resolução configurável.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="blue" data-tool="crop" data-category="edit" data-search="recortar cortar margem borda pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-12"/></svg></span><strong>Recortar PDF</strong><p>Ajuste as margens visíveis das páginas.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="rose" data-tool="metadata" data-category="security" data-search="limpar remover metadados autor título privacidade pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-13"/></svg></span><strong>Limpar metadados</strong><p>Remova autor, título, assunto e informações do programa criador.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="violet" data-tool="normalize" data-category="organize" data-search="normalizar reparar compatibilidade reconstruir pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-14"/></svg></span><strong>Normalizar PDF</strong><p>Regrave a estrutura para melhorar a compatibilidade.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card" data-icon-tone="teal" data-tool="pdfToText" data-category="convert" data-search="extrair texto pdf txt pesquisar" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-15"/></svg></span><strong>Extrair texto</strong><p>Exporte o texto selecionável para TXT.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card featured" data-icon-tone="teal" data-tool="ocr" data-category="convert" data-search="ocr reconhecer texto pdf escaneado imagem pesquisável português" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-16"/></svg></span><strong>OCR e PDF pesquisável</strong><p>Reconheça textos em digitalizações e gere PDF pesquisável, TXT e relatório.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card featured" data-icon-tone="blue" data-tool="pdfToOffice" data-shortcut="PDF para Word" data-category="convert" data-search="word docx office ofice pdf" data-card-badges="DOCX|Local|Páginas" type="button"><span class="tool-card-icon office-word" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-34"/></svg></span><strong>PDF para Word</strong><p>Exporte páginas para Word visual ou texto editável simplificado.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="green" data-tool="pdfToOffice" data-shortcut="PDF para Excel" data-category="convert" data-search="excel xlsx planilha office ofice pdf" data-card-badges="XLSX|Tabelas|Local" type="button"><span class="tool-card-icon office-sheet" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-36"/></svg></span><strong>PDF para Excel</strong><p>Extraia texto e tabelas do PDF para uma planilha Excel.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="orange" data-tool="pdfToOffice" data-shortcut="PDF para PowerPoint" data-category="convert" data-search="powerpoint pptx slides office ofice pdf" data-card-badges="PPTX|Slides|Local" type="button"><span class="tool-card-icon office-slides" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-38"/></svg></span><strong>PDF para PowerPoint</strong><p>Transforme cada página em um slide, preservando a aparência.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="blue" data-tool="documentsToPdf" data-shortcut="Word para PDF" data-category="convert" data-search="word doc docx odt office ofice pdf" data-card-badges="DOC/DOCX|ODT|Local" type="button"><span class="tool-card-icon office-word" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-35"/></svg></span><strong>Word para PDF</strong><p>Converta documentos Word e ODT com cabeçalhos, imagens e layout.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="green" data-tool="documentsToPdf" data-shortcut="Excel para PDF" data-category="convert" data-search="excel xls xlsx ods csv planilha office ofice pdf" data-card-badges="XLS/XLSX|ODS|Local" type="button"><span class="tool-card-icon office-sheet" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-37"/></svg></span><strong>Excel para PDF</strong><p>Converta planilhas Excel e ODS respeitando a configuração de impressão.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="orange" data-tool="documentsToPdf" data-shortcut="PowerPoint para PDF" data-category="convert" data-search="powerpoint ppt pptx odp office ofice pdf" data-card-badges="PPT/PPTX|ODP|Local" type="button"><span class="tool-card-icon office-slides" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-39"/></svg></span><strong>PowerPoint para PDF</strong><p>Converta apresentações PowerPoint e ODP em páginas PDF.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="teal" data-tool="documentsToPdf" data-shortcut="Texto e HTML para PDF" data-category="convert" data-search="html htm txt texto markdown md rtf pdf" data-card-badges="HTML/TXT|Markdown|Local" type="button"><span class="tool-card-icon office-text" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-40"/></svg></span><strong>Texto e HTML para PDF</strong><p>Crie PDFs a partir de HTML, texto, Markdown e RTF.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="teal" data-tool="extractImages" data-category="convert" data-search="extrair imagens internas pdf fotos figuras recursos" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-23"/></svg></span><strong>Extrair imagens</strong><p>Recupere imagens internas ou exporte páginas completas com manifesto.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="violet" data-tool="archivePdf" data-category="organize" data-search="arquivamento pdfa normalizar rasterizar hash manifesto preservar" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-24"/></svg></span><strong>Preparar para arquivamento</strong><p>Crie cópia normalizada ou rasterizada com hashes e relatório técnico.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="teal" data-tool="documentAssistant" data-category="convert" data-search="assistente documental perguntar pdf resumir contrato cláusula localizar evidência" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-25"/></svg></span><span class="recommended">Inteligência local</span><strong>Assistente documental</strong><p>Resuma, pesquise e responda perguntas com evidências por página.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="teal" data-tool="structuredExtraction" data-category="convert" data-search="extrair dados cnpj cpf datas valores nota fiscal contrato csv json" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-26"/></svg></span><span class="recommended">Inteligência local</span><strong>Extração estruturada</strong><p>Transforme dados localizados nos PDFs em CSV, JSON e relatório.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="rose" data-tool="documentAudit" data-category="security" data-search="auditoria documentos divergências cnpj valores códigos certidões pagamento" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-27"/></svg></span><span class="recommended">Inteligência local</span><strong>Auditoria documental</strong><p>Cruze documentos e destaque divergências e riscos para conferência.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="violet" data-tool="classifyRename" data-category="organize" data-search="classificar renomear lote páginas duplicadas em branco organizar arquivos" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-28"/></svg></span><span class="recommended">Inteligência local</span><strong>Classificar e renomear</strong><p>Padronize nomes e localize páginas possivelmente vazias ou duplicadas.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="rose" data-tool="compare" data-category="security" data-search="comparar pdf diferenças texto visual versões contrato relatório" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-17"/></svg></span><strong>Comparar PDFs</strong><p>Compare duas versões e gere relatório textual e visual por página.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="rose" data-tool="redact" data-category="security" data-search="censura definitiva redação segura ocultar remover dados cpf cnpj" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-18"/></svg></span><strong>Censura definitiva</strong><p>Remova permanentemente áreas sensíveis e gere relatório de auditoria.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="blue" data-tool="formBuilder" data-category="edit" data-search="criar formulário preenchível campos texto data cpf cnpj moeda checkbox lista pdf" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-19"/></svg></span><strong>Criar formulário</strong><p>Desenhe campos preenchíveis, listas, datas, valores, CPF e CNPJ diretamente nas páginas.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card featured" data-icon-tone="blue" data-tool="signPdf" data-category="edit" data-search="assinar assinatura rubrica desenhar imagem nome data pdf" type="button"><span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-20"/></svg></span><strong>Assinar e rubricar</strong><p>Insira assinatura visual desenhada, digitada ou por imagem e aplique rubricas em lote.</p><span class="open-tool">Abrir ferramenta →</span></button>
+        <button class="tool-card professional" data-icon-tone="rose" data-tool="protect" data-category="security" data-search="proteger senha criptografar aes 256 pdf segurança" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-29"/></svg></span><strong>Proteger PDF</strong><p>Adicione senha AES-256 e defina permissões de uso.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-icon-tone="rose" data-tool="unlock" data-category="security" data-search="desbloquear remover senha conhecida descriptografar pdf" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-30"/></svg></span><strong>Remover senha</strong><p>Retire a proteção usando a senha conhecida.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-icon-tone="rose" data-tool="diagnose" data-category="security" data-search="diagnóstico analisar pdf criptografia formulários assinatura estrutura" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-31"/></svg></span><strong>Diagnosticar PDF</strong><p>Analise criptografia, páginas, formulários, assinaturas e recuperação.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-icon-tone="violet" data-tool="repairAdvanced" data-category="organize" data-search="reparar recuperar pdf corrompido xref estrutura avançada" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-32"/></svg></span><strong>Recuperar PDF</strong><p>Tente abrir estruturas danificadas e reconstruir o arquivo.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+        <button class="tool-card professional" data-icon-tone="violet" data-tool="flattenForms" data-category="security" data-search="achatar formulário campos editáveis pdf fixar" type="button">
+          <span class="tool-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#t-33"/></svg></span><strong>Fixar formulários</strong><p>Transforme campos preenchidos em conteúdo estático.</p><span class="open-tool">Abrir ferramenta →</span>
+        </button>
+      </section>
+      <div id="noTools" class="no-tools hidden">Nenhuma ferramenta corresponde à busca.</div>
+    </main>
+
+    <section id="workspaceView" class="workspace-view" aria-label="Prévia das ferramentas">
+      <div id="workspaceMerge" class="workspace-screen" data-workspace-tool="merge">
+        <div class="workspace-main">
+          <div class="workspace-progress">
+            <div class="workspace-step"><span class="workspace-step-badge">1</span> Arquivos</div><span class="workspace-step-line"></span>
+            <div class="workspace-step"><span class="workspace-step-badge">2</span> Ajustes</div><span class="workspace-step-line"></span>
+            <div class="workspace-step"><span class="workspace-step-badge">3</span> Baixar</div>
+          </div>
+          <div class="workspace-tags"><span class="workspace-tag">Organizar</span><span class="workspace-tag muted">Compositor único</span></div>
+          <div class="workspace-heading">
+            <h1>Juntar PDFs</h1>
+            <p>Adicione os documentos e organize todas as páginas em uma única área visual. A sequência das miniaturas será a sequência exata do PDF final.</p>
+          </div>
+          <div class="workspace-stats">
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-upload"/></svg></span><div><small>Entrada</small><strong>2 ou mais PDFs</strong></div></div>
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-check"/></svg></span><div><small>Você poderá</small><strong>Organizar páginas juntas</strong></div></div>
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-download"/></svg></span><div><small>Resultado</small><strong>1 PDF unificado</strong></div></div>
+          </div>
+          <div class="workspace-helpbar"><strong><svg><use href="#i-info"/></svg> Como usar esta ferramenta</strong><span>Orientação contextual</span></div>
+          <div class="workspace-dropzone">
+            <div class="workspace-drop-inner">
+              <div class="workspace-drop-icon"><svg><use href="#i-upload"/></svg></div>
+              <h2>Escolha seus arquivos</h2>
+              <p>Arraste dois ou mais PDFs. Todas as páginas entrarão no mesmo organizador.</p>
+              <button class="workspace-button" type="button">Selecionar no computador</button>
+              <div class="workspace-file-pill">PDF</div>
+            </div>
+          </div>
+        </div>
+        <aside class="workspace-sidebar">
+          <div class="workspace-sidebar-top"><div><small>Arquivos</small><h2>Resumo da união</h2><p>Confira os documentos de origem, preserve metadados e escolha o nome final.</p></div><button class="workspace-sidebar-toggle" type="button" data-sidebar-toggle><svg><use href="#i-chevron-right"/></svg></button></div>
+          <div class="workspace-alert"><span class="icon"><svg><use href="#i-info"/></svg></span><div><strong>Ponto de atenção</strong><p>A sequência das miniaturas é a sequência exata do PDF exportado. Remover um documento no painel elimina todas as páginas restantes daquele original.</p></div></div>
+          <div class="workspace-sidecard empty"><div><div class="workspace-drop-icon"><svg><use href="#i-upload"/></svg></div><h3>Adicione os arquivos primeiro</h3><p>As configurações serão liberadas na próxima etapa.</p></div></div>
+          <input type="text" value="Adicione um arquivo para continuar." readonly />
+          <button class="primary-action" type="button">Juntar PDFs</button>
+          <p class="footer-note">O processamento ocorre no navegador. Os arquivos permanecem no navegador. Motores externos podem exigir internet ao abrir.</p>
+        </aside>
+      </div>
+
+      <div id="workspaceSplit" class="workspace-screen" data-workspace-tool="split">
+        <div class="workspace-main">
+          <div class="workspace-progress">
+            <div class="workspace-step"><span class="workspace-step-badge">1</span> Arquivos</div><span class="workspace-step-line"></span>
+            <div class="workspace-step"><span class="workspace-step-badge">2</span> Ajustes</div><span class="workspace-step-line"></span>
+            <div class="workspace-step"><span class="workspace-step-badge">3</span> Baixar</div>
+          </div>
+          <div class="workspace-tags"><span class="workspace-tag">Organizar</span><span class="workspace-tag muted">6 modos</span></div>
+          <div class="workspace-heading">
+            <h1>Dividir PDF</h1>
+            <p>Veja as páginas, escolha os intervalos e confira cada arquivo antes de dividir.</p>
+          </div>
+          <div class="workspace-stats">
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-upload"/></svg></span><div><small>Entrada</small><strong>1 PDF</strong></div></div>
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-check"/></svg></span><div><small>Você poderá</small><strong>Criar partes por regra</strong></div></div>
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-download"/></svg></span><div><small>Resultado</small><strong>PDFs ou ZIP</strong></div></div>
+          </div>
+          <div class="workspace-helpbar"><strong><svg><use href="#i-info"/></svg> Como usar esta ferramenta</strong><span>Orientação contextual</span></div>
+          <div class="workspace-dropzone">
+            <div class="workspace-drop-inner">
+              <div class="workspace-drop-icon"><svg><use href="#i-upload"/></svg></div>
+              <h2>Escolha seus arquivos</h2>
+              <p>Abra um PDF para calcular e visualizar o plano de divisão.</p>
+              <button class="workspace-button" type="button">Selecionar no computador</button>
+              <div class="workspace-file-pill">PDF</div>
+            </div>
+          </div>
+          <div class="workspace-subpanel">
+            <div class="workspace-subpanel-header"><h3>Pré-visualização da divisão</h3><span class="counter">0 arquivos serão criados</span></div>
+            <div class="workspace-subpanel-empty"><strong>Adicione um PDF para começar</strong><p>Assim que um arquivo for importado, os recortes aparecerão aqui para conferência.</p></div>
+          </div>
+        </div>
+        <aside class="workspace-sidebar">
+          <div class="workspace-sidebar-top"><div><small>Arquivos</small><h2>Plano de divisão</h2><p>Escolha um modo e confirme exatamente quais arquivos serão gerados.</p></div><button class="workspace-sidebar-toggle" type="button" data-sidebar-toggle><svg><use href="#i-chevron-right"/></svg></button></div>
+          <div class="workspace-alert"><span class="icon"><svg><use href="#i-info"/></svg></span><div><strong>Ponto de atenção</strong><p>Verifique se todas as páginas necessárias aparecem na prévia. Páginas omitidas podem ficar fora do resultado.</p></div></div>
+          <div class="workspace-sidecard empty"><div><div class="workspace-drop-icon"><svg><use href="#i-upload"/></svg></div><h3>Adicione os arquivos primeiro</h3><p>As configurações serão liberadas na próxima etapa.</p></div></div>
+          <input type="text" value="Adicione um arquivo para continuar." readonly />
+          <button class="primary-action" type="button">Dividir PDF</button>
+          <p class="footer-note">O processamento ocorre no navegador. Os arquivos permanecem no navegador. Motores externos podem exigir internet ao abrir.</p>
+        </aside>
+      </div>
+
+      <div id="workspaceOrganize" class="workspace-screen" data-workspace-tool="organize">
+        <div class="workspace-main">
+          <div class="workspace-progress">
+            <div class="workspace-step"><span class="workspace-step-badge">1</span> Arquivos</div><span class="workspace-step-line"></span>
+            <div class="workspace-step"><span class="workspace-step-badge">2</span> Ajustes</div><span class="workspace-step-line"></span>
+            <div class="workspace-step"><span class="workspace-step-badge">3</span> Baixar</div>
+          </div>
+          <div class="workspace-tags"><span class="workspace-tag">Organizar</span><span class="workspace-tag muted">Editor visual</span></div>
+          <div class="workspace-heading">
+            <h1>Organizar PDF</h1>
+            <p>Edite cada página: reordene, gire, exclua, duplique e adicione páginas de PDFs, imagens ou páginas em branco.</p>
+          </div>
+          <div class="workspace-stats">
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-upload"/></svg></span><div><small>Entrada</small><strong>1 PDF</strong></div></div>
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-check"/></svg></span><div><small>Você poderá</small><strong>Reordenar, girar e inserir</strong></div></div>
+            <div class="workspace-stat"><span class="workspace-stat-icon"><svg><use href="#i-download"/></svg></span><div><small>Resultado</small><strong>PDF reorganizado</strong></div></div>
+          </div>
+          <div class="workspace-helpbar"><strong><svg><use href="#i-info"/></svg> Como usar esta ferramenta</strong><span>Orientação contextual</span></div>
+          <div class="workspace-dropzone">
+            <div class="workspace-drop-inner">
+              <div class="workspace-drop-icon"><svg><use href="#i-upload"/></svg></div>
+              <h2>Escolha um arquivo PDF</h2>
+              <p>Arraste um PDF ou clique para abrir o editor de páginas.</p>
+              <button class="workspace-button" type="button">Selecionar no computador</button>
+              <div class="workspace-file-pill">PDF</div>
+            </div>
+          </div>
+        </div>
+        <aside class="workspace-sidebar">
+          <div class="workspace-sidebar-top"><div><small>Arquivos</small><h2>Opções do organizador</h2><p>Ações de página ficam nas miniaturas; aqui permanecem apenas opções do documento.</p></div><button class="workspace-sidebar-toggle" type="button" data-sidebar-toggle><svg><use href="#i-chevron-right"/></svg></button></div>
+          <div class="workspace-alert"><span class="icon"><svg><use href="#i-info"/></svg></span><div><strong>Ponto de atenção</strong><p>Páginas importadas de outros PDFs e imagens passam a fazer parte da nova cópia. Confira a ordem antes de exportar.</p></div></div>
+          <div class="workspace-sidecard empty"><div><div class="workspace-drop-icon"><svg><use href="#i-upload"/></svg></div><h3>Adicione os arquivos primeiro</h3><p>As configurações serão liberadas na próxima etapa.</p></div></div>
+          <input type="text" value="Adicione um arquivo para continuar." readonly />
+          <button class="primary-action" type="button">Salvar PDF organizado</button>
+          <p class="footer-note">O processamento ocorre no navegador. Os arquivos permanecem no navegador. Motores externos podem exigir internet ao abrir.</p>
+        </aside>
+      </div>
+    </section>
+<script>
+// Tema: a ação rápida mostra lua no modo claro e sol no modo escuro.
+var b=document.body;
+var themeToggleButton=document.getElementById('themeToggleButton');
+var themeToggleIcon=document.getElementById('themeToggleIcon');
+var settingsButton=document.getElementById('settingsButton');
+var settingsPanel=document.getElementById('settingsPanel');
+var settingsCloseButton=document.getElementById('settingsCloseButton');
+var firstSettingsItem=document.querySelector('.settings-item');
+var savedTheme='light';
+try{var storedTheme=localStorage.getItem('centralpdf-theme');if(['light','dark','system'].indexOf(storedTheme)!==-1)savedTheme=storedTheme}catch(e){}
+var themePreference=savedTheme;
+var systemTheme=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+function syncTheme(){
+  var dark=themePreference==='dark'||(themePreference==='system'&&systemTheme&&systemTheme.matches);
+  b.dataset.theme=dark?'dark':'light';
+  themeToggleIcon.setAttribute('href',dark?'#i-sun':'#i-moon');
+  var description=dark?'Ativar tema claro':'Ativar tema escuro';
+  themeToggleButton.setAttribute('aria-label',description);
+  themeToggleButton.title=description;
+}
+function setThemePreference(preference){
+  if(['light','dark','system'].indexOf(preference)===-1)return;
+  themePreference=preference;
+  try{localStorage.setItem('centralpdf-theme',preference)}catch(e){}
+  syncTheme();
+}
+themeToggleButton.addEventListener('click',function(){setThemePreference(b.dataset.theme==='dark'?'light':'dark')});
+if(systemTheme){
+  if(systemTheme.addEventListener)systemTheme.addEventListener('change',function(){if(themePreference==='system')syncTheme()});
+  else if(systemTheme.addListener)systemTheme.addListener(function(){if(themePreference==='system')syncTheme()});
+}
+syncTheme();
+function closeSettings(restoreFocus){settingsPanel.hidden=true;settingsButton.setAttribute('aria-expanded','false');if(restoreFocus)settingsButton.focus()}
+settingsButton.addEventListener('click',function(){
+  var opening=settingsPanel.hidden;
+  settingsPanel.hidden=!opening;
+  settingsButton.setAttribute('aria-expanded',String(opening));
+  if(opening&&firstSettingsItem)firstSettingsItem.focus();
+});
+settingsCloseButton.addEventListener('click',function(){closeSettings(true)});
+document.addEventListener('click',function(event){if(!settingsPanel.hidden&&!event.target.closest('.settings-host'))closeSettings(false)});
+document.addEventListener('keydown',function(event){if(event.key==='Escape'&&!settingsPanel.hidden)closeSettings(true)});
+var cards=[].slice.call(document.querySelectorAll('.tool-card')),cat='all',q='';
+var homeView=document.getElementById('homeView');
+var workspaceView=document.getElementById('workspaceView');
+var workspaceLayoutActions=document.getElementById('workspaceLayoutActions');
+var sidebarToggleTop=document.getElementById('sidebarToggleTop');
+var homeBrand=document.getElementById('homeBrand');
+var workspaceScreens={merge:document.getElementById('workspaceMerge'),split:document.getElementById('workspaceSplit'),organize:document.getElementById('workspaceOrganize')};
+function f(){var n=0;cards.forEach(function(c){var ok=(cat==='all'||c.dataset.category===cat)&&(!q||(c.dataset.search+' '+c.textContent).toLowerCase().indexOf(q)>-1);c.style.display=ok?'':'none';if(ok)n++});document.getElementById('toolResultCount').textContent=n+' opções disponíveis'}
+document.querySelectorAll('.category-tab').forEach(function(x){x.onclick=function(){document.querySelectorAll('.category-tab').forEach(function(y){y.classList.remove('active')});x.classList.add('active');cat=x.dataset.category;f()}});
+document.getElementById('toolSearch').oninput=function(e){q=e.target.value.toLowerCase();f()};
+function closeMenus(){document.querySelectorAll('.cp2-dropdown-panel').forEach(function(panel){panel.hidden=true});document.querySelectorAll('.cp2-dropdown-trigger').forEach(function(button){button.setAttribute('aria-expanded','false')})}
+function setHeaderActive(tool){document.querySelectorAll('#primaryProductNav [data-nav-tool]').forEach(function(button){button.classList.toggle('is-active',button.getAttribute('data-nav-tool')===tool)})}
+function showHomeView(){b.dataset.workspaceOpen='false';delete b.dataset.sidebarCollapsed;homeView.style.display='';workspaceView.style.display='none';Object.values(workspaceScreens).forEach(function(screen){screen.classList.remove('active')});setHeaderActive('');closeMenus();window.scrollTo({top:0,behavior:'smooth'})}
+function showWorkspace(tool){var screen=workspaceScreens[tool];if(!screen)return false;b.dataset.workspaceOpen='true';b.dataset.sidebarCollapsed='false';homeView.style.display='none';workspaceView.style.display='block';Object.keys(workspaceScreens).forEach(function(key){workspaceScreens[key].classList.toggle('active',key===tool)});setHeaderActive(tool);closeMenus();window.scrollTo({top:0,behavior:'smooth'});return true}
+function showCategoryFromHeader(category){showHomeView();var tab=document.querySelector('.category-tab[data-category="'+category+'"]');if(tab)tab.click();var search=document.getElementById('toolSearch');if(search&&search.value){search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));}var grid=document.getElementById('toolGrid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'})}
+homeBrand.addEventListener('click',function(){showHomeView()});
+if(sidebarToggleTop)sidebarToggleTop.addEventListener('click',function(){if(b.dataset.workspaceOpen==='true')b.dataset.sidebarCollapsed=(b.dataset.sidebarCollapsed==='true'?'false':'true')});
+document.querySelectorAll('[data-sidebar-toggle]').forEach(function(button){button.addEventListener('click',function(){b.dataset.sidebarCollapsed='true'})});
+document.querySelectorAll('#primaryProductNav [data-nav-tool]').forEach(function(button){
+  button.addEventListener('click',function(){
+    var tool=button.getAttribute('data-nav-tool');
+    if(showWorkspace(tool))return;
+    showCategoryFromHeader('all');
+    var card=document.querySelector('.tool-card[data-tool="'+tool+'"]');
+    if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.focus({preventScroll:true});}
+  });
+});
+cards.forEach(function(card){card.addEventListener('click',function(){if(showWorkspace(card.dataset.tool))return;});});
+// Os menus de Converter PDF e Todas as ferramentas reaproveitam os 39 cartões desta prévia.
+(function(){
+  var menus=[
+    {button:document.getElementById('converterMenuButton'),panel:document.getElementById('converterMenuPanel'),type:'convert'},
+    {button:document.getElementById('allToolsMenuButton'),panel:document.getElementById('allToolsMenuPanel'),type:'all'}
+  ];
+  function linkForCard(card){
+    var button=document.createElement('button');
+    button.type='button';button.className='cp2-dropdown-link';
+    button.dataset.iconTone=card.dataset.iconTone || 'violet';
+    var icon=document.createElement('span');icon.className='cp2-dropdown-icon';icon.setAttribute('aria-hidden','true');
+    var cardIcon=card.querySelector('.tool-card-icon svg');
+    if(cardIcon)icon.appendChild(cardIcon.cloneNode(true));
+    var label=document.createElement('span');label.className='cp2-dropdown-label';
+    label.textContent=card.querySelector('strong').textContent.trim();
+    button.appendChild(icon);button.appendChild(label);
+    button.addEventListener('click',function(){
+      closeMenus();
+      if(showWorkspace(card.dataset.tool))return;
+      showCategoryFromHeader('all');
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+      try{card.focus({preventScroll:true})}catch(e){card.focus()}
+    });
+    return button;
+  }
+  var convert=menus[0].panel;
+  var ctitle=document.createElement('p');ctitle.className='cp2-dropdown-title';ctitle.textContent='Converter PDF e arquivos';convert.appendChild(ctitle);
+  var cgrid=document.createElement('div');cgrid.className='cp2-dropdown-grid';
+  cards.filter(function(card){return card.dataset.category==='convert'}).forEach(function(card){cgrid.appendChild(linkForCard(card))});
+  convert.appendChild(cgrid);
+  var all=menus[1].panel;
+  var atitle=document.createElement('p');atitle.className='cp2-dropdown-title';atitle.textContent='Todas as '+cards.length+' ferramentas';all.appendChild(atitle);
+  var agrid=document.createElement('div');agrid.className='cp2-dropdown-grid';
+  [['organize','Organizar'],['edit','Editar'],['convert','Converter'],['security','Segurança']].forEach(function(group){
+    var col=document.createElement('div');col.className='cp2-dropdown-group';
+    var heading=document.createElement('h3');heading.textContent=group[1];col.appendChild(heading);
+    cards.filter(function(card){return card.dataset.category===group[0]}).forEach(function(card){col.appendChild(linkForCard(card))});
+    agrid.appendChild(col);
+  });all.appendChild(agrid);
+  function place(menu){
+    var r=menu.button.getBoundingClientRect();
+    var width=menu.panel.getBoundingClientRect().width;
+    var left=Math.min(Math.max(12,r.left),Math.max(12,window.innerWidth-width-12));
+    menu.panel.style.left=left+'px';
+    menu.panel.style.top=Math.min(r.bottom+8,Math.max(12,window.innerHeight-80))+'px';
+  }
+  menus.forEach(function(menu){menu.button.addEventListener('click',function(event){
+    event.stopPropagation();
+    var opening=menu.panel.hidden;closeMenus();
+    if(opening){menu.panel.hidden=false;menu.button.setAttribute('aria-expanded','true');place(menu)}
+  })});
+  document.addEventListener('click',function(event){
+    if(!event.target.closest('.cp2-dropdown-panel')&&!event.target.closest('.cp2-dropdown-trigger'))closeMenus();
+  });
+  document.addEventListener('keydown',function(event){
+    if(event.key==='Escape'&&menus.some(function(menu){return !menu.panel.hidden})){
+      var active=menus.find(function(menu){return !menu.panel.hidden});
+      closeMenus();active.button.focus();event.preventDefault();
+    }
+  });
+  window.addEventListener('resize',function(){menus.forEach(function(menu){if(!menu.panel.hidden)place(menu)})});
+  window.addEventListener('scroll',function(){menus.forEach(function(menu){if(!menu.panel.hidden)place(menu)})});
+})();
+</script></body></html>
