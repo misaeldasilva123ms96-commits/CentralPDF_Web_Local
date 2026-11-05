@@ -11,6 +11,12 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Retorno à edição — 05/11/2026
+
+- Preserva o foco do campo que o usuário selecionou antes do quadro de retorno da tela de resultado, evitando perda de digitação e exportação com margem padrão no Firefox.
+- Reproduz a disputa de foco com ordem de eventos controlada em Chromium e Firefox, no computador e celular, verificando também dimensões e cores do PDF exportado.
+- Atualiza o cache para `pages-49` e a referência de compatibilidade do catálogo administrativo.
+
 ### Administração 0.3.0 — 04/11/2026
 
 - Sincroniza a referência do painel com CentralPDF 2.0.1 / pages-48 e diferencia os motores PDF.js do site (6.2.108) e React (6.4.299).

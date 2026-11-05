@@ -960,7 +960,10 @@
     } else if (wasCompleted) {
       const returnFocus = completionReturnFocus;
       completionReturnFocus = null;
+      const focusAtClose = document.activeElement;
       requestAnimationFrame(() => {
+        // A quick edit may start before this frame. Preserve the user's focus.
+        if (state.taskCompleted || document.activeElement !== focusAtClose) return;
         const target = returnFocus?.isConnected && !returnFocus.disabled ? returnFocus : dropzone;
         target.focus({ preventScroll: true });
       });

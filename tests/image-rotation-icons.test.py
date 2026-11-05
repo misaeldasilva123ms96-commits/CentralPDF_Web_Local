@@ -104,6 +104,29 @@ with sync_playwright() as p:
       assert (round(result['w']),round(result['h']))==(120,80),result
       assert result['a'][0]>245 and result['b'][2]>245,result
       page.locator('#continueEditingButton').click()
+   # Hold the completion frame so a fast user can select the next margin
+   # before focus restoration runs. No sleeps/retries: exercise both orders.
+   page.evaluate("async()=>{CentralPDFApp.selectTool('imagesToPdf');await CentralPDFApp.addFiles([qaImages[0]]);}")
+   with page.expect_download():page.locator('#processButton').click()
+   page.wait_for_function("document.activeElement.id==='continueEditingButton'")
+   page.evaluate("""()=>{
+    window.qaFrames=[];window.qaOriginalRaf=requestAnimationFrame;
+    window.requestAnimationFrame=callback=>qaFrames.push(callback);
+   }""")
+   page.locator('#continueEditingButton').click()
+   page.evaluate("async()=>{CentralPDFApp.selectTool('imagesToPdf');await CentralPDFApp.addFiles([qaImages[0]]);}")
+   page.locator('#imageMargin').select_text()
+   page.evaluate("""()=>{
+    window.requestAnimationFrame=qaOriginalRaf;
+    for(const callback of qaFrames.splice(0))callback(performance.now());
+   }""")
+   assert page.evaluate("document.activeElement.id==='imageMargin'"),(name,width,'late completion frame stole input focus')
+   page.keyboard.insert_text('0')
+   assert page.locator('#imageMargin').input_value()=='0'
+   with page.expect_download() as download:page.locator('#processButton').click()
+   result=page.evaluate(RENDER,list(Path(download.value.path()).read_bytes()))[0]
+   assert (round(result['w']),round(result['h']))==(120,80),(name,width,result)
+   assert result['a'][0]>245 and result['b'][2]>245,result
    assert not errors,errors
    context.close()
   browser.close()
