@@ -31,7 +31,14 @@ CSS novo é carregado por último e escopado no site por `data-design="3"`. Não
 
 Os JSON em `evidence/` registram resultados realmente executados, sem documentos privados. Os PDFs, imagens e nomes de teste são sintéticos. Hashes individuais não significam igualdade byte a byte entre execuções: metadados temporais podem variar.
 
-Resultados finais e comandos serão registrados ao completar as suítes. Ausência de um resultado não significa aprovação.
+Resultados já confirmados:
+
+- `tests/tool-regression-real.py`: **34/34 PASS antes e depois**, zero erros de página; exportações reabertas, hashes registrados, casos adicionais de OCR girado, compressão sem perda de texto/vetores e XML Office válidos.
+- `tests/redesign-3-exports.test.py`: **PASS**, ordem B1/B2/B3/A1/A2, três partes P1–P6 e organização final P4/P1/P1/P2/em branco, com rotação de 90°.
+- `tests/settings-theme-toggle.test.py`: **PASS** em Chromium/Firefox, persistência, teclado, oito ações, tela móvel/baixa e storage bloqueado.
+- JavaScript da raiz, sintaxe, integridade estática e sincronização dos ícones: **PASS**.
+
+As suítes restantes e a matriz visual continuam em verificação. Testes concorrentes interrompidos ou com timeout não são marcados como aprovados; são repetidos em sequência por causa do limite de duas CPUs. Ausência de um resultado não significa aprovação.
 
 ## Limites de validação e revisão pendente
 

@@ -1,0 +1,78 @@
+[
+  {
+    "case": "merge-cover-reordered",
+    "filename": "PDF_unido.pdf",
+    "sha256": "5e11e68997e8735a81eed4330cc759471f77ef19b84ba6fdf2f962a91d5ce0cd",
+    "bytes": 1605,
+    "pages": [
+      {
+        "text": "B1",
+        "rotation": 0
+      },
+      {
+        "text": "B2",
+        "rotation": 0
+      },
+      {
+        "text": "B3",
+        "rotation": 0
+      },
+      {
+        "text": "A1",
+        "rotation": 0
+      },
+      {
+        "text": "A2",
+        "rotation": 0
+      }
+    ]
+  },
+  {
+    "case": "split-three-ranges",
+    "filename": "six_dividido.zip",
+    "sha256": "f939b0681895fcbc8532ef327b62f422ba7e9de7940d8624831c9ec3379e532e",
+    "bytes": 3845,
+    "parts": [
+      [
+        "P1",
+        "P2"
+      ],
+      [
+        "P3",
+        "P4"
+      ],
+      [
+        "P5",
+        "P6"
+      ]
+    ]
+  },
+  {
+    "case": "organize-edit-sequence",
+    "filename": "four_organizado.pdf",
+    "sha256": "7a305c48ad12b39553b5904ee79f8212d5719efac6820cc7808ae6832865e5df",
+    "bytes": 1453,
+    "pages": [
+      {
+        "text": "P4",
+        "rotation": 0
+      },
+      {
+        "text": "P1",
+        "rotation": 0
+      },
+      {
+        "text": "P1",
+        "rotation": 0
+      },
+      {
+        "text": "P2",
+        "rotation": 90
+      },
+      {
+        "text": "",
+        "rotation": 0
+      }
+    ]
+  }
+]
