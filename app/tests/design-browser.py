@@ -27,6 +27,7 @@ try:
    page.locator('input[type=file]').first.set_input_files([{'name':f['name'],'mimeType':'application/pdf','buffer':bytes(f['bytes'])} for f in fixtures])
    page.locator('.cp-tool-sidebar button').filter(has_text='Juntar PDFs').click()
    page.get_by_role('link',name='Baixar',exact=False).wait_for()
+   assert 'linear-gradient' in page.get_by_role('link',name='Baixar',exact=False).evaluate('el=>getComputedStyle(el).backgroundImage')
    with page.expect_download() as e:page.get_by_role('link',name='Baixar',exact=False).click()
    data=Path(e.value.path()).read_bytes();sizes=page.evaluate('async b=>(await PDFLib.PDFDocument.load(new Uint8Array(b))).getPages().map(p=>p.getWidth())',list(data))
    assert sizes==[201,202,301,302,303],sizes
