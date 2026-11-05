@@ -1216,8 +1216,8 @@
         logPdfIngest('received', file, null, 'received');
         const result = await window.CentralPDFIngest.inspectPdfFile(file, { parse: bytes => parsePdfForIngest(bytes, queuedTool) });
         if (!sessionIsActive()) return null;
-        // Keep diagnostic/unlock inputs original; normal tools use a native, readable working copy.
-        const preserveOriginal = ['unlock', 'diagnose', 'repairAdvanced'].includes(queuedTool);
+        // Diagnostics, unlock and rename-only exports must retain the original bytes.
+        const preserveOriginal = ['unlock', 'diagnose', 'repairAdvanced', 'classifyRename'].includes(queuedTool);
         const accepted = result.preparedBytes && !preserveOriginal
           ? new File([result.preparedBytes], file.name, { type: file.type || 'application/pdf', lastModified: file.lastModified })
           : file;

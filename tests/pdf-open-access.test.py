@@ -8,14 +8,14 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 from playwright.sync_api import sync_playwright
-import argparse, hashlib, json, re
+import argparse, hashlib, json, re, zipfile
 
 root=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser();parser.add_argument('--files',nargs=2,type=Path);parser.add_argument('--report',type=Path);args=parser.parse_args()
 files=args.files or [root/'tests/pdf-corpus/fixtures/open-access-owner-aes128.pdf',root/'tests/pdf-corpus/fixtures/open-access-owner-aes256.pdf']
 hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
 html=(root/'index.html').read_text();html=re.sub(r'<script src="[^"]+"></script>','',html);html=re.sub(r'<link[^>]+rel="manifest"[^>]*>','',html)
-scripts=['app/node_modules/pdf-lib/dist/pdf-lib.min.js','vendor/jszip.min.js','assets/js/pdf-ingest.js','assets/js/pdf-open-access.js','assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/pdf-native-text.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/layout-controls.js']
+scripts=['app/node_modules/pdf-lib/dist/pdf-lib.min.js','vendor/jszip.min.js','assets/js/pdf-ingest.js','assets/js/pdf-open-access.js','assets/js/split-planner.js','assets/js/advanced-planner.js','assets/js/pdf-native-text.js','assets/js/organizer-planner.js','assets/js/pdf-editor.js','assets/js/ux-enhancements.js','assets/js/app.js','assets/js/intelligence-0.20.js','assets/js/layout-controls.js']
 html=html.replace('</body>',''.join(f'<script src="/{s}"></script>' for s in scripts)+'''<script type="module">
 import * as pdfjs from '/app/node_modules/pdfjs-dist/legacy/build/pdf.mjs';window.pdfjsLib=pdfjs;pdfjs.GlobalWorkerOptions.workerSrc='/app/node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs';window.testReady=true;</script></body>''')
 class H(SimpleHTTPRequestHandler):
@@ -58,13 +58,30 @@ try:
     assert awaitable==1,(engine,tool,page.locator('#statusBox').inner_text())
     if tool=='diagnose':assert page.evaluate('async()=>[...new Uint8Array(await CentralPDFApp.getFiles()[0].arrayBuffer())]',)==source
     else:assert page.evaluate('async()=>!(await PDFLib.PDFDocument.load(await CentralPDFApp.getFiles()[0].arrayBuffer())).isEncrypted')
+   # Rename is read-only: export the exact original bytes, including encryption/signatures.
+   page.evaluate("CentralPDFApp.selectTool('classifyRename')")
+   page.locator('#fileInput').set_input_files([str(f) for f in files])
+   page.wait_for_function('CentralPDFApp.getFiles().length===2',timeout=60000)
+   assert page.evaluate('async()=>Promise.all(CentralPDFApp.getFiles().map(async f=>[...new Uint8Array(await f.arrayBuffer())]))')==original
+   page.locator('#renameTemplate').fill('{original}_renomeado')
+   try:
+    with page.expect_download() as renamed:page.locator('#processButton').click()
+   except Exception as error:
+    raise AssertionError((engine, 'rename export', page.locator('#statusBox').inner_text(), errors)) from error
+   with zipfile.ZipFile(renamed.value.path()) as archive:
+    report=json.loads(archive.read('classificacao_renomeacao.json'))
+    assert len(report['documents'])==2
+    for source,doc in zip(files,report['documents']):
+     assert doc['pageCount']>0
+     assert archive.read('arquivos_renomeados/'+doc['suggestedName'])==source.read_bytes(),(engine,'rename changed original PDF bytes')
+   page.locator('#continueEditingButton').click()
    awaitable=page.evaluate("async()=>{await CentralPDFApp.openFilesInTool([new File([new Uint8Array(qaSources[0])],'Acesso livre.pdf',{type:'application/pdf'})],'unlock');return CentralPDFApp.getFiles().length;}")
    assert awaitable==1
    assert page.locator('#unlockPassword').input_value()==''
    with page.expect_download() as unlocked:page.locator('#processButton').click()
    assert page.evaluate('async b=>(await PDFLib.PDFDocument.load(new Uint8Array(b))).getPageCount()',list(Path(unlocked.value.path()).read_bytes()))==accepted[0]['pages']
    assert not writes,(engine,'document/network writes',writes);assert not errors,errors
-   results.append({'browser':engine,'accepted':len(accepted),'native_merge_text_geometry_pixels':'identical','real_password':'still required','additional_tools':5,'originals':'unchanged','network_writes':0});c.close();b.close()
+   results.append({'browser':engine,'accepted':len(accepted),'native_merge_text_geometry_pixels':'identical','real_password':'still required','additional_tools':5,'rename_zip_original_bytes':'identical','originals':'unchanged','network_writes':0});c.close();b.close()
 finally:s.shutdown()
 for f in files:assert hashlib.sha256(f.read_bytes()).hexdigest()==hashes[str(f)]
 if args.report:args.report.write_text(json.dumps(results,indent=2))

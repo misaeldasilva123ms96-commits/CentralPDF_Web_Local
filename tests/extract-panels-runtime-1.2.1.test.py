@@ -26,9 +26,9 @@ assert "width: var(--cp2-inspector-width)" in css
 assert "overscroll-behavior: contain" in css
 assert "product-redesign-2.0.css?v=3.0.0-shell1" in index
 assert "assets/js/forms-signatures-0.18.js?v=0.18.2" in index
-assert "assets/js/app.js?v=3.0.0-open-access1" in index
+assert "assets/js/app.js?v=3.0.0-open-access2" in index
 assert "./assets/js/forms-signatures-0.18.js?v=0.18.2" in service_worker
-assert "./assets/js/app.js?v=3.0.0-open-access1" in service_worker
+assert "./assets/js/app.js?v=3.0.0-open-access2" in service_worker
 assert "./assets/css/product-redesign-2.0.css?v=3.0.0-shell1" in service_worker
 assert "centralpdf-v3.0.0-pages-53" in service_worker
 

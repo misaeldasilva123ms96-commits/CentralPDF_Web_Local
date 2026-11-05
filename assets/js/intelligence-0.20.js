@@ -99,7 +99,8 @@
     const cacheKey = `${file.name}:${file.size}:${file.lastModified}`;
     if (state.cache.has(cacheKey) && !options.visualAudit) return state.cache.get(cacheKey);
     if (!window.pdfjsLib) throw new Error('O motor PDF.js não foi carregado.');
-    const pdf = await window.pdfjsLib.getDocument({ data:new Uint8Array(await file.arrayBuffer()) }).promise;
+    const loadingTask = window.pdfjsLib.getDocument({ data:new Uint8Array(await file.arrayBuffer()) });
+    const pdf = await loadingTask.promise;
     const pages = [];
     try {
       for (let number=1; number<=pdf.numPages; number++) {
@@ -130,7 +131,7 @@
         pages.push({ number, text, lines, charCount:text.length, visualHash, visualBlank });
         options.onPage?.(number,pdf.numPages);
       }
-    } finally { await pdf.destroy(); }
+    } finally { await loadingTask.destroy(); }
     const fullText = pages.map(page => page.text).join('\n\n');
     const result = { fileName:file.name, size:file.size, pageCount:pages.length, pages, fullText, selectableCharacters:fullText.length, needsOcr:fullText.length < Math.max(40,pages.length*10) };
     if (!options.visualAudit) state.cache.set(cacheKey,result);

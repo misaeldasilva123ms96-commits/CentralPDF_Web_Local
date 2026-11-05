@@ -12,7 +12,7 @@ trabalho, mantendo nome, MIME e data do arquivo. Não usa `ignoreEncryption`,
 não rasteriza páginas e não envia documentos pela rede. Uma senha real continua
 necessária e o arquivo protegido continua rejeitado na entrada comum.
 
-Diagnosticar, Recuperar e Desbloquear mantêm os bytes originais na entrada.
+Diagnosticar, Recuperar, Desbloquear e Classificar/renomear mantêm os bytes originais na entrada. A classificação analisa o original com PDF.js e inclui no ZIP exatamente os mesmos bytes, preservando criptografia e assinaturas; apenas o nome muda.
 Desbloquear permite o campo vazio apenas quando a inspeção já comprovou a
 abertura sem senha. Originais em disco permanecem inalterados. Estruturas de
 assinatura continuam detectadas para os avisos existentes; regravar um PDF não
@@ -46,6 +46,8 @@ Execuções direcionadas passaram em Chromium e Firefox:
 - Controle com senha verdadeira ainda rejeitado e PDF comum aceito.
 - Entrada de Editar, Dividir, Organizar, PDF para imagens e Diagnosticar.
 - Desbloqueio sem digitar senha nos arquivos que comprovadamente já abrem assim.
+- ZIP de classificação/renomeação baixado e aberto: cada PDF é idêntico byte a byte ao original, em ambos os navegadores.
+- Encerramento da análise pelo loading task do PDF.js, compatível com o motor atual.
 - Mesmo contrato com fixtures AES-128/AES-256, em `synthetic-report.json`.
 - Testes Go/vet, ingestão JavaScript, contenção de recuperação e migração de cache.
 
