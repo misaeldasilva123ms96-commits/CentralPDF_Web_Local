@@ -48,3 +48,16 @@ temas, seis larguras e Chromium/Firefox: PASS na execução local final. Os chec
 Sem merge ou publicação desta etapa. A publicação do Admin permanece separada,
 conforme a restrição do pedido original. Rollback por reversão deste ajuste e
 nova revisão de cache, sem apagar projetos, preferências ou dados de documentos.
+
+## Revisão: alinhamento vertical dos nomes no cabeçalho
+
+A primeira prévia ainda deixava Converter PDF e Todas as ferramentas abaixo dos
+outros cinco itens. A reprodução com Range real do texto mediu diferença de
+6,25 px em Chromium/320 px/tema claro. A causa era `inline-flex` sem centralização
+nos cinco botões simples, enquanto os dois acionadores já centralizavam o texto.
+Todos os sete itens agora usam a mesma centralização vertical e horizontal.
+
+A suíte responsiva compara os centros dos textos (tolerância de 1 px), incluindo
+os dois temas, seis larguras e Chromium/Firefox. As capturas foram renovadas;
+`evidence/alinhamento-html/app-cabecalho.png` mostra somente o cabeçalho real,
+sem recorte ou montagem posteriores. Nenhum handler ou posição dos menus mudou.

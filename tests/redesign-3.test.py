@@ -22,6 +22,8 @@ try:
      assert page.locator('#homeBrand strong').inner_text()=='Central PDF'
      assert page.locator('#helpButton').is_visible()
      assert page.locator('#cp101SettingsPanel #cp101ThemeToggle').count()==0
+     text_centers=page.locator('#primaryProductNav').evaluate("""nav=>[...nav.children].filter(e=>e.matches('button,label')).map(e=>{const r=document.createRange();r.selectNodeContents(e.firstChild);const b=r.getBoundingClientRect();return {text:e.firstChild.textContent.trim(),y:b.y+b.height/2};})""")
+     assert max(t['y'] for t in text_centers)-min(t['y'] for t in text_centers)<=1,(engine,width,theme,'nav text alignment',text_centers)
      for tool in page.evaluate('Object.keys(CentralPDFApp.getToolCatalog())'):
       assert page.evaluate('(t)=>CentralPDFApp.selectTool(t)',tool)
       metrics=page.locator('#operationTitle').evaluate("el=>({gradient:getComputedStyle(el).backgroundImage,w:el.getBoundingClientRect().width,container:el.parentElement.getBoundingClientRect().width,overflow:document.documentElement.scrollWidth>innerWidth+1})")
