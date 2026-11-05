@@ -151,3 +151,9 @@ body[data-design='3'] .cp2-mega-menu {top:calc(var(--cd-header-height,70px) + 8p
 @media(max-width:480px) {
   body[data-design='3'] #cp101SettingsPanel {top:calc(var(--cd-header-height,112px) + 8px);max-height:calc(100dvh - var(--cd-header-height,112px) - 24px)}
 }
+/* Secondary surfaces share the same palette without recoloring PDF content. */
+body[data-design='3'] :is(.foundation-dialog-shell,.foundation-dialog-head,.foundation-dialog-actions,.cp15-dialog-head,.cp15-dialog-body) {background:var(--cd-sf)!important;border-color:var(--cd-bd)!important;color:var(--cd-tx)}
+body[data-design='3'] :is(.settings-empty-state,.foundation-list-row,.foundation-metric,.foundation-dialog-close) {background:var(--cd-alt)!important;border-color:var(--cd-bd)!important;color:var(--cd-tx)}
+body[data-design='3'] :is(.cp15-rail strong,dialog h2,dialog h3) {color:var(--cd-tx)}
+body[data-design='3'] .foundation-button.primary {background:linear-gradient(135deg,#5b4bff,#7951dd)!important;color:#fff}
+body[data-design='3'] dialog :is(h2,h3) {color:var(--cd-tx)!important}
