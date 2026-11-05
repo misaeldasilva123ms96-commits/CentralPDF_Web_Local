@@ -17,6 +17,10 @@ $pdfJsPackage = @{
 }
 
 $items = @(
+    # Single-thread QPDF: works without cross-origin isolation, entirely on-device.
+    @{ Url = 'https://cdn.jsdelivr.net/npm/@neslinesli93/qpdf-wasm@0.3.1/dist/qpdf.js'; Path = 'vendor/qpdf/qpdf.js'; MinBytes = 40000; Sha256 = 'c0e8fe62e0c3385dd8cb5d6b613f74d87a4138a3a3343e2add45a067a14d0884' },
+    @{ Url = 'https://cdn.jsdelivr.net/npm/@neslinesli93/qpdf-wasm@0.3.1/dist/qpdf.wasm'; Path = 'vendor/qpdf/qpdf.wasm'; MinBytes = 1300000; Sha256 = '69a17eecb26ef73e6b853487500802b18523c7b453382de0063bb2d387edb6bd' },
+    @{ Url = 'https://cdn.jsdelivr.net/npm/@neslinesli93/qpdf-wasm@0.3.1/LICENSE'; Path = 'vendor/qpdf/LICENSE'; MinBytes = 700; Sha256 = '68f98c117f69f4e2838603ebef2b05187a6fd2a1aefe0d4d4806a8fb5d3407b7' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'; Path = 'vendor/pdf-lib.min.js'; MinBytes = 300000; Sha256 = '0f9a5cad07941f0826586c94e089d89b918c46e5c17cf2d5a3c6f666e3bc694f' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js'; Path = 'vendor/tesseract/tesseract.min.js'; MinBytes = 50000; Sha256 = '000c27d9cd0def655f77b36c72a389c0ab13793aa31cb4d7aab56d09c0afbc7e' },
     @{ Url = 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js'; Path = 'vendor/tesseract/worker.min.js'; MinBytes = 90000; Sha256 = '576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d' },

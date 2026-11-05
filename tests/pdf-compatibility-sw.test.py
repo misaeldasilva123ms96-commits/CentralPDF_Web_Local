@@ -40,16 +40,16 @@ try:
         page.wait_for_function(
             """async () => {
               const keys = await caches.keys();
-              return keys.includes('centralpdf-v3.0.0-pages-52-core')
+              return keys.includes('centralpdf-v3.0.0-pages-53-core')
                 && !keys.includes('centralpdf-v2.0.1-pages-19-core');
             }""",
             timeout=60_000,
         )
         cached = page.evaluate(
             """async () => {
-              const cache = await caches.open('centralpdf-v3.0.0-pages-52-core');
-              const app = await cache.match('/assets/js/app.js?v=3.0.0-design3');
-              const ingest = await cache.match('/assets/js/pdf-ingest.js?v=3.0.0-ingest2');
+              const cache = await caches.open('centralpdf-v3.0.0-pages-53-core');
+              const app = await cache.match('/assets/js/app.js?v=3.0.0-open-access1');
+              const ingest = await cache.match('/assets/js/pdf-ingest.js?v=3.0.0-open-access1');
               return {app: Boolean(app), ingest: Boolean(ingest)};
             }"""
         )
@@ -58,8 +58,8 @@ try:
         context.set_offline(True)
         offline = page.evaluate(
             """async () => ({
-              app: (await (await fetch('/assets/js/app.js?v=3.0.0-design3')).text()).includes('fileIngestChain'),
-              ingest: (await (await fetch('/assets/js/pdf-ingest.js?v=3.0.0-ingest2')).text()).includes('inspectPdfFile')
+              app: (await (await fetch('/assets/js/app.js?v=3.0.0-open-access1')).text()).includes('fileIngestChain'),
+              ingest: (await (await fetch('/assets/js/pdf-ingest.js?v=3.0.0-open-access1')).text()).includes('inspectPdfFile')
             })"""
         )
         assert offline == {"app": True, "ingest": True}, offline

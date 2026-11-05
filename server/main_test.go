@@ -9,6 +9,24 @@ import (
 	"testing"
 )
 
+func TestPdfOpenAccessWorkerPolicy(t *testing.T) {
+	for _, path := range []string{"/", "/assets/js/app.js", "/assets/js/pdf-open-access-worker.js?v=1"} {
+		response := httptest.NewRecorder()
+		newHandler(t.TempDir()).ServeHTTP(response, httptest.NewRequest(http.MethodGet, path, nil))
+		policy := response.Header().Get("Content-Security-Policy")
+		worker := strings.HasPrefix(path, "/assets/js/pdf-open-access-worker.js")
+		if strings.Contains(policy, "'wasm-unsafe-eval'") != worker {
+			t.Errorf("unexpected WASM policy for %s: %s", path, policy)
+		}
+		if strings.Contains(policy, "'unsafe-eval'") {
+			t.Errorf("JavaScript eval must stay blocked: %s", path)
+		}
+		if worker && (!strings.Contains(policy, "connect-src 'self';") || !strings.Contains(policy, "worker-src 'none'")) {
+			t.Errorf("worker must remain isolated from remote hosts and child workers: %s", policy)
+		}
+	}
+}
+
 func TestHealthAllowsOnlyGet(t *testing.T) {
 	handler := newHandler(t.TempDir())
 
