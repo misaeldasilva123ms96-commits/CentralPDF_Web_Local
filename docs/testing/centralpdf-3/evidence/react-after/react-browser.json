@@ -1,0 +1,54 @@
+[
+  {
+    "width": 320,
+    "themes": 2,
+    "pages": 5,
+    "widths": [
+      201,
+      202,
+      301,
+      302,
+      303
+    ],
+    "sha256": "a4370ba8f2f177040d26d508e44970561f48ce86b9a74deda7fb4b5777b995e4"
+  },
+  {
+    "width": 390,
+    "themes": 2,
+    "pages": 5,
+    "widths": [
+      201,
+      202,
+      301,
+      302,
+      303
+    ],
+    "sha256": "6897dad6cbd08f71dc003131f3ba95a68bbe2d671393521967de161d7174eacf"
+  },
+  {
+    "width": 768,
+    "themes": 2,
+    "pages": 5,
+    "widths": [
+      201,
+      202,
+      301,
+      302,
+      303
+    ],
+    "sha256": "1ccb12b4839ef89ba34c28ae3724ce38acbeca1f9af7e62fdfc66c8bf1d0cf44"
+  },
+  {
+    "width": 1440,
+    "themes": 2,
+    "pages": 5,
+    "widths": [
+      201,
+      202,
+      301,
+      302,
+      303
+    ],
+    "sha256": "83a7a5bc0a314bf394f8e6e1ab026ae5c020ed329153aed4726a3655ca0ff481"
+  }
+]

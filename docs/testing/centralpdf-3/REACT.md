@@ -22,8 +22,8 @@ das ferramentas existentes continuam explícitos no catálogo.
 - `app/tests/design-browser.py` exercita o build local em 320/390/768/1440 px,
   claro/escuro, verifica a marca e overflow e realiza uma fusão/download de PDFs
   sintéticos. Reabre o PDF e verifica as cinco páginas por dimensões distintas;
-  registra SHA-256 e capturas. A validação de navegador deve ser conferida no
-  relatório antes de aprovar.
+  registra SHA-256 e capturas. **PASS** nos quatro tamanhos; evidências em
+  `evidence/react-after/`.
 
 A primeira execução de suítes simultâneas excedeu o orçamento do ambiente (duas
 CPUs), com timeouts de testes e de início dos workers. As verificações foram
