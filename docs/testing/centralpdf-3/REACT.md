@@ -43,3 +43,7 @@ A revisão visual detectou contraste baixo no botão primário do tema escuro.
 O seletor foi alinhado ao componente real `.cp-btn--primary`, preservando o
 texto claro sobre degradê escuro. Build e teste de navegador com a fusão real
 foram repetidos com sucesso; as capturas desta pasta mostram a correção final.
+
+O cenário de navegador também abre a tela real de ferramenta planejada,
+verifica seu título 3.0 e retorna às ferramentas antes de executar a fusão.
+O rótulo “Em breve” e o bloqueio de execução continuam preservados.
