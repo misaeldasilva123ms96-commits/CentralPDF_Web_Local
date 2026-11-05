@@ -34,7 +34,7 @@ Gerado por `scripts/extract-tool-catalog.mjs` a partir de `assets/js/app.js` (to
 | documentAudit | Auditoria documental | sim | PDF | `application/pdf,.pdf` | zip | - | 2147 | 10 |
 | classifyRename | Classificar e renomear | sim | PDF | `application/pdf,.pdf` | zip | - | 1669 | 8 |
 | protect | Proteger PDF | sim | PDF | `application/pdf,.pdf` | auto | sim | 1689 | 9 |
-| unlock | Remover senha | sim | PDF protegido | `application/pdf,.pdf` | auto | sim | 514 | 1 |
+| unlock | Remover senha | sim | PDF protegido | `application/pdf,.pdf` | auto | sim | 562 | 1 |
 | diagnose | Diagnosticar PDF | sim | PDF | `application/pdf,.pdf` | auto | sim | 506 | 2 |
 | repairAdvanced | Recuperar PDF | sim | PDF | `application/pdf,.pdf` | auto | sim | 678 | 2 |
 | flattenForms | Fixar formulários | sim | PDF com formulário | `application/pdf,.pdf` | auto | sim | 583 | 1 |
