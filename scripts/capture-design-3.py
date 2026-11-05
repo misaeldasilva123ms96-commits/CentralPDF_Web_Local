@@ -16,6 +16,16 @@ with sync_playwright() as p:
   for tool in ['merge','split','organize','editPdf']:
    page.evaluate('(t)=>CentralPDFApp.selectTool(t)',tool)
    page.screenshot(path=str(out/f'{tool}-{width}-{theme}.png'))
-  page.locator('#cp101SettingsButton').click();page.screenshot(path=str(out/f'settings-{width}-{theme}.png'));c.close()
+  page.locator('#cp101SettingsButton').click();page.screenshot(path=str(out/f'settings-{width}-{theme}.png'))
+  actions={'layoutSettingsButton':'layoutSettingsDialog','cp15PresetsBtn':'cp15Presets','foundationProjectsButton':'foundationProjectsDialog','cp15ResultsBtn':'cp15Results','foundationQueueButton':'foundationQueueDialog','cp15FlowsBtn':'cp15Flows','foundationDiagnosticsButton':'foundationDiagnosticsDialog','cp10QualityButton':'cp10Quality'}
+  for button,dialog in actions.items():
+   if page.locator('#cp101SettingsPanel').is_hidden():page.locator('#cp101SettingsButton').click()
+   page.locator('#'+button).click();page.locator('#'+dialog).wait_for(state='visible')
+   bounds=page.locator('#'+dialog).bounding_box();assert bounds['x']>=0 and bounds['x']+bounds['width']<=width+1,(dialog,width,bounds)
+   assert page.locator('#'+dialog).evaluate('el=>el.scrollWidth<=el.clientWidth+1'),(dialog,width,'horizontal overflow')
+   page.locator('#'+dialog).screenshot(path=str(out/f'{dialog}-{width}-{theme}.png'))
+   page.evaluate('(id)=>document.getElementById(id).close()',dialog)
+  page.locator('#helpButton').click();page.locator('dialog[open]').screenshot(path=str(out/f'help-{width}-{theme}.png'));page.evaluate('document.querySelector("dialog[open]").close()')
+  c.close()
  b.close()
 s.shutdown()
