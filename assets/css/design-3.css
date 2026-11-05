@@ -162,3 +162,9 @@ body[data-design='3'] .step b {display:block;font-size:10px;letter-spacing:0;whi
 body[data-design='3'] .dropzone p {font-size:13px;line-height:1.5}
 body[data-design='3'] .dropzone strong {font-size:15px}
 @media(max-width:360px) {body[data-design='3'] .stepper {gap:6px}body[data-design='3'] .step b {font-size:9px}}
+/* Project/result/flow shells and diagnostics own nested surfaces in the legacy DOM. */
+body[data-design='3'] :is(.cp15-dialog>section,.cp15-dialog main,.cp15-dialog header,.cp15-dialog footer,.cp15-toast,.cp15-flowbar,.cp10-dialog-shell,.cp10-dialog-header,.cp10-dialog-body) {background:var(--cd-sf)!important;border-color:var(--cd-bd)!important;color:var(--cd-tx)}
+body[data-design='3'] :is(.cp15-result strong,.cp15-preset strong,.cp15-empty strong) {color:var(--cd-tx)!important}
+body[data-design='3'] :is(.cp15-dialog,.cp15-toast,.cp15-flowbar) button:not(.primary):not(.danger) {background:var(--cd-sf)!important;border-color:var(--cd-bd)!important;color:var(--cd-tx)}
+body[data-design='3'] :is(.cp15-dialog,.cp15-flowbar) .primary {background:linear-gradient(135deg,#5b4bff,#7951dd)!important;border-color:transparent;color:#fff}
+body[data-design='3'] .cp15-flow-grid article {background:var(--cd-alt)!important;border-color:var(--cd-bd)!important;color:var(--cd-tx)}

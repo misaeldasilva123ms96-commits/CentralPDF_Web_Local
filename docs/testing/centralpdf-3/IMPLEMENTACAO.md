@@ -110,3 +110,11 @@ cada HEAD devem ser conferidos nas PRs; resultados de commits anteriores não
 substituem os da revisão final. Permanecem aceite visual humano, leitor de tela,
 zoom real de 200% e testes em aparelho físico. Não se declara o redesign
 homologado/publicado nem se autoriza produção com base somente nesta automação.
+
+### Revisão final das superfícies secundárias
+
+As oito ações reais de Configurações e Ajuda foram abertas e capturadas em
+1440/escuro e 390/claro. O gerador verifica limites horizontais dos diálogos e
+recusa overflow da própria superfície. Projetos, resultados, fila, fluxos,
+predefinições e diagnósticos recebem os tokens também nos seus containers
+internos. A suíte de Configurações foi repetida após o alinhamento: PASS.
