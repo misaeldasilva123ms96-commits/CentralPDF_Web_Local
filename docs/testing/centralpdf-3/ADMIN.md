@@ -27,8 +27,8 @@ histórico, consentimento, tema e ausência de chamadas externas.
 
 A primeira execução de capturas após o redesign revelou que o servidor do harness
 respondia HTML para o SVG. O arquivo existia no build; a rota do harness foi
-corrigida e uma assertiva de imagem carregada adicionada. A validação final e as
-novas capturas devem ser conferidas antes de aprovar.
+corrigida e uma assertiva de imagem carregada adicionada. A repetição final passou em Chromium/Firefox, computador/celular, com a marca
+carregada e sem chamadas externas. Capturas em `evidence/admin-after/`.
 
 ## Pendências e rollback
 
