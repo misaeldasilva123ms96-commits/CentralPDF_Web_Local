@@ -1,0 +1,1102 @@
+{
+  "results": [
+    {
+      "tool": "organize",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 246.20000000298023,
+      "outputs": [
+        {
+          "name": "Contrato João_organizado.pdf",
+          "size": 1526,
+          "sha256": "63c0501895d679f6444a0f56a2e025ee46357bc3ddd33d1494e0e9d33c1e2c47",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "editPdf",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 807,
+      "outputs": [
+        {
+          "name": "Contrato João_editado.pdf",
+          "size": 29264,
+          "sha256": "726fdb1d35c99642d4cc0b1eb67fbd2439bad3a9e94e6d67e14060922b196f1c",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "merge",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        },
+        {
+          "name": "Anexo São Paulo.pdf",
+          "type": "application/pdf",
+          "bytes": 1244
+        }
+      ],
+      "ok": true,
+      "ms": 98.59999999403954,
+      "outputs": [
+        {
+          "name": "PDF_unido.pdf",
+          "size": 2082,
+          "sha256": "d4abd0b1f363b07dd88619e74f9c00ece994ec1aa23f052b48893a64fa2dbf0c",
+          "validation": {
+            "pages": 5,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "split",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 94.1000000089407,
+      "outputs": [
+        {
+          "name": "Contrato João_dividido.zip",
+          "size": 3031,
+          "sha256": "a233f60ffebb22d96a5ef5d023d98e2f3ad2d13a3101e6fa75482a1e85523de7",
+          "validation": {
+            "entries": [
+              "Contrato João_dividido_parte_01_paginas_1-2.pdf",
+              "Contrato João_dividido_parte_02_paginas_3.pdf",
+              "RELATORIO_DA_DIVISAO.txt"
+            ],
+            "Contrato João_dividido_parte_01_paginas_1-2.pdf": {
+              "pages": 2,
+              "bytes": 1246
+            },
+            "Contrato João_dividido_parte_02_paginas_3.pdf": {
+              "pages": 1,
+              "bytes": 949
+            }
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "extract",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 202.40000000596046,
+      "outputs": [
+        {
+          "name": "Contrato João_extracao_01.pdf",
+          "size": 1236,
+          "sha256": "568c1a1493d29fc81ea4f0b3173f13f969b3ce9511a50c9dfc548adfb03a2839",
+          "validation": {
+            "pages": 2,
+            "fields": [],
+            "rotations": [
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "rotate",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 97.29999999701977,
+      "outputs": [
+        {
+          "name": "Contrato João_girado.pdf",
+          "size": 1533,
+          "sha256": "e95207a0367fca148e88c5a8ac50caaa0245285e9729da7b95460a67373f0711",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              90,
+              90,
+              90
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "watermark",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 165.29999999701977,
+      "outputs": [
+        {
+          "name": "Contrato João_marca_dagua.pdf",
+          "size": 2523,
+          "sha256": "e7ef7333f4eadef2709c94bb13b5e97b7d119b43cc711f4d0bdf520d08ff7bdb",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00 AUDITORIA"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "pageNumbers",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 94.8999999910593,
+      "outputs": [
+        {
+          "name": "Contrato João_numerado.pdf",
+          "size": 2240,
+          "sha256": "80fc7ed953d1e31e361c8c24f3313b4315d7c6424c73149170f1ca4d1902a9e8",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00  1"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "imagesToPdf",
+      "inputs": [
+        {
+          "name": "Imagem São Paulo.png",
+          "type": "image/png",
+          "bytes": 50885
+        }
+      ],
+      "ok": true,
+      "ms": 1083,
+      "outputs": [
+        {
+          "name": "imagens_convertidas.pdf",
+          "size": 28274,
+          "sha256": "658cf9a1eb6b6031055a869dbef745ee54358e35961db30a5dbb37f598622e02",
+          "validation": {
+            "pages": 1,
+            "fields": [],
+            "rotations": [
+              0
+            ],
+            "text": ""
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "imageConvert",
+      "inputs": [
+        {
+          "name": "Imagem São Paulo.png",
+          "type": "image/png",
+          "bytes": 50885
+        }
+      ],
+      "ok": true,
+      "ms": 375.19999998807907,
+      "outputs": [
+        {
+          "name": "Imagem São Paulo_convertida.jpg",
+          "size": 44154,
+          "sha256": "7cfd9700f6ba6c56b9242dce27123ec1b3c4995b368733b6f1e114ac298de19b",
+          "validation": {
+            "width": 1200,
+            "height": 600
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "compress",
+      "inputs": [
+        {
+          "name": "Digitalização.pdf",
+          "type": "application/pdf",
+          "bytes": 28181
+        }
+      ],
+      "ok": true,
+      "ms": 2454.0999999940395,
+      "outputs": [
+        {
+          "name": "PDFs_comprimidos.zip",
+          "size": 16046,
+          "sha256": "7efbf43b95a0c42e7cd3f718919fa9db4dd5d4e7a67c87efda2cc853b432c4e3",
+          "validation": {
+            "entries": [
+              "Digitalização_comprimido.pdf",
+              "RELATORIO_DE_COMPRESSAO.txt"
+            ],
+            "Digitalização_comprimido.pdf": {
+              "pages": 1,
+              "bytes": 18007
+            }
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "pdfToImage",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 1980.2000000029802,
+      "outputs": [
+        {
+          "name": "PDF_para_imagens.zip",
+          "size": 63652,
+          "sha256": "c7b7ebfef0856954b166626d7b34e9c594eea15b71738c9e331c507c39c87e18",
+          "validation": {
+            "entries": [
+              "Contrato João_pagina_1.jpg",
+              "Contrato João_pagina_2.jpg",
+              "Contrato João_pagina_3.jpg"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "crop",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 229.09999999403954,
+      "outputs": [
+        {
+          "name": "Contrato João_recortado.pdf",
+          "size": 1540,
+          "sha256": "a90deb0421e39648c36132e2a313520024073b08d34c19c203573fab37bb47e3",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "metadata",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 198,
+      "outputs": [
+        {
+          "name": "Contrato João_sem_metadados.pdf",
+          "size": 1463,
+          "sha256": "888d68f0a60aaaf1c051578521b869b398bc0ec80254306f055b2eb544a3633e",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "normalize",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 162.90000000596046,
+      "outputs": [
+        {
+          "name": "Contrato João_normalizado.pdf",
+          "size": 1524,
+          "sha256": "b9c94d29729e68d1b1263547944f466ad04a7d7c7f45eb2003b67ed1f6b3dde5",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "pdfToText",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 2996.300000011921,
+      "outputs": [
+        {
+          "name": "textos_extraidos.txt",
+          "size": 263,
+          "sha256": "af81aba839d2023dfda3129327bd3aa7b5a13b71626da5a05d5593c116996281",
+          "validation": {
+            "text": "===== PÁGINA 1 =====\nCONTRATO TESTE PAGINA 1 CNPJ 12.345.678/0001-90 VALOR R$ 1250,00\n\n===== PÁGINA 2 =====\nCONTRATO TESTE PAGINA 2 CNPJ 12.345.678/0001-90 VALOR R$ 1250,00\n\n===== PÁGINA 3 =====\nCONTRATO TESTE PAGINA 3 CNPJ 12.345.678/0001-90 VALOR R$ 1250,00\n"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "ocr",
+      "inputs": [
+        {
+          "name": "Imagem São Paulo.png",
+          "type": "image/png",
+          "bytes": 50885
+        }
+      ],
+      "ok": true,
+      "ms": 11996,
+      "outputs": [
+        {
+          "name": "Imagem São Paulo_pesquisavel.pdf",
+          "size": 65888,
+          "sha256": "88eb789102927a1e47b0bec25d1d7766121b889f0004ebe56c73831654e40b7d",
+          "validation": {
+            "pages": 1,
+            "fields": [],
+            "rotations": [
+              0
+            ],
+            "text": "CONTRATO   DE   PRESTACAO   DE   SERVICOS VALOR   R$   1250,00 DOCUMENTO   TESTE   CENTRAL   PDF"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "compare",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        },
+        {
+          "name": "Anexo São Paulo.pdf",
+          "type": "application/pdf",
+          "bytes": 1244
+        }
+      ],
+      "ok": true,
+      "ms": 3117.1000000089407,
+      "outputs": [
+        {
+          "name": "Contrato João_versus_Anexo São Paulo_comparacao.zip",
+          "size": 101406,
+          "sha256": "1da16a108f004c4fbffe085ddfe7013ad7c35e6f40f3ce01d611875199f6ec29",
+          "validation": {
+            "entries": [
+              "imagens/",
+              "imagens/pagina_0001_original.jpg",
+              "imagens/pagina_0001_revisado.jpg",
+              "imagens/pagina_0001_diferencas.png",
+              "imagens/pagina_0002_original.jpg",
+              "imagens/pagina_0002_revisado.jpg",
+              "imagens/pagina_0002_diferencas.png",
+              "imagens/pagina_0003_original.jpg",
+              "imagens/pagina_0003_revisado.jpg",
+              "imagens/pagina_0003_diferencas.png",
+              "relatorio.html",
+              "relatorio.json",
+              "LEIA-ME.txt"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "redact",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 434.20000000298023,
+      "outputs": [
+        {
+          "name": "Contrato João_censurado.pdf",
+          "size": 73492,
+          "sha256": "fcee373296eebc3e2889b4018e043ea3ca73de00d95329a7bb61cda293a5f233",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "",
+            "blackCoverage": 1,
+            "redactedAreas": 3
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "formBuilder",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 306.20000000298023,
+      "outputs": [
+        {
+          "name": "Contrato João_formulario_preenchivel.pdf",
+          "size": 2812,
+          "sha256": "d945d1fd43487399178c988371d7c10b6ca7e2ede5c418c6b3d77c35a3d68adc",
+          "validation": {
+            "pages": 3,
+            "fields": [
+              "audit_name"
+            ],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "signPdf",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 3665.5,
+      "outputs": [
+        {
+          "name": "Contrato João_assinado_visual.pdf",
+          "size": 29455,
+          "sha256": "7cd8524fcaa598d386bb416176ef68def2103b48cc76d79e0e0220810ed649fb",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00  Pessoa Teste"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "pdfToOffice",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 9321.20000000298,
+      "outputs": [
+        {
+          "name": "Contrato João.docx",
+          "size": 136615,
+          "sha256": "a74485e42983a3c012d61f637e3b0f24821b89dd1127f0d76d7d7dfe1c77ad55",
+          "validation": {
+            "entries": [
+              "word/",
+              "word/media/",
+              "word/media/page-1.png",
+              "word/media/page-2.png",
+              "word/media/page-3.png",
+              "[Content_Types].xml",
+              "_rels/",
+              "_rels/.rels",
+              "word/_rels/",
+              "word/_rels/document.xml.rels",
+              "word/styles.xml",
+              "word/document.xml",
+              "docProps/",
+              "docProps/core.xml",
+              "docProps/app.xml"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "documentsToPdf",
+      "inputs": [
+        {
+          "name": "Documento.docx",
+          "type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "bytes": 2778
+        }
+      ],
+      "ok": true,
+      "ms": 1207.2000000029802,
+      "outputs": [
+        {
+          "name": "Documento.pdf",
+          "size": 983,
+          "sha256": "7eb4d34dceeb812c909678ab309575ee81b7a095373e1cbc648fdb87a0834caa",
+          "validation": {
+            "pages": 1,
+            "fields": [],
+            "rotations": [
+              0
+            ],
+            "text": "Página undefined"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "extractImages",
+      "inputs": [
+        {
+          "name": "Digitalização.pdf",
+          "type": "application/pdf",
+          "bytes": 28181
+        }
+      ],
+      "ok": true,
+      "ms": 9885.5,
+      "outputs": [
+        {
+          "name": "imagens_extraidas.zip",
+          "size": 43619,
+          "sha256": "6464cc13b9875e85c53aef24c4b11b2fbd6fb87d42cc32b69b8669cdeb73b9da",
+          "validation": {
+            "entries": [
+              "Digitalização/",
+              "Digitalização/pagina_001_interna_01.png",
+              "manifesto_imagens.json"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "archivePdf",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 2262,
+      "outputs": [
+        {
+          "name": "pacote_de_arquivamento.zip",
+          "size": 2685,
+          "sha256": "a97e5e2c9e918fab4b420465a2babb7513b1451153c67a3f8d9758cb31b4b363",
+          "validation": {
+            "entries": [
+              "Contrato João_arquivamento.pdf",
+              "Contrato João_manifesto.json",
+              "manifesto_geral.json"
+            ],
+            "Contrato João_arquivamento.pdf": {
+              "pages": 3,
+              "bytes": 1550
+            }
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "documentAssistant",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 6206.5999999940395,
+      "outputs": [
+        {
+          "name": "documentAssistant_2026-11-05.zip",
+          "size": 2542,
+          "sha256": "e1ce1503ebd0c50facbe3cd4b5817b75c6eee8f0e0c94b1a79685e521f951f2e",
+          "validation": {
+            "entries": [
+              "relatorio_assistente.html",
+              "dados_assistente.json",
+              "texto_extraido.txt",
+              "LEIA-ME.txt"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "structuredExtraction",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 524.7999999970198,
+      "outputs": [
+        {
+          "name": "structuredExtraction_2026-11-05.zip",
+          "size": 1719,
+          "sha256": "1f8c36a50bb6c6d4d0dcfb0941c7695ad970db38addab86788aa401ce9b7a052",
+          "validation": {
+            "entries": [
+              "extracao_estruturada.csv",
+              "extracao_estruturada.json",
+              "relatorio_extracao.html",
+              "LEIA-ME.txt"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "documentAudit",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 151.69999998807907,
+      "outputs": [
+        {
+          "name": "documentAudit_2026-11-05.zip",
+          "size": 2374,
+          "sha256": "c0be1b415149450b44661003d591a2d28eb22fd973daaf0c6cd6fd17963fca88",
+          "validation": {
+            "entries": [
+              "relatorio_auditoria.html",
+              "auditoria_documental.json",
+              "achados_auditoria.csv",
+              "LEIA-ME.txt"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "classifyRename",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 3454.8999999910593,
+      "outputs": [
+        {
+          "name": "classifyRename_2026-11-05.zip",
+          "size": 3634,
+          "sha256": "1db4e5864743030f898935141cdf198e888405e82ef824cc620e75d5b3831dd1",
+          "validation": {
+            "entries": [
+              "arquivos_renomeados/",
+              "arquivos_renomeados/CONTRATO_2026-11-05_SEM_NUMERO.pdf",
+              "relatorio_classificacao.html",
+              "classificacao_renomeacao.json",
+              "classificacao_renomeacao.csv",
+              "LEIA-ME.txt"
+            ],
+            "arquivos_renomeados/CONTRATO_2026-11-05_SEM_NUMERO.pdf": {
+              "pages": 3,
+              "bytes": 1524
+            }
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "protect",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 2937.7999999970198,
+      "outputs": [
+        {
+          "name": "Contrato João_protegido.pdf",
+          "size": 3609,
+          "sha256": "8ac0d36529df4c807b9761a019d3f0518417cbd41710acefa14458b86ee12768",
+          "validation": {
+            "encrypted": true,
+            "authenticated": true,
+            "pages": 3
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "unlock",
+      "inputs": [
+        {
+          "name": "Protegido.pdf",
+          "type": "application/pdf",
+          "bytes": 3609
+        }
+      ],
+      "ok": true,
+      "ms": 696.0999999940395,
+      "outputs": [
+        {
+          "name": "Protegido_desbloqueado.pdf",
+          "size": 2706,
+          "sha256": "7cb849313b2f374830e6e5cb0ded976126c0016b31ab39b0ef8eb88eef73f533",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "diagnose",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 205.09999999403954,
+      "outputs": [
+        {
+          "name": "diagnostico_PDF.zip",
+          "size": 988,
+          "sha256": "245b3377161693e18b4909ebcee401305ef2a598894e9fff09f939da2deb9992",
+          "validation": {
+            "entries": [
+              "diagnostico.txt",
+              "diagnostico.json"
+            ]
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "repairAdvanced",
+      "inputs": [
+        {
+          "name": "Contrato João.pdf",
+          "type": "application/pdf",
+          "bytes": 1524
+        }
+      ],
+      "ok": true,
+      "ms": 1281.7000000029802,
+      "outputs": [
+        {
+          "name": "Contrato João_recuperado.pdf",
+          "size": 1524,
+          "sha256": "b9c94d29729e68d1b1263547944f466ad04a7d7c7f45eb2003b67ed1f6b3dde5",
+          "validation": {
+            "pages": 3,
+            "fields": [],
+            "rotations": [
+              0,
+              0,
+              0
+            ],
+            "text": "CONTRATO TESTE PAGINA 1  CNPJ 12.345.678/0001-90 VALOR R$ 1250,00"
+          }
+        }
+      ],
+      "error": ""
+    },
+    {
+      "tool": "flattenForms",
+      "inputs": [
+        {
+          "name": "Formulário.pdf",
+          "type": "application/pdf",
+          "bytes": 1571
+        }
+      ],
+      "ok": true,
+      "ms": 111.5,
+      "outputs": [
+        {
+          "name": "Formulário_formulario_fixado.pdf",
+          "size": 1625,
+          "sha256": "b5eec6697ac7390c5fd3f0483b341f05c91ef9eaa86392c74ebd35a81642c8af",
+          "validation": {
+            "pages": 1,
+            "fields": [],
+            "rotations": [
+              0
+            ],
+            "text": "Pessoa Teste"
+          }
+        }
+      ],
+      "error": ""
+    }
+  ],
+  "pageErrors": [],
+  "edgeCases": {
+    "compression": {
+      "nativeText": true,
+      "nativeVector": true,
+      "noReductionPreservesBytes": true,
+      "sizes": [
+        {
+          "before": 28387,
+          "after": 28386
+        },
+        {
+          "before": 28386,
+          "after": 28386
+        }
+      ]
+    },
+    "rotatedOCR": {
+      "sourceRotation": 90,
+      "manualCorrection": 270,
+      "text": "CONTRATO   DE   PRESTACAO   DE   SERVICOS VALOR   R$   1250,00 DOCUMENTO   TESTE   CENTRAL   PDF"
+    },
+    "office": {
+      "docx": {
+        "filename": "Contrato João.docx",
+        "bytes": 136615,
+        "entries": 15,
+        "xmlValid": true
+      },
+      "xlsx": {
+        "filename": "Contrato João.xlsx",
+        "bytes": 4187,
+        "entries": 15,
+        "xmlValid": true
+      },
+      "pptx": {
+        "filename": "Contrato João.pptx",
+        "bytes": 257425,
+        "entries": 50,
+        "xmlValid": true
+      }
+    }
+  },
+  "usageTools": [
+    "archivePdf",
+    "classifyRename",
+    "compare",
+    "compress",
+    "crop",
+    "diagnose",
+    "documentAssistant",
+    "documentAudit",
+    "documentsToPdf",
+    "editPdf",
+    "extract",
+    "extractImages",
+    "flattenForms",
+    "formBuilder",
+    "imageConvert",
+    "imagesToPdf",
+    "merge",
+    "metadata",
+    "normalize",
+    "ocr",
+    "organize",
+    "pageNumbers",
+    "pdfToImage",
+    "pdfToOffice",
+    "pdfToText",
+    "protect",
+    "redact",
+    "repairAdvanced",
+    "rotate",
+    "signPdf",
+    "split",
+    "structuredExtraction",
+    "unlock",
+    "watermark"
+  ]
+}

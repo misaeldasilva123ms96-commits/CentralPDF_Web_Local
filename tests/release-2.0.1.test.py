@@ -24,33 +24,35 @@ builder = read("scripts/build-release.ps1")
 release_notes = read("docs/releases/2.0.1.md")
 
 # Versão corrente nas fontes oficiais das duas interfaces e do servidor local.
-assert package["version"] == "2.0.1"
-assert lock["version"] == "2.0.1"
-assert lock["packages"][""]["version"] == "2.0.1"
-assert "const BUILD_VERSION = '2.0.1';" in app_source
-assert "Web local 2.0.1" in index
-assert "v2.0.1" in index
-assert "Central PDF & Imagem — Web Local 2.0.1" in index
-assert "const VERSION='2.0.1';" in stable
-assert 'Central PDF & Imagem 2.0.1' in manifest
-assert '"version":"2.0.1"' in server
-assert readme.startswith("# Central PDF & Imagem 2.0.1\n")
-assert changelog.startswith("## 2.0.1 —")
-assert "centralpdf-v2.0.1-pages-49" in service_worker
+assert package["version"] == "3.0.0"
+assert lock["version"] == "3.0.0"
+assert lock["packages"][""]["version"] == "3.0.0"
+assert "const BUILD_VERSION = '3.0.0';" in app_source
+assert "Web local 3.0.0" in index
+assert "v3.0.0" in index
+assert "Central PDF & Imagem — Web Local 3.0.0" in index
+assert "const VERSION='3.0.0';" in stable
+assert 'Central PDF & Imagem 3.0.0' in manifest
+assert '"version":"3.0.0"' in server
+assert readme.startswith("# Central PDF & Imagem 3.0.0\n")
+assert changelog.startswith("## 3.0.0 —")
+assert "centralpdf-v3.0.0-pages-51" in service_worker
 
 # O pacote continua genérico e produz os três nomes oficiais para qualquer SemVer estável.
 assert 'CentralPDF_Web_Local_v$Version' in builder
 assert 'CentralPDF_Local_Server.exe' in builder
 assert '$packageName.sha256' in builder
-assert "2.0.1" not in builder
+assert "3.0.0" not in builder
 
-# O workflow aceita 2.0.1 e versões estáveis futuras sem lógica exclusiva desta release.
+# O workflow aceita 3.0.0 e versões estáveis futuras sem lógica exclusiva desta release.
 assert '"v[0-9]*.[0-9]*.[0-9]*"' in workflow
 assert "^v[0-9]+\\.[0-9]+\\.[0-9]+$" in workflow
 assert 'docs/releases/$version.md' in workflow
 assert "sha256sum -c" in workflow
-assert "2.0.1" not in workflow
+assert "3.0.0" not in workflow
 
+# As notas atuais não prometem uma tag/ZIP já publicado; preservar o histórico.
+assert '# Central PDF 3.0.0' in read('docs/releases/3.0.0.md')
 # A documentação preserva a alpha publicada e usa somente comparações entre tags reais.
 assert "v2.0.0-alpha.1" in release_notes
 assert "compare/v2.0.0-alpha.1...v2.0.1" in release_notes
@@ -59,4 +61,4 @@ assert "compare/v2.0.0...v2.0.1" not in release_notes
 for pull_request in (26, 27, 28, 29, 30):
     assert f"pull/{pull_request}" in release_notes
 
-print("release-2.0.1: passed")
+print("release-3.0.0 and historical notes: passed")

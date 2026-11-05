@@ -27,15 +27,17 @@ try:
                 page.locator('#cp101SettingsButton').click()
                 panel=page.locator('#cp101SettingsPanel');toggle=page.get_by_role('switch',name='Tema escuro')
                 assert panel.is_visible() and toggle.count()==1
+                assert panel.locator('#cp101ThemeToggle').count()==0
                 assert panel.locator('.cp101-theme-option').count()==0
                 assert panel.locator('.cp101-settings-action').count()==8
                 for theme in ['dark','light']:
                     if page.locator('body').get_attribute('data-theme')!=theme:toggle.click()
                     assert page.locator('html').get_attribute('data-theme')==theme
                     assert toggle.get_attribute('aria-checked')==str(theme=='dark').lower()
+                    if panel.is_hidden():page.locator('#cp101SettingsButton').click()
                     assert panel.is_visible()
                     contrast=toggle.evaluate(r"""el=>{
-                      const inactive=el.querySelector(el.getAttribute('aria-checked')==='true'?'[data-mode="light"]':'[data-mode="dark"]');
+                      const inactive=el;
                       const rgb=s=>s.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
                       const lum=s=>rgb(s).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
                       const a=lum(getComputedStyle(inactive).color),b=lum(getComputedStyle(el).backgroundColor);

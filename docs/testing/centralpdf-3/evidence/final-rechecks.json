@@ -1,0 +1,22 @@
+[
+  {
+    "check": "workspace-completion-actions-2.0.6",
+    "exit": 0
+  },
+  {
+    "check": "image-rotation-icons",
+    "exit": 0
+  },
+  {
+    "check": "redesign-3",
+    "exit": 0
+  },
+  {
+    "check": "dark-theme-1.0.4",
+    "exit": 0
+  },
+  {
+    "check": "foundation-dark-1.0.6",
+    "exit": 0
+  }
+]

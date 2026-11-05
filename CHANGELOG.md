@@ -1,3 +1,11 @@
+## 3.0.0 — identidade unificada e revisão de acessibilidade
+
+- Atualiza a versão atual em interface, PWA, relatórios, telemetria, servidor local, pacote React e catálogo do Admin.
+- Mantém dados, projetos e preferências existentes; renova o cache e preserva a atualização de caches anteriores.
+- Inclui o redesign completo e as correções revisadas de navegação em telas baixas e contraste no tema escuro.
+- Recompila o servidor Windows com o mesmo Go 1.26.10 e as flags reproduzíveis; atualiza o checksum.
+- Não cria tag nem publica um pacote Windows automaticamente.
+
 ## 2.0.1 — workspace renovado e entrega verificável
 
 ### Auditoria de estabilização de 25/10/2026
@@ -10,6 +18,12 @@
 - Valida grafo de assets/Workers/cache e hashes no pacote Pages; fixa Actions por SHA e configura CI semanal/Dependabot.
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
+
+### Sistema visual 3.0 — em revisão, sem publicação
+
+- Aplica uma camada visual reversível à aplicação original: marca vetorial local, degradês no próprio texto, cartões por categoria e componentes compartilhados nos workspaces e diálogos.
+- Move o tema para o topo e preserva as oito ações de configurações. Mantém 34 módulos, 39 atalhos e o processamento existente.
+- Registra evidências e pendências em `docs/testing/centralpdf-3/IMPLEMENTACAO.md`; esta mudança não altera a versão de release.
 
 ### Retorno à edição — 05/11/2026
 

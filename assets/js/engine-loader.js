@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const APP_VERSION = '2.0.1';
+  const APP_VERSION = '3.0.0';
   const runtimeProtocol = window.CentralPDFProtocolOverride || location.protocol;
   const PDFJS_VERSION = '6.2.108';
   const PDFLIB_VERSION = '1.17.1';

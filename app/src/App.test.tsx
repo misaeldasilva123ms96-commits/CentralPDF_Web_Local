@@ -15,13 +15,13 @@ beforeEach(() => {
   });
 });
 
-describe('App (shell 2.0)', () => {
+describe('App (shell 3.0)', () => {
   it('renderiza o shell com marca, modo local e versão', () => {
     render(<App />);
     expect(screen.getByTestId('app-shell')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /CentralPDF 2\.0/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Central PDF 3\.0/ })).toBeInTheDocument();
     expect(screen.getByText(/Modo local · offline/)).toBeInTheDocument();
-    expect(screen.getByText(/v2\.0\.1/)).toBeInTheDocument();
+    expect(screen.getByText(/v3\.0\.0/)).toBeInTheDocument();
   });
 
   it('exibe o catálogo oficial na home com as ferramentas disponíveis', () => {
@@ -42,7 +42,7 @@ describe('App (shell 2.0)', () => {
     await user.click(screen.getByRole('button', { name: 'Juntar PDFs' }));
     expect(screen.getByRole('region', { name: 'Resumo, configurações, validação e ação da ferramenta' })).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: /CentralPDF 2\.0/ }));
+    await user.click(screen.getByRole('button', { name: /Central PDF 3\.0/ }));
     expect(screen.getByRole('heading', { name: /Todas as ferramentas/ })).toBeInTheDocument();
   });
 

@@ -1,6 +1,6 @@
 # Documentação do Central PDF & Imagem
 
-Referência revisada em **21/10/2026**, a partir da `main` com as PRs até a #56 integradas. Versão declarada: **2.0.1**.
+Referência atualizada em **05/11/2026** para o sistema visual e a versão 3.0.0. Versão declarada: **3.0.0**.
 
 [Abrir o aplicativo](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/) · [README do projeto](../README.md) · [Contribuir](../CONTRIBUTING.md)
 
@@ -44,7 +44,7 @@ O site e o pacote Windows usam a aplicação estática da raiz. O conteúdo de `
 ## Histórico e evidências
 
 - [CHANGELOG](../CHANGELOG.md): evolução integrada ao código; melhorias na `main` podem ser posteriores ao último ZIP publicado.
-- [Notas da release 2.0.1](releases/2.0.1.md): recorte daquela distribuição.
+- [Notas da release anterior 2.0.1](releases/2.0.1.md): recorte daquela distribuição.
 - [Modernização do editor](modernizacao-ux-editor-v2.md) e [estabilização](estabilizacao-editor.md): relatórios de entregas específicas.
 - [Auditoria das 34 ferramentas](testing/AUDITORIA_34_FERRAMENTAS_1.2.0.md), [auditoria técnica](reports/AUDITORIA_TECNICA_1.2.0.md) e demais arquivos em `testing/`, `reports/` e `history/`: evidências datadas, não garantias sobre toda versão futura.
 - `previews/`: capturas de versões identificadas nos nomes; não representam necessariamente a interface atual.

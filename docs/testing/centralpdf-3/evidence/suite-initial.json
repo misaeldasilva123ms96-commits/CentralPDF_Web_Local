@@ -1,0 +1,362 @@
+[
+  {
+    "check": "react-tests",
+    "exit": 0
+  },
+  {
+    "check": "react-types",
+    "exit": 0
+  },
+  {
+    "check": "react-build",
+    "exit": 0
+  },
+  {
+    "check": "admin-tests",
+    "exit": 0
+  },
+  {
+    "check": "admin-build",
+    "exit": 0
+  },
+  {
+    "check": "admin-browser",
+    "exit": 0
+  },
+  {
+    "check": "root-admin-demo.test",
+    "exit": 0
+  },
+  {
+    "check": "root-browser-network-guard.test",
+    "exit": 0
+  },
+  {
+    "check": "root-cached-editor-downloads.test",
+    "exit": 0
+  },
+  {
+    "check": "root-ci-workflow.test",
+    "exit": 0
+  },
+  {
+    "check": "root-compare-redaction-engine-0.17.test",
+    "exit": 0
+  },
+  {
+    "check": "root-completion-labels-contract-2.0.6.test",
+    "exit": 0
+  },
+  {
+    "check": "root-compression-worker-1.1.6.test",
+    "exit": 0
+  },
+  {
+    "check": "root-conversions-0.19.test",
+    "exit": 0
+  },
+  {
+    "check": "root-dark-theme-1.0.4.test",
+    "exit": 1
+  },
+  {
+    "check": "root-diagnostics-telemetry.test",
+    "exit": 0
+  },
+  {
+    "check": "root-dialog-audit-1.0.8.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-context-controls.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-modes.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-native-text.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-orientation-delivery.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-page-orientation.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-restricted-runtime.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-stability.test",
+    "exit": 0
+  },
+  {
+    "check": "root-editor-transform.test",
+    "exit": 0
+  },
+  {
+    "check": "root-experience-0.15.test",
+    "exit": 0
+  },
+  {
+    "check": "root-extract-panels-runtime-1.2.1.test",
+    "exit": 0
+  },
+  {
+    "check": "root-forms-recovery-real-pdf.test",
+    "exit": 0
+  },
+  {
+    "check": "root-forms-signatures-0.18.test",
+    "exit": 0
+  },
+  {
+    "check": "root-forms-signatures-ui-0.18.test",
+    "exit": 0
+  },
+  {
+    "check": "root-foundation-dark-1.0.6.test",
+    "exit": 1
+  },
+  {
+    "check": "root-foundation.test",
+    "exit": 0
+  },
+  {
+    "check": "root-github-governance-verifier.test",
+    "exit": 0
+  },
+  {
+    "check": "root-home-dark-1.0.5.test",
+    "exit": 0
+  },
+  {
+    "check": "root-image-rotation-icons.test",
+    "exit": 0
+  },
+  {
+    "check": "root-intelligence-0.20.test",
+    "exit": 0
+  },
+  {
+    "check": "root-internal-drag-overlay.test",
+    "exit": 0
+  },
+  {
+    "check": "root-large-merge.test",
+    "exit": 0
+  },
+  {
+    "check": "root-layout-controls.test",
+    "exit": 0
+  },
+  {
+    "check": "root-libpdf-offline-bundle.test",
+    "exit": 0
+  },
+  {
+    "check": "root-local-server-sw-0.14.test",
+    "exit": 0
+  },
+  {
+    "check": "root-merge-cover-default.test",
+    "exit": 0
+  },
+  {
+    "check": "root-merge-default-az.test",
+    "exit": 0
+  },
+  {
+    "check": "root-merge-dragdrop.test",
+    "exit": 0
+  },
+  {
+    "check": "root-merge-source-order.test",
+    "exit": 0
+  },
+  {
+    "check": "root-micro-polish-1.1.0.test",
+    "exit": 0
+  },
+  {
+    "check": "root-modal-fit-1.0.9.test",
+    "exit": 0
+  },
+  {
+    "check": "root-ocr-0.16.test",
+    "exit": 0
+  },
+  {
+    "check": "root-office-conversions.test",
+    "exit": 0
+  },
+  {
+    "check": "root-offline-installer-integrity.test",
+    "exit": 0
+  },
+  {
+    "check": "root-offline-marker-1.1.3.test",
+    "exit": 0
+  },
+  {
+    "check": "root-offline-marker-cache.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pages-deployment.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pdf-compatibility-sw.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pdf-corpus-manifest.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pdf-ingest-browser.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pdf-log-migration-1.1.3.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pdf-runtime-regressions-1.1.5.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pdf-worker-file-mode-1.1.3.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pdf-worker-routing-1.1.2.test",
+    "exit": 0
+  },
+  {
+    "check": "root-pptxgenjs-4.0.1.test",
+    "exit": 0
+  },
+  {
+    "check": "root-product-redesign-functional-parity-2.0.test",
+    "exit": 0
+  },
+  {
+    "check": "root-professional-0.17.test",
+    "exit": 0
+  },
+  {
+    "check": "root-quality-button-1.1.4.test",
+    "exit": 0
+  },
+  {
+    "check": "root-quality-logs-1.1.2.test",
+    "exit": 0
+  },
+  {
+    "check": "root-readme-guide.test",
+    "exit": 0
+  },
+  {
+    "check": "root-recovery-containment.test",
+    "exit": 0
+  },
+  {
+    "check": "root-redesign-3-exports.test",
+    "exit": 0
+  },
+  {
+    "check": "root-redesign-3.test",
+    "exit": 0
+  },
+  {
+    "check": "root-release-2.0.1.test",
+    "exit": 0
+  },
+  {
+    "check": "root-release-provenance.test",
+    "exit": 0
+  },
+  {
+    "check": "root-remote-engine-consent.test",
+    "exit": 0
+  },
+  {
+    "check": "root-runtime-reliability.test",
+    "exit": 0
+  },
+  {
+    "check": "root-settings-panel-fit-1.0.7.test",
+    "exit": 0
+  },
+  {
+    "check": "root-settings-theme-toggle.test",
+    "exit": 0
+  },
+  {
+    "check": "root-signature-warning.test",
+    "exit": 0
+  },
+  {
+    "check": "root-smart-compression-integration.test",
+    "exit": 0
+  },
+  {
+    "check": "root-split-interactive-ui.test",
+    "exit": 0
+  },
+  {
+    "check": "root-stable-release-1.0.test",
+    "exit": 0
+  },
+  {
+    "check": "root-static-site-validation.test",
+    "exit": 0
+  },
+  {
+    "check": "root-tool-quality-1.2.0.test",
+    "exit": 0
+  },
+  {
+    "check": "root-ux-editor-modernization.test",
+    "exit": 0
+  },
+  {
+    "check": "root-ux_interaction.test",
+    "exit": 0
+  },
+  {
+    "check": "root-version-sync-1.1.1.test",
+    "exit": 0
+  },
+  {
+    "check": "root-workflow-governance.test",
+    "exit": 0
+  },
+  {
+    "check": "root-workflow-supply-chain.test",
+    "exit": 0
+  },
+  {
+    "check": "root-workspace-compact-panels-1.2.3.test",
+    "exit": 0
+  },
+  {
+    "check": "root-workspace-completion-actions-2.0.6.test",
+    "exit": 1
+  },
+  {
+    "check": "root-workspace-fixed-settings-2.0.5.test",
+    "exit": 0
+  },
+  {
+    "check": "root-workspace-visual-fixes-1.2.2.test",
+    "exit": 0
+  }
+]

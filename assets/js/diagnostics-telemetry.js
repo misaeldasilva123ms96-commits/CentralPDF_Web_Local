@@ -2,7 +2,7 @@
    replay, breadcrumbs, attachments, user identifier or historical-log replay. */
 (() => {
   'use strict';
-  const RELEASE='centralpdf@2.0.1-tracing1';
+  const RELEASE='centralpdf@3.0.0-tracing1';
   const TRACING_KEY='centralpdf-tracing-consent-v1';
   const CONSENT_KEY='centralpdf-diagnostics-consent-v1';
   const MAX_QUEUE=20, MAX_AGE=15*60*1000, MAX_SENT=30, PER_MINUTE=10;

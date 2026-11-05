@@ -6,7 +6,7 @@ from threading import Thread
 import os
 import re
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 root = Path(__file__).resolve().parents[1]
 html = (root / 'index.html').read_text()
@@ -74,7 +74,7 @@ try:
         page.locator('[data-import-tool="merge"]').click()
         page.wait_for_function("CentralPDFApp.getFiles().length===2 && document.querySelectorAll('#pageGrid .page-card').length===2")
         assert page.locator('#mergePageView').input_value()=='covers'
-        assert '2 capas' in page.locator('#mergePlanCount').inner_text()
+        expect(page.locator('#mergePlanCount')).to_have_text('2 capas')
         assert '5' in page.locator('#mergePlanCount').get_attribute('title')
         page.locator('#outputFileName').fill('União de comprovação')
         with page.expect_download() as info:page.locator('#processButton').click()

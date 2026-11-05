@@ -84,7 +84,7 @@ describe('Acessibilidade (roles ARIA e nomes acessíveis)', () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole('button', { name: 'Juntar PDFs' }));
-    await user.click(screen.getByRole('button', { name: /CentralPDF 2.0/ }));
+    await user.click(screen.getByRole('button', { name: /Central PDF 3.0/ }));
     expect(screen.queryByRole('region', { name: 'Resumo, configurações, validação e ação da ferramenta' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Todas as ferramentas/ })).toBeInTheDocument();
   });
