@@ -188,8 +188,16 @@ try:
     page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).wait_for();assert state['enabled'] is False
     page.get_by_role('button',name='Ativar estatísticas opcionais',exact=True).click()
     page.get_by_role('button',name='Pausar estatísticas',exact=True).wait_for();assert state['enabled'] is True
+    if width>=800:
+     page.set_viewport_size({'width':1366,'height':768})
+     logout=page.get_by_role('button',name='Sair da conta')
+     logout.scroll_into_view_if_needed(timeout=5000)
+     bounds=logout.bounding_box()
+     assert bounds and bounds['y']>=0 and bounds['y']+bounds['height']<=768,('short desktop logout clipped',bounds)
+     page.locator('#sidebar').screenshot(path=str(OUT/f'short-desktop-sidebar-{engine}.png'))
     if width<800:page.get_by_role('button',name='Abrir menu').click()
     page.get_by_role('button',name='Sair da conta').click();page.get_by_role('heading',name='Acesso do administrador').wait_for()
+    page.set_viewport_size({'width':width,'height':height})
     # Provider invitations do not initiate browser PKCE: test the fixed invite callback.
     state['enrolled']=False  # A newly invited identity has no verified factor yet.
     invite=origin+('/auth/invite' if width==1440 else '/')+'#access_token='+jwt('aal1')+'&refresh_token=fixture-refresh-token&expires_in=3600&token_type=bearer&type=invite'
