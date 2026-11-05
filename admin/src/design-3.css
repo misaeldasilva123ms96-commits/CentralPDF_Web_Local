@@ -67,3 +67,6 @@ dialog header {background:var(--surface);border-color:var(--border)}
 @media(max-width:390px) {.access-card {padding:20px}.metrics {grid-template-columns:1fr}.breadcrumb {font-size:12px}.access-card h1 {font-size:27px}}
 @media(prefers-reduced-motion:reduce) {*,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(forced-colors:active) {:is(.page-heading h1,.access-card h1) {background:none;color:CanvasText;-webkit-text-fill-color:CanvasText}}
+/* Keep account/sign-out reachable when the desktop navigation exceeds the viewport. */
+.sidebar {overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.sidebar>* {flex-shrink:0}

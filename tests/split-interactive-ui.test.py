@@ -15,7 +15,7 @@ section = soup.select_one("#splitVisualSection")
 assert section is not None
 assert section.select_one("#splitVisualGroups") is not None
 assert section.select_one("#splitVisualFileCount") is not None
-assert "assets/css/split-interactive.css?v=2.0.1-split1" in [
+assert "assets/css/split-interactive.css?v=3.0.0-split1" in [
     link.get("href", "") for link in soup.select('link[rel="stylesheet"]')
 ]
 
@@ -42,7 +42,7 @@ for selector in (
 ):
     assert selector in css
 
-assert "./assets/css/split-interactive.css?v=2.0.1-split1" in sw
-assert "centralpdf-v2.0.1-pages-50" in sw
+assert "./assets/css/split-interactive.css?v=3.0.0-split1" in sw
+assert "centralpdf-v3.0.0-pages-51" in sw
 
 print("split-interactive-ui: passed")

@@ -7,7 +7,7 @@ import { centralCatalog } from './core/catalog';
 import type { ToolDefinition } from './core/types';
 import { Icon } from './ui/Icon';
 
-const BUILD_VERSION = '2.0.1';
+const BUILD_VERSION = '3.0.0';
 
 const PRIMARY_NAV = [
   { label: 'Juntar PDF', toolId: 'merge-pdfs' },
@@ -43,7 +43,7 @@ export function App() {
   return (
     <div className="app-shell" data-testid="app-shell">
       <header className="app-header">
-        <button type="button" className="app-brand" onClick={() => navigate(null)} aria-label="CentralPDF 2.0 — início">
+        <button type="button" className="app-brand" onClick={() => navigate(null)} aria-label="Central PDF 3.0 — início">
           <span className="app-brand-mark" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}centralpdf-logo.svg`} alt="" width="46" height="46" /></span>
           <span>Central PDF</span>
         </button>

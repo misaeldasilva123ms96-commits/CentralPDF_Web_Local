@@ -4,7 +4,7 @@ Base: `1dc49d820a719f065ddd6ce807eedeb1e77c0c45` (PR #79).
 Referência: prompt mestre do ZIP fornecido pelo responsável e documentos de `docs/proposals/centralpdf-3-redesign/`.
 
 **Entrega em rascunho. Sem merge, publicação, release, deploy ou alteração de banco.**
-O número 3.0 identifica o sistema visual; as versões técnicas permanecem 2.0.1 (site/React) e 0.3.0 (Admin).
+Após a revisão, o responsável autorizou a versão **3.0.0** no site, React e referências do Admin. O painel mantém sua versão de pacote independente **0.3.0**. Baselines e capturas anteriores preservam os números históricos.
 
 ## Checkpoints e superfícies
 
@@ -17,7 +17,7 @@ O número 3.0 identifica o sistema visual; as versões técnicas permanecem 2.0.
 | 4 | Admin: estilos comuns, marca e alternância de tema em acesso e páginas privadas | Auth/PKCE/MFA, rotas, API, RLS e storage independente |
 | 5 | React parcial: identidade e tema próprio nos componentes existentes | Catálogo parcial, ferramentas experimentais/planejadas e bundle separado |
 
-CSS novo é carregado por último e escopado no site por `data-design="3"`. Não há cópia do HTML demonstrativo nem troca pela migração React. Ícones das ferramentas continuam vindo do sprite real. Novos assets não dependem de rede externa. A revisão de cache do site passa para `pages-50`.
+CSS novo é carregado por último e escopado no site por `data-design="3"`. Não há cópia do HTML demonstrativo nem troca pela migração React. Ícones das ferramentas continuam vindo do sprite real. Novos assets não dependem de rede externa. A revisão de cache do site passa para `pages-51`.
 
 ## Linha de base e falhas de preparação
 

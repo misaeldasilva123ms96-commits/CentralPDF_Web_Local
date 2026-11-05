@@ -1,6 +1,6 @@
 # Guia do usuário — Central PDF & Imagem
 
-Referência da versão declarada **2.0.1**, revisada em **29/10/2026**. O nome deste arquivo foi mantido para preservar os links existentes.
+Referência da versão declarada **3.0.0**, revisada em **29/10/2026**. O nome deste arquivo foi mantido para preservar os links existentes.
 
 [Documentação](../README.md) · [Editor PDF](EDITOR_PDF.md) · [Offline e projetos](OFFLINE_E_PROJETOS.md)
 

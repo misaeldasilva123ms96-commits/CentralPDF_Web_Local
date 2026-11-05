@@ -4,6 +4,7 @@ from PIL import Image
 import os
 import re
 import tempfile
+import json, zipfile
 
 root = Path(__file__).resolve().parents[1]
 html = (root / 'index.html').read_text(encoding='utf-8')
@@ -61,12 +62,21 @@ with tempfile.TemporaryDirectory() as temp_dir:
         download_info.value.save_as(project_path)
         assert project_path.exists() and project_path.stat().st_size > 100
 
-        # Limpa e restaura o projeto salvo.
+        # A versão nova ainda abre projetos do produto anterior, sem migrar dados.
+        legacy_path = project_path.with_name('legacy.cpdf')
+        with zipfile.ZipFile(project_path) as source, zipfile.ZipFile(legacy_path, 'w', zipfile.ZIP_DEFLATED) as legacy:
+            manifest = json.loads(source.read('project.json'))
+            assert manifest['appVersion'] == '3.0.0' and manifest['formatVersion'] == 1
+            manifest['appVersion'] = '2.0.1'
+            for item in source.infolist():
+                legacy.writestr(item.filename, json.dumps(manifest) if item.filename == 'project.json' else source.read(item.filename))
+
+        # Limpa e restaura o projeto legado.
         page.locator('[data-close-dialog="foundationProjectsDialog"]').click()
         page.evaluate("CentralPDFApp.clearAll()")
         assert page.locator('#fileCount').inner_text().startswith('0 ')
         page.locator('#foundationProjectsButton').click()
-        page.locator('#foundationProjectInput').set_input_files(str(project_path))
+        page.locator('#foundationProjectInput').set_input_files(str(legacy_path))
         page.wait_for_function("document.querySelector('#foundationProjectStatus').textContent.includes('Projeto aberto')")
         assert page.locator('#fileCount').inner_text().startswith('1 ')
 

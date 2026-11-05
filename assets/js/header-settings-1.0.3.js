@@ -150,7 +150,7 @@
           <button id="cp101CloseSettings" class="cp101-settings-close" type="button" aria-label="Fechar configurações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
         </div>
         <div id="cp101SettingsBody" class="cp101-settings-body"></div>
-        <div class="cp101-settings-footer"><span>CentralPDF · 2.0.1</span><span><kbd>Esc</kbd> para fechar</span></div>
+        <div class="cp101-settings-footer"><span>CentralPDF · 3.0.0</span><span><kbd>Esc</kbd> para fechar</span></div>
       </div>
       <div id="cp101SettingsBackdrop" class="cp101-settings-backdrop" hidden></div>`;
 

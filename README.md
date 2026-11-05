@@ -1,4 +1,4 @@
-# Central PDF & Imagem 2.0.1
+# Central PDF & Imagem 3.0.0
 
 <p align="center">
   <img src="assets/icons/icon-192.png" width="80" height="80" alt="Ícone do Central PDF & Imagem" />
@@ -16,7 +16,7 @@ O processamento de PDFs e imagens acontece no navegador, sem upload dos document
 
 O link **Administração** no rodapé abre o [painel privado](https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/), com senha e TOTP. Em **Compatibilidade e modo offline → Área do administrador**, a opção **Permitir estatísticas de uso (opcional)** começa ativada. Desativar fica salvo neste navegador e continua valendo nas próximas visitas. Somente operações com a coleta ativada entram nos indicadores, com cobertura parcial e sem documentos ou nomes de arquivos. Avisos publicados aparecem nos clientes online. Detalhes de limites, retenção, pausa global e leitura do Sentry estão no [guia administrativo](admin/README.md).
 
-> **Estado da documentação — 25/10/2026.** O site usa a aplicação da raiz (`index.html` + `assets/`). A migração React/TypeScript em [`app/`](app/README.md) é separada e ainda não substitui o produto publicado. O número da versão continua **2.0.1**; a `main` contém melhorias posteriores à release Windows de mesmo número. Consulte o [histórico](CHANGELOG.md) e a data da release antes de comparar as distribuições.
+> **Estado da documentação — 05/11/2026.** O site usa a aplicação da raiz (`index.html` + `assets/`). A migração React/TypeScript em [`app/`](app/README.md) é separada e ainda não substitui o produto publicado. A versão atual do código é **3.0.0**. O ZIP da última release Windows é uma distribuição anterior; esta atualização não cria uma tag nem publica outro ZIP. Consulte o [histórico](CHANGELOG.md) e a data da release antes de comparar as distribuições.
 
 **Nesta página:** [Começar](#começar) · [Editor](#editor-pdf) · [Ferramentas](#as-34-ferramentas) · [Projetos](#projetos-e-continuidade) · [Privacidade](#privacidade-e-diagnósticos) · [Suporte](#solução-de-problemas) · [Desenvolvimento](#desenvolvimento)
 
@@ -218,7 +218,7 @@ Estas são **versões adotadas no repositório**, não uma afirmação sobre a �
 
 | Componente | Referência atual |
 | --- | --- |
-| Produto e pacote React | `2.0.1`; distribuições podem apontar para commits diferentes |
+| Produto e pacote React | `3.0.0`; distribuições podem apontar para commits diferentes |
 | PDF.js | Site/pacotes locais: `6.2.108`, legacy ESM com Worker, fontes, CMaps e WASM; interface React em `/app`: `6.4.299` |
 | pdf-lib | `1.17.1` |
 | Tesseract.js / core | `7.0.0`, com idiomas português e inglês na preparação offline |
@@ -234,6 +234,6 @@ A CI valida as duas interfaces e o executável. O workflow Pages monta o site da
 - [Guia do usuário](docs/guides/GUIA_DO_USUARIO_1.0.md) e [editor PDF](docs/guides/EDITOR_PDF.md).
 - [Offline e projetos](docs/guides/OFFLINE_E_PROJETOS.md), [fluxos e resultados](docs/guides/FLUXOS_RESULTADOS_E_PREDEFINICOES.md) e [acessibilidade](docs/guides/ACESSIBILIDADE_1.0.md).
 - [Segurança](SECURITY.md), [diagnósticos opcionais](docs/diagnosticos-sentry.md) e [componentes de terceiros](THIRD_PARTY_NOTICES.md).
-- [Histórico de alterações](CHANGELOG.md) e [notas das releases](docs/releases/2.0.1.md).
+- [Histórico de alterações](CHANGELOG.md) e [notas da versão 3.0.0](docs/releases/3.0.0.md).
 
 Contribuições passam por branch, validação e pull request antes da integração à `main`.
