@@ -65,3 +65,11 @@ Testes também ficam junto aos módulos. `legacy/` e o adaptador via iframe desc
 - [Componentes de terceiros](../THIRD_PARTY_NOTICES.md).
 
 As dependências revisadas desta interface incluem PDF.js `6.4.299`, Zustand `5.0.16` e tipagens Node `26.6.6`. As tipagens não exigem Node.js 26 para executar o projeto. O motor PDF.js do site publicado na raiz tem fixação e verificação de integridade próprias; esta atualização de `/app` não altera seus binários.
+
+## Sistema visual 3.0 — em revisão
+
+A apresentação usa a marca vetorial local, títulos em degradê e tokens coerentes
+com o aplicativo principal e o Admin. O tema claro/escuro tem preferência própria
+`centralpdf-react-theme`; não altera as chaves do site ou da administração.
+Os recursos e limites do catálogo parcial acima continuam vigentes. O build
+permanece separado; esta alteração não publica nem substitui a aplicação da raiz.

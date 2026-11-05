@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAppStore } from './store/app-store';
 import { HomeView } from './home/HomeView';
 import { ToolLayout } from './workspace/ToolLayout';
@@ -23,6 +23,14 @@ export function App() {
   const tools = useMemo(() => centralCatalog.list(), []);
   const runtimeRouter = useMemo(() => new RuntimeRouter(), []);
   const activeTool = tools.find((tool) => tool.id === activeToolId) ?? null;
+  const [dark, setDark] = useState(() => {
+    try { return localStorage.getItem('centralpdf-react-theme') === 'dark'; }
+    catch { return false; }
+  });
+  useEffect(() => {
+    document.documentElement.dataset.reactTheme = dark ? 'dark' : 'light';
+    try { localStorage.setItem('centralpdf-react-theme', dark ? 'dark' : 'light'); } catch { /* Storage can be disabled. */ }
+  }, [dark]);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -36,8 +44,8 @@ export function App() {
     <div className="app-shell" data-testid="app-shell">
       <header className="app-header">
         <button type="button" className="app-brand" onClick={() => navigate(null)} aria-label="CentralPDF 2.0 — início">
-          <span className="app-brand-mark" aria-hidden="true"><Icon name="file" size={20} /></span>
-          <span>CentralPDF</span>
+          <span className="app-brand-mark" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}centralpdf-logo.svg`} alt="" width="46" height="46" /></span>
+          <span>Central PDF</span>
         </button>
 
         <nav className={`app-nav${mobileOpen ? ' is-open' : ''}`} aria-label="Ferramentas principais">
@@ -63,6 +71,9 @@ export function App() {
         </nav>
 
         <div className="app-header__actions">
+          <button type="button" className="app-theme" role="switch" aria-label="Tema escuro" aria-checked={dark} onClick={() => setDark(!dark)} title={dark ? 'Ativar tema claro' : 'Ativar tema escuro'}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">{dark ? <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></> : <path d="M21 13A9 9 0 0 1 11 3a9 9 0 1 0 10 10Z"/>}</svg>
+          </button>
           <div className="app-privacy" title={`CentralPDF ${BUILD_VERSION}`}>
             <span className="status-dot" aria-hidden="true" />
             <span>Local e privado</span>
