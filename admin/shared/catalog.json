@@ -1,9 +1,325 @@
 {
   "applicationVersion": "2.0.1",
   "applicationRevision": "centralpdf-v2.0.1-pages-48",
-  "adminVersion": "0.2.0",
+  "adminVersion": "0.3.0",
   "officeEngineVersion": "2.7.2",
+  "sitePdfJsVersion": "6.2.108",
+  "reactPdfJsVersion": "6.4.299",
   "shortcutCount": 39,
+  "shortcuts": [
+    {
+      "id": "organize",
+      "familyId": "organize",
+      "title": "Organizar PDF",
+      "description": "Veja as páginas, arraste para reordenar, gire ou exclua.",
+      "category": "organize",
+      "searchTerms": "organizar reordenar excluir girar páginas pdf"
+    },
+    {
+      "id": "editPdf",
+      "familyId": "editPdf",
+      "title": "Editar PDF",
+      "description": "Adicione e formate textos, imagens, pincel, marcador, coberturas e recortes.",
+      "category": "edit",
+      "searchTerms": "editar pdf texto fonte cor imagem pincel marcador desenhar cobrir cortar página"
+    },
+    {
+      "id": "merge",
+      "familyId": "merge",
+      "title": "Juntar PDFs",
+      "description": "Una vários documentos na ordem desejada.",
+      "category": "organize",
+      "searchTerms": "juntar unir combinar mesclar pdf"
+    },
+    {
+      "id": "split",
+      "familyId": "split",
+      "title": "Dividir PDF",
+      "description": "Divida por intervalos, partes iguais, quantidade de páginas ou pontos de corte.",
+      "category": "organize",
+      "searchTerms": "dividir separar páginas pdf zip"
+    },
+    {
+      "id": "extract",
+      "familyId": "extract",
+      "title": "Extrair páginas",
+      "description": "Monte um novo PDF apenas com as páginas escolhidas.",
+      "category": "organize",
+      "searchTerms": "extrair selecionar páginas pdf intervalo"
+    },
+    {
+      "id": "rotate",
+      "familyId": "rotate",
+      "title": "Girar páginas",
+      "description": "Corrija a orientação de todas ou apenas algumas páginas.",
+      "category": "edit",
+      "searchTerms": "girar rotacionar virar páginas pdf"
+    },
+    {
+      "id": "watermark",
+      "familyId": "watermark",
+      "title": "Marca-d’água",
+      "description": "Adicione um texto transparente sobre o documento.",
+      "category": "edit",
+      "searchTerms": "marca água texto confidencial pdf"
+    },
+    {
+      "id": "pageNumbers",
+      "familyId": "pageNumbers",
+      "title": "Numerar páginas",
+      "description": "Escolha formato, posição e número inicial.",
+      "category": "edit",
+      "searchTerms": "numerar número páginas rodapé cabeçalho pdf"
+    },
+    {
+      "id": "imagesToPdf",
+      "familyId": "imagesToPdf",
+      "title": "Imagens para PDF",
+      "description": "Gire, organize e transforme fotos e imagens em PDF.",
+      "category": "convert",
+      "searchTerms": "imagem foto jpg png webp girar rodar rotacionar para pdf"
+    },
+    {
+      "id": "imageConvert",
+      "familyId": "imageConvert",
+      "title": "Converter imagens",
+      "description": "Altere formato, dimensões e qualidade de várias imagens.",
+      "category": "convert",
+      "searchTerms": "converter redimensionar reduzir imagem jpg png webp"
+    },
+    {
+      "id": "compress",
+      "familyId": "compress",
+      "title": "Comprimir PDF",
+      "description": "Reduza o tamanho com três níveis e compare antes e depois.",
+      "category": "convert",
+      "searchTerms": "comprimir reduzir tamanho pdf leve recomendada extrema"
+    },
+    {
+      "id": "pdfToImage",
+      "familyId": "pdfToImage",
+      "title": "PDF para JPG/PNG",
+      "description": "Converta páginas em imagens com resolução configurável.",
+      "category": "convert",
+      "searchTerms": "pdf para jpg png imagem converter páginas"
+    },
+    {
+      "id": "crop",
+      "familyId": "crop",
+      "title": "Recortar PDF",
+      "description": "Ajuste as margens visíveis das páginas.",
+      "category": "edit",
+      "searchTerms": "recortar cortar margem borda pdf"
+    },
+    {
+      "id": "metadata",
+      "familyId": "metadata",
+      "title": "Limpar metadados",
+      "description": "Remova autor, título, assunto e informações do programa criador.",
+      "category": "security",
+      "searchTerms": "limpar remover metadados autor título privacidade pdf"
+    },
+    {
+      "id": "normalize",
+      "familyId": "normalize",
+      "title": "Normalizar PDF",
+      "description": "Regrave a estrutura para melhorar a compatibilidade.",
+      "category": "organize",
+      "searchTerms": "normalizar reparar compatibilidade reconstruir pdf"
+    },
+    {
+      "id": "pdfToText",
+      "familyId": "pdfToText",
+      "title": "Extrair texto",
+      "description": "Exporte o texto selecionável para TXT.",
+      "category": "convert",
+      "searchTerms": "extrair texto pdf txt pesquisar"
+    },
+    {
+      "id": "ocr",
+      "familyId": "ocr",
+      "title": "OCR e PDF pesquisável",
+      "description": "Reconheça textos em digitalizações e gere PDF pesquisável, TXT e relatório.",
+      "category": "convert",
+      "searchTerms": "ocr reconhecer texto pdf escaneado imagem pesquisável português"
+    },
+    {
+      "id": "shortcut:PDF para Word",
+      "familyId": "pdfToOffice",
+      "title": "PDF para Word",
+      "description": "Exporte páginas para Word visual ou texto editável simplificado.",
+      "category": "convert",
+      "searchTerms": "word docx office ofice pdf"
+    },
+    {
+      "id": "shortcut:PDF para Excel",
+      "familyId": "pdfToOffice",
+      "title": "PDF para Excel",
+      "description": "Extraia texto e tabelas do PDF para uma planilha Excel.",
+      "category": "convert",
+      "searchTerms": "excel xlsx planilha office ofice pdf"
+    },
+    {
+      "id": "shortcut:PDF para PowerPoint",
+      "familyId": "pdfToOffice",
+      "title": "PDF para PowerPoint",
+      "description": "Transforme cada página em um slide, preservando a aparência.",
+      "category": "convert",
+      "searchTerms": "powerpoint pptx slides office ofice pdf"
+    },
+    {
+      "id": "shortcut:Word para PDF",
+      "familyId": "documentsToPdf",
+      "title": "Word para PDF",
+      "description": "Converta documentos Word e ODT com cabeçalhos, imagens e layout.",
+      "category": "convert",
+      "searchTerms": "word doc docx odt office ofice pdf"
+    },
+    {
+      "id": "shortcut:Excel para PDF",
+      "familyId": "documentsToPdf",
+      "title": "Excel para PDF",
+      "description": "Converta planilhas Excel e ODS respeitando a configuração de impressão.",
+      "category": "convert",
+      "searchTerms": "excel xls xlsx ods csv planilha office ofice pdf"
+    },
+    {
+      "id": "shortcut:PowerPoint para PDF",
+      "familyId": "documentsToPdf",
+      "title": "PowerPoint para PDF",
+      "description": "Converta apresentações PowerPoint e ODP em páginas PDF.",
+      "category": "convert",
+      "searchTerms": "powerpoint ppt pptx odp office ofice pdf"
+    },
+    {
+      "id": "shortcut:Texto e HTML para PDF",
+      "familyId": "documentsToPdf",
+      "title": "Texto e HTML para PDF",
+      "description": "Crie PDFs a partir de HTML, texto, Markdown e RTF.",
+      "category": "convert",
+      "searchTerms": "html htm txt texto markdown md rtf pdf"
+    },
+    {
+      "id": "extractImages",
+      "familyId": "extractImages",
+      "title": "Extrair imagens",
+      "description": "Recupere imagens internas ou exporte páginas completas com manifesto.",
+      "category": "convert",
+      "searchTerms": "extrair imagens internas pdf fotos figuras recursos"
+    },
+    {
+      "id": "archivePdf",
+      "familyId": "archivePdf",
+      "title": "Preparar para arquivamento",
+      "description": "Crie cópia normalizada ou rasterizada com hashes e relatório técnico.",
+      "category": "organize",
+      "searchTerms": "arquivamento pdfa normalizar rasterizar hash manifesto preservar"
+    },
+    {
+      "id": "documentAssistant",
+      "familyId": "documentAssistant",
+      "title": "Assistente documental",
+      "description": "Resuma, pesquise e responda perguntas com evidências por página.",
+      "category": "convert",
+      "searchTerms": "assistente documental perguntar pdf resumir contrato cláusula localizar evidência"
+    },
+    {
+      "id": "structuredExtraction",
+      "familyId": "structuredExtraction",
+      "title": "Extração estruturada",
+      "description": "Transforme dados localizados nos PDFs em CSV, JSON e relatório.",
+      "category": "convert",
+      "searchTerms": "extrair dados cnpj cpf datas valores nota fiscal contrato csv json"
+    },
+    {
+      "id": "documentAudit",
+      "familyId": "documentAudit",
+      "title": "Auditoria documental",
+      "description": "Cruze documentos e destaque divergências e riscos para conferência.",
+      "category": "security",
+      "searchTerms": "auditoria documentos divergências cnpj valores códigos certidões pagamento"
+    },
+    {
+      "id": "classifyRename",
+      "familyId": "classifyRename",
+      "title": "Classificar e renomear",
+      "description": "Padronize nomes e localize páginas possivelmente vazias ou duplicadas.",
+      "category": "organize",
+      "searchTerms": "classificar renomear lote páginas duplicadas em branco organizar arquivos"
+    },
+    {
+      "id": "compare",
+      "familyId": "compare",
+      "title": "Comparar PDFs",
+      "description": "Compare duas versões e gere relatório textual e visual por página.",
+      "category": "security",
+      "searchTerms": "comparar pdf diferenças texto visual versões contrato relatório"
+    },
+    {
+      "id": "redact",
+      "familyId": "redact",
+      "title": "Censura definitiva",
+      "description": "Remova permanentemente áreas sensíveis e gere relatório de auditoria.",
+      "category": "security",
+      "searchTerms": "censura definitiva redação segura ocultar remover dados cpf cnpj"
+    },
+    {
+      "id": "formBuilder",
+      "familyId": "formBuilder",
+      "title": "Criar formulário",
+      "description": "Desenhe campos preenchíveis, listas, datas, valores, CPF e CNPJ diretamente nas páginas.",
+      "category": "edit",
+      "searchTerms": "criar formulário preenchível campos texto data cpf cnpj moeda checkbox lista pdf"
+    },
+    {
+      "id": "signPdf",
+      "familyId": "signPdf",
+      "title": "Assinar e rubricar",
+      "description": "Insira assinatura visual desenhada, digitada ou por imagem e aplique rubricas em lote.",
+      "category": "edit",
+      "searchTerms": "assinar assinatura rubrica desenhar imagem nome data pdf"
+    },
+    {
+      "id": "protect",
+      "familyId": "protect",
+      "title": "Proteger PDF",
+      "description": "Adicione senha AES-256 e defina permissões de uso.",
+      "category": "security",
+      "searchTerms": "proteger senha criptografar aes 256 pdf segurança"
+    },
+    {
+      "id": "unlock",
+      "familyId": "unlock",
+      "title": "Remover senha",
+      "description": "Retire a proteção usando a senha conhecida.",
+      "category": "security",
+      "searchTerms": "desbloquear remover senha conhecida descriptografar pdf"
+    },
+    {
+      "id": "diagnose",
+      "familyId": "diagnose",
+      "title": "Diagnosticar PDF",
+      "description": "Analise criptografia, páginas, formulários, assinaturas e recuperação.",
+      "category": "security",
+      "searchTerms": "diagnóstico analisar pdf criptografia formulários assinatura estrutura"
+    },
+    {
+      "id": "repairAdvanced",
+      "familyId": "repairAdvanced",
+      "title": "Recuperar PDF",
+      "description": "Tente abrir estruturas danificadas e reconstruir o arquivo.",
+      "category": "organize",
+      "searchTerms": "reparar recuperar pdf corrompido xref estrutura avançada"
+    },
+    {
+      "id": "flattenForms",
+      "familyId": "flattenForms",
+      "title": "Fixar formulários",
+      "description": "Transforme campos preenchidos em conteúdo estático.",
+      "category": "security",
+      "searchTerms": "achatar formulário campos editáveis pdf fixar"
+    }
+  ],
   "tools": [
     {
       "id": "organize",

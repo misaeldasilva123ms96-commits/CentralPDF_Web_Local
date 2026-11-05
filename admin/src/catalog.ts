@@ -2,6 +2,7 @@ import catalogue from "../shared/catalog.json";
 import type { Metric } from "./data";
 
 export const release = catalogue;
+export const shortcuts = catalogue.shortcuts;
 export const toolNames: Record<string, string> = Object.fromEntries(
   catalogue.tools.map(tool => [tool.id, tool.title]),
 );
@@ -16,6 +17,10 @@ export function matchesTool(id: string, query: string) {
   const haystack = normalize([toolNames[id] || id, tool?.description, aliases[id]].join(" "));
   return normalize(query).split(/\s+/).filter(word => word && !["para", "de", "em"].includes(word))
     .every(word => haystack.includes(word));
+}
+export function matchesShortcut(shortcut: typeof shortcuts[number], query: string) {
+  const haystack = normalize([shortcut.title, shortcut.description, shortcut.searchTerms].join(" "));
+  return normalize(query).split(/\s+/).filter(Boolean).every(word => haystack.includes(word));
 }
 export function catalogueRows(recorded: Pick<Metric, "tool" | "completed" | "failed">[]) {
   const received = new Map(recorded.map(row => [row.tool, row]));

@@ -11,6 +11,13 @@
 - Prepara relatório, checklist administrativo e proposta 2.1.0 sem criar tag, publicar release ou alterar o ruleset da main.
 
 
+### Administração 0.3.0 — 04/11/2026
+
+- Sincroniza a referência do painel com CentralPDF 2.0.1 / pages-48 e diferencia os motores PDF.js do site (6.2.108) e React (6.4.299).
+- Gera o catálogo dos 39 atalhos a partir da página pública e o apresenta com busca, separado das 34 famílias de indicadores históricos.
+- Atualiza a apresentação para giro de imagens, ícones vetoriais e layout móvel, com acabamento visual mais suave e campos de saúde aditivos.
+- Preserva contratos de métricas, CSV, autenticação, MFA, permissões e preferências de coleta.
+
 ### Dependências da interface React — 04/11/2026
 
 - Reúne as atualizações revisadas de PDF.js para 6.4.299, Zustand para 5.0.16 e tipagens Node para 26.6.6 em `/app`.
