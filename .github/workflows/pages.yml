@@ -73,6 +73,10 @@ jobs:
 
       - name: Install real browser regression dependencies
         run: |
+          # Match CI: the Azure mirror can consume the entire job budget.
+          # Include runner mirror lists as well as classic/deb822 sources.
+          sudo find /etc/apt -maxdepth 2 -type f \( -name '*.list' -o -name '*.sources' -o -name '*mirrors*.txt' \) \
+            -exec sed -i -E 's@https?://azure.archive.ubuntu.com/ubuntu/?@https://archive.ubuntu.com/ubuntu/@g' {} +
           python -m pip install -r requirements-test.txt
           python -m playwright install --with-deps chromium firefox
 
