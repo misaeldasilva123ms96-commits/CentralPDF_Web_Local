@@ -7,6 +7,7 @@ import { handle } from "../worker/index";
 it("keeps the image tool identifier and old searches under the new display name", () => {
   expect(toolNames.imagesToPdf).toBe("JPG/PNG para PDF");
   expect(matchesTool("imagesToPdf", "Imagens para PDF")).toBe(true);
+  expect(matchesTool("imagesToPdf", "Imagens para PDF avançado")).toBe(true);
   expect(matchesTool("imagesToPdf", "JPG/PNG para PDF")).toBe(true);
   expect(matchesTool("imagesToPdf", "WEBP")).toBe(true);
   const shortcut = shortcuts.find(item => item.id === "imagesToPdf")!;
