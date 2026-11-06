@@ -6,14 +6,14 @@ param(
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$pdfJsVersion = '6.2.108'
+$pdfJsVersion = '6.5.438'
 $pdfJsPackage = @{
     Url = "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-$pdfJsVersion.tgz"
-    Sha256 = 'b3e68d5cda70551a90b3f771419d379e20fc788ce056fa32de73608e01df47f4'
+    Sha256 = '7461aefcd27c4ef0dd76f9ca5760f09466eb6b3f934432670c12132e7b3d6faa'
     MinBytes = 8000000
-    ApiSha256 = '9fab0c910bf1484835c5c2aeb68f7eb3dfce7f9eb435a004526c5af86d70890c'
-    WorkerSha256 = 'bc0d1b88ea0b66196b1d36a58ac243c6d92adfe725624e2a9fdd381bdf8ef434'
-    ResourcesSha256 = '960886d4e606e53b75909ea28efae08ff7f41011b1b8b09ed370f9c9087761be'
+    ApiSha256 = '522ad2c83bc8a0010e7f0cc60d0892b77c8d2bf2c9702dc12288311d94270f42'
+    WorkerSha256 = 'b4c8353ded0d88d2e2009574a29eb4e0c3ff7e942ecdf51ef5f71566a9667f31'
+    ResourcesSha256 = '8b4e60b576a8105db24c6ac5cbaf39de1ba2a8b7d8cf355306f5ed6d29422740'
 }
 
 $items = @(

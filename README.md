@@ -20,6 +20,12 @@ O link **Administração** no rodapé abre o [painel privado](https://centralpdf
 
 **Nesta página:** [Começar](#começar) · [Editor](#editor-pdf) · [Ferramentas](#as-34-ferramentas) · [Projetos](#projetos-e-continuidade) · [Privacidade](#privacidade-e-diagnósticos) · [Suporte](#solução-de-problemas) · [Desenvolvimento](#desenvolvimento)
 
+## Novidades do código 3.0
+
+Busca e filtros mais arredondados, cartões com destaque uniforme e controles adaptados aos temas claro e escuro. Ao adicionar documentos, o indicador de leitura mostra a etapa, o tamanho do lote e o tempo decorrido; PDFs grandes podem precisar de mais memória. O PDF.js 6.5.438 mantém renderização e recursos locais sincronizados.
+
+PDFs que abrem sem senha são aceitos mesmo quando possuem restrições de edição. **Classificar e renomear** exporta os bytes originais, alterando somente o nome. No Admin, o resumo de versão fica compacto e os indicadores mostram a última consulta bem-sucedida, com filtro de falhas. Veja as [notas preparadas para o lançamento 3.0](docs/releases/3.0.0.md).
+
 ## Conversões Office
 
 A página inicial, o menu lateral e **Converter PDF**, ao lado de **Todas as ferramentas**, separam Word, Excel e PowerPoint nas duas direções, com o formato já selecionado. Texto e HTML têm um atalho próprio. **Office para PDF** usa LibreOffice WebAssembly no computador para preservar cabeçalhos, tabelas e imagens e aceitar ODS/ODT/ODP. O motor é carregado automaticamente ao converter; os documentos não são enviados. Fontes e impressão ainda devem ser conferidas. [Uso, preparação, licença e limitações](docs/OFFICE.md).

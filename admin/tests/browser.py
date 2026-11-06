@@ -116,8 +116,8 @@ try:
      page.locator(f'nav a[href="#{key}"]').click();page.get_by_role('heading',name=label,exact=True).wait_for()
      assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
     release=page.get_by_role('region',name='Versão do CentralPDF')
-    release.get_by_text(RELEASE['applicationVersion'],exact=True).wait_for();release.get_by_text(RELEASE['adminVersion'],exact=True).wait_for()
-    release.get_by_text('39 atalhos',exact=True).wait_for()
+    release.get_by_text('CentralPDF '+RELEASE['applicationVersion'],exact=True).wait_for()
+    release.get_by_text('34 módulos · 39 atalhos · documentos no dispositivo',exact=True).wait_for()
     page.screenshot(path=str(OUT/f'overview-{engine}-{width}.png'),full_page=True)
     state['metrics']=[{'day':'2026-10-30','tool':'merge','completed':5,'failed':1}]
     nav('tools','Ferramentas');page.get_by_role('combobox',name='Período').select_option('today')
@@ -138,6 +138,10 @@ try:
     search.fill('Word para PDF');assert page.locator('tbody tr').count()==2
     search.fill('ODS');page.get_by_role('cell',name='Office para PDF',exact=True).wait_for();assert page.locator('tbody tr').count()==1
     search.fill('');assert page.locator('tbody tr').count()==34
+    page.get_by_label('Somente com falhas').check();assert page.locator('tbody tr').count()==1
+    page.get_by_role('cell',name='Juntar PDFs',exact=True).wait_for()
+    page.get_by_label('Somente com falhas').uncheck();assert page.locator('tbody tr').count()==34
+    page.get_by_text('Atualizado às',exact=False).wait_for()
     page.screenshot(path=str(OUT/f'tools-{engine}-{width}.png'),full_page=True)
     with page.expect_download() as download:page.get_by_role('button',name='Exportar resumo').click()
     assert download.value.suggested_filename=='CentralPDF — resumo de utilização.csv'
@@ -180,8 +184,9 @@ try:
     nav('diagnostics','Diagnósticos');page.get_by_text('Leitura não conectada',exact=True).wait_for()
     nav('settings','Ajustes')
     release=page.get_by_role('region',name='Versão do CentralPDF')
-    release.get_by_text(RELEASE['sitePdfJsVersion'],exact=True).wait_for()
-    release.get_by_text(RELEASE['reactPdfJsVersion'],exact=True).wait_for()
+    release.get_by_text(RELEASE['applicationVersion'],exact=True).wait_for();release.get_by_text(RELEASE['adminVersion'],exact=True).wait_for()
+    assert release.get_by_text(RELEASE['sitePdfJsVersion'],exact=True).count()==2
+    assert release.get_by_text(RELEASE['reactPdfJsVersion'],exact=True).count()==2
     release.get_by_text(RELEASE['applicationRevision'],exact=True).wait_for()
     page.screenshot(path=str(OUT/f'settings-{engine}-{width}.png'),full_page=True)
     page.get_by_role('button',name='Pausar estatísticas',exact=True).click()

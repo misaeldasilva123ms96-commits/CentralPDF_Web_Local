@@ -1,0 +1,12 @@
+{
+  "version": "6.5.438",
+  "integrity": "sha512-vg8Pw1x+AFKy4AMDvhuWl5cOYV8d698UoEANoFFhc79hqXDnZQqnOXoxw3HG907WHOg1JYOvLhP756boddFxpA==",
+  "tgz": "7461aefcd27c4ef0dd76f9ca5760f09466eb6b3f934432670c12132e7b3d6faa",
+  "api": "522ad2c83bc8a0010e7f0cc60d0892b77c8d2bf2c9702dc12288311d94270f42",
+  "worker": "b4c8353ded0d88d2e2009574a29eb4e0c3ff7e942ecdf51ef5f71566a9667f31",
+  "resources": "8b4e60b576a8105db24c6ac5cbaf39de1ba2a8b7d8cf355306f5ed6d29422740",
+  "engines": {
+    "node": ">=22.13.0 || >=24"
+  },
+  "resources_algorithm": "Get-PdfJsResourceDigest in prepare-offline.ps1, PowerShell Sort-Object FullName"
+}

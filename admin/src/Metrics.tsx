@@ -13,13 +13,14 @@ export function Metrics({
   tools?: boolean;
 }) {
   const [period, setPeriod] = useState("week"),
-    [search, setSearch] = useState("");
-  const { data, error, loading, reload } = useData<Overview>(
+    [search, setSearch] = useState(""),
+    [failuresOnly, setFailuresOnly] = useState(false);
+  const { data, error, loading, updatedAt, reload } = useData<Overview>(
     client,
     "overview?period=" + period,
   );
   const rows = summarize(data?.metrics || []);
-  const displayed = (tools ? catalogueRows(rows) : rows.map(row => ({...row, recorded: true}))).filter(row => matchesTool(row.tool, search));
+  const displayed = (tools ? catalogueRows(rows) : rows.map(row => ({...row, recorded: true}))).filter(row => matchesTool(row.tool, search) && (!tools || !failuresOnly || row.failed > 0));
   useEffect(()=>{const timer=setInterval(()=>{if(!document.hidden)reload();},60000);return()=>clearInterval(timer);},[client,period]);
   const totals = rows.reduce(
     (t, r) => ({
@@ -74,6 +75,11 @@ export function Metrics({
           </button>
         </div>
       </Heading>
+      <div className="refresh-status" role="status">
+        <span className={loading ? 'status-dot pending' : error ? 'status-dot failed' : 'status-dot'} aria-hidden="true" />
+        {loading ? 'Consultando registros…' : error ? 'Não foi possível atualizar os registros.' : updatedAt ? `Atualizado às ${new Date(updatedAt).toLocaleTimeString('pt-BR')}` : 'Aguardando registros.'}
+        <span>Horários dos indicadores em UTC · cobertura parcial</span>
+      </div>
       {!tools && <AppRelease />}
       {tools && <ShortcutCatalogue />}
       {error && (
@@ -136,12 +142,13 @@ export function Metrics({
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </label>
+                  <label className="failure-filter"><input type="checkbox" checked={failuresOnly} onChange={e => setFailuresOnly(e.target.checked)} /> Somente com falhas</label>
                 </div>
               )}
               {tools && <p className="hint">Catálogo completo. “Sem registros” indica ausência de dados recebidos; não significa que a ferramenta não foi usada. Atalhos Word, Excel e PowerPoint compartilham os indicadores de Office para PDF ou PDF para Office.</p>}
               {!displayed.length ? (
                 <Empty>
-                  {tools ? "Nenhuma ferramenta encontrada." : "Sem dados de utilização neste período."}
+                  {tools ? failuresOnly ? "Nenhuma ferramenta com falhas neste filtro." : "Nenhuma ferramenta encontrada." : "Sem dados de utilização neste período."}
                   <br />
                   <small>Isso não significa que ninguém utilizou o site.</small>
                 </Empty>

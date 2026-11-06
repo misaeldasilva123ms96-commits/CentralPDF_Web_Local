@@ -1,0 +1,34 @@
+[
+  {
+    "browser": "chromium",
+    "width": 1440,
+    "theme": "dark",
+    "hover_cards": 39,
+    "pdf_pages_exported": 40,
+    "overlap": false
+  },
+  {
+    "browser": "chromium",
+    "width": 390,
+    "theme": "light",
+    "hover_cards": 39,
+    "pdf_pages_exported": 40,
+    "overlap": false
+  },
+  {
+    "browser": "firefox",
+    "width": 1440,
+    "theme": "dark",
+    "hover_cards": 39,
+    "pdf_pages_exported": 40,
+    "overlap": false
+  },
+  {
+    "browser": "firefox",
+    "width": 390,
+    "theme": "light",
+    "hover_cards": 39,
+    "pdf_pages_exported": 40,
+    "overlap": false
+  }
+]

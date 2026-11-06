@@ -124,7 +124,7 @@ try:
         def exported():
             return page.evaluate('''async () => {
               const {bytes}=await PDFVisualEditor.exportPdf();
-              const task=pdfjsLib.getDocument({data:bytes}); const doc=await task.promise;
+              const task=pdfjsLib.getDocument({fontExtraProperties:true,data:bytes}); const doc=await task.promise;
               const result=[];
               for(let i=1;i<=doc.numPages;i++) result.push((await (await doc.getPage(i)).getTextContent()).items.map(x=>({text:x.str,transform:x.transform})));
               await task.destroy();return result;
@@ -186,12 +186,12 @@ try:
           const stream=original.context.flateStream('BT /F1 14 Tf 2 Tc 3 Tw 1 0 0 1 30 700 Tm [(Alpha) -20 ( Beta)] TJ (Next) Tj ET');
           p.node.set(PDFName.of('Contents'),original.context.register(stream));
           const bytes=await original.save();
-          const task=pdfjsLib.getDocument({data:bytes.slice()});const rendered=await task.promise;
+          const task=pdfjsLib.getDocument({fontExtraProperties:true,data:bytes.slice()});const rendered=await task.promise;
           const doc=await PDFDocument.load(bytes);const target=doc.getPage(0);
           const analysis=await PDFNativeText.inspect(target,await rendered.getPage(1),PDFLib,pdfjsLib);
           if(analysis.runs[0].text!=='Alpha Beta') throw Error('TJ extraction mismatch');
           PDFNativeText.apply(target,analysis,{[analysis.runs[0].id]:''},PDFLib);
-          const out=pdfjsLib.getDocument({data:await doc.save()}), output=await out.promise;
+          const out=pdfjsLib.getDocument({fontExtraProperties:true,data:await doc.save()}), output=await out.promise;
           const before=(await (await rendered.getPage(1)).getTextContent()).items;
           const after=(await (await output.getPage(1)).getTextContent()).items;
           if(after.some(x=>x.str.includes('Alpha'))) throw Error('Old text still rendered');
@@ -213,14 +213,14 @@ try:
           p.node.set(PDFName.of('Resources'),doc.context.obj({Font:{F1:font.ref}}));
           p.node.set(PDFName.of('Contents'),doc.context.register(doc.context.flateStream(`BT /F1 14 Tf 17 TL 1 0 0 1 30 700 Tm (AA) Tj (BB) ' 3 2 (CC) " ET`)));
           const bytes=await doc.save(),original=await PDFDocument.load(bytes);
-          const task=pdfjsLib.getDocument({data:bytes.slice()}),pdf=await task.promise;
+          const task=pdfjsLib.getDocument({fontExtraProperties:true,data:bytes.slice()}),pdf=await task.promise;
           const analysis=await PDFNativeText.inspect(original.getPage(0),await pdf.getPage(1),PDFLib,pdfjsLib);
           if(analysis.runs.length!==3)throw Error('Quote operators missing');
           if(analysis.runs[1].geometry[0][1]!==683-14*.22)throw Error('Incorrect next-line geometry');
           // D is declared in the font but is not used anywhere on this page.
           const edits=Object.fromEntries(analysis.runs.map(r=>[r.id,'DD']));
           PDFNativeText.apply(original.getPage(0),analysis,edits,PDFLib);
-          const outTask=pdfjsLib.getDocument({data:await original.save()}),out=await outTask.promise;
+          const outTask=pdfjsLib.getDocument({fontExtraProperties:true,data:await original.save()}),out=await outTask.promise;
           const items=(await (await out.getPage(1)).getTextContent()).items.filter(x=>x.str.trim());
           if(items.length!==3 || items.some(x=>x.str.replaceAll(' ','')!=='DD'))throw Error('Declared font glyphs not replaced: '+JSON.stringify(items));
           if(items.map(x=>x.transform[5]).join(',')!=='700,683,666')throw Error('Quote line positioning changed');
@@ -232,10 +232,10 @@ try:
           const cf=cid.context.register(cid.context.obj({Type:'Font',Subtype:'Type0',BaseFont:'Helvetica',Encoding:'Identity-H',DescendantFonts:[cid.context.register(descendant)],ToUnicode:unicode}));
           cp.node.set(PDFName.of('Resources'),cid.context.obj({Font:{F1:cf}}));
           cp.node.set(PDFName.of('Contents'),cid.context.register(cid.context.flateStream('BT /F1 14 Tf 1 0 0 1 30 700 Tm <0001> Tj ET')));
-          const cb=await cid.save(),cdoc=await PDFDocument.load(cb),ct=pdfjsLib.getDocument({data:cb.slice()}),cr=await ct.promise;
+          const cb=await cid.save(),cdoc=await PDFDocument.load(cb),ct=pdfjsLib.getDocument({fontExtraProperties:true,data:cb.slice()}),cr=await ct.promise;
           const ca=await PDFNativeText.inspect(cdoc.getPage(0),await cr.getPage(1),PDFLib,pdfjsLib);
           PDFNativeText.apply(cdoc.getPage(0),ca,{[ca.runs[0].id]:'C'},PDFLib);
-          const cot=pdfjsLib.getDocument({data:await cdoc.save()}),cor=await cot.promise;
+          const cot=pdfjsLib.getDocument({fontExtraProperties:true,data:await cdoc.save()}),cor=await cot.promise;
           if((await (await cor.getPage(1)).getTextContent()).items.map(x=>x.str).join('')!=='C')throw Error('CID glyph replacement failed');
           await ct.destroy();await cot.destroy();
           // PDFTron-style one-byte CID CMap, with a separate Form watermark.
@@ -246,12 +246,12 @@ try:
           cp.node.set(PDFName.of('Resources'),cid.context.obj({Font:{F1:cf},XObject:{Mark:form}}));
           cp.node.set(PDFName.of('Contents'),cid.context.register(cid.context.flateStream('/Mark Do BT /F1 14 Tf 1 0 0 1 30 700 Tm <01> Tj <02> Tj ET /Mark Do')));
           const oneBytes=await cid.save(),oneDoc=await PDFDocument.load(oneBytes);
-          const oneTask=pdfjsLib.getDocument({data:oneBytes.slice()}),onePdf=await oneTask.promise;
+          const oneTask=pdfjsLib.getDocument({fontExtraProperties:true,data:oneBytes.slice()}),onePdf=await oneTask.promise;
           const oneAnalysis=await PDFNativeText.inspect(oneDoc.getPage(0),await onePdf.getPage(1),PDFLib,pdfjsLib);
           if(oneAnalysis.runs.length!==2 || oneAnalysis.runs[0].text!=='A')throw Error('Form glyphs mixed with page text');
           if(PDFNativeText.plan(oneAnalysis,oneAnalysis.runs[0],'C',PDFLib).fallback)throw Error('Declared CID width ignored');
           PDFNativeText.apply(oneDoc.getPage(0),oneAnalysis,{[oneAnalysis.runs[0].id]:'C'},PDFLib);
-          const oneOutTask=pdfjsLib.getDocument({data:await oneDoc.save()}),oneOut=await oneOutTask.promise;
+          const oneOutTask=pdfjsLib.getDocument({fontExtraProperties:true,data:await oneDoc.save()}),oneOut=await oneOutTask.promise;
           const oneItems=(await (await oneOut.getPage(1)).getTextContent()).items.filter(i=>i.str.trim());
           if(oneItems.map(i=>i.str).join('')!=='BCBB')throw Error('CID edit or Form preservation failed: '+JSON.stringify(oneItems));
           const beforeItems=(await (await onePdf.getPage(1)).getTextContent()).items.filter(i=>i.str.trim());
@@ -265,7 +265,7 @@ try:
             const doc=await PDFDocument.create(),p=doc.addPage(),font=await doc.embedFont(StandardFonts.Helvetica);
             p.node.set(PDFName.of('Resources'),doc.context.obj({Font:{F1:font.ref},Properties:{P1:{ActualText:PDFLib.PDFString.of('Old')}}}));
             p.node.set(PDFName.of('Contents'),doc.context.register(doc.context.flateStream(`/Span ${properties} BDC BT /F1 14 Tf 1 0 0 1 30 700 Tm (Original) Tj ET EMC`)));
-            const bytes=await doc.save(),loaded=await PDFDocument.load(bytes),task=pdfjsLib.getDocument({data:bytes.slice()}),pdf=await task.promise;
+            const bytes=await doc.save(),loaded=await PDFDocument.load(bytes),task=pdfjsLib.getDocument({fontExtraProperties:true,data:bytes.slice()}),pdf=await task.promise;
             return {loaded,task,page:await pdf.getPage(1)};
           }
           // Nested metadata, strings containing operators, arrays and booleans must
@@ -274,7 +274,7 @@ try:
           const analysis=await PDFNativeText.inspect(f.loaded.getPage(0),f.page,PDFLib,pdfjsLib);
           if(analysis.runs.length!==1 || analysis.runs[0].text!=='Original')throw Error('Tagged text not recognized');
           PDFNativeText.apply(f.loaded.getPage(0),analysis,{[analysis.runs[0].id]:'Revisado'},PDFLib);
-          const output=pdfjsLib.getDocument({data:await f.loaded.save()}),pdf=await output.promise;
+          const output=pdfjsLib.getDocument({fontExtraProperties:true,data:await f.loaded.save()}),pdf=await output.promise;
           const items=(await (await pdf.getPage(1)).getTextContent()).items;
           if(items.map(x=>x.str).join('')!=='Revisado')throw Error('Tagged export mismatch');
           if(Math.abs(items[0].transform[4]-30)>.01 || Math.abs(items[0].transform[5]-700)>.01)throw Error('Tagged position changed');

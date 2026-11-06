@@ -32,6 +32,7 @@
  }
  function mount(parent){if(!parent)return;parent.replaceChildren();
   const title=document.createElement('h3');title.textContent='Área do administrador';
+  parent.classList.add('admin-access-card');
   const info=document.createElement('p');info.textContent='Acesso exclusivo do responsável. As ferramentas continuam públicas e os documentos ficam neste dispositivo.';
   const link=document.createElement('a');link.href=BASE+'/';link.target='_blank';link.rel='noopener noreferrer';link.className='ghost-button';link.textContent='Entrar no administrador';
   const label=document.createElement('label');label.className='toggle-row';const box=document.createElement('input');box.type='checkbox';box.id='cpUsageConsent';box.addEventListener('change',()=>setConsent(box.checked));

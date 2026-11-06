@@ -17,10 +17,10 @@ fonte de verdade para a Fase 0 (congelamento de dependências) e alimenta o
 | Motor | Versão | Uso | Caminho local | Fonte (CDN) | SHA-256 verificado |
 | --- | --- | --- | --- | --- | --- |
 | pdf-lib | 1.17.1 | Criação/edição de PDF (juntar, dividir, organizar, proteger) | `vendor/pdf-lib.min.js` | jsDelivr | `0f9a5cad07941f0826586c94e089d89b918c46e5c17cf2d5a3c6f666e3bc694f` |
-| PDF.js | 6.2.108 | Renderização de páginas, extração de texto/imagens | `vendor/pdfjs/` (tgz do npm) | registry.npmjs.org | tgz: `b3e68d5cda70551a90b3f771419d379e20fc788ce056fa32de73608e01df47f4` |
-| — API PDF.js | 6.2.108 | — | `pdf.min.mjs` | — | `9fab0c910bf1484835c5c2aeb68f7eb3dfce7f9eb435a004526c5af86d70890c` |
-| — Worker PDF.js | 6.2.108 | — | `pdf.worker.min.mjs` | — | `bc0d1b88ea0b66196b1d36a58ac243c6d92adfe725624e2a9fdd381bdf8ef434` |
-| — Recursos PDF.js | 6.2.108 | cmaps/iccs/fonts/wasm | `vendor/pdfjs/` | — | `960886d4e606e53b75909ea28efae08ff7f41011b1b8b09ed370f9c9087761be` |
+| PDF.js | 6.5.438 | Renderização de páginas, extração de texto/imagens | `vendor/pdfjs/` (tgz do npm) | registry.npmjs.org | tgz: `7461aefcd27c4ef0dd76f9ca5760f09466eb6b3f934432670c12132e7b3d6faa` |
+| — API PDF.js | 6.5.438 | — | `pdf.min.mjs` | — | `522ad2c83bc8a0010e7f0cc60d0892b77c8d2bf2c9702dc12288311d94270f42` |
+| — Worker PDF.js | 6.5.438 | — | `pdf.worker.min.mjs` | — | `b4c8353ded0d88d2e2009574a29eb4e0c3ff7e942ecdf51ef5f71566a9667f31` |
+| — Recursos PDF.js | 6.5.438 | cmaps/iccs/fonts/wasm | `vendor/pdfjs/` | — | `8b4e60b576a8105db24c6ac5cbaf39de1ba2a8b7d8cf355306f5ed6d29422740` |
 | Tesseract.js | 7.0.0 | OCR | `vendor/tesseract/tesseract.min.js` | jsDelivr | `000c27d9cd0def655f77b36c72a389c0ab13793aa31cb4d7aab56d09c0afbc7e` |
 | — Worker Tesseract | 7.0.0 | — | `vendor/tesseract/worker.min.js` | — | `576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d` |
 | tesseract.js-core | 7.0.0 | WASM do OCR | `vendor/tesseract-core/` (8 variantes) | — | ver `prepare-offline.ps1` |

@@ -37,6 +37,8 @@ with sync_playwright() as p:
         shellBg: css('.foundation-dialog-shell').backgroundImage,
         shellColor: css('.foundation-dialog-shell').backgroundColor,
         closeBg: css('.foundation-dialog-close').backgroundColor,
+        closeGradient: css('.foundation-dialog-close').backgroundImage,
+        closeShadow: css('.foundation-dialog-close').boxShadow,
         actionsBg: css('.foundation-dialog-actions').backgroundImage,
         bannerBg: css('.foundation-offline-banner').backgroundImage,
         cardBg: css('.foundation-card').backgroundImage,
@@ -47,7 +49,9 @@ with sync_playwright() as p:
       };
     }""")
     assert values['shellColor'] == 'rgb(20, 26, 46)'
-    assert values['closeBg'] == 'rgb(32, 38, 65)'
+    assert 'linear-gradient' in values['closeGradient']
+    assert 'rgb(32, 38, 65)' in values['closeGradient'] and 'rgb(20, 26, 46)' in values['closeGradient']
+    assert values['closeShadow'] != 'none'
     assert values['actionsBg']=='none'
     assert 'gradient' in values['bannerBg']
     assert values['cardBg']=='none'
