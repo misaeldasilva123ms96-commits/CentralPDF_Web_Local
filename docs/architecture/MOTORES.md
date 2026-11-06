@@ -63,3 +63,15 @@ A classificação definitiva por ferramenta será fixada na Fase 6 (migração) 
 | LibPDF core (pkijs, pvtsutils, noble-hashes, pako, scure-base) | MIT/BSD-2/BSD-3 (ver `vendor/libpdf-core.LICENSES.txt`) |
 
 Consulte `THIRD_PARTY_NOTICES.md` para os avisos completos.
+## Adição 3.0 — abertura sem senha
+
+PDFs com senha de abertura vazia e criptografia de permissões são preparados
+localmente pelo QPDF 12.2.0 (wrapper `@neslinesli93/qpdf-wasm` 0.3.1). O motor
+single-thread funciona sem COOP/COEP e regrava a estrutura nativa sem rasterizar.
+Cada tarefa usa um Worker descartável; somente a senha vazia é tentada.
+Arquivos que exigem uma senha de abertura continuam rejeitados na entrada comum.
+Diagnóstico/recuperação/desbloqueio conservam o arquivo original na entrada.
+
+- `vendor/qpdf/qpdf.js`: `c0e8fe62e0c3385dd8cb5d6b613f74d87a4138a3a3343e2add45a067a14d0884`.
+- `vendor/qpdf/qpdf.wasm`: `69a17eecb26ef73e6b853487500802b18523c7b453382de0063bb2d387edb6bd`.
+- Fontes/licenças: `vendor/qpdf/NOTICE.txt`.

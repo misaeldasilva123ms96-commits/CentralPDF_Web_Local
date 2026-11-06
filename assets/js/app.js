@@ -488,7 +488,7 @@
     unlock: {
       title: 'Remover senha', description: 'Abra PDFs protegidos usando a senha conhecida e salve uma cópia sem criptografia.',
       accept: 'application/pdf,.pdf', multiple: true, typeLabel: 'PDF protegido', button: 'Remover proteção', outputExt: 'auto', outputBase: 'PDFs_desbloqueados', professional: true,
-      settings: '<div class="engine-banner"><strong>Motor profissional experimental</strong><p>Use somente a senha que você conhece e tem autorização para utilizar.</p></div><div class="field"><label for="unlockPassword">Senha atual</label><input id="unlockPassword" type="password" autocomplete="current-password" placeholder="Senha do PDF" /></div><div class="notice-card"><strong>Acesso administrativo</strong><p>Alguns documentos exigem a senha de proprietário para remover completamente a proteção e as restrições.</p></div>'
+      settings: '<div class="engine-banner"><strong>Motor profissional experimental</strong><p>Use somente a senha que você conhece e tem autorização para utilizar.</p></div><div class="field"><label for="unlockPassword">Senha de abertura (se houver)</label><input id="unlockPassword" type="password" autocomplete="current-password" placeholder="Deixe em branco se o PDF já abre sem senha" /></div><div class="notice-card"><strong>Acesso administrativo</strong><p>Alguns documentos exigem a senha de proprietário para remover completamente a proteção e as restrições.</p></div>'
     },
     diagnose: {
       title: 'Diagnosticar PDF', description: 'Gere um relatório técnico sobre estrutura, criptografia, permissões, formulários e assinaturas.',
@@ -587,6 +587,7 @@
     taskCompleted: false
   };
   const fileSignatureInfo = new WeakMap();
+  const filesOpeningWithoutPassword = new WeakSet();
   const PDFLIB_INGEST_TOOLS = new Set(['organize', 'editPdf', 'merge', 'split', 'extract', 'rotate', 'watermark', 'pageNumbers', 'compress', 'crop', 'metadata', 'normalize', 'redact', 'formBuilder', 'signPdf', 'archivePdf']);
   let fileIngestChain = Promise.resolve();
   let fileIngestSession = 0;
@@ -1215,9 +1216,15 @@
         logPdfIngest('received', file, null, 'received');
         const result = await window.CentralPDFIngest.inspectPdfFile(file, { parse: bytes => parsePdfForIngest(bytes, queuedTool) });
         if (!sessionIsActive()) return null;
-        state.filePageCounts.set(getFileCacheKey(file), result.pageCount);
-        fileSignatureInfo.set(file,{signatureFields:result.signatureFields,digitalSignatures:result.digitalSignatures});
-        valid.push(file);
+        // Diagnostics, unlock and rename-only exports must retain the original bytes.
+        const preserveOriginal = ['unlock', 'diagnose', 'repairAdvanced', 'classifyRename'].includes(queuedTool);
+        const accepted = result.preparedBytes && !preserveOriginal
+          ? new File([result.preparedBytes], file.name, { type: file.type || 'application/pdf', lastModified: file.lastModified })
+          : file;
+        state.filePageCounts.set(getFileCacheKey(accepted), result.pageCount);
+        fileSignatureInfo.set(accepted,{signatureFields:result.signatureFields,digitalSignatures:result.digitalSignatures});
+        if (result.preparedBytes) filesOpeningWithoutPassword.add(accepted);
+        valid.push(accepted);
         logPdfIngest('metadata-ready', file, null, 'metadata');
       } catch (error) {
         if (!sessionIsActive()) return null;
@@ -1247,6 +1254,22 @@
   }
 
   async function parsePdfForIngest(ownedBytes, tool = state.tool) {
+    try {
+      // PDF.js opens permission-encrypted files itself. Probe them too so later
+      // export/edit steps receive the same readable copy as pdf-lib tools.
+      if (!PDFLIB_INGEST_TOOLS.has(tool) && window.PDFLib?.PDFDocument) {
+        try { await PDFLib.PDFDocument.load(ownedBytes, { ignoreEncryption: false, updateMetadata: false }); }
+        catch (error) { if (window.CentralPDFIngest.classifyParserError(error).code === 'encrypted') throw error; }
+      }
+      return await parsePdfForIngestRaw(ownedBytes, tool);
+    } catch (error) {
+      if (window.CentralPDFIngest.classifyParserError(error).code !== 'encrypted' || !window.CentralPDFOpenAccess) throw error;
+      const preparedBytes = await window.CentralPDFOpenAccess.decryptEmpty(ownedBytes);
+      return { ...await parsePdfForIngestRaw(preparedBytes.slice(0), tool), preparedBytes };
+    }
+  }
+
+  async function parsePdfForIngestRaw(ownedBytes, tool = state.tool) {
     if (PDFLIB_INGEST_TOOLS.has(tool)) {
       if (!window.PDFLib?.PDFDocument) throw Object.assign(new Error('pdf-lib não está disponível.'), { name: 'PDFLibUnavailableError', engine: 'pdf-lib' });
       try {
@@ -3841,11 +3864,17 @@
 
   async function unlock() {
     const password = String($('#unlockPassword')?.value || '');
-    if (!password) throw new Error('Informe a senha atual do PDF.');
-    const { PDF } = await loadLibPdfEngine();
+    if (!password && (!state.files.length || !state.files.every(file => filesOpeningWithoutPassword.has(file)))) throw new Error('Informe a senha atual do PDF.');
+    const PDF = password ? (await loadLibPdfEngine()).PDF : null;
     const outputs = [];
     for (let index = 0; index < state.files.length; index++) {
       const file = state.files[index];
+      if (!password) {
+        const bytes = await window.CentralPDFOpenAccess.decryptEmpty(await file.arrayBuffer());
+        outputs.push({ name: `${baseName(file.name)}_desbloqueado.pdf`, bytes });
+        setProgress(10 + Math.round(((index + 1) / state.files.length) * 80));
+        continue;
+      }
       const pdf = await PDF.load(new Uint8Array(await file.arrayBuffer()), { credentials: password });
       if (!pdf.isEncrypted) throw new Error(`${file.name} não está protegido por senha.`);
       if (!pdf.isAuthenticated) throw new Error(`Senha incorreta para ${file.name}.`);

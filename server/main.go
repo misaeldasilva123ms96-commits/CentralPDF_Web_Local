@@ -86,6 +86,11 @@ func newHandler(root string) http.Handler {
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()")
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh; worker-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://tessdata.projectnaptha.com https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://*.ingest.de.sentry.io; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'")
+		if r.URL.Path == "/assets/js/pdf-open-access-worker.js" {
+			// Only this dedicated, local worker compiles the PDF access WASM.
+			// Keep JavaScript eval and external network connections disallowed.
+			w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; worker-src 'none'; object-src 'none'; base-uri 'none'")
+		}
 		if strings.HasSuffix(r.URL.Path, "sw.js") || strings.HasSuffix(r.URL.Path, "index.html") || strings.HasSuffix(r.URL.Path, "vendor/offline-status.js") || r.URL.Path == "/" {
 			w.Header().Set("Cache-Control", "no-cache")
 		}

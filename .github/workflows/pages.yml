@@ -27,6 +27,7 @@ jobs:
           path: |
             vendor/pdf-lib.min.js
             vendor/pdfjs
+            vendor/qpdf
             vendor/pdfjs-manifest.js
             vendor/UTIF.js
             vendor/heic2any.min.js

@@ -71,3 +71,10 @@ Dentro de `vendor/libpdf-core.LICENSES.txt`:
 - `release-provenance.test.py` valida atestações (repositório existente).
 - A SBOM do 2.0 será gerada por release a partir do `package-lock.json` e deste
   documento.
+
+## QPDF for PDFs with an empty opening password
+
+QPDF 12.2.0, single-thread browser build from `@neslinesli93/qpdf-wasm` 0.3.1.
+Wrapper: ISC (`vendor/qpdf/LICENSE`); QPDF: Apache-2.0
+(`vendor/qpdf/QPDF-LICENSE-APACHE-2.0.txt`). Additional notices and pinned source:
+`vendor/qpdf/NOTICE.txt`. Assets remain local and are verified by SHA-256.

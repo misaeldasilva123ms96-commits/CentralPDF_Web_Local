@@ -13,7 +13,7 @@ html=f'''<!doctype html><html><body>
 <select id="auditProfile"><option value="procurement" selected>procurement</option></select><input id="auditPaymentDate" type="date" value="2026-08-20"><input id="auditLaunchDate" type="date" value="2026-08-01"><input id="auditDueFallback" type="checkbox" checked><input id="auditCompareAmounts" type="checkbox" checked><input id="auditCompareCodes" type="checkbox" checked><input id="auditCompareCnpj" type="checkbox" checked><input id="auditCheckCnd" type="checkbox" checked><div id="auditLastSummary" class="hidden"></div>
 <input id="renameTemplate" value="{{tipo}}_{{data}}_{{numero}}"><input id="renameIncludeCopies" type="checkbox" checked><input id="renameDetectDuplicates" type="checkbox" checked><input id="renameDetectBlank" type="checkbox"><input id="renameUseDate" type="checkbox" checked><input id="renameMaxLength" value="100"><div id="renameLastSummary" class="hidden"></div>
 <script>{jszip}</script><script>
-window.pdfjsLib={{getDocument:({{data}})=>({{promise:(async()=>{{
+window.pdfjsLib={{getDocument:({{data}})=>({{destroy:async()=>{{}},promise:(async()=>{{
  const raw=new TextDecoder().decode(data); const pages=raw.split('\\f');
  return {{numPages:pages.length,getPage:async(n)=>({{getTextContent:async()=>({{items:pages[n-1].split('\\n').filter(Boolean).map((str,i)=>({{str,transform:[1,0,0,1,10,800-i*20],width:100,height:12}}))}})}}),destroy:async()=>{{}}}};
 }})()}})}};

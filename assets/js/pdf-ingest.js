@@ -69,6 +69,7 @@
       if (!Number.isInteger(pageCount) || pageCount < 1) throw new Error('PDF sem páginas legíveis.');
       return {
         status: 'valid',
+        ...(parsed.preparedBytes instanceof ArrayBuffer ? { preparedBytes: parsed.preparedBytes } : {}),
         pageCount,
         signatureFields: Boolean(parsed?.signatureFields),
         digitalSignatures: Boolean(parsed?.digitalSignatures),

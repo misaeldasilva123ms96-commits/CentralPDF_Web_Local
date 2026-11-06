@@ -1,0 +1,22 @@
+[
+  {
+    "browser": "chromium",
+    "accepted": 2,
+    "native_merge_text_geometry_pixels": "identical",
+    "real_password": "still required",
+    "additional_tools": 5,
+    "rename_zip_original_bytes": "identical",
+    "originals": "unchanged",
+    "network_writes": 0
+  },
+  {
+    "browser": "firefox",
+    "accepted": 2,
+    "native_merge_text_geometry_pixels": "identical",
+    "real_password": "still required",
+    "additional_tools": 5,
+    "rename_zip_original_bytes": "identical",
+    "originals": "unchanged",
+    "network_writes": 0
+  }
+]
