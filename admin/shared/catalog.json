@@ -1,6 +1,6 @@
 {
   "applicationVersion": "3.0.0",
-  "applicationRevision": "centralpdf-v3.0.0-pages-54",
+  "applicationRevision": "centralpdf-v3.0.0-pages-55",
   "adminVersion": "0.3.0",
   "officeEngineVersion": "2.7.2",
   "sitePdfJsVersion": "6.5.438",
@@ -74,10 +74,10 @@
     {
       "id": "imagesToPdf",
       "familyId": "imagesToPdf",
-      "title": "Imagens para PDF",
-      "description": "Gire, organize e transforme fotos e imagens em PDF.",
+      "title": "JPG/PNG para PDF",
+      "description": "Gire, organize e converta JPG, PNG e WEBP em PDF.",
       "category": "convert",
-      "searchTerms": "imagem foto jpg png webp girar rodar rotacionar para pdf"
+      "searchTerms": "imagens imagem foto jpg png webp girar rodar rotacionar para pdf"
     },
     {
       "id": "imageConvert",
@@ -363,7 +363,7 @@
     },
     {
       "id": "imagesToPdf",
-      "title": "Imagens para PDF avançado",
+      "title": "JPG/PNG para PDF",
       "description": "Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada."
     },
     {

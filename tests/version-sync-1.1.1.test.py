@@ -13,7 +13,7 @@ server = (root/'server/main.go').read_text(encoding='utf-8')
 readme = (root/'README.md').read_text(encoding='utf-8')
 assert 'Web local 3.0.0' in index
 assert 'v3.0.0' in index
-assert 'Central PDF & Imagem — Web Local 3.0.0' in index
+assert 'Central PDF — Web Local 3.0.0' in index
 for snippet in [
     '3.0.0 estável',
     'Central 3.0.0: qualidade e acessibilidade',
@@ -29,8 +29,8 @@ assert "qualityLabel.textContent = 'Diagnóstico e erros';" in head3
 assert "const APP_VERSION = '3.0.0';" in foundation
 assert "const APP_VERSION = '3.0.0';" in engine_loader
 assert "const VERSION = '3.0.0';" in quality
-assert 'Central PDF & Imagem 3.0.0' in manifest
-assert "centralpdf-v3.0.0-pages-54" in service_worker
+assert 'Central PDF 3.0.0' in manifest
+assert "centralpdf-v3.0.0-pages-55" in service_worker
 assert '"version":"3.0.0"' in server
-assert readme.startswith('# Central PDF & Imagem 3.0.0\n')
+assert readme.startswith('# Central PDF 3.0.0\n')
 print('version-sync-3.0.0: passed')

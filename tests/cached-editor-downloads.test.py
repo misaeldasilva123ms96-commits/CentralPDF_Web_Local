@@ -83,7 +83,7 @@ try:
           await old.put('/assets/js/app.js?v=2.0.1-ui10',new Response('stale-runtime-app'));
           await old.put('/assets/js/stale-only.js',new Response('do-not-migrate'));
           // A newer engine copy already stored by another tab must win.
-          await (await caches.open('centralpdf-v3.0.0-pages-54-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
+          await (await caches.open('centralpdf-v3.0.0-pages-55-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
         }""",engines)
 
         # New HTML must bypass old script URLs on the very first reload, even
@@ -119,7 +119,7 @@ try:
         assert 'centralpdf-v2.0.1-pages-30-core' not in fetched['keys'], fetched['keys']
         assert 'centralpdf-v2.0.1-pages-30-runtime' not in fetched['keys'], fetched['keys']
         migrated=page.evaluate("""async urls => {
-          const runtime=await caches.open('centralpdf-v3.0.0-pages-54-runtime');
+          const runtime=await caches.open('centralpdf-v3.0.0-pages-55-runtime');
           const pdf=await runtime.match(urls.pdf),ocr=await runtime.match(urls.ocr),opaque=await runtime.match(urls.opaque);
           return {
             pdf:pdf && await pdf.text(),ocr:ocr && await ocr.text(),opaque:opaque?.type,
@@ -129,7 +129,7 @@ try:
         assert migrated=={'pdf':'newer-pdf-engine','ocr':'prepared-ocr-engine','opaque':'opaque','marker':'prepared-before-upgrade'},migrated
 
         assert page.evaluate("async () => (await caches.keys()).some(k=>k.startsWith('centralpdf-v3.0.0-pages-51-'))") is False
-        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v3.0.0-pages-54-runtime')).match('/assets/js/stale-only.js'))") is False
+        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v3.0.0-pages-55-runtime')).match('/assets/js/stale-only.js'))") is False
         # A stale entry for an unversioned URL must also refresh online, and the
         # most recently fetched code must remain available offline.
         page.evaluate("""async () => {

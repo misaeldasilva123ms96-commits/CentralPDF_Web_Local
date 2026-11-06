@@ -30,13 +30,13 @@ assert lock["packages"][""]["version"] == "3.0.0"
 assert "const BUILD_VERSION = '3.0.0';" in app_source
 assert "Web local 3.0.0" in index
 assert "v3.0.0" in index
-assert "Central PDF & Imagem — Web Local 3.0.0" in index
+assert "Central PDF — Web Local 3.0.0" in index
 assert "const VERSION='3.0.0';" in stable
-assert 'Central PDF & Imagem 3.0.0' in manifest
+assert 'Central PDF 3.0.0' in manifest
 assert '"version":"3.0.0"' in server
-assert readme.startswith("# Central PDF & Imagem 3.0.0\n")
+assert readme.startswith("# Central PDF 3.0.0\n")
 assert changelog.startswith("## 3.0.0 —")
-assert "centralpdf-v3.0.0-pages-54" in service_worker
+assert "centralpdf-v3.0.0-pages-55" in service_worker
 
 # O pacote continua genérico e produz os três nomes oficiais para qualquer SemVer estável.
 assert 'CentralPDF_Web_Local_v$Version' in builder

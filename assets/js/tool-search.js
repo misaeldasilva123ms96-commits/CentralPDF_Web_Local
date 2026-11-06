@@ -3,7 +3,7 @@
   const aliases = {
     documentsToPdf: 'office ofice word doc docx odt excel xls xlsx ods calc planilha powerpoint ppt pptx odp impress documento converter pdf',
     pdfToOffice: 'office ofice word docx excel xlsx planilha powerpoint pptx converter pdf',
-    imagesToPdf: 'jpg jpeg png imagem foto converter pdf',
+    imagesToPdf: 'imagens para pdf jpg jpeg png webp imagem foto converter pdf',
     pdfToImage: 'jpg jpeg png webp imagem foto converter pdf'
   };
   const normalize = value => String(value || '').normalize('NFKD')

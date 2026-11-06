@@ -470,7 +470,7 @@
     const completeText = texts.filter(Boolean).join('\n\n').trim();
     const allPatterns = options.detectPatterns ? detectPatterns(completeText) : {};
     const report = {
-      application: `Central PDF & Imagem ${VERSION}`,
+      application: `Central PDF ${VERSION}`,
       file: file.name,
       fileSize: file.size,
       pages: pageCount,

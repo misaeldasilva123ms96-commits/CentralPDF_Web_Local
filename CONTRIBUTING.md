@@ -1,4 +1,4 @@
-# Contribuir com o Central PDF & Imagem
+# Contribuir com o Central PDF
 
 [README](README.md) · [Documentação](docs/README.md) · [Estrutura](docs/reference/ESTRUTURA_DO_PROJETO.md)
 
