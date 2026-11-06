@@ -28,8 +28,8 @@ if (Test-Path -LiteralPath $outputPath) {
 }
 
 $versionChecks = @(
-    @{ Path = 'README.md'; Pattern = "# Central PDF & Imagem $Version" },
-    @{ Path = 'manifest.webmanifest'; Pattern = "Central PDF & Imagem $Version" },
+    @{ Path = 'README.md'; Pattern = "# Central PDF $Version" },
+    @{ Path = 'manifest.webmanifest'; Pattern = "Central PDF $Version" },
     @{ Path = 'index.html'; Pattern = "Web local $Version" },
     @{ Path = 'assets/js/stable-1.0.js'; Pattern = "const VERSION='$Version'" },
     @{ Path = 'app/package.json'; Pattern = "`"version`": `"$Version`"" },

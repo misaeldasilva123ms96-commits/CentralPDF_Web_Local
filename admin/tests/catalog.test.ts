@@ -4,6 +4,16 @@ import adminPackage from "../package.json";
 import { release, toolNames, catalogueRows, matchesTool, shortcuts, matchesShortcut } from "../src/catalog";
 import { handle } from "../worker/index";
 
+it("keeps the image tool identifier and old searches under the new display name", () => {
+  expect(toolNames.imagesToPdf).toBe("JPG/PNG para PDF");
+  expect(matchesTool("imagesToPdf", "Imagens para PDF")).toBe(true);
+  expect(matchesTool("imagesToPdf", "JPG/PNG para PDF")).toBe(true);
+  expect(matchesTool("imagesToPdf", "WEBP")).toBe(true);
+  const shortcut = shortcuts.find(item => item.id === "imagesToPdf")!;
+  expect(shortcut.familyId).toBe("imagesToPdf");
+  expect(matchesShortcut(shortcut, "Imagens para PDF")).toBe(true);
+});
+
 it("uses the current public catalogue and preserves the stable Office metric identifier", () => {
   expect(Object.keys(toolNames)).toHaveLength(34);
   expect(toolNames.documentsToPdf).toBe("Office para PDF");

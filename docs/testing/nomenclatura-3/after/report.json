@@ -1,0 +1,170 @@
+[
+  {
+    "browser": "chromium",
+    "width": 1440,
+    "theme": "dark",
+    "title": "Central PDF",
+    "tool": "JPG/PNG para PDF",
+    "modules": 34,
+    "shortcuts": 39,
+    "accept": "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp",
+    "rendered": [
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          200,
+          30,
+          40,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          30,
+          180,
+          70,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          30,
+          60,
+          199,
+          255
+        ]
+      }
+    ]
+  },
+  {
+    "browser": "chromium",
+    "width": 390,
+    "theme": "light",
+    "title": "Central PDF",
+    "tool": "JPG/PNG para PDF",
+    "modules": 34,
+    "shortcuts": 39,
+    "accept": "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp",
+    "rendered": [
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          200,
+          30,
+          40,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          30,
+          180,
+          70,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          30,
+          60,
+          199,
+          255
+        ]
+      }
+    ]
+  },
+  {
+    "browser": "firefox",
+    "width": 1440,
+    "theme": "light",
+    "title": "Central PDF",
+    "tool": "JPG/PNG para PDF",
+    "modules": 34,
+    "shortcuts": 39,
+    "accept": "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp",
+    "rendered": [
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          200,
+          30,
+          39,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          30,
+          180,
+          70,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          31,
+          60,
+          200,
+          255
+        ]
+      }
+    ]
+  },
+  {
+    "browser": "firefox",
+    "width": 390,
+    "theme": "dark",
+    "title": "Central PDF",
+    "tool": "JPG/PNG para PDF",
+    "modules": 34,
+    "shortcuts": 39,
+    "accept": "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp",
+    "rendered": [
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          200,
+          30,
+          39,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          30,
+          180,
+          70,
+          255
+        ]
+      },
+      {
+        "width": 96,
+        "height": 64,
+        "pixel": [
+          31,
+          60,
+          200,
+          255
+        ]
+      }
+    ]
+  }
+]

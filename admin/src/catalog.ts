@@ -7,6 +7,7 @@ export const toolNames: Record<string, string> = Object.fromEntries(
   catalogue.tools.map(tool => [tool.id, tool.title]),
 );
 const aliases: Record<string, string> = {
+  imagesToPdf: "imagens para pdf jpg jpeg png webp foto",
   documentsToPdf: "word docx odt excel xlsx ods calc powerpoint ppt pptx odp office ofice",
   pdfToOffice: "word docx excel xlsx powerpoint ppt pptx office ofice",
 };

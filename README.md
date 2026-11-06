@@ -1,7 +1,7 @@
-# Central PDF & Imagem 3.0.0
+# Central PDF 3.0.0
 
 <p align="center">
-  <img src="assets/icons/icon-192.png" width="80" height="80" alt="Ícone do Central PDF & Imagem" />
+  <img src="assets/icons/icon-192.png" width="80" height="80" alt="Ícone do Central PDF" />
 </p>
 
 <p align="center"><strong>Seus PDFs e imagens, organizados no seu dispositivo.</strong><br />
@@ -107,7 +107,7 @@ A edição original depende da estrutura e das fontes do PDF. Digitalizações n
 
 ### Conversão, extração e otimização
 
-9. Imagens para PDF — botões de giro de 90° para esquerda/direita em cada miniatura; prévia e PDF seguem o mesmo ângulo. A orientação do papel é ajustada separadamente.
+9. JPG/PNG para PDF — botões de giro de 90° para esquerda/direita em cada miniatura; prévia e PDF seguem o mesmo ângulo. A orientação do papel é ajustada separadamente.
 10. Converter imagens
 11. Comprimir PDF
 12. PDF para imagens

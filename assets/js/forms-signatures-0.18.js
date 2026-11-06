@@ -442,7 +442,7 @@
       await waitFrame();
     }
     try { form.updateFieldAppearances(font); } catch (_) {}
-    pdf.setProducer('Central PDF & Imagem 1.0 - Formulários');
+    pdf.setProducer('Central PDF 1.0 - Formulários');
     const bytes = await pdf.save({ useObjectStreams: true });
     const filename = `${baseName(files[0].name)}_formulario_preenchivel.pdf`;
     return { outputs: [{ filename, blob: new Blob([bytes], { type: 'application/pdf' }) }], message: `${formState.items.length} campo(s) preenchível(is) criado(s) em ${new Set(formState.items.map(item => item.page)).size} página(s).` };
@@ -598,7 +598,7 @@
       if (caption) page.drawText(caption, { x, y: Math.max(4, y - 11), size: 8, font, color: rgb(.18, .22, .3), maxWidth: Math.max(40, width) });
       progress?.(Math.round(((index + 1) / signatureState.items.length) * 90)); await waitFrame();
     }
-    pdf.setProducer('Central PDF & Imagem 1.0 - Assinatura visual');
+    pdf.setProducer('Central PDF 1.0 - Assinatura visual');
     const bytes = await pdf.save({ useObjectStreams: true });
     return { outputs: [{ filename: `${baseName(files[0].name)}_assinado_visual.pdf`, blob: new Blob([bytes], { type: 'application/pdf' }) }], message: `${signatureState.items.length} assinatura(s) ou rubrica(s) aplicadas em ${new Set(signatureState.items.map(item => item.page)).size} página(s).` };
   }

@@ -222,7 +222,7 @@
         <label class="toggle-row"><input id="numberBackground" type="checkbox" /><span>Adicionar fundo branco discreto atrás do número</span></label>`
     },
     imagesToPdf: {
-      title: 'Imagens para PDF avançado', description: 'Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada.',
+      title: 'JPG/PNG para PDF', description: 'Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada.',
       accept: 'image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp', multiple: true, typeLabel: 'JPG, PNG ou WEBP', button: 'Criar PDF(s)', outputExt: 'auto', outputBase: 'imagens_convertidas',
       settings: `
         <div class="field"><label for="imageOutputMode">Resultado</label><select id="imageOutputMode"><option value="combined">Um PDF com todas as imagens</option><option value="separate">Um PDF para cada imagem</option></select></div>

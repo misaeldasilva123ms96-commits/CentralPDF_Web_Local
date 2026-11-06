@@ -1,4 +1,4 @@
-# Documentação do Central PDF & Imagem
+# Documentação do Central PDF
 
 Referência atualizada em **05/11/2026** para o sistema visual e a versão 3.0.0. Versão declarada: **3.0.0**.
 

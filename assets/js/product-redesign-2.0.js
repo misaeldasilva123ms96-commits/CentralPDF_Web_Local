@@ -90,7 +90,7 @@
     if (!converterButton || !converterMenu) return;
     const groups = [
       ['Converter em PDF', [
-        { label: 'JPG para PDF', tool: 'imagesToPdf', icon: 'JPG', color: 'image' },
+        { label: 'JPG/PNG para PDF', tool: 'imagesToPdf', icon: 'JPG', color: 'image' },
         { label: 'Word para PDF', tool: 'documentsToPdf', icon: 'W', color: 'word', accept: '.docx,.doc,.odt', settings: { docToPdfEngine: 'layout' } },
         { label: 'PowerPoint para PDF', tool: 'documentsToPdf', icon: 'P', color: 'slides', accept: '.pptx,.ppt,.odp', settings: { docToPdfEngine: 'layout' } },
         { label: 'Excel para PDF', tool: 'documentsToPdf', icon: 'X', color: 'sheet', accept: '.xlsx,.xls,.ods,.csv', settings: { docToPdfEngine: 'layout' } },

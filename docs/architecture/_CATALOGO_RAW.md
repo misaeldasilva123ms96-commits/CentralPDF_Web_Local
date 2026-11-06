@@ -12,7 +12,7 @@ Gerado por `scripts/extract-tool-catalog.mjs` a partir de `assets/js/app.js` (to
 | rotate | Girar páginas | sim | PDF | `application/pdf,.pdf` | auto | - | 1292 | 5 |
 | watermark | Marca-d’água avançada | sim | PDF | `application/pdf,.pdf` | auto | - | 2892 | 16 |
 | pageNumbers | Numerar páginas avançado | sim | PDF | `application/pdf,.pdf` | auto | - | 2735 | 14 |
-| imagesToPdf | Imagens para PDF avançado | sim | JPG, PNG ou WEBP | `image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp` | auto | - | 2082 | 11 |
+| imagesToPdf | JPG/PNG para PDF | sim | JPG, PNG ou WEBP | `image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp` | auto | - | 2082 | 11 |
 | imageConvert | Converter imagens | sim | Imagens | `image/*,.png,.jpg,.jpeg,.webp,.bmp,.gif` | auto | - | 715 | 4 |
 | compress | Comprimir PDF avançado | sim | PDF | `application/pdf,.pdf` | auto | - | 2271 | 11 |
 | pdfToImage | PDF para imagens avançado | sim | PDF | `application/pdf,.pdf` | auto | - | 2127 | 12 |

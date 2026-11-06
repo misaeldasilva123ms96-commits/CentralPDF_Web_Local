@@ -14,7 +14,7 @@ A aplicação possui 34 ferramentas:
 6. Girar páginas
 7. Marca-d’água
 8. Numerar páginas
-9. Imagens para PDF
+9. JPG/PNG para PDF
 10. Converter imagens
 11. Comprimir PDF
 12. PDF para imagens
