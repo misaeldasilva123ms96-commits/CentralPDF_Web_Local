@@ -1,5 +1,15 @@
 ## 3.0.0 — identidade unificada e revisão de acessibilidade
 
+### Acabamento final do lançamento
+
+- Arredonda busca, importação e filtros; uniformiza hover/foco dos 39 cartões e botões com relevo discreto.
+- Corrige espaçamento entre o acesso administrativo e o consentimento de estatísticas; mantém rótulos e instruções legíveis nos dois temas.
+- Mostra etapas reais, tamanho do lote e tempo decorrido durante a leitura compartilhada de arquivos, com ajuda expansível e limpeza ao concluir, falhar ou trocar de ferramenta.
+- Atualiza PDF.js do site, pacote offline e interface React para 6.5.438, com API/Worker/recursos sincronizados e hashes verificados.
+- Mantém PDFs sem senha de abertura utilizáveis; classificar/renomear conserva os bytes originais, inclusive criptografia e assinaturas existentes.
+- Melhora o Admin com resumo compacto de versão, horário da última consulta bem-sucedida e filtro de ferramentas com falhas. Preserva Auth, MFA e os limites do plano gratuito.
+- Renova o cache para `pages-54`, sem apagar preferências ou projetos. Notas e evidências de validação acompanham a PR; publicação de release permanece separada.
+
 - Atualiza a versão atual em interface, PWA, relatórios, telemetria, servidor local, pacote React e catálogo do Admin.
 - Mantém dados, projetos e preferências existentes; renova o cache e preserva a atualização de caches anteriores.
 - Inclui o redesign completo e as correções revisadas de navegação em telas baixas e contraste no tema escuro.

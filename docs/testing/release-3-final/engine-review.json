@@ -1,0 +1,22 @@
+[
+  {
+    "package": "@matbee/libreoffice-converter",
+    "published": "2.7.2"
+  },
+  {
+    "package": "pdf-lib",
+    "published": "1.17.1"
+  },
+  {
+    "package": "tesseract.js",
+    "published": "7.0.0"
+  },
+  {
+    "package": "@neslinesli93/qpdf-wasm",
+    "published": "0.3.1"
+  },
+  {
+    "package": "@libpdf/core",
+    "published": "0.5.3"
+  }
+]

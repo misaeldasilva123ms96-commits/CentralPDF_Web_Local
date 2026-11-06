@@ -35,7 +35,7 @@ Dentro de `vendor/libpdf-core.LICENSES.txt`:
 | Pacote | Versão | Licença | Caminho | SHA-256 |
 | --- | --- | --- | --- | --- |
 | pdf-lib | 1.17.1 | MIT | `vendor/pdf-lib.min.js` | `0f9a5cad07941f0826586c94e089d89b918c46e5c17cf2d5a3c6f666e3bc694f` |
-| PDF.js (dist) | 6.2.108 | Apache-2.0 | `vendor/pdfjs/` | `b3e68d5cda70551a90b3f771419d379e20fc788ce056fa32de73608e01df47f4` |
+| PDF.js (dist) | 6.5.438 | Apache-2.0 | `vendor/pdfjs/` | `7461aefcd27c4ef0dd76f9ca5760f09466eb6b3f934432670c12132e7b3d6faa` |
 | Tesseract.js | 7.0.0 | Apache-2.0 | `vendor/tesseract/` | `000c27d9cd0def655f77b36c72a389c0ab13793aa31cb4d7aab56d09c0afbc7e` (tesseract.min.js) |
 | tesseract.js-core | 7.0.0 | Apache-2.0 | `vendor/tesseract-core/` | ver `prepare-offline.ps1` (8 wasm) |
 | tessdata pt-BR | 4.0.0 | Apache-2.0 | `vendor/tessdata/4.0.0/por.traineddata.gz` | `3f5feea9dfc39106c92348089097a39bec66e9d6d09ca49befebb0bb60947374` |

@@ -3,7 +3,7 @@
 
   const APP_VERSION = '3.0.0';
   const runtimeProtocol = window.CentralPDFProtocolOverride || location.protocol;
-  const PDFJS_VERSION = '6.2.108';
+  const PDFJS_VERSION = '6.5.438';
   const PDFLIB_VERSION = '1.17.1';
   const REMOTE_ENGINES_KEY = 'centralpdf-remote-engines-allowed';
 

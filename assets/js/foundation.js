@@ -9,8 +9,8 @@
   const RECOVERY_LIMIT = 80 * 1024 * 1024;
   const OFFLINE_URLS = [
     'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
-    'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/pdf.min.mjs',
-    'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/pdf.worker.min.mjs',
+    'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/legacy/build/pdf.min.mjs',
+    'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/legacy/build/pdf.worker.min.mjs',
     'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js',
     'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js',
     'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core.wasm.js',
@@ -80,14 +80,14 @@
     wrapper.innerHTML = `
       <dialog id="foundationQueueDialog" class="foundation-dialog">
         <div class="foundation-dialog-shell">
-          <div class="foundation-dialog-head"><div><small>Central de processamento</small><h2>Tarefas da sessão</h2><p>Acompanhe operações longas e consulte o histórico recente.</p></div><button class="foundation-dialog-close" data-close-dialog="foundationQueueDialog" type="button">×</button></div>
+          <div class="foundation-dialog-head"><div><small>Central de processamento</small><h2>Tarefas da sessão</h2><p>Acompanhe operações longas e consulte o histórico recente.</p></div><button class="foundation-dialog-close" aria-label="Fechar" data-close-dialog="foundationQueueDialog" type="button">×</button></div>
           <div class="foundation-dialog-body"><div id="foundationQueueList"></div></div>
           <div class="foundation-dialog-actions"><button id="foundationClearTasks" class="foundation-button" type="button">Limpar concluídas</button><button id="foundationCancelTask" class="foundation-button danger" type="button" disabled>Cancelar tarefa ativa</button></div>
         </div>
       </dialog>
       <dialog id="foundationProjectsDialog" class="foundation-dialog">
         <div class="foundation-dialog-shell">
-          <div class="foundation-dialog-head"><div><small>Projetos locais</small><h2>Salvar e continuar depois</h2><p>O projeto guarda arquivos, configurações, ordem de páginas e edições compatíveis.</p></div><button class="foundation-dialog-close" data-close-dialog="foundationProjectsDialog" type="button">×</button></div>
+          <div class="foundation-dialog-head"><div><small>Projetos locais</small><h2>Salvar e continuar depois</h2><p>O projeto guarda arquivos, configurações, ordem de páginas e edições compatíveis.</p></div><button class="foundation-dialog-close" aria-label="Fechar" data-close-dialog="foundationProjectsDialog" type="button">×</button></div>
           <div class="foundation-dialog-body">
             <div id="foundationRecoverySlot"></div>
             <div class="foundation-grid">
@@ -104,7 +104,7 @@
       </dialog>
       <dialog id="foundationDiagnosticsDialog" class="foundation-dialog">
         <div class="foundation-dialog-shell">
-          <div class="foundation-dialog-head"><div><small>Diagnóstico</small><h2>Compatibilidade e modo offline</h2><p>Confira os motores, armazenamento e forma de abertura da aplicação.</p></div><button class="foundation-dialog-close" data-close-dialog="foundationDiagnosticsDialog" type="button">×</button></div>
+          <div class="foundation-dialog-head"><div><small>Diagnóstico</small><h2>Compatibilidade e modo offline</h2><p>Confira os motores, armazenamento e forma de abertura da aplicação.</p></div><button class="foundation-dialog-close" aria-label="Fechar" data-close-dialog="foundationDiagnosticsDialog" type="button">×</button></div>
           <div class="foundation-dialog-body"><div id="foundationDiagnosticsContent"></div></div>
           <div class="foundation-dialog-actions"><button id="foundationPrepareOffline" class="foundation-button primary" type="button">Preparar uso offline</button><button id="foundationRefreshDiagnostics" class="foundation-button" type="button">Verificar novamente</button></div>
         </div>

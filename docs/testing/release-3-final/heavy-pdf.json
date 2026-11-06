@@ -1,0 +1,15 @@
+{
+  "synthetic": true,
+  "input_bytes": 16054909,
+  "pages": 9,
+  "seconds_to_ready": 8.61,
+  "loading_stages": [
+    "Preparando a leitura\u2026",
+    "Conferindo arquivo 1 de 1\u2026",
+    "Preparando p\u00e1ginas e miniaturas\u2026"
+  ],
+  "native_export": "passed",
+  "text_geometry_pixels": "identical",
+  "external_requests": "blocked",
+  "page_errors": []
+}

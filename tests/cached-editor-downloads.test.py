@@ -68,7 +68,7 @@ try:
         assert page.evaluate("async () => (await (await fetch('/assets/js/pdf-native-text.js')).text())") == 'old-native'
         opaque_url=f'http://localhost:{server.server_address[1]}/tests/pdf-corpus/sw-harness.html'
         engines={
-            'pdf':'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/pdf.min.mjs',
+            'pdf':'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/legacy/build/pdf.min.mjs',
             'ocr':'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js',
             'opaque':opaque_url,
         }
@@ -83,7 +83,7 @@ try:
           await old.put('/assets/js/app.js?v=2.0.1-ui10',new Response('stale-runtime-app'));
           await old.put('/assets/js/stale-only.js',new Response('do-not-migrate'));
           // A newer engine copy already stored by another tab must win.
-          await (await caches.open('centralpdf-v3.0.0-pages-53-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
+          await (await caches.open('centralpdf-v3.0.0-pages-54-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
         }""",engines)
 
         # New HTML must bypass old script URLs on the very first reload, even
@@ -93,7 +93,7 @@ try:
             url=next('/'+url for url in urls if '/'+module+'?' in url)
             assert marker in page.evaluate("async url => (await (await fetch(url)).text())",url)
         assert 'Converter PDF e arquivos' in page.evaluate("async () => (await fetch('/assets/js/design-3.js?v=2')).text()")
-        assert 'Fidelity to the approved HTML' in page.evaluate("async () => (await fetch('/assets/css/design-3.css?v=2')).text()")
+        assert 'Fidelity to the approved HTML' in page.evaluate("async () => (await fetch('/assets/css/design-3.css?v=3')).text()")
         updated = True
         page.evaluate("""async () => {
           const registration=await navigator.serviceWorker.getRegistration();
@@ -119,7 +119,7 @@ try:
         assert 'centralpdf-v2.0.1-pages-30-core' not in fetched['keys'], fetched['keys']
         assert 'centralpdf-v2.0.1-pages-30-runtime' not in fetched['keys'], fetched['keys']
         migrated=page.evaluate("""async urls => {
-          const runtime=await caches.open('centralpdf-v3.0.0-pages-53-runtime');
+          const runtime=await caches.open('centralpdf-v3.0.0-pages-54-runtime');
           const pdf=await runtime.match(urls.pdf),ocr=await runtime.match(urls.ocr),opaque=await runtime.match(urls.opaque);
           return {
             pdf:pdf && await pdf.text(),ocr:ocr && await ocr.text(),opaque:opaque?.type,
@@ -129,7 +129,7 @@ try:
         assert migrated=={'pdf':'newer-pdf-engine','ocr':'prepared-ocr-engine','opaque':'opaque','marker':'prepared-before-upgrade'},migrated
 
         assert page.evaluate("async () => (await caches.keys()).some(k=>k.startsWith('centralpdf-v3.0.0-pages-51-'))") is False
-        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v3.0.0-pages-53-runtime')).match('/assets/js/stale-only.js'))") is False
+        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v3.0.0-pages-54-runtime')).match('/assets/js/stale-only.js'))") is False
         # A stale entry for an unversioned URL must also refresh online, and the
         # most recently fetched code must remain available offline.
         page.evaluate("""async () => {

@@ -35,6 +35,7 @@ export interface NoticePage {
   hasMore: boolean;
 }
 export function useData<T>(client: SupabaseClient, path: string) {
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
   const [data, setData] = useState<T | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true),
@@ -44,9 +45,10 @@ export function useData<T>(client: SupabaseClient, path: string) {
     setLoading(true);
     setError("");
     setData(null);
+    setUpdatedAt(null);
     void api<T>(client, path)
       .then((value) => {
-        if (active) setData(value);
+        if (active) { setData(value); setUpdatedAt(Date.now()); }
       })
       .catch((e) => {
         if (active)
@@ -61,7 +63,7 @@ export function useData<T>(client: SupabaseClient, path: string) {
       active = false;
     };
   }, [client, path, version]);
-  return { data, error, loading, reload: () => setVersion((v) => v + 1) };
+  return { data, error, loading, updatedAt, reload: () => setVersion((v) => v + 1) };
 }
 export function summarize(metrics: Metric[]) {
   const map = new Map<

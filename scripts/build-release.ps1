@@ -63,6 +63,11 @@ $requiredOfflineFiles = @(
     'vendor/pdfjs/pdf.min.mjs',
     'vendor/pdfjs/pdf.worker.min.mjs',
     'vendor/pdfjs/LICENSE',
+    'vendor/qpdf/qpdf.js',
+    'vendor/qpdf/qpdf.wasm',
+    'vendor/qpdf/LICENSE',
+    'vendor/qpdf/NOTICE.txt',
+    'vendor/qpdf/QPDF-LICENSE-APACHE-2.0.txt',
     'vendor/tesseract/tesseract.min.js',
     'vendor/tesseract-core/tesseract-core-relaxedsimd-lstm.wasm.js',
     'vendor/tessdata/4.0.0/por.traineddata.gz',
@@ -105,6 +110,7 @@ foreach ($file in @(
     'PREPARAR_OFFLINE.bat',
     'README.md',
     'SECURITY.md',
+    'THIRD_PARTY_NOTICES.md',
     'sw.js'
 )) {
     Copy-Item -LiteralPath (Join-Path $projectRoot $file) -Destination $packageRoot

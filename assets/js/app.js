@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PDF_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/pdf.worker.min.mjs';
+  const PDF_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/legacy/build/pdf.worker.min.mjs';
   const PDF_WORKER_LOCAL_URL = window.CentralPDFEnginePaths?.pdfWorker || 'vendor/pdfjs/pdf.worker.min.mjs';
   const HOME_STORAGE_KEY = 'central-pdf-last-tool';
   window.CentralPDFRuntimeFixes = Object.assign({}, window.CentralPDFRuntimeFixes, { pdfBufferIsolation: true });
@@ -795,6 +795,7 @@
   function selectTool(tool) {
     if (state.processing) { setStatus('Aguarde a operação terminar ou cancele antes de trocar de ferramenta.', 'warning'); return false; }
     if (!toolConfig[tool]) return false;
+    window.CentralPDFImportFeedback?.dismiss();
     fileIngestSession += 1;
     state.tool = tool;
     if(tool==='merge') $('#mergePageView').value='covers';
@@ -905,6 +906,7 @@
   }
 
   function clearAll() {
+    window.CentralPDFImportFeedback?.dismiss();
     if (state.processing) { setStatus('Cancele a operação antes de remover os arquivos.', 'warning'); return; }
     fileIngestSession += 1;
     setCompletionState(false);
@@ -1032,12 +1034,16 @@
     const queuedSession = fileIngestSession;
     fileIngestChain = fileIngestChain.catch(error => {
       logPdfIngest('queue-recovered', null, error, 'queue');
-    }).then(() => {
+    }).then(async () => {
       if (state.tool !== queuedTool || fileIngestSession !== queuedSession) {
         logPdfIngest('cancelled', null, new Error('A ferramenta mudou durante a leitura.'), 'queue');
         return;
       }
-      return ingestFiles(queuedFiles, { ...options, queuedTool, queuedSession });
+      const feedback = window.CentralPDFImportFeedback?.start({ count: queuedFiles.length, bytes: queuedFiles.reduce((sum, file) => sum + Number(file?.size || 0), 0) });
+      try {
+        await feedback?.paint();
+        return await ingestFiles(queuedFiles, { ...options, queuedTool, queuedSession, feedback });
+      } finally { feedback?.finish(); }
     });
     return fileIngestChain;
   }
@@ -1081,10 +1087,13 @@
       }
     }
     const inputConfig = queuedTool === 'documentsToPdf' ? { ...config, accept: fileInput.accept } : config;
-    const inspected = await inspectIncomingFiles(files, inputConfig, queuedTool, sessionIsActive, options.source);
+    const inspected = await inspectIncomingFiles(files, inputConfig, queuedTool, sessionIsActive, options.source, options.feedback);
     if (!inspected || abortInactiveSession()) return;
     const valid = inspected.valid;
     const rejected = inspected.rejected;
+    options.feedback?.update('Preparando páginas e miniaturas…');
+    await options.feedback?.paint();
+    if (abortInactiveSession()) return;
     if (!valid.length) {
       setStatus(rejected.map(item => `${item.file.name}: ${item.message}`).join(' ') || 'Nenhum arquivo compatível foi selecionado.', 'error');
       notifyFilesChanged('rejected');
@@ -1190,11 +1199,14 @@
     notifyFilesChanged(options.source || 'add');
   }
 
-  async function inspectIncomingFiles(files, config, queuedTool, sessionIsActive, source = 'unknown') {
+  async function inspectIncomingFiles(files, config, queuedTool, sessionIsActive, source = 'unknown', feedback) {
     const valid = [];
     const rejected = [];
     const acceptsPdf = /application\/pdf|\.pdf(?:,|$)/i.test(config.accept || '');
-    for (const file of files) {
+    for (const [index, file] of files.entries()) {
+      if (!sessionIsActive()) return null;
+      feedback?.update(`Conferindo arquivo ${index + 1} de ${files.length}…`);
+      await feedback?.paint();
       if (!sessionIsActive()) return null;
       if (!file || Number(file.size || 0) === 0) {
         const ingest = window.CentralPDFIngest;

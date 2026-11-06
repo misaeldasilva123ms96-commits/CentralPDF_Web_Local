@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/pdf.worker.min.mjs';
+  const WORKER_URL = window.CentralPDFEnginePaths?.pdfWorkerRemote || 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/legacy/build/pdf.worker.min.mjs';
   const LOCAL_WORKER_URL = window.CentralPDFEnginePaths?.pdfWorker || 'vendor/pdfjs/pdf.worker.min.mjs';
   const FONT_MAP = {
     Helvetica: 'Helvetica',
@@ -572,7 +572,9 @@
     const bytes = await file.arrayBuffer();
     const renderedBytes = bytes.slice(0);
     const libraryBytes = bytes.slice(0);
-    const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(renderedBytes) });
+    // PDF.js 6.5 exposes original glyph codes only with this option. Native
+    // text editing needs those codes to verify the content before replacing it.
+    const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(renderedBytes), fontExtraProperties: true });
     let rendered;
     try { rendered = await loadingTask.promise; }
     catch(error) { await loadingTask.destroy(); throw error; }
