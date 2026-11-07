@@ -175,6 +175,9 @@ try:
         signature = page.locator('#signatureOverlay [data-id="s1"]')
         signature.evaluate("el => el.scrollIntoView({block:'center',inline:'center',behavior:'instant'})")
         signature.hover()
+        # Preview sizing and native scroll adjustment finish asynchronously.
+        # Wait for the real hit target; retain the strict pointer/drag assertions.
+        page.wait_for_function("""() => { const el=document.querySelector('#signatureOverlay [data-id="s1"]'); if(!el)return false; const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }""")
         box = signature.bounding_box()
         assert signature.evaluate("el => { const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }")
         page.mouse.move(box['x']+box['width']/2, box['y']+box['height']/2)
