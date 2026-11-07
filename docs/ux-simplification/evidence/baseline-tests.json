@@ -1,0 +1,517 @@
+[
+  {
+    "test": "admin-bridge.test.js",
+    "exit": 0,
+    "seconds": 0.06
+  },
+  {
+    "test": "advanced-planner.test.js",
+    "exit": 0,
+    "seconds": 0.06
+  },
+  {
+    "test": "app-load-smoke.test.js",
+    "exit": 0,
+    "seconds": 0.11
+  },
+  {
+    "test": "diagnostics-telemetry.test.js",
+    "exit": 0,
+    "seconds": 0.22
+  },
+  {
+    "test": "download-filenames.test.js",
+    "exit": 0,
+    "seconds": 0.12
+  },
+  {
+    "test": "libpdf-offline-runtime.test.js",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "organizer-planner.test.js",
+    "exit": 0,
+    "seconds": 0.06
+  },
+  {
+    "test": "pdf-editor-orientation.test.js",
+    "exit": 0,
+    "seconds": 0.06
+  },
+  {
+    "test": "pdf-editor-restricted.test.js",
+    "exit": 0,
+    "seconds": 0.06
+  },
+  {
+    "test": "pdf-editor.test.js",
+    "exit": 0,
+    "seconds": 0.06
+  },
+  {
+    "test": "pdf-ingest.test.js",
+    "exit": 0,
+    "seconds": 0.47
+  },
+  {
+    "test": "quality-balanced-auto.test.js",
+    "exit": 0,
+    "seconds": 0.07
+  },
+  {
+    "test": "sentry-tracing.test.js",
+    "exit": 0,
+    "seconds": 0.12
+  },
+  {
+    "test": "smart-compression-engine.test.js",
+    "exit": 0,
+    "seconds": 0.06
+  },
+  {
+    "test": "admin-demo.test.py",
+    "exit": 0,
+    "seconds": 19.35
+  },
+  {
+    "test": "browser-dependency-mirror.test.py",
+    "exit": 0,
+    "seconds": 0.21
+  },
+  {
+    "test": "browser-network-guard.test.py",
+    "exit": 0,
+    "seconds": 1.18
+  },
+  {
+    "test": "cached-editor-downloads.test.py",
+    "exit": 0,
+    "seconds": 3.23
+  },
+  {
+    "test": "ci-workflow.test.py",
+    "exit": 0,
+    "seconds": 0.22
+  },
+  {
+    "test": "compare-redaction-engine-0.17.test.py",
+    "exit": 0,
+    "seconds": 2.07
+  },
+  {
+    "test": "completion-labels-contract-2.0.6.test.py",
+    "exit": 0,
+    "seconds": 0.47
+  },
+  {
+    "test": "compression-worker-1.1.6.test.py",
+    "exit": 0,
+    "seconds": 1.63
+  },
+  {
+    "test": "conversions-0.19.test.py",
+    "exit": 0,
+    "seconds": 1.25
+  },
+  {
+    "test": "dark-theme-1.0.4.test.py",
+    "exit": 0,
+    "seconds": 2.51
+  },
+  {
+    "test": "diagnostics-telemetry.test.py",
+    "exit": 0,
+    "seconds": 9.93
+  },
+  {
+    "test": "dialog-audit-1.0.8.test.py",
+    "exit": 0,
+    "seconds": 0.97
+  },
+  {
+    "test": "editor-context-controls.test.py",
+    "exit": 0,
+    "seconds": 24.45
+  },
+  {
+    "test": "editor-modes.test.py",
+    "exit": 0,
+    "seconds": 7.15
+  },
+  {
+    "test": "editor-native-text.test.py",
+    "exit": 0,
+    "seconds": 18.63
+  },
+  {
+    "test": "editor-orientation-delivery.test.py",
+    "exit": 0,
+    "seconds": 0.33
+  },
+  {
+    "test": "editor-page-orientation.test.py",
+    "exit": 0,
+    "seconds": 3.81
+  },
+  {
+    "test": "editor-restricted-runtime.test.py",
+    "exit": 0,
+    "seconds": 2.57
+  },
+  {
+    "test": "editor-stability.test.py",
+    "exit": 0,
+    "seconds": 24.49
+  },
+  {
+    "test": "editor-transform.test.py",
+    "exit": 0,
+    "seconds": 4.5
+  },
+  {
+    "test": "experience-0.15.test.py",
+    "exit": 0,
+    "seconds": 0.27
+  },
+  {
+    "test": "extract-panels-runtime-1.2.1.test.py",
+    "exit": 0,
+    "seconds": 0.47
+  },
+  {
+    "test": "forms-recovery-real-pdf.test.py",
+    "exit": 0,
+    "seconds": 6.45
+  },
+  {
+    "test": "forms-signatures-0.18.test.py",
+    "exit": 0,
+    "seconds": 1.2
+  },
+  {
+    "test": "forms-signatures-ui-0.18.test.py",
+    "exit": 0,
+    "seconds": 4.0
+  },
+  {
+    "test": "foundation-dark-1.0.6.test.py",
+    "exit": 0,
+    "seconds": 1.94
+  },
+  {
+    "test": "foundation.test.py",
+    "exit": 0,
+    "seconds": 10.7
+  },
+  {
+    "test": "github-governance-verifier.test.py",
+    "exit": 0,
+    "seconds": 0.77
+  },
+  {
+    "test": "home-dark-1.0.5.test.py",
+    "exit": 0,
+    "seconds": 2.59
+  },
+  {
+    "test": "image-rotation-icons.test.py",
+    "exit": 0,
+    "seconds": 79.94
+  },
+  {
+    "test": "intelligence-0.20.test.py",
+    "exit": 0,
+    "seconds": 1.12
+  },
+  {
+    "test": "internal-drag-overlay.test.py",
+    "exit": 0,
+    "seconds": 2.18
+  },
+  {
+    "test": "large-merge.test.py",
+    "exit": 0,
+    "seconds": 3.25
+  },
+  {
+    "test": "layout-controls.test.py",
+    "exit": 0,
+    "seconds": 3.06
+  },
+  {
+    "test": "libpdf-offline-bundle.test.py",
+    "exit": 0,
+    "seconds": 0.32
+  },
+  {
+    "test": "local-server-sw-0.14.test.py",
+    "exit": 0,
+    "seconds": 3.01
+  },
+  {
+    "test": "merge-cover-default.test.py",
+    "exit": 0,
+    "seconds": 4.16
+  },
+  {
+    "test": "merge-default-az.test.py",
+    "exit": 0,
+    "seconds": 0.16
+  },
+  {
+    "test": "merge-dragdrop.test.py",
+    "exit": 0,
+    "seconds": 3.18
+  },
+  {
+    "test": "merge-source-order.test.py",
+    "exit": 0,
+    "seconds": 2.42
+  },
+  {
+    "test": "micro-polish-1.1.0.test.py",
+    "exit": 0,
+    "seconds": 0.82
+  },
+  {
+    "test": "modal-fit-1.0.9.test.py",
+    "exit": 0,
+    "seconds": 0.97
+  },
+  {
+    "test": "nomenclature-3.test.py",
+    "exit": 0,
+    "seconds": 16.06
+  },
+  {
+    "test": "ocr-0.16.test.py",
+    "exit": 0,
+    "seconds": 0.77
+  },
+  {
+    "test": "office-conversions.test.py",
+    "exit": 0,
+    "seconds": 50.93
+  },
+  {
+    "test": "offline-installer-integrity.test.py",
+    "exit": 0,
+    "seconds": 0.21
+  },
+  {
+    "test": "offline-marker-1.1.3.test.py",
+    "exit": 0,
+    "seconds": 0.47
+  },
+  {
+    "test": "offline-marker-cache.test.py",
+    "exit": 0,
+    "seconds": 3.18
+  },
+  {
+    "test": "pages-deployment.test.py",
+    "exit": 0,
+    "seconds": 0.16
+  },
+  {
+    "test": "pdf-compatibility-sw.test.py",
+    "exit": 0,
+    "seconds": 1.58
+  },
+  {
+    "test": "pdf-corpus-manifest.test.py",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "pdf-ingest-browser.test.py",
+    "exit": 0,
+    "seconds": 2.18
+  },
+  {
+    "test": "pdf-log-migration-1.1.3.test.py",
+    "exit": 0,
+    "seconds": 0.16
+  },
+  {
+    "test": "pdf-open-access.test.py",
+    "exit": 0,
+    "seconds": 23.05
+  },
+  {
+    "test": "pdf-runtime-regressions-1.1.5.test.py",
+    "exit": 0,
+    "seconds": 0.87
+  },
+  {
+    "test": "pdf-worker-file-mode-1.1.3.test.py",
+    "exit": 0,
+    "seconds": 0.93
+  },
+  {
+    "test": "pdf-worker-routing-1.1.2.test.py",
+    "exit": 0,
+    "seconds": 0.16
+  },
+  {
+    "test": "pptxgenjs-4.0.1.test.py",
+    "exit": 0,
+    "seconds": 1.02
+  },
+  {
+    "test": "product-redesign-functional-parity-2.0.test.py",
+    "exit": 0,
+    "seconds": 0.42
+  },
+  {
+    "test": "professional-0.17.test.py",
+    "exit": 0,
+    "seconds": 0.28
+  },
+  {
+    "test": "quality-button-1.1.4.test.py",
+    "exit": 0,
+    "seconds": 3.54
+  },
+  {
+    "test": "quality-logs-1.1.2.test.py",
+    "exit": 0,
+    "seconds": 2.18
+  },
+  {
+    "test": "readme-guide.test.py",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "recovery-containment.test.py",
+    "exit": 0,
+    "seconds": 4.77
+  },
+  {
+    "test": "redesign-3-exports.test.py",
+    "exit": 0,
+    "seconds": 15.4
+  },
+  {
+    "test": "redesign-3.test.py",
+    "exit": 0,
+    "seconds": 66.52
+  },
+  {
+    "test": "release-2.0.1.test.py",
+    "exit": 0,
+    "seconds": 0.16
+  },
+  {
+    "test": "release-3-polish.test.py",
+    "exit": 0,
+    "seconds": 82.45
+  },
+  {
+    "test": "release-provenance.test.py",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "remote-engine-consent.test.py",
+    "exit": 0,
+    "seconds": 3.1
+  },
+  {
+    "test": "runtime-reliability.test.py",
+    "exit": 0,
+    "seconds": 27.51
+  },
+  {
+    "test": "settings-panel-fit-1.0.7.test.py",
+    "exit": 0,
+    "seconds": 0.92
+  },
+  {
+    "test": "settings-theme-toggle.test.py",
+    "exit": 0,
+    "seconds": 32.47
+  },
+  {
+    "test": "signature-warning.test.py",
+    "exit": 0,
+    "seconds": 2.39
+  },
+  {
+    "test": "smart-compression-integration.test.py",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "split-interactive-ui.test.py",
+    "exit": 0,
+    "seconds": 0.37
+  },
+  {
+    "test": "stable-release-1.0.test.py",
+    "exit": 0,
+    "seconds": 3.67
+  },
+  {
+    "test": "static-site-validation.test.py",
+    "exit": 0,
+    "seconds": 1.48
+  },
+  {
+    "test": "tool-quality-1.2.0.test.py",
+    "exit": 0,
+    "seconds": 0.87
+  },
+  {
+    "test": "ux-editor-modernization.test.py",
+    "exit": 0,
+    "seconds": 17.07
+  },
+  {
+    "test": "ux_interaction.test.py",
+    "exit": 0,
+    "seconds": 2.53
+  },
+  {
+    "test": "version-sync-1.1.1.test.py",
+    "exit": 0,
+    "seconds": 0.16
+  },
+  {
+    "test": "workflow-governance.test.py",
+    "exit": 0,
+    "seconds": 0.21
+  },
+  {
+    "test": "workflow-supply-chain.test.py",
+    "exit": 0,
+    "seconds": 0.16
+  },
+  {
+    "test": "workspace-compact-panels-1.2.3.test.py",
+    "exit": 0,
+    "seconds": 1.07
+  },
+  {
+    "test": "workspace-completion-actions-2.0.6.test.py",
+    "exit": 0,
+    "seconds": 2.99
+  },
+  {
+    "test": "workspace-fixed-settings-2.0.5.test.py",
+    "exit": 0,
+    "seconds": 1.68
+  },
+  {
+    "test": "workspace-visual-fixes-1.2.2.test.py",
+    "exit": 0,
+    "seconds": 0.82
+  },
+  {
+    "test": "static_integrity",
+    "exit": 0,
+    "seconds": 0.42
+  }
+]

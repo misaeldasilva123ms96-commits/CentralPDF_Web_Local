@@ -1,0 +1,110 @@
+[
+  {
+    "browser": "chromium",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "modes": [
+      "simple",
+      "advanced"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "ok": true,
+    "pageErrors": [],
+    "touch": true
+  },
+  {
+    "browser": "chromium",
+    "viewport": [
+      768,
+      1024
+    ],
+    "modes": [
+      "simple",
+      "advanced"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "ok": true,
+    "pageErrors": [],
+    "touch": true
+  },
+  {
+    "browser": "chromium",
+    "viewport": [
+      390,
+      844
+    ],
+    "modes": [
+      "simple",
+      "advanced"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "ok": true,
+    "pageErrors": [],
+    "touch": true
+  },
+  {
+    "browser": "firefox",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "modes": [
+      "simple",
+      "advanced"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "ok": true,
+    "pageErrors": [],
+    "touch": false
+  },
+  {
+    "browser": "firefox",
+    "viewport": [
+      768,
+      1024
+    ],
+    "modes": [
+      "simple",
+      "advanced"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "ok": true,
+    "pageErrors": [],
+    "touch": false
+  },
+  {
+    "browser": "firefox",
+    "viewport": [
+      390,
+      844
+    ],
+    "modes": [
+      "simple",
+      "advanced"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "ok": true,
+    "pageErrors": [],
+    "touch": false
+  }
+]

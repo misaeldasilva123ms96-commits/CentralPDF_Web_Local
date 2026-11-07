@@ -1,0 +1,653 @@
+{
+  "method": "Chromium 1440x900; 3 alternating independent contexts per source/size/tool; main JS heap after CDP GC excludes native canvas/WASM workers; local loopback; synthetic files; output PDFs reopened",
+  "rows": [
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 3,
+      "repeat": 1,
+      "inputBytes": 1424,
+      "startupMs": 803.9000000059605,
+      "importMs": 636.6999999880791,
+      "exportMs": 56.30000001192093,
+      "mainJsHeapMiB": 5.687042236328125,
+      "outputPages": 3,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 3,
+      "repeat": 1,
+      "inputBytes": 1424,
+      "startupMs": 797,
+      "importMs": 638.6999999880791,
+      "exportMs": 63.400000005960464,
+      "mainJsHeapMiB": 5.700592041015625,
+      "outputPages": 3,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 3,
+      "repeat": 2,
+      "inputBytes": 1424,
+      "startupMs": 751.9000000059605,
+      "importMs": 578.6000000238419,
+      "exportMs": 28.599999994039536,
+      "mainJsHeapMiB": 5.626712799072266,
+      "outputPages": 3,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 3,
+      "repeat": 2,
+      "inputBytes": 1424,
+      "startupMs": 799.4000000059605,
+      "importMs": 615.7999999821186,
+      "exportMs": 33.099999994039536,
+      "mainJsHeapMiB": 5.699710845947266,
+      "outputPages": 3,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 3,
+      "repeat": 3,
+      "inputBytes": 1424,
+      "startupMs": 825,
+      "importMs": 564.3000000119209,
+      "exportMs": 41.70000001788139,
+      "mainJsHeapMiB": 5.6775970458984375,
+      "outputPages": 3,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 3,
+      "repeat": 3,
+      "inputBytes": 1424,
+      "startupMs": 814.6999999880791,
+      "importMs": 691.6999999880791,
+      "exportMs": 46.900000005960464,
+      "mainJsHeapMiB": 5.698650360107422,
+      "outputPages": 3,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 20,
+      "repeat": 1,
+      "inputBytes": 5714,
+      "startupMs": 934.6000000238419,
+      "importMs": 766.9000000059605,
+      "exportMs": 603.5999999940395,
+      "mainJsHeapMiB": 6.062412261962891,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 20,
+      "repeat": 1,
+      "inputBytes": 5714,
+      "startupMs": 893.7000000178814,
+      "importMs": 588,
+      "exportMs": 145.2000000178814,
+      "mainJsHeapMiB": 6.075469970703125,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 20,
+      "repeat": 2,
+      "inputBytes": 5714,
+      "startupMs": 981.9000000059605,
+      "importMs": 515.1999999880791,
+      "exportMs": 145.40000000596046,
+      "mainJsHeapMiB": 6.062648773193359,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 20,
+      "repeat": 2,
+      "inputBytes": 5714,
+      "startupMs": 730.2000000178814,
+      "importMs": 655.2000000178814,
+      "exportMs": 110.5,
+      "mainJsHeapMiB": 6.0780029296875,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 20,
+      "repeat": 3,
+      "inputBytes": 5714,
+      "startupMs": 805.8000000119209,
+      "importMs": 634.3000000119209,
+      "exportMs": 153.59999999403954,
+      "mainJsHeapMiB": 6.064933776855469,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 20,
+      "repeat": 3,
+      "inputBytes": 5714,
+      "startupMs": 907.4000000059605,
+      "importMs": 678.4000000059605,
+      "exportMs": 155.09999999403954,
+      "mainJsHeapMiB": 6.075695037841797,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 80,
+      "repeat": 1,
+      "inputBytes": 21848,
+      "startupMs": 811.3000000119209,
+      "importMs": 721,
+      "exportMs": 438.2999999821186,
+      "mainJsHeapMiB": 6.287376403808594,
+      "outputPages": 80,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 80,
+      "repeat": 1,
+      "inputBytes": 21848,
+      "startupMs": 662.2000000178814,
+      "importMs": 713.2000000178814,
+      "exportMs": 425.59999999403954,
+      "mainJsHeapMiB": 6.414844512939453,
+      "outputPages": 80,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 80,
+      "repeat": 2,
+      "inputBytes": 21848,
+      "startupMs": 841.7999999821186,
+      "importMs": 498.5,
+      "exportMs": 471.69999998807907,
+      "mainJsHeapMiB": 6.284473419189453,
+      "outputPages": 80,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 80,
+      "repeat": 2,
+      "inputBytes": 21848,
+      "startupMs": 762.9000000059605,
+      "importMs": 628,
+      "exportMs": 481.40000000596046,
+      "mainJsHeapMiB": 6.356346130371094,
+      "outputPages": 80,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "editPdf",
+      "size": 80,
+      "repeat": 3,
+      "inputBytes": 21848,
+      "startupMs": 871.1999999880791,
+      "importMs": 626,
+      "exportMs": 432.2999999821186,
+      "mainJsHeapMiB": 6.286186218261719,
+      "outputPages": 80,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "editPdf",
+      "size": 80,
+      "repeat": 3,
+      "inputBytes": 21848,
+      "startupMs": 949.9000000059605,
+      "importMs": 628.0999999940395,
+      "exportMs": 448.2999999821186,
+      "mainJsHeapMiB": 6.410961151123047,
+      "outputPages": 80,
+      "outputDimensions": [
+        [
+          420,
+          595
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 1,
+      "inputBytes": 607202,
+      "startupMs": 908.5,
+      "importMs": 169.60000002384186,
+      "exportMs": 145.59999999403954,
+      "mainJsHeapMiB": 4.172264099121094,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 1,
+      "inputBytes": 607202,
+      "startupMs": 891,
+      "importMs": 158,
+      "exportMs": 101.2999999821186,
+      "mainJsHeapMiB": 4.196910858154297,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 2,
+      "inputBytes": 607202,
+      "startupMs": 800.8000000119209,
+      "importMs": 174.7000000178814,
+      "exportMs": 155.59999999403954,
+      "mainJsHeapMiB": 4.162769317626953,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 2,
+      "inputBytes": 607202,
+      "startupMs": 835.1999999880791,
+      "importMs": 160.40000000596046,
+      "exportMs": 101.60000002384186,
+      "mainJsHeapMiB": 4.196071624755859,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 3,
+      "inputBytes": 607202,
+      "startupMs": 735,
+      "importMs": 233.90000000596046,
+      "exportMs": 85.19999998807907,
+      "mainJsHeapMiB": 4.170398712158203,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 3,
+      "inputBytes": 607202,
+      "startupMs": 790.9000000059605,
+      "importMs": 182.7000000178814,
+      "exportMs": 169.80000001192093,
+      "mainJsHeapMiB": 4.203788757324219,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 5,
+      "repeat": 1,
+      "inputBytes": 3036010,
+      "startupMs": 811.2999999821186,
+      "importMs": 332.09999999403954,
+      "exportMs": 221.09999999403954,
+      "mainJsHeapMiB": 4.293148040771484,
+      "outputPages": 5,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 5,
+      "repeat": 1,
+      "inputBytes": 3036010,
+      "startupMs": 872.4000000059605,
+      "importMs": 311.7000000178814,
+      "exportMs": 217.90000000596046,
+      "mainJsHeapMiB": 4.3307647705078125,
+      "outputPages": 5,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 5,
+      "repeat": 2,
+      "inputBytes": 3036010,
+      "startupMs": 846.0999999940395,
+      "importMs": 331.7999999821186,
+      "exportMs": 183.7999999821186,
+      "mainJsHeapMiB": 4.290126800537109,
+      "outputPages": 5,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 5,
+      "repeat": 2,
+      "inputBytes": 3036010,
+      "startupMs": 608.8000000119209,
+      "importMs": 305.90000000596046,
+      "exportMs": 189.10000002384186,
+      "mainJsHeapMiB": 4.327327728271484,
+      "outputPages": 5,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 5,
+      "repeat": 3,
+      "inputBytes": 3036010,
+      "startupMs": 796.0999999940395,
+      "importMs": 306.59999999403954,
+      "exportMs": 203,
+      "mainJsHeapMiB": 4.286781311035156,
+      "outputPages": 5,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 5,
+      "repeat": 3,
+      "inputBytes": 3036010,
+      "startupMs": 846,
+      "importMs": 281.09999999403954,
+      "exportMs": 196.2999999821186,
+      "mainJsHeapMiB": 4.332405090332031,
+      "outputPages": 5,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 1,
+      "inputBytes": 12144040,
+      "startupMs": 899,
+      "importMs": 807.7999999821186,
+      "exportMs": 362.2999999821186,
+      "mainJsHeapMiB": 4.474784851074219,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 1,
+      "inputBytes": 12144040,
+      "startupMs": 875.1999999880791,
+      "importMs": 791.8000000119209,
+      "exportMs": 427.80000001192093,
+      "mainJsHeapMiB": 4.583858489990234,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 2,
+      "inputBytes": 12144040,
+      "startupMs": 698.9000000059605,
+      "importMs": 791.4000000059605,
+      "exportMs": 360.90000000596046,
+      "mainJsHeapMiB": 4.4704742431640625,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 2,
+      "inputBytes": 12144040,
+      "startupMs": 849.6000000238419,
+      "importMs": 792.5,
+      "exportMs": 411.90000000596046,
+      "mainJsHeapMiB": 4.53363037109375,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 3,
+      "inputBytes": 12144040,
+      "startupMs": 845.5999999940395,
+      "importMs": 811.5999999940395,
+      "exportMs": 357.40000000596046,
+      "mainJsHeapMiB": 4.4702606201171875,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 3,
+      "inputBytes": 12144040,
+      "startupMs": 766.6999999880791,
+      "importMs": 844.1000000238419,
+      "exportMs": 431,
+      "mainJsHeapMiB": 4.5334930419921875,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ]
+    }
+  ]
+}

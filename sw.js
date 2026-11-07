@@ -1,9 +1,10 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v3.0.0-pages-56';
+const CACHE_VERSION = 'centralpdf-v3.0.0-pages-57';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
+  './assets/js/ux-tool-settings.js?v=1',
   './assets/css/ux-simple.css?v=1', './assets/js/ux-simple.js?v=1',
   './assets/js/pdf-open-access.js?v=1', './assets/js/pdf-open-access-worker.js?v=1',
   './vendor/qpdf/qpdf.js', './vendor/qpdf/qpdf.wasm', './vendor/qpdf/LICENSE', './vendor/qpdf/NOTICE.txt', './vendor/qpdf/QPDF-LICENSE-APACHE-2.0.txt',
