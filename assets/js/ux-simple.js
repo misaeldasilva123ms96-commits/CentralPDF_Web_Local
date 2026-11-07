@@ -94,7 +94,9 @@
       const alignment=$('#imageAlign').value;
       const top=alignment==='top'?margin:alignment==='bottom'?h-margin-dh:(h-dh)/2;
       paper.style.aspectRatio=`${w} / ${h}`;
-      paper.style.maxWidth=`${Math.min(320,320*w/h)}px`;
+      // Fit the complete paper inside the available cover, including the
+      // existing thumbnail-size preference and compact mobile padding.
+      paper.style.maxWidth=`min(100%, calc(var(--ux-paper-space, 310px) * ${w/h}))`;
       paper.style.background=$('#imageBackground').value;
       paper.dataset.width=String(w);paper.dataset.height=String(h);
       Object.assign(image.style,{left:`${100*(w-dw)/2/w}%`,top:`${100*top/h}%`,width:`${100*dw/w}%`,height:`${100*dh/h}%`});
