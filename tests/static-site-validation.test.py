@@ -26,6 +26,6 @@ class StaticPackage(unittest.TestCase):
     def test_missing_script(self):self.corrupt('index.html',lambda s:s.replace('assets/js/app.js?', 'assets/js/missing-audit.js?'),'missing-audit.js')
     def test_missing_css_image(self):self.corrupt('assets/css/styles.css',lambda s:s+'\n.audit { background:url(missing-audit.png) }','missing-audit.png')
     def test_outside_package(self):self.corrupt('index.html',lambda s:s.replace('assets/js/app.js?','../private.js?'),'outside package')
-    def test_mismatched_cache_revision(self):self.corrupt('sw.js',lambda s:s.replace('pdf-editor.js?v=3.0.0-editor6','pdf-editor.js?v=obsolete'),'inconsistent asset revisions')
+    def test_mismatched_cache_revision(self):self.corrupt('sw.js',lambda s:s.replace('pdf-editor.js?v=3.0.0-ux-simple1','pdf-editor.js?v=obsolete'),'inconsistent asset revisions')
     def test_missing_worker_manifest(self):self.corrupt('vendor/pdfjs-manifest.js',lambda s:'self.CentralPDFPdfJsAssets=Object.freeze(["./vendor/pdfjs/missing-worker.mjs"]);','missing-worker.mjs')
 if __name__=='__main__':unittest.main()

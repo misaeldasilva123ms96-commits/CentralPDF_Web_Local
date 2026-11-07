@@ -1,0 +1,75 @@
+/* Workspaces only; keep the Central PDF palette and native document colors. */
+body[data-design='3'] {
+ --ux-surface:var(--cd-sf); --ux-canvas:var(--cd-bg); --ux-text:var(--cd-tx);
+ --ux-muted:var(--cd-mu); --ux-border:var(--cd-bd); --ux-primary:var(--cd-ac);
+ --ux-radius:14px; --ux-gap:12px; --ux-danger:#db5267;
+}
+body[data-design='3'][data-workspace-open='true'] .workspace {grid-template-columns:minmax(0,1fr) 330px}
+body[data-design='3'][data-workspace-open='true'] .main-panel {padding:22px 28px 80px}
+body[data-design='3'][data-workspace-open='true'] .panel-heading {margin-block:12px}
+body[data-design='3'][data-workspace-open='true'] #operationTitle {font-size:clamp(24px,2.4vw,32px);line-height:1.2}
+body[data-design='3'][data-workspace-open='true'] #operationDescription {font-size:13px;max-width:76ch;margin-top:8px}
+body[data-design='3'][data-workspace-open='true'] .tool-experience-strip {gap:16px;margin-block:14px}
+body[data-design='3'][data-workspace-open='true'] .tool-experience-strip article {padding:6px 0;border:0;background:transparent!important;box-shadow:none}
+body[data-design='3'][data-workspace-open='true'] .tool-experience-strip .experience-icon {width:28px;height:28px;border-radius:8px}
+body[data-design='3'][data-workspace-open='true'] .tool-guide {margin-bottom:14px}
+body[data-design='3'][data-workspace-open='true'] .settings-heading {padding:18px}
+body[data-design='3'][data-workspace-open='true'] #settingsContent {padding:16px 18px}
+body[data-design='3'][data-workspace-open='true'] .settings-panel .field {margin-bottom:12px}
+body[data-design='3'][data-workspace-open='true'] .settings-panel :is(input:not([type='checkbox']),select) {min-height:40px;border-radius:10px}
+body[data-design='3'][data-workspace-open='true'] .settings-panel :is(.notice-card,.conversion-engine-banner,.intelligence-banner) {padding:12px;border-radius:12px;font-size:12px}
+.ux-advanced {margin-block:14px;border:1px solid var(--ux-border);border-radius:var(--ux-radius);background:var(--ux-surface);color:var(--ux-text)}
+.ux-advanced>summary {cursor:pointer;font-size:12px;font-weight:700;padding:14px;min-height:44px;box-sizing:border-box}
+.ux-advanced-body {padding:0 12px 4px}
+.ux-advanced-body>.field-row:empty {display:none}
+.ux-choices {display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;padding:0;border:0;min-width:0}
+.ux-choices legend {font-size:12px;font-weight:700;padding:0 0 8px;color:var(--ux-text)}
+.ux-choices button {flex:1;min-width:68px;min-height:44px;padding:8px;border:1px solid var(--ux-border);border-radius:10px;background:var(--cd-alt);color:var(--ux-text);font-family:inherit;font-size:11px;font-weight:600;line-height:1.3;cursor:pointer}
+.ux-choices button[aria-pressed='true'] {border-color:#8b75f6;background:color-mix(in srgb,#7953e8 16%,var(--ux-surface));color:var(--ux-text);box-shadow:inset 0 0 0 1px #8b75f6}
+.ux-choices button:hover {border-color:#8b75f6}
+.ux-combine {align-items:flex-start;font-size:12px;line-height:1.5;min-height:44px}
+.ux-combine input {margin-top:3px;flex:none}
+.ux-output-summary {font-size:12px;line-height:1.5;color:var(--ux-muted)}
+body[data-active-tool='imagesToPdf'] #fileList.file-card-grid {display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,calc(var(--cover-card-width,190px) + 80px)),1fr));gap:18px}
+body[data-active-tool='imagesToPdf'] .file-card {max-width:calc(var(--cover-card-width,190px) + 160px);width:100%;justify-self:center}
+body[data-active-tool='imagesToPdf'] .file-card-cover {height:calc(var(--cover-card-width,190px) + 170px);display:flex;align-items:center;justify-content:center;background:var(--cd-alt)!important;padding:24px;overflow:hidden;box-sizing:border-box}
+.ux-image-paper {display:block;position:relative;width:100%;overflow:hidden;flex:none;box-shadow:0 3px 14px #0002}
+body[data-active-tool='imagesToPdf'] .ux-image-paper img.file-cover-image {position:absolute;max-width:none;max-height:none;object-fit:fill;border-radius:0;margin:0;transform:none}
+body[data-active-tool='imagesToPdf'] .file-card-cover .floating {top:8px;left:8px}
+body[data-active-tool='imagesToPdf'] .file-card-actions {gap:6px;flex-wrap:wrap}
+/* Compact contextual editor: one text field, type controls, styles, More options. */
+body[data-design='3'] .editor-context-controls {padding:10px 12px;border-radius:16px;background:var(--ux-surface)!important;color:var(--ux-text);border-color:var(--ux-border)}
+body[data-design='3'] .editor-context-heading,body[data-design='3'] .editor-context-actions {background:var(--ux-surface)!important}
+body[data-design='3'] .editor-context-controls #editorTextControlsPanel:not(.hidden) {grid-template-columns:minmax(0,1fr) 72px 64px;gap:8px}
+body[data-design='3'] .editor-context-controls #editorTextControlsPanel .field:has(#editorFontFamily) {grid-column:auto}
+body[data-design='3'] .editor-context-controls #editorTextControlsPanel>.field:first-child {grid-column:1/-1}
+body[data-design='3'] .editor-context-controls .editor-inline-options {grid-column:1/3;display:flex;gap:8px}
+body[data-design='3'] .editor-context-controls .editor-inline-options label {flex:1;min-height:36px;justify-content:center;border:1px solid var(--ux-border);border-radius:8px;padding:4px;font-size:12px}
+body[data-design='3'] .editor-context-controls :is(input:not([type='checkbox']),select) {height:36px;min-height:36px}
+body[data-design='3'] .editor-context-controls textarea {min-height:44px;max-height:72px}
+body[data-design='3'] .editor-context-controls #editorObjectSizePanel {max-height:22dvh;overflow:auto}
+body[data-design='3'] .editor-context-controls #editorObjectSizePanel>summary {min-height:40px;align-content:center;position:sticky;top:0;background:var(--ux-surface);z-index:1}
+body[data-design='3'] .editor-context-controls .editor-context-actions {justify-content:space-between}
+body[data-design='3'] .editor-context-controls .small-button {min-height:36px}
+body[data-design='3'] #editorContextDone {background:var(--cd-ac);color:#fff;min-height:40px;padding-inline:16px}
+body[data-design='3'] .editor-context-controls :focus-visible,body[data-design='3'] .ux-choices button:focus-visible,body[data-design='3'] .ux-advanced summary:focus-visible {outline:3px solid #a797ff;outline-offset:2px}
+@media(max-width:980px) {
+ body[data-design='3'][data-workspace-open='true'] .workspace {display:block}
+ body[data-design='3'][data-workspace-open='true'] .settings-panel {position:static!important;max-height:none;height:auto;overflow:visible}
+ body[data-design='3'][data-workspace-open='true'] .main-panel {padding:16px 16px 24px}
+ body[data-design='3'][data-workspace-open='true'] .action-dock {position:static}
+ body[data-design='3'][data-workspace-open='true'] .tool-experience-strip {gap:8px}
+ body[data-design='3'][data-workspace-open='true'] .tool-experience-strip strong {font-size:10px}
+ body[data-design='3'] .editor-context-controls .small-button,body[data-design='3'] .editor-context-controls .toggle-row {min-height:44px}
+}
+@media(max-width:400px) {
+ body[data-design='3'] .editor-context-controls {padding:8px}
+ body[data-design='3'] .editor-context-controls #editorTextControlsPanel:not(.hidden) {grid-template-columns:minmax(0,1fr) 60px 52px;gap:6px}
+ body[data-design='3'] .editor-context-controls label {font-size:10px}
+ body[data-active-tool='imagesToPdf'] .file-card-cover {height:310px;padding:20px}
+}
+@media(prefers-reduced-motion:reduce) {
+ .ux-choices button,.editor-context-controls {transition:none;animation:none}
+}
+
+body[data-design='3'].settings-collapsed[data-workspace-open='true'] .workspace {grid-template-columns:minmax(0,1fr)}

@@ -22,6 +22,7 @@
     activeTool: 'select',
     mode: 'simple',
     selectedObjectId: null,
+    pointerSelectionId: null,
     zoom: 100,
     scale: 1,
     history: [],
@@ -506,6 +507,7 @@
     clearNativePanel();
     if($('#editorNativeLayer'))$('#editorNativeLayer').hidden=true;
     state.pendingGesture = null;
+    state.pointerSelectionId = null;
     state.currentRenderGeneration += 1;
     state.thumbnailRenderGeneration++;state.thumbnailObserver?.disconnect();state.thumbnailQueue=[];
     try {state.thumbnailTask?.cancel();}catch(_){}
@@ -960,7 +962,14 @@
       element.style.transformOrigin = 'center center';
       element.classList.toggle('selected', state.selectedObjectId === object.id);
       element.addEventListener('pointerdown', event => startObjectDrag(event, object));
-      element.addEventListener('click', event => { event.stopPropagation(); selectObject(object.id); });
+      element.addEventListener('click', event => {
+        event.stopPropagation();
+        // A properties panel can reflow the page between touch down and the
+        // compatibility click. Honor the object that began this gesture.
+        const id=event.detail>0&&state.pointerSelectionId ? state.pointerSelectionId : object.id;
+        state.pointerSelectionId=null;
+        selectObject(id);
+      });
       if (state.selectedObjectId === object.id) appendTransformControls(element, object);
       layer.appendChild(element);
     });
@@ -1193,7 +1202,9 @@
 
   function startObjectDrag(event, object) {
     if (state.activeTool !== 'select' || event.target.closest('.editor-transform-handle, .editor-rotate-handle') || event.target.closest('[contenteditable="true"]')) return;
-    event.preventDefault(); event.stopPropagation(); selectObject(object.id);
+    event.preventDefault(); event.stopPropagation();
+    state.pointerSelectionId=object.id;
+    selectObject(object.id);
     const start = { x:event.clientX, y:event.clientY, ox:object.x, oy:object.y };
     let moved=false;
     const move = moveEvent => {
@@ -1316,7 +1327,7 @@
     const visibleBottom=Math.min(window.innerHeight,(window.visualViewport?.height||window.innerHeight)+(window.visualViewport?.offsetTop||0));
     const selection=$('#editorObjectLayer .editor-object.selected')?.getBoundingClientRect();
     dock.classList.toggle('outside-editor',section.bottom<80||(selection?area.top>visibleBottom-100:section.top>visibleBottom-80));
-    const width=Math.max(0,Math.min(760,area.width-24,window.innerWidth-24));
+    const width=Math.max(0,Math.min(400,area.width-24,window.innerWidth-24));
     dock.style.width=`${width}px`;
     dock.style.left=`${Math.max(12,Math.min(area.left+(area.width-width)/2,window.innerWidth-width-12))}px`;
     const topLimit=selection?Math.max(80,area.top)+12:80;
@@ -1325,6 +1336,16 @@
     const aboveSpace=aboveEnd-topLimit,belowSpace=visibleBottom-belowStart-12;
     const above=Boolean(selection&&aboveSpace>belowSpace);
     dock.style.bottom=`${window.innerHeight-(above?aboveEnd:visibleBottom-12)}px`;
+    // Prefer a side anchor when it leaves the selected object fully visible.
+    const rightLimit=Math.min(area.right,window.innerWidth-12),leftLimit=Math.max(12,area.left);
+    if(selection && (rightLimit-selection.right-12>=width || selection.left-leftLimit-12>=width)) {
+      dock.style.left=`${rightLimit-selection.right-12>=width ? selection.right+12 : selection.left-width-12}px`;
+      dock.style.maxHeight=`${Math.max(100,Math.min(visibleBottom*.52,visibleBottom-Math.max(80,area.top)-24))}px`;
+      const height=dock.getBoundingClientRect().height;
+      const top=Math.max(80,Math.min(selection.top,visibleBottom-height-12));
+      dock.style.bottom=`${window.innerHeight-top-height}px`;
+      return;
+    }
     // Keep the selection and document toolbar reachable, including a double click.
     dock.style.maxHeight=`${Math.max(100,Math.min(visibleBottom*.52,above?aboveSpace:belowSpace))}px`;
   }
@@ -1505,6 +1526,9 @@
       object.bold = Boolean($('#editorBold')?.checked); object.italic = Boolean($('#editorItalic')?.checked);
       object.align = $('#editorTextAlign')?.value || 'left';
       fitTextBoxHeight(object);clampObjectInsidePage(object);
+      // Keep precision fields current when text grows; changing X/Y must not
+      // restore a stale height and truncate later lines during export.
+      updateInspectorTransformFields(object);
       renderCurrentPage();
     } else if (object.type === 'cover') {
       checkpoint(); object.color = $('#editorCoverColor')?.value || '#ffffff'; object.opacity = Number($('#editorCoverOpacity')?.value || 100)/100; renderCurrentPage();
