@@ -89,3 +89,5 @@ body[data-design='3'].density-compact[data-workspace-open='true'] .tool-guide {m
 .ux-choices button[data-setting='imageOrientation'][data-value='portrait']::before,
 .ux-choices button[data-setting='imageOrientation'][data-value='landscape']::before {content:'';display:inline-block;width:10px;height:14px;border:1.5px solid currentColor;border-radius:2px;margin-right:6px;vertical-align:-2px}
 .ux-choices button[data-setting='imageOrientation'][data-value='landscape']::before {width:14px;height:10px;vertical-align:0}
+/* Opacity belongs to text; image/cover precision keeps its original controls. */
+#editorSelectionPanel:has(#editorTextControlsPanel.hidden) .field:has(#editorTextOpacity) {display:none}
