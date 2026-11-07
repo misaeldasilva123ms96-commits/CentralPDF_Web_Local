@@ -30,7 +30,7 @@ body[data-design='3'][data-workspace-open='true'] .settings-panel :is(.notice-ca
 .ux-combine {align-items:flex-start;font-size:12px;line-height:1.5;min-height:44px}
 .ux-combine input {margin-top:3px;flex:none}
 .ux-output-summary {font-size:12px;line-height:1.5;color:var(--ux-muted)}
-body[data-active-tool='imagesToPdf'] #fileList.file-card-grid {display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,calc(var(--cover-card-width,190px) + 80px)),1fr));gap:18px}
+body[data-active-tool='imagesToPdf'] #fileList.file-card-grid {--ux-paper-space:calc(var(--cover-card-width,190px) + 120px);display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,calc(var(--cover-card-width,190px) + 80px)),1fr));gap:18px}
 body[data-active-tool='imagesToPdf'] .file-card {max-width:calc(var(--cover-card-width,190px) + 160px);width:100%;justify-self:center}
 body[data-active-tool='imagesToPdf'] .file-card-cover {height:calc(var(--cover-card-width,190px) + 170px);display:flex;align-items:center;justify-content:center;background:var(--cd-alt)!important;padding:24px;overflow:hidden;box-sizing:border-box}
 .ux-image-paper {display:block;position:relative;width:100%;overflow:hidden;flex:none;box-shadow:0 3px 14px #0002}
@@ -66,6 +66,7 @@ body[data-design='3'] .editor-context-controls :focus-visible,body[data-design='
  body[data-design='3'] .editor-context-controls {padding:8px}
  body[data-design='3'] .editor-context-controls #editorTextControlsPanel:not(.hidden) {grid-template-columns:minmax(0,1fr) 60px 76px;gap:6px}
  body[data-design='3'] .editor-context-controls label {font-size:10px}
+ body[data-active-tool='imagesToPdf'] #fileList.file-card-grid {--ux-paper-space:268px}
  body[data-active-tool='imagesToPdf'] .file-card-cover {height:310px;padding:20px}
 }
 @media(prefers-reduced-motion:reduce) {

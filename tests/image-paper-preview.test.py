@@ -15,6 +15,18 @@ try:
    page.wait_for_selector('.ux-image-paper img')
    alpha=page.locator('.ux-image-paper img').evaluate("img=>{const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const x=c.getContext('2d');x.drawImage(img,0,0);return x.getImageData(1,1,1,1).data[3];}")
    assert alpha==0,(engine,'Transparent source was flattened in the preview',alpha)
+   # The paper must fit its cover at both ends of the existing thumbnail slider.
+   page.locator('#imagePageMode').select_option('a4')
+   page.locator('[data-setting="imageOrientation"][data-value="portrait"]').click()
+   for width in [1440,390]:
+    page.set_viewport_size({'width':width,'height':900})
+    for key in ['Home','End']:
+     page.locator('#coverZoom').focus();page.keyboard.press(key)
+     page.wait_for_selector('.ux-image-paper')
+     fit=page.locator('.ux-image-paper').evaluate("p=>{const a=p.getBoundingClientRect(),c=p.closest('.file-card-cover'),r=c.getBoundingClientRect(),s=getComputedStyle(c);return {top:a.top,bottom:a.bottom,left:a.left,right:a.right,ct:r.top+parseFloat(s.paddingTop),cb:r.bottom-parseFloat(s.paddingBottom),cl:r.left+parseFloat(s.paddingLeft),cr:r.right-parseFloat(s.paddingRight)};}")
+     assert fit['top']>=fit['ct']-1 and fit['bottom']<=fit['cb']+1 and fit['left']>=fit['cl']-1 and fit['right']<=fit['cr']+1,(engine,width,key,fit)
+   page.set_viewport_size({'width':1440,'height':900})
+   page.locator('#imagePageMode').select_option('image');page.locator('[data-setting="imageOrientation"][data-value="auto"]').click()
    page.locator('[data-setting="imageMargin"][data-value="0"]').click();page.get_by_role('button',name='Personalizada',exact=True).click()
    page.locator('#imageBackground').evaluate("e=>{e.value='#334455';e.dispatchEvent(new Event('change',{bubbles:true}));}")
    assert page.locator('.ux-image-paper').evaluate('p=>getComputedStyle(p).backgroundColor')=='rgb(51, 68, 85)'
