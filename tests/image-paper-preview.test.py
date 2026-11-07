@@ -1,5 +1,7 @@
 """PNG alpha stays visible over the selected paper background, including export."""
 from pathlib import Path
+from io import BytesIO
+from PIL import Image
 from functools import partial
 from http.server import ThreadingHTTPServer
 from threading import Thread
@@ -30,6 +32,9 @@ try:
    page.locator('[data-setting="imageMargin"][data-value="0"]').click();page.get_by_role('button',name='Personalizada',exact=True).click()
    page.locator('#imageBackground').evaluate("e=>{e.value='#334455';e.dispatchEvent(new Event('change',{bubbles:true}));}")
    assert page.locator('.ux-image-paper').evaluate('p=>getComputedStyle(p).backgroundColor')=='rgb(51, 68, 85)'
+   # Check actual CSS compositing, not just source alpha and the parent separately.
+   rendered=Image.open(BytesIO(page.locator('.ux-image-paper img').screenshot())).convert('RGB')
+   assert rendered.getpixel((2,2))==(51,68,85),(engine,'Transparent preview corner covers the selected paper color',rendered.getpixel((2,2)))
    page.locator('#processButton').click();page.wait_for_function('alphaOutputs.length===1')
    pixel=page.evaluate("""async()=>{const t=pdfjsLib.getDocument({data:new Uint8Array(await alphaOutputs[0].blob.arrayBuffer())});try{const d=await t.promise;const p=await d.getPage(1),v=p.getViewport({scale:1}),c=document.createElement('canvas');c.width=v.width;c.height=v.height;const x=c.getContext('2d');await p.render({canvasContext:x,viewport:v}).promise;return [...x.getImageData(1,1,1,1).data];}finally{await t.destroy();}}""")
    assert pixel==[51,68,85,255],(engine,pixel)

@@ -134,3 +134,7 @@ cd server && go test ./... && go vet ./...
 ```
 
 A suíte integral da raiz segue os comandos de CONTRIBUTING.md/CI. Não executar apenas estes casos focados como substituto de toda a CI.
+
+### Revisão antes do merge — PNG transparente
+
+A revisão automática da PR #89 identificou um fundo branco herdado em `img.file-cover-image`, sobrepondo a cor do papel apenas na prévia. A regra foi limitada à prévia de imagens e corrigida para `background: transparent`, sem alterar a exportação. O teste agora mede o pixel da captura renderizada do elemento, além do alfa do bitmap e do PDF exportado. Antes da correção, o pixel era `(255, 255, 255)` e o teste falhou; após a correção, deve coincidir com o papel `(51, 68, 85)` em Chromium e Firefox. A revisão da referência CSS passou a `v=2` no HTML e no service worker. As capturas e matrizes anteriores continuam sendo evidência do checkpoint aprovado; esta correção adicional tem sua própria evidência de regressão.

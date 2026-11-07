@@ -3,11 +3,11 @@
   "sourceFiles": [
     {
       "path": "index.html",
-      "sha256": "049811713803198d83dc8e10009c6c9bf036b12760af961601cbd8fa6220fb8f"
+      "sha256": "2eadd776520ec220c4b2ec0614677dfdf1975afe695d4cbe3838afcc14de7192"
     },
     {
       "path": "sw.js",
-      "sha256": "ef5ec8f47da24b01fb40e46b30e5f2750ba13d7b2aeccfdc2e4d26ad8637b2a2"
+      "sha256": "bbbf9324a3448cbf8724a54faa0e8462aa692f9a424ef11684ca787dd7162b9b"
     },
     {
       "path": "assets/js/admin-bridge.js",
@@ -271,7 +271,7 @@
     },
     {
       "path": "assets/css/ux-simple.css",
-      "sha256": "bb6f426735deb421956d7ba4ee7bca028ce1e71c333e8752d0cfd94f4d5c5098"
+      "sha256": "e1276c10426fdfd0ebc9ed6d5f35a372f645e9df81e699bd7c55d04eaf5b9de3"
     },
     {
       "path": "assets/css/workspace-modernization.css",
