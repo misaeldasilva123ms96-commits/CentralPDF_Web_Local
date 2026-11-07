@@ -1,0 +1,8 @@
+CENTRAL PDF 3.0 — PREVIA VISUAL
+
+Extraia este ZIP e abra CentralPDF_3_0_Previa.html no navegador.
+Selecione a ferramenta, o tema e computador/celular no topo.
+
+Este arquivo mostra capturas reais da interface; nao converte documentos.
+O aplicativo funcional esta nas PRs #89 e #90 do repositorio CentralPDF_Web_Local.
+Nenhuma alteracao foi integrada ou publicada em producao.
