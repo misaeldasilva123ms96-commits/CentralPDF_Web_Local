@@ -182,6 +182,7 @@ try:
                 page.locator('#editorDuplicateObject').tap()
                 assert page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects.length')==3
                 page.locator('#editorObjectSizePanel summary').tap()
+                assert page.locator('#editorTextOpacity').is_hidden(), 'Text-only opacity must not appear as a disabled image action'
                 page.locator('#editorObjectWidth').fill('120')
                 page.locator('#editorObjectWidth').dispatch_event('change')
                 objects=page.evaluate('PDFVisualEditor.exportProjectState().pages[0].objects')

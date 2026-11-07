@@ -51,6 +51,7 @@ with sync_playwright() as p:
    await_restore=page.evaluate('''async()=>{const saved=await CentralPDFApp.exportProjectState();const files=new Map(saved.files.map(({id,file})=>[id,new File([file],file.name,{type:file.type,lastModified:file.lastModified})]));await CentralPDFApp.importProjectState(JSON.parse(JSON.stringify(saved.snapshot)),files);return saved.snapshot.imageRotations.map(i=>i.angle);}''')
    assert await_restore==[270,90]
    assert page.locator('.file-card output').all_text_contents()==['270°','90°']
+   page.get_by_role('button',name='Personalizada',exact=True).click()
    page.locator('#imageMargin').fill('0');page.locator('#outputFileName').fill('Imagens com rotação')
    directory=os.environ.get('CENTRALPDF_QA_SCREENSHOTS')
    if directory:
@@ -90,7 +91,7 @@ with sync_playwright() as p:
       const exif=new Uint8Array([255,225,0,34,69,120,105,102,0,0,73,73,42,0,8,0,0,0,1,0,18,1,3,0,1,0,0,0,orientation,0,0,0,0,0,0,0]);
       await CentralPDFApp.addFiles([new File([jpeg.slice(0,2),exif,jpeg.slice(2)],'Foto celular.jpg',{type:'image/jpeg'})]);
      }''',orientation)
-     page.wait_for_function('CentralPDFApp.getFiles().length===1');page.locator('#imageMargin').fill('0')
+     page.wait_for_function('CentralPDFApp.getFiles().length===1');page.get_by_role('button',name='Personalizada',exact=True).click();page.locator('#imageMargin').fill('0')
      with page.expect_download() as download:page.locator('#processButton').click()
      result=page.evaluate(RENDER,list(Path(download.value.path()).read_bytes()))[0]
      assert (round(result['w']),round(result['h']))==((80,120) if orientation==6 else (120,80)),result
@@ -115,6 +116,8 @@ with sync_playwright() as p:
    }""")
    page.locator('#continueEditingButton').click()
    page.evaluate("async()=>{CentralPDFApp.selectTool('imagesToPdf');await CentralPDFApp.addFiles([qaImages[0]]);}")
+   # Native disclosure is opened synchronously while the completion RAF is held.
+   page.locator('#imageAdvanced').evaluate('el=>el.open=true')
    page.locator('#imageMargin').select_text()
    page.evaluate("""()=>{
     window.requestAnimationFrame=qaOriginalRaf;

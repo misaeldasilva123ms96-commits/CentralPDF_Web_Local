@@ -38,13 +38,14 @@
             </div>
             <div class="field-row">
               <div class="field"><label for="editorTextColor">Cor do texto</label><input id="editorTextColor" data-editor-text-control type="color" value="#202735" /></div>
-              <div class="field"><label for="editorTextOpacity">Opacidade (%)</label><input id="editorTextOpacity" data-editor-text-control type="number" min="5" max="100" value="100" /></div>
+
             </div>
             <div class="field-row editor-inline-options"><label class="toggle-row compact"><input id="editorBold" data-editor-text-control type="checkbox" /><span>Negrito</span></label><label class="toggle-row compact"><input id="editorItalic" data-editor-text-control type="checkbox" /><span>Itálico</span></label></div>
             <div class="field"><label for="editorTextAlign">Alinhamento</label><select id="editorTextAlign" data-editor-text-control><option value="left">Esquerda</option><option value="center">Centralizado</option><option value="right">Direita</option></select></div>
           </div>
           <details id="editorObjectSizePanel" class="editor-object-size-panel hidden">
-            <summary>Posição, tamanho e camadas</summary>
+            <summary>Mais opções · posição e camadas</summary>
+            <div class="field"><label for="editorTextOpacity">Opacidade (%)</label><input id="editorTextOpacity" data-editor-text-control type="number" min="5" max="100" value="100" /></div>
             <p class="field-hint">Valores em pontos do PDF.</p>
             <div class="field-row">
               <div class="field"><label for="editorObjectX">Posição X</label><input id="editorObjectX" type="number" min="0" step="1" /></div>
@@ -1584,8 +1585,9 @@
     const cover = card.querySelector('.file-card-cover');
     cover.classList.remove('loading');
     cover.innerHTML = preview.dataUrl
-      ? `<img src="${preview.dataUrl}" alt="Capa de ${escapeHtml(file.name)}" class="file-cover-image" draggable="false" /><div class="file-cover-badge floating">${escapeHtml(extension)}</div><span class="cover-expand-hint">Ampliar</span>`
+      ? `<img src="${preview.dataUrl}" alt="Capa de ${escapeHtml(file.name)}" class="file-cover-image" data-source-width="${preview.width || 0}" data-source-height="${preview.height || 0}" draggable="false" /><div class="file-cover-badge floating">${escapeHtml(extension)}</div><span class="cover-expand-hint">Ampliar</span>`
       : `<div class="file-cover-placeholder"><div class="file-cover-badge">${escapeHtml(extension)}</div><strong>${escapeHtml(extension)}</strong><span>Prévia indisponível</span></div>`;
+    cover.dispatchEvent(new Event('centralpdf-preview-ready', { bubbles: true }));
     const pages = card.querySelector('.file-page-count');
     pages.textContent = preview.pageCount ? `${preview.pageCount} ${preview.pageCount === 1 ? 'página' : 'páginas'}` : file.type.startsWith('image/') ? 'Imagem' : 'Documento';
   }
@@ -1614,19 +1616,23 @@
   async function buildImageCoverData(file, extension, rotation = 0) {
     const bitmap = await createImageBitmap(file);
     try {
-      const scale = Math.min(220 / bitmap.width, 290 / bitmap.height, 1);
+      const previewLimit = state.tool === 'imagesToPdf' ? 480 : 220;
+      const scale = Math.min(previewLimit / bitmap.width, (state.tool === 'imagesToPdf' ? 480 : 290) / bitmap.height, 1);
       const width = Math.max(1, Math.round(bitmap.width * scale));
       const height = Math.max(1, Math.round(bitmap.height * scale));
       const canvas = document.createElement('canvas');
       canvas.width = rotation % 180 ? height : width;
       canvas.height = rotation % 180 ? width : height;
       const context = canvas.getContext('2d');
-      context.fillStyle = '#fff';
-      context.fillRect(0, 0, canvas.width, canvas.height);
+      const preserveAlpha = state.tool === 'imagesToPdf' && file.type === 'image/png';
+      if (!preserveAlpha) {
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+      }
       context.translate(canvas.width / 2, canvas.height / 2);
       context.rotate(rotation * Math.PI / 180);
       context.drawImage(bitmap, -width / 2, -height / 2, width, height);
-      return { dataUrl: canvas.toDataURL('image/jpeg', .9), pageCount: null, type: extension };
+      return { dataUrl: canvas.toDataURL(preserveAlpha ? 'image/png' : 'image/jpeg', .9), pageCount: null, type: extension, width: rotation % 180 ? bitmap.height : bitmap.width, height: rotation % 180 ? bitmap.width : bitmap.height };
     } finally {
       bitmap.close();
     }

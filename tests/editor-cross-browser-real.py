@@ -44,7 +44,10 @@ try:
                         assert page.evaluate('PDFVisualEditor.getProjectSummary().objectCount')==1
                         expect(page.locator('.editor-image-object')).to_have_count(1)
                         image=page.locator('.editor-image-object');image.hover();image.click()
-                        assert actions.bounding_box()['y']+actions.bounding_box()['height']<=page.locator('.editor-scroll-area').bounding_box()['y']+1
+                        # One layout snapshot: separate protocol calls can straddle
+                        # the browser's scroll adjustment after opening properties.
+                        geometry=page.evaluate('''()=>{const a=document.querySelector('#editorImageActions').getBoundingClientRect(),s=document.querySelector('.editor-scroll-area').getBoundingClientRect();return {actionsBottom:a.bottom,canvasTop:s.top};}''')
+                        assert geometry['actionsBottom']<=geometry['canvasTop']+1,(name,width,mode,theme,geometry)
                         click(actions.locator(':scope > summary'))
                 # Move and resize through the actual pointer handles, not inspector state.
                 image=page.locator('.editor-image-object');image.hover()

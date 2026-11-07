@@ -1,0 +1,4100 @@
+{
+  "organize": {
+    "config": {
+      "key": "organize",
+      "title": "Organizar PDF",
+      "description": "Edite cada página: reordene, gire, exclua, duplique e adicione páginas de PDFs, imagens ou páginas em branco.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "organizerPreserveMetadata",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_organizado",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Organizar PDF",
+      "description": "Edite cada página: reordene, gire, exclua, duplique e adicione páginas de PDFs, imagens ou páginas em branco.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF",
+      "button": "Salvar PDF organizado",
+      "outputExt": "pdf",
+      "outputBase": "PDF_organizado",
+      "settings": "<div class=\"notice-card\"><strong>Editor completo de páginas</strong><p>Use as ações individuais nas miniaturas ou selecione várias páginas para girar, duplicar, mover e excluir em lote.</p></div><label class=\"toggle-row\"><input id=\"organizerPreserveMetadata\" type=\"checkbox\" checked /><span>Preservar metadados básicos do PDF original</span></label><p class=\"help-text\">As alterações são aplicadas somente ao arquivo baixado. O original permanece intacto.</p>"
+    }
+  },
+  "editPdf": {
+    "config": {
+      "key": "editPdf",
+      "title": "Editar PDF",
+      "description": "Edite visualmente cada página com textos formatados, imagens, pincel, marcador, cobertura de áreas e recorte.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "editorReturnToPage",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Voltar à página",
+        "options": null
+      },
+      {
+        "id": "editorReadOriginal",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Localizar textos da página",
+        "options": null
+      },
+      {
+        "id": "editorNativeSearch",
+        "tag": "INPUT",
+        "type": "search",
+        "value": "",
+        "label": "Buscar no texto original",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_editado",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [
+      {
+        "id": "editorNativePanel",
+        "title": "Editar texto original"
+      },
+      {
+        "id": "editorObjectsPanel",
+        "title": "Objetos adicionados nesta página"
+      }
+    ],
+    "sourceConfig": {
+      "title": "Editar PDF",
+      "description": "Edite visualmente cada página com textos formatados, imagens, pincel, marcador, cobertura de áreas e recorte.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF",
+      "button": "Salvar PDF editado",
+      "outputExt": "pdf",
+      "outputBase": "PDF_editado",
+      "settings": "\n        <button id=\"editorReturnToPage\" class=\"small-button editor-mobile-control\" type=\"button\">Voltar à página</button><div class=\"notice-card\"><strong>Edite sua cópia</strong><p>Use o modo Avançado para substituir textos originais compatíveis. As alterações são salvas em uma nova cópia do PDF.</p></div>\n        <details id=\"editorNativePanel\" class=\"editor-settings-group\" open>\n          <summary>Editar texto original</summary>\n          <p class=\"help-text\">Clique no texto destacado para editar ali mesmo. Se a fonte original não permitir os novos caracteres, o trecho usará Helvetica. Letras que fazem parte de uma imagem não são editáveis aqui.</p>\n          <button id=\"editorReadOriginal\" class=\"small-button\" type=\"button\">Localizar textos da página</button>\n          <p id=\"editorNativeStatus\" class=\"help-text\" role=\"status\" aria-live=\"polite\"></p>\n          <div class=\"field\"><label for=\"editorNativeSearch\">Buscar no texto original</label><input id=\"editorNativeSearch\" type=\"search\" placeholder=\"Nome, valor, descrição…\" /></div>\n          <div id=\"editorNativeList\" class=\"editor-objects-list\" aria-label=\"Trechos originais\"></div>\n        </details>\n        <details id=\"editorObjectsPanel\" class=\"editor-settings-group\" open><summary>Objetos adicionados nesta página</summary><div id=\"editorObjectsList\" class=\"editor-objects-list\"></div></details>\n        <div id=\"editorSelectionPanel\" class=\"editor-selection-panel inactive\">\n          <div class=\"editor-selection-heading\"><span>Objeto selecionado</span><strong id=\"editorSelectedType\">Nenhum objeto selecionado</strong></div>\n          <div id=\"editorTextControlsPanel\">\n            <div class=\"field\"><label for=\"editorTextValue\">Texto</label><textarea id=\"editorTextValue\" rows=\"1\" data-editor-text-control placeholder=\"Digite o texto que será inserido\">Digite seu texto</textarea></div>\n            <div class=\"field-row\">\n              <div class=\"field\"><label for=\"editorFontFamily\">Fonte</label><select id=\"editorFontFamily\" data-editor-text-control><option value=\"Helvetica\">Helvetica / Arial</option><option value=\"TimesRoman\">Times / Georgia</option><option value=\"Courier\">Courier</option></select></div>\n              <div class=\"field\"><label for=\"editorFontSize\">Tamanho</label><input id=\"editorFontSize\" data-editor-text-control type=\"number\" min=\"6\" max=\"120\" value=\"16\" /></div>\n            </div>\n            <div class=\"field-row\">\n              <div class=\"field\"><label for=\"editorTextColor\">Cor do texto</label><input id=\"editorTextColor\" data-editor-text-control type=\"color\" value=\"#202735\" /></div>\n              <div class=\"field\"><label for=\"editorTextOpacity\">Opacidade (%)</label><input id=\"editorTextOpacity\" data-editor-text-control type=\"number\" min=\"5\" max=\"100\" value=\"100\" /></div>\n            </div>\n            <div class=\"field-row editor-inline-options\"><label class=\"toggle-row compact\"><input id=\"editorBold\" data-editor-text-control type=\"checkbox\" /><span>Negrito</span></label><label class=\"toggle-row compact\"><input id=\"editorItalic\" data-editor-text-control type=\"checkbox\" /><span>Itálico</span></label></div>\n            <div class=\"field\"><label for=\"editorTextAlign\">Alinhamento</label><select id=\"editorTextAlign\" data-editor-text-control><option value=\"left\">Esquerda</option><option value=\"center\">Centralizado</option><option value=\"right\">Direita</option></select></div>\n          </div>\n          <details id=\"editorObjectSizePanel\" class=\"editor-object-size-panel hidden\">\n            <summary>Posição, tamanho e camadas</summary>\n            <p class=\"field-hint\">Valores em pontos do PDF.</p>\n            <div class=\"field-row\">\n              <div class=\"field\"><label for=\"editorObjectX\">Posição X</label><input id=\"editorObjectX\" type=\"number\" min=\"0\" step=\"1\" /></div>\n              <div class=\"field\"><label for=\"editorObjectY\">Posição Y</label><input id=\"editorObjectY\" type=\"number\" min=\"0\" step=\"1\" /></div>\n            </div>\n            <div class=\"field-row\">\n              <div class=\"field\"><label for=\"editorObjectWidth\">Largura</label><input id=\"editorObjectWidth\" type=\"number\" min=\"10\" step=\"1\" /></div>\n              <div class=\"field\"><label for=\"editorObjectHeight\">Altura</label><input id=\"editorObjectHeight\" type=\"number\" min=\"10\" step=\"1\" /></div>\n            </div>\n            <div class=\"field\"><label for=\"editorObjectRotation\">Rotação</label><div class=\"editor-rotation-field\"><input id=\"editorObjectRotation\" type=\"number\" min=\"-360\" max=\"360\" step=\"1\" value=\"0\" /><span>°</span></div></div>\n            <div class=\"editor-rotation-actions\">\n              <button id=\"editorRotateLeft\" class=\"small-button\" type=\"button\" title=\"Girar 90 graus para a esquerda\">↶ 90°</button>\n              <button id=\"editorResetRotation\" class=\"small-button\" type=\"button\">Zerar</button>\n              <button id=\"editorRotateRight\" class=\"small-button\" type=\"button\" title=\"Girar 90 graus para a direita\">↷ 90°</button>\n            </div>\n            <label id=\"editorAspectRow\" class=\"toggle-row compact\"><input id=\"editorObjectLockAspect\" type=\"checkbox\" /><span>Manter proporção ao redimensionar</span></label>\n            <button id=\"editorResetImageRatio\" class=\"small-button full-width hidden\" type=\"button\">Restaurar proporção original da imagem</button>\n            <div class=\"editor-alignment-block\">\n              <span>Alinhar na página</span>\n              <div class=\"editor-alignment-actions\">\n                <button id=\"editorAlignLeft\" class=\"small-button\" type=\"button\" title=\"Alinhar à esquerda\">⇤</button>\n                <button id=\"editorAlignCenterX\" class=\"small-button\" type=\"button\" title=\"Centralizar horizontalmente\">↔</button>\n                <button id=\"editorAlignRight\" class=\"small-button\" type=\"button\" title=\"Alinhar à direita\">⇥</button>\n                <button id=\"editorAlignTop\" class=\"small-button\" type=\"button\" title=\"Alinhar ao topo\">⇡</button>\n                <button id=\"editorAlignCenterY\" class=\"small-button\" type=\"button\" title=\"Centralizar verticalmente\">↕</button>\n                <button id=\"editorAlignBottom\" class=\"small-button\" type=\"button\" title=\"Alinhar à base\">⇣</button>\n              </div>\n            </div>\n            <div class=\"editor-layer-actions\">\n              <button id=\"editorSendBackward\" class=\"small-button\" type=\"button\">Enviar para trás</button>\n              <button id=\"editorBringForward\" class=\"small-button\" type=\"button\">Trazer à frente</button>\n            </div>\n            <p class=\"field-hint\"><strong>No documento:</strong> use as oito alças para ajustar por qualquer lado e a alça circular superior para girar. Segure Shift para preservar a proporção e encaixar a rotação em intervalos de 15°.</p>\n          </details>\n          <div class=\"editor-context-actions\"><button id=\"editorDuplicateObject\" class=\"small-button\" type=\"button\">Duplicar</button><button id=\"editorDeleteObject\" class=\"small-button danger\" type=\"button\" disabled>Excluir selecionado</button></div>\n        </div>\n        <details id=\"editorDrawingSettings\" class=\"editor-settings-group\" open><summary>Pincel e marcador</summary>\n          <div class=\"field-row\"><div class=\"field\"><label for=\"editorBrushColor\">Cor do pincel</label><input id=\"editorBrushColor\" type=\"color\" value=\"#1f2937\" /></div><div class=\"field\"><label for=\"editorBrushWidth\">Espessura</label><input id=\"editorBrushWidth\" type=\"number\" min=\"1\" max=\"40\" value=\"3\" /></div></div>\n          <div class=\"field-row\"><div class=\"field\"><label for=\"editorHighlightColor\">Cor do marcador</label><input id=\"editorHighlightColor\" type=\"color\" value=\"#fff176\" /></div><div class=\"field\"><label for=\"editorHighlightWidth\">Espessura</label><input id=\"editorHighlightWidth\" type=\"number\" min=\"4\" max=\"80\" value=\"16\" /></div></div>\n          <button id=\"editorClearDrawings\" class=\"small-button full-width\" type=\"button\">Limpar desenhos da página atual</button>\n        </details>\n        <details id=\"editorCoverSettings\" class=\"editor-settings-group\"><summary>Cobertura visual</summary>\n          <div class=\"field-row\"><div class=\"field\"><label for=\"editorCoverColor\">Cor da cobertura</label><input id=\"editorCoverColor\" type=\"color\" value=\"#ffffff\" /></div><div class=\"field\"><label for=\"editorCoverOpacity\">Opacidade (%)</label><input id=\"editorCoverOpacity\" type=\"number\" min=\"5\" max=\"100\" value=\"100\" /></div></div>\n          <div class=\"notice-card warning\"><strong>Não é redação segura</strong><p>A cobertura apenas oculta visualmente. O conteúdo interno original pode continuar existindo no PDF.</p></div>\n        </details>\n        <details id=\"editorCropSettings\" class=\"editor-settings-group\"><summary>Recorte da página</summary>\n          <p class=\"help-text\">Escolha a ferramenta Recortar, arraste sobre a página e confirme abaixo.</p>\n          <div class=\"field-row\"><button id=\"editorApplyCrop\" class=\"small-button primary-soft\" type=\"button\">Aplicar recorte</button><button id=\"editorResetCrop\" class=\"small-button\" type=\"button\">Remover recorte</button></div>\n        </details>\n        <div class=\"notice-card\"><strong>Fontes do PDF final</strong><p>O resultado usa Helvetica, Times ou Courier, que são fontes padrão compatíveis com leitores de PDF.</p></div>"
+    }
+  },
+  "merge": {
+    "config": {
+      "key": "merge",
+      "title": "Juntar PDFs",
+      "description": "Adicione os documentos e organize todas as páginas em uma única área visual. A sequência das miniaturas será a sequência exata do PDF final.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "mergePreserveMetadata",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "mergeSourceSort",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "nameAsc",
+        "label": "Ordenar documentos\n              Nome: A → Z\n              Ordem manual\n              Ordem de adição\n              Nome: Z → A\n              Número do nome: menor → maior\n              Número do nome: maior → menor\n              Mais páginas primeiro\n              Menos páginas primeiro\n              Maior arquivo primeiro\n              Menor arquivo primeiro\n              Modificado mais recentemente\n              Modificado há mais tempo\n            ",
+        "options": [
+          {
+            "value": "nameAsc",
+            "label": "Nome: A → Z"
+          },
+          {
+            "value": "manual",
+            "label": "Ordem manual"
+          },
+          {
+            "value": "added",
+            "label": "Ordem de adição"
+          },
+          {
+            "value": "nameDesc",
+            "label": "Nome: Z → A"
+          },
+          {
+            "value": "numberAsc",
+            "label": "Número do nome: menor → maior"
+          },
+          {
+            "value": "numberDesc",
+            "label": "Número do nome: maior → menor"
+          },
+          {
+            "value": "pagesDesc",
+            "label": "Mais páginas primeiro"
+          },
+          {
+            "value": "pagesAsc",
+            "label": "Menos páginas primeiro"
+          },
+          {
+            "value": "sizeDesc",
+            "label": "Maior arquivo primeiro"
+          },
+          {
+            "value": "sizeAsc",
+            "label": "Menor arquivo primeiro"
+          },
+          {
+            "value": "newest",
+            "label": "Modificado mais recentemente"
+          },
+          {
+            "value": "oldest",
+            "label": "Modificado há mais tempo"
+          }
+        ]
+      },
+      {
+        "id": "mergeReverseSources",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "⇅ Inverter",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_unido",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Juntar PDFs",
+      "description": "Adicione os documentos e organize todas as páginas em uma única área visual. A sequência das miniaturas será a sequência exata do PDF final.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Juntar PDFs",
+      "outputExt": "pdf",
+      "outputBase": "PDF_unido",
+      "settings": "\n        <div class=\"notice-card\"><strong>Uma única organização</strong><p>Não há modos separados. Arraste, gire, duplique, exclua ou adicione páginas diretamente no organizador central.</p></div>\n        <div id=\"mergeLargeBatchNotice\" class=\"notice-card hidden\"><strong>Modo para lote grande ativado</strong><p id=\"mergeLargeBatchText\">A exportação será feita em etapas para reduzir o uso de memória.</p></div>\n        <label class=\"toggle-row\"><input id=\"mergePreserveMetadata\" type=\"checkbox\" checked /><span>Preservar os metadados do primeiro PDF</span></label>\n        <div class=\"merge-source-summary\">\n          <div class=\"split-plan-header\"><span>Documentos da união</span><strong id=\"mergePlanCount\">0 capas</strong></div>\n          <div class=\"merge-source-toolbar\">\n            <label for=\"mergeSourceSort\"><span>Ordenar documentos</span><select id=\"mergeSourceSort\">\n              <option value=\"nameAsc\" selected>Nome: A → Z</option>\n              <option value=\"manual\">Ordem manual</option>\n              <option value=\"added\">Ordem de adição</option>\n              <option value=\"nameDesc\">Nome: Z → A</option>\n              <option value=\"numberAsc\">Número do nome: menor → maior</option>\n              <option value=\"numberDesc\">Número do nome: maior → menor</option>\n              <option value=\"pagesDesc\">Mais páginas primeiro</option>\n              <option value=\"pagesAsc\">Menos páginas primeiro</option>\n              <option value=\"sizeDesc\">Maior arquivo primeiro</option>\n              <option value=\"sizeAsc\">Menor arquivo primeiro</option>\n              <option value=\"newest\">Modificado mais recentemente</option>\n              <option value=\"oldest\">Modificado há mais tempo</option>\n            </select></label>\n            <button id=\"mergeReverseSources\" class=\"small-button\" type=\"button\" title=\"Inverter a ordem atual\">⇅ Inverter</button>\n          </div>\n          <div id=\"mergePlanPreview\" class=\"merge-source-list\"><div class=\"split-plan-empty\">Adicione pelo menos dois PDFs.</div></div>\n          <p class=\"field-hint\"><strong>Arraste os documentos</strong> para mudar a ordem. A ordenação automática mantém a ordem interna atual das páginas de cada documento e agrupa as páginas pela origem.</p>\n        </div>"
+    }
+  },
+  "split": {
+    "config": {
+      "key": "split",
+      "title": "Dividir PDF",
+      "description": "Veja as páginas, escolha os intervalos e confira cada arquivo antes de dividir.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "IntervalosEscolha início e fim",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "A cada NMesmo tamanho",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Uma por páginaArquivos individuais",
+        "options": null
+      },
+      {
+        "id": "splitAddInterval",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "＋ Adicionar",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "1",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "1",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "×",
+        "options": null
+      },
+      {
+        "id": "splitCustomGroups",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": "",
+        "label": "Lista avançada",
+        "options": null
+      },
+      {
+        "id": "splitIncludeUnmentioned",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "splitPartCount",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "2",
+        "label": "Quantidade de partes",
+        "options": null
+      },
+      {
+        "id": "splitPagesPerFile",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "2",
+        "label": "Páginas por arquivo",
+        "options": null
+      },
+      {
+        "id": "splitCuts",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Cortar depois das páginas",
+        "options": null
+      },
+      {
+        "id": "splitMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "custom",
+        "label": "Modo avançado",
+        "options": [
+          {
+            "value": "custom",
+            "label": "Intervalos personalizados"
+          },
+          {
+            "value": "equalParts",
+            "label": "Dividir em partes iguais"
+          },
+          {
+            "value": "fixedSize",
+            "label": "A cada quantidade de páginas"
+          },
+          {
+            "value": "cuts",
+            "label": "Cortar depois de páginas específicas"
+          },
+          {
+            "value": "everyPage",
+            "label": "Uma página por arquivo"
+          },
+          {
+            "value": "oddEven",
+            "label": "Separar páginas pares e ímpares"
+          }
+        ]
+      },
+      {
+        "id": "splitIncludeManifest",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_dividido",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [
+      {
+        "id": "",
+        "title": "Editar como lista de páginas"
+      },
+      {
+        "id": "",
+        "title": "Outras formas de dividir"
+      }
+    ],
+    "sourceConfig": {
+      "title": "Dividir PDF",
+      "description": "Veja as páginas, escolha os intervalos e confira cada arquivo antes de dividir.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Dividir PDF",
+      "outputExt": "auto",
+      "outputLabel": "PDF ou ZIP",
+      "outputBase": "PDF_dividido",
+      "settings": "\n        <div class=\"split-mode-selector\" role=\"group\" aria-label=\"Modo de divisão rápida\">\n          <button class=\"split-mode-choice active\" data-split-mode-choice=\"custom\" type=\"button\" aria-pressed=\"true\"><span class=\"split-mode-icon\"><svg aria-hidden=\"true\"><use href=\"#i-split\"/></svg></span><strong>Intervalos</strong><small>Escolha início e fim</small></button>\n          <button class=\"split-mode-choice\" data-split-mode-choice=\"fixedSize\" type=\"button\" aria-pressed=\"false\"><span class=\"split-mode-icon\"><svg aria-hidden=\"true\"><use href=\"#i-grid\"/></svg></span><strong>A cada N</strong><small>Mesmo tamanho</small></button>\n          <button class=\"split-mode-choice\" data-split-mode-choice=\"everyPage\" type=\"button\" aria-pressed=\"false\"><span class=\"split-mode-icon\"><svg aria-hidden=\"true\"><use href=\"#i-file\"/></svg></span><strong>Uma por página</strong><small>Arquivos individuais</small></button>\n        </div>\n        <div class=\"split-mode-panel\" data-split-panel=\"custom\">\n          <div class=\"split-interval-heading\"><div><strong>Intervalos personalizados</strong><span>Cada linha gera um PDF separado.</span></div><button id=\"splitAddInterval\" class=\"small-button primary-soft\" type=\"button\">＋ Adicionar</button></div>\n          <div id=\"splitIntervalRows\" class=\"split-interval-rows\" aria-live=\"polite\"></div>\n          <details class=\"split-text-mode\"><summary>Editar como lista de páginas</summary><div class=\"field\"><label for=\"splitCustomGroups\">Lista avançada</label><textarea id=\"splitCustomGroups\" class=\"split-source-input\" rows=\"3\" placeholder=\"Exemplo: 1-2;3-5;6,8-10\"></textarea></div><p class=\"field-hint\">Use ponto e vírgula para separar os PDFs. A lista permite combinações como 1,3-5.</p></details>\n          <label class=\"toggle-row\"><input id=\"splitIncludeUnmentioned\" type=\"checkbox\" /><span>Adicionar páginas não mencionadas em um arquivo extra</span></label>\n        </div>\n        <div class=\"split-mode-panel hidden\" data-split-panel=\"equalParts\">\n          <div class=\"field\"><label for=\"splitPartCount\">Quantidade de partes</label><input id=\"splitPartCount\" type=\"number\" min=\"2\" value=\"2\" /></div>\n          <p class=\"field-hint\">Exemplo: um PDF de 10 páginas dividido em 2 partes gera páginas 1-5 e 6-10.</p>\n        </div>\n        <div class=\"split-mode-panel hidden\" data-split-panel=\"fixedSize\">\n          <div class=\"field\"><label for=\"splitPagesPerFile\">Páginas por arquivo</label><input id=\"splitPagesPerFile\" type=\"number\" min=\"1\" value=\"2\" /></div>\n          <p class=\"field-hint\">Exemplo: a cada 2 páginas gera 1-2, 3-4, 5-6...</p>\n        </div>\n        <div class=\"split-mode-panel hidden\" data-split-panel=\"cuts\">\n          <div class=\"field\"><label for=\"splitCuts\">Cortar depois das páginas</label><input id=\"splitCuts\" placeholder=\"Exemplo: 2,5\" /></div>\n          <p class=\"field-hint\">Com cortes em 2 e 5, o resultado será 1-2, 3-5 e 6 até o final.</p>\n        </div>\n        <div class=\"split-mode-panel hidden\" data-split-panel=\"everyPage\"><div class=\"notice-card\"><strong>Uma página por arquivo</strong><p>Cada página será salva em um PDF independente.</p></div></div>\n        <div class=\"split-mode-panel hidden\" data-split-panel=\"oddEven\"><div class=\"notice-card\"><strong>Pares e ímpares</strong><p>Será criado um PDF com páginas ímpares e outro com páginas pares.</p></div></div>\n        <details class=\"split-more-modes\"><summary>Outras formas de dividir</summary><div class=\"field\"><label for=\"splitMode\">Modo avançado</label>\n          <select id=\"splitMode\">\n            <option value=\"custom\" selected>Intervalos personalizados</option>\n            <option value=\"equalParts\">Dividir em partes iguais</option>\n            <option value=\"fixedSize\">A cada quantidade de páginas</option>\n            <option value=\"cuts\">Cortar depois de páginas específicas</option>\n            <option value=\"everyPage\">Uma página por arquivo</option>\n            <option value=\"oddEven\">Separar páginas pares e ímpares</option>\n          </select>\n        </div></details>\n        <div id=\"splitDocumentInfo\" class=\"notice-card\"><strong>Documento</strong><p>Adicione um PDF para calcular a divisão.</p></div>\n        <div class=\"split-plan-box\">\n          <div class=\"split-plan-header\"><span>Prévia do resultado</span><strong id=\"splitPlanCount\">0 arquivos</strong></div>\n          <div id=\"splitPlanPreview\" class=\"split-plan-preview\"><div class=\"split-plan-empty\">O plano aparecerá aqui.</div></div>\n        </div>\n        <label class=\"toggle-row\"><input id=\"splitIncludeManifest\" type=\"checkbox\" checked /><span>Incluir relatório TXT com a divisão dentro do ZIP</span></label>"
+    }
+  },
+  "extract": {
+    "config": {
+      "key": "extract",
+      "title": "Extrair ou remover páginas",
+      "description": "Extraia páginas em um ou vários PDFs, remova páginas ou separe pares e ímpares.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "extractMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "single",
+        "label": "Operação",
+        "options": [
+          {
+            "value": "single",
+            "label": "Extrair páginas para um PDF"
+          },
+          {
+            "value": "groups",
+            "label": "Extrair grupos para vários PDFs"
+          },
+          {
+            "value": "remove",
+            "label": "Remover páginas informadas"
+          },
+          {
+            "value": "odd",
+            "label": "Manter somente páginas ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Manter somente páginas pares"
+          },
+          {
+            "value": "oddEven",
+            "label": "Gerar um PDF par e outro ímpar"
+          }
+        ]
+      },
+      {
+        "id": "extractPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas e ordem",
+        "options": null
+      },
+      {
+        "id": "extractAllowDuplicates",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "extractGroups",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": "",
+        "label": "Grupos",
+        "options": null
+      },
+      {
+        "id": "extractManifest",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "extractRemovePages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas para excluir",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "paginas_extraidas",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Extrair ou remover páginas",
+      "description": "Extraia páginas em um ou vários PDFs, remova páginas ou separe pares e ímpares.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Gerar resultado",
+      "outputExt": "auto",
+      "outputBase": "paginas_extraidas",
+      "settings": "\n        <div class=\"field\"><label for=\"extractMode\">Operação</label><select id=\"extractMode\"><option value=\"single\">Extrair páginas para um PDF</option><option value=\"groups\">Extrair grupos para vários PDFs</option><option value=\"remove\">Remover páginas informadas</option><option value=\"odd\">Manter somente páginas ímpares</option><option value=\"even\">Manter somente páginas pares</option><option value=\"oddEven\">Gerar um PDF par e outro ímpar</option></select></div>\n        <div data-extract-panel=\"single\"><div class=\"field\"><label for=\"extractPages\">Páginas e ordem</label><input id=\"extractPages\" placeholder=\"Exemplo: 5,1-3,8\" /></div><label class=\"toggle-row\"><input id=\"extractAllowDuplicates\" type=\"checkbox\" /><span>Permitir repetir páginas no resultado</span></label></div>\n        <div data-extract-panel=\"groups\" class=\"hidden\"><div class=\"field\"><label for=\"extractGroups\">Grupos</label><textarea id=\"extractGroups\" rows=\"4\" placeholder=\"Exemplo: 1-3;4-6;1,5,9\"></textarea></div><p class=\"field-hint\">Cada grupo separado por ponto e vírgula gera um PDF.</p><label class=\"toggle-row\"><input id=\"extractManifest\" type=\"checkbox\" checked /><span>Incluir relatório dos arquivos gerados</span></label></div>\n        <div data-extract-panel=\"remove\" class=\"hidden\"><div class=\"field\"><label for=\"extractRemovePages\">Páginas para excluir</label><input id=\"extractRemovePages\" placeholder=\"Exemplo: 1,4-6\" /></div></div>\n        <div id=\"extractDocumentInfo\" class=\"notice-card\"><strong>Documento</strong><p>Adicione um PDF para calcular o resultado.</p></div>\n        <div class=\"split-plan-box\"><div class=\"split-plan-header\"><span>Prévia do resultado</span><strong id=\"extractPlanCount\">0 arquivos</strong></div><div id=\"extractPlanPreview\" class=\"split-plan-preview\"><div class=\"split-plan-empty\">O plano aparecerá aqui.</div></div></div>"
+    }
+  },
+  "rotate": {
+    "config": {
+      "key": "rotate",
+      "title": "Girar páginas",
+      "description": "Gire páginas específicas, pares, ímpares ou páginas detectadas pela orientação.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "rotationAngle",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "90",
+        "label": "Rotação",
+        "options": [
+          {
+            "value": "90",
+            "label": "90° para a direita"
+          },
+          {
+            "value": "180",
+            "label": "180°"
+          },
+          {
+            "value": "270",
+            "label": "90° para a esquerda"
+          },
+          {
+            "value": "0",
+            "label": "Remover rotação e deixar em 0°"
+          }
+        ]
+      },
+      {
+        "id": "rotateMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Aplicar em",
+        "options": [
+          {
+            "value": "all",
+            "label": "Todas as páginas"
+          },
+          {
+            "value": "selected",
+            "label": "Páginas informadas"
+          },
+          {
+            "value": "odd",
+            "label": "Páginas ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Páginas pares"
+          },
+          {
+            "value": "portrait",
+            "label": "Somente páginas em retrato"
+          },
+          {
+            "value": "landscape",
+            "label": "Somente páginas em paisagem"
+          }
+        ]
+      },
+      {
+        "id": "rotatePages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "rotateBehavior",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "relative",
+        "label": "Comportamento",
+        "options": [
+          {
+            "value": "relative",
+            "label": "Somar à rotação atual"
+          },
+          {
+            "value": "absolute",
+            "label": "Definir exatamente o ângulo escolhido"
+          }
+        ]
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_girados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Girar páginas",
+      "description": "Gire páginas específicas, pares, ímpares ou páginas detectadas pela orientação.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Girar PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "PDFs_girados",
+      "settings": "\n        <div class=\"field\"><label for=\"rotationAngle\">Rotação</label><select id=\"rotationAngle\"><option value=\"90\">90° para a direita</option><option value=\"180\">180°</option><option value=\"270\">90° para a esquerda</option><option value=\"0\">Remover rotação e deixar em 0°</option></select></div>\n        <div class=\"field\"><label for=\"rotateMode\">Aplicar em</label><select id=\"rotateMode\"><option value=\"all\">Todas as páginas</option><option value=\"selected\">Páginas informadas</option><option value=\"odd\">Páginas ímpares</option><option value=\"even\">Páginas pares</option><option value=\"portrait\">Somente páginas em retrato</option><option value=\"landscape\">Somente páginas em paisagem</option></select></div>\n        <div id=\"rotatePagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"rotatePages\">Páginas</label><input id=\"rotatePages\" placeholder=\"Exemplo: 2-4,8\" /></div></div>\n        <div class=\"field\"><label for=\"rotateBehavior\">Comportamento</label><select id=\"rotateBehavior\"><option value=\"relative\">Somar à rotação atual</option><option value=\"absolute\">Definir exatamente o ângulo escolhido</option></select></div>\n        <div class=\"notice-card\"><strong>Processamento em lote</strong><p>A mesma regra será aplicada separadamente a todos os PDFs selecionados.</p></div>"
+    }
+  },
+  "watermark": {
+    "config": {
+      "key": "watermark",
+      "title": "Marca-d’água avançada",
+      "description": "Use texto ou imagem, posição livre, repetição, cor, rotação e seleção de páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "watermarkType",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "text",
+        "label": "Tipo",
+        "options": [
+          {
+            "value": "text",
+            "label": "Texto"
+          },
+          {
+            "value": "image",
+            "label": "Imagem ou logotipo"
+          }
+        ]
+      },
+      {
+        "id": "watermarkText",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": "CONFIDENCIAL",
+        "label": "Texto",
+        "options": null
+      },
+      {
+        "id": "watermarkFont",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "bold",
+        "label": "Fonte",
+        "options": [
+          {
+            "value": "bold",
+            "label": "Helvetica em negrito"
+          },
+          {
+            "value": "regular",
+            "label": "Helvetica regular"
+          }
+        ]
+      },
+      {
+        "id": "watermarkColor",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#777777",
+        "label": "Cor",
+        "options": null
+      },
+      {
+        "id": "watermarkImageFile",
+        "tag": "INPUT",
+        "type": "file",
+        "value": "",
+        "label": "Imagem PNG ou JPG",
+        "options": null
+      },
+      {
+        "id": "watermarkSize",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "45",
+        "label": "Tamanho (%)",
+        "options": null
+      },
+      {
+        "id": "watermarkOpacity",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "20",
+        "label": "Opacidade (%)",
+        "options": null
+      },
+      {
+        "id": "watermarkRotation",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "-35",
+        "label": "Rotação",
+        "options": null
+      },
+      {
+        "id": "watermarkPattern",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "single",
+        "label": "Repetição",
+        "options": [
+          {
+            "value": "single",
+            "label": "Uma marca"
+          },
+          {
+            "value": "tile",
+            "label": "Repetir pela página"
+          }
+        ]
+      },
+      {
+        "id": "watermarkPosition",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "center",
+        "label": "Posição",
+        "options": [
+          {
+            "value": "center",
+            "label": "Centro"
+          },
+          {
+            "value": "top-left",
+            "label": "Topo esquerdo"
+          },
+          {
+            "value": "top-center",
+            "label": "Topo central"
+          },
+          {
+            "value": "top-right",
+            "label": "Topo direito"
+          },
+          {
+            "value": "bottom-left",
+            "label": "Rodapé esquerdo"
+          },
+          {
+            "value": "bottom-center",
+            "label": "Rodapé central"
+          },
+          {
+            "value": "bottom-right",
+            "label": "Rodapé direito"
+          }
+        ]
+      },
+      {
+        "id": "watermarkScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Páginas",
+        "options": [
+          {
+            "value": "all",
+            "label": "Todas"
+          },
+          {
+            "value": "selected",
+            "label": "Informar páginas"
+          },
+          {
+            "value": "odd",
+            "label": "Ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Pares"
+          },
+          {
+            "value": "first",
+            "label": "Somente a primeira"
+          },
+          {
+            "value": "last",
+            "label": "Somente a última"
+          }
+        ]
+      },
+      {
+        "id": "watermarkPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_com_marca_dagua",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Marca-d’água avançada",
+      "description": "Use texto ou imagem, posição livre, repetição, cor, rotação e seleção de páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Aplicar marca-d’água",
+      "outputExt": "auto",
+      "outputBase": "PDFs_com_marca_dagua",
+      "settings": "\n        <div class=\"field\"><label for=\"watermarkType\">Tipo</label><select id=\"watermarkType\"><option value=\"text\">Texto</option><option value=\"image\">Imagem ou logotipo</option></select></div>\n        <div id=\"watermarkTextPanel\"><div class=\"field\"><label for=\"watermarkText\">Texto</label><textarea id=\"watermarkText\" rows=\"3\">CONFIDENCIAL</textarea></div><div class=\"field-row\"><div class=\"field\"><label for=\"watermarkFont\">Fonte</label><select id=\"watermarkFont\"><option value=\"bold\">Helvetica em negrito</option><option value=\"regular\">Helvetica regular</option></select></div><div class=\"field\"><label for=\"watermarkColor\">Cor</label><input id=\"watermarkColor\" type=\"color\" value=\"#777777\" /></div></div></div>\n        <div id=\"watermarkImagePanel\" class=\"hidden\"><div class=\"field\"><label for=\"watermarkImageFile\">Imagem PNG ou JPG</label><input id=\"watermarkImageFile\" type=\"file\" accept=\"image/png,image/jpeg\" /></div><p class=\"field-hint\">Imagens PNG podem preservar transparência.</p></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"watermarkSize\">Tamanho (%)</label><input id=\"watermarkSize\" type=\"number\" min=\"5\" max=\"100\" value=\"45\" /></div><div class=\"field\"><label for=\"watermarkOpacity\">Opacidade (%)</label><input id=\"watermarkOpacity\" type=\"number\" min=\"3\" max=\"100\" value=\"20\" /></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"watermarkRotation\">Rotação</label><input id=\"watermarkRotation\" type=\"number\" min=\"-180\" max=\"180\" value=\"-35\" /></div><div class=\"field\"><label for=\"watermarkPattern\">Repetição</label><select id=\"watermarkPattern\"><option value=\"single\">Uma marca</option><option value=\"tile\">Repetir pela página</option></select></div></div>\n        <div class=\"field\"><label for=\"watermarkPosition\">Posição</label><select id=\"watermarkPosition\"><option value=\"center\">Centro</option><option value=\"top-left\">Topo esquerdo</option><option value=\"top-center\">Topo central</option><option value=\"top-right\">Topo direito</option><option value=\"bottom-left\">Rodapé esquerdo</option><option value=\"bottom-center\">Rodapé central</option><option value=\"bottom-right\">Rodapé direito</option></select></div>\n        <div class=\"field\"><label for=\"watermarkScope\">Páginas</label><select id=\"watermarkScope\"><option value=\"all\">Todas</option><option value=\"selected\">Informar páginas</option><option value=\"odd\">Ímpares</option><option value=\"even\">Pares</option><option value=\"first\">Somente a primeira</option><option value=\"last\">Somente a última</option></select></div>\n        <div id=\"watermarkPagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"watermarkPages\">Páginas</label><input id=\"watermarkPages\" placeholder=\"Exemplo: 1,3-5\" /></div></div>\n        <div class=\"notice-card\"><strong>Prévia conceitual</strong><p id=\"watermarkSummary\">Uma marca de texto central será aplicada em todas as páginas.</p></div>"
+    }
+  },
+  "pageNumbers": {
+    "config": {
+      "key": "pageNumbers",
+      "title": "Numerar páginas avançado",
+      "description": "Defina escopo, formato personalizado, páginas iniciais ignoradas e posição alternada.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "numberFormat",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "{n}",
+        "label": "Formato",
+        "options": [
+          {
+            "value": "{n}",
+            "label": "1"
+          },
+          {
+            "value": "Página {n}",
+            "label": "Página 1"
+          },
+          {
+            "value": "{n} de {total}",
+            "label": "1 de 10"
+          },
+          {
+            "value": "Página {n} de {total}",
+            "label": "Página 1 de 10"
+          },
+          {
+            "value": "custom",
+            "label": "Personalizado"
+          }
+        ]
+      },
+      {
+        "id": "numberCustomFormat",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "Folha {n} / {total}",
+        "label": "Modelo",
+        "options": null
+      },
+      {
+        "id": "numberScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Páginas a numerar",
+        "options": [
+          {
+            "value": "all",
+            "label": "Todas"
+          },
+          {
+            "value": "selected",
+            "label": "Informar páginas"
+          },
+          {
+            "value": "odd",
+            "label": "Ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Pares"
+          }
+        ]
+      },
+      {
+        "id": "numberPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "numberSkip",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "0",
+        "label": "Ignorar primeiras",
+        "options": null
+      },
+      {
+        "id": "numberStart",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "1",
+        "label": "Primeiro número",
+        "options": null
+      },
+      {
+        "id": "numberSize",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "10",
+        "label": "Tamanho",
+        "options": null
+      },
+      {
+        "id": "numberColor",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#333333",
+        "label": "Cor",
+        "options": null
+      },
+      {
+        "id": "numberPosition",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "bottom-center",
+        "label": "Posição",
+        "options": [
+          {
+            "value": "bottom-center",
+            "label": "Rodapé central"
+          },
+          {
+            "value": "bottom-right",
+            "label": "Rodapé direito"
+          },
+          {
+            "value": "bottom-left",
+            "label": "Rodapé esquerdo"
+          },
+          {
+            "value": "top-center",
+            "label": "Topo central"
+          },
+          {
+            "value": "top-right",
+            "label": "Topo direito"
+          },
+          {
+            "value": "top-left",
+            "label": "Topo esquerdo"
+          },
+          {
+            "value": "outer-bottom",
+            "label": "Rodapé externo alternado"
+          },
+          {
+            "value": "inner-bottom",
+            "label": "Rodapé interno alternado"
+          }
+        ]
+      },
+      {
+        "id": "numberMargin",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "24",
+        "label": "Margem",
+        "options": null
+      },
+      {
+        "id": "numberTotalMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "numbered",
+        "label": "Total mostrado",
+        "options": [
+          {
+            "value": "numbered",
+            "label": "Páginas numeradas"
+          },
+          {
+            "value": "document",
+            "label": "Total do documento"
+          }
+        ]
+      },
+      {
+        "id": "numberBackground",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_numerados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Numerar páginas avançado",
+      "description": "Defina escopo, formato personalizado, páginas iniciais ignoradas e posição alternada.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Numerar PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "PDFs_numerados",
+      "settings": "\n        <div class=\"field\"><label for=\"numberFormat\">Formato</label><select id=\"numberFormat\"><option value=\"{n}\">1</option><option value=\"Página {n}\">Página 1</option><option value=\"{n} de {total}\">1 de 10</option><option value=\"Página {n} de {total}\">Página 1 de 10</option><option value=\"custom\">Personalizado</option></select></div>\n        <div id=\"numberCustomPanel\" class=\"hidden\"><div class=\"field\"><label for=\"numberCustomFormat\">Modelo</label><input id=\"numberCustomFormat\" value=\"Folha {n} / {total}\" /></div><p class=\"field-hint\">Variáveis: {n} número exibido, {total} total numerado e {page} página física.</p></div>\n        <div class=\"field\"><label for=\"numberScope\">Páginas a numerar</label><select id=\"numberScope\"><option value=\"all\">Todas</option><option value=\"selected\">Informar páginas</option><option value=\"odd\">Ímpares</option><option value=\"even\">Pares</option></select></div>\n        <div id=\"numberPagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"numberPages\">Páginas</label><input id=\"numberPages\" placeholder=\"Exemplo: 3-10\" /></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"numberSkip\">Ignorar primeiras</label><input id=\"numberSkip\" type=\"number\" min=\"0\" value=\"0\" /></div><div class=\"field\"><label for=\"numberStart\">Primeiro número</label><input id=\"numberStart\" type=\"number\" value=\"1\" /></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"numberSize\">Tamanho</label><input id=\"numberSize\" type=\"number\" min=\"6\" max=\"48\" value=\"10\" /></div><div class=\"field\"><label for=\"numberColor\">Cor</label><input id=\"numberColor\" type=\"color\" value=\"#333333\" /></div></div>\n        <div class=\"field\"><label for=\"numberPosition\">Posição</label><select id=\"numberPosition\"><option value=\"bottom-center\">Rodapé central</option><option value=\"bottom-right\">Rodapé direito</option><option value=\"bottom-left\">Rodapé esquerdo</option><option value=\"top-center\">Topo central</option><option value=\"top-right\">Topo direito</option><option value=\"top-left\">Topo esquerdo</option><option value=\"outer-bottom\">Rodapé externo alternado</option><option value=\"inner-bottom\">Rodapé interno alternado</option></select></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"numberMargin\">Margem</label><input id=\"numberMargin\" type=\"number\" min=\"5\" max=\"100\" value=\"24\" /></div><div class=\"field\"><label for=\"numberTotalMode\">Total mostrado</label><select id=\"numberTotalMode\"><option value=\"numbered\">Páginas numeradas</option><option value=\"document\">Total do documento</option></select></div></div>\n        <label class=\"toggle-row\"><input id=\"numberBackground\" type=\"checkbox\" /><span>Adicionar fundo branco discreto atrás do número</span></label>"
+    }
+  },
+  "imagesToPdf": {
+    "config": {
+      "key": "imagesToPdf",
+      "title": "JPG/PNG para PDF",
+      "description": "Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada.",
+      "accept": "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp",
+      "multiple": true,
+      "typeLabel": "JPG, PNG ou WEBP"
+    },
+    "controls": [
+      {
+        "id": "imageOutputMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "combined",
+        "label": "Resultado",
+        "options": [
+          {
+            "value": "combined",
+            "label": "Um PDF com todas as imagens"
+          },
+          {
+            "value": "separate",
+            "label": "Um PDF para cada imagem"
+          }
+        ]
+      },
+      {
+        "id": "imagePageMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "image",
+        "label": "Tamanho da página",
+        "options": [
+          {
+            "value": "image",
+            "label": "Ajustar à imagem"
+          },
+          {
+            "value": "a4",
+            "label": "A4"
+          },
+          {
+            "value": "letter",
+            "label": "Carta"
+          },
+          {
+            "value": "custom",
+            "label": "Personalizado"
+          }
+        ]
+      },
+      {
+        "id": "imageCustomWidth",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "210",
+        "label": "Largura (mm)",
+        "options": null
+      },
+      {
+        "id": "imageCustomHeight",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "297",
+        "label": "Altura (mm)",
+        "options": null
+      },
+      {
+        "id": "imageOrientation",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "auto",
+        "label": "Orientação da página",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Automática"
+          },
+          {
+            "value": "portrait",
+            "label": "Retrato"
+          },
+          {
+            "value": "landscape",
+            "label": "Paisagem"
+          }
+        ]
+      },
+      {
+        "id": "imageMargin",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "10",
+        "label": "Margem (mm)",
+        "options": null
+      },
+      {
+        "id": "imageFit",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "contain",
+        "label": "Encaixe",
+        "options": [
+          {
+            "value": "contain",
+            "label": "Conter imagem inteira"
+          },
+          {
+            "value": "cover",
+            "label": "Preencher e cortar excesso"
+          },
+          {
+            "value": "stretch",
+            "label": "Esticar para preencher"
+          }
+        ]
+      },
+      {
+        "id": "imageAlign",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "center",
+        "label": "Alinhamento",
+        "options": [
+          {
+            "value": "center",
+            "label": "Centro"
+          },
+          {
+            "value": "top",
+            "label": "Topo"
+          },
+          {
+            "value": "bottom",
+            "label": "Rodapé"
+          }
+        ]
+      },
+      {
+        "id": "imageBackground",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#ffffff",
+        "label": "Fundo",
+        "options": null
+      },
+      {
+        "id": "imageNoUpscale",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "imagens_convertidas",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "JPG/PNG para PDF",
+      "description": "Gire cada imagem e controle página, orientação do papel, margens, encaixe e saída combinada ou separada.",
+      "accept": "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp",
+      "multiple": true,
+      "typeLabel": "JPG, PNG ou WEBP",
+      "button": "Criar PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "imagens_convertidas",
+      "settings": "\n        <div class=\"field\"><label for=\"imageOutputMode\">Resultado</label><select id=\"imageOutputMode\"><option value=\"combined\">Um PDF com todas as imagens</option><option value=\"separate\">Um PDF para cada imagem</option></select></div>\n        <div class=\"field\"><label for=\"imagePageMode\">Tamanho da página</label><select id=\"imagePageMode\"><option value=\"image\">Ajustar à imagem</option><option value=\"a4\">A4</option><option value=\"letter\">Carta</option><option value=\"custom\">Personalizado</option></select></div>\n        <div id=\"imageCustomPagePanel\" class=\"hidden\"><div class=\"field-row\"><div class=\"field\"><label for=\"imageCustomWidth\">Largura (mm)</label><input id=\"imageCustomWidth\" type=\"number\" min=\"20\" value=\"210\" /></div><div class=\"field\"><label for=\"imageCustomHeight\">Altura (mm)</label><input id=\"imageCustomHeight\" type=\"number\" min=\"20\" value=\"297\" /></div></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"imageOrientation\">Orientação da página</label><select id=\"imageOrientation\"><option value=\"auto\">Automática</option><option value=\"portrait\">Retrato</option><option value=\"landscape\">Paisagem</option></select></div><div class=\"field\"><label for=\"imageMargin\">Margem (mm)</label><input id=\"imageMargin\" type=\"number\" min=\"0\" value=\"10\" /></div></div>\n        <div class=\"field\"><label for=\"imageFit\">Encaixe</label><select id=\"imageFit\"><option value=\"contain\">Conter imagem inteira</option><option value=\"cover\">Preencher e cortar excesso</option><option value=\"stretch\">Esticar para preencher</option></select></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"imageAlign\">Alinhamento</label><select id=\"imageAlign\"><option value=\"center\">Centro</option><option value=\"top\">Topo</option><option value=\"bottom\">Rodapé</option></select></div><div class=\"field\"><label for=\"imageBackground\">Fundo</label><input id=\"imageBackground\" type=\"color\" value=\"#ffffff\" /></div></div>\n        <label class=\"toggle-row\"><input id=\"imageNoUpscale\" type=\"checkbox\" checked /><span>Não ampliar imagens menores</span></label>"
+    }
+  },
+  "imageConvert": {
+    "config": {
+      "key": "imageConvert",
+      "title": "Converter imagens",
+      "description": "Converta, reduza ou redimensione várias imagens de uma vez.",
+      "accept": "image/*,.png,.jpg,.jpeg,.webp,.bmp,.gif",
+      "multiple": true,
+      "typeLabel": "Imagens"
+    },
+    "controls": [
+      {
+        "id": "outputFormat",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "image/jpeg",
+        "label": "Formato",
+        "options": [
+          {
+            "value": "image/jpeg",
+            "label": "JPG"
+          },
+          {
+            "value": "image/png",
+            "label": "PNG"
+          },
+          {
+            "value": "image/webp",
+            "label": "WEBP"
+          }
+        ]
+      },
+      {
+        "id": "maxWidth",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "1920",
+        "label": "Largura máxima",
+        "options": null
+      },
+      {
+        "id": "maxHeight",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "1080",
+        "label": "Altura máxima",
+        "options": null
+      },
+      {
+        "id": "quality",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "88",
+        "label": "Qualidade JPG/WEBP",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "imagens_convertidas",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Converter imagens",
+      "description": "Converta, reduza ou redimensione várias imagens de uma vez.",
+      "accept": "image/*,.png,.jpg,.jpeg,.webp,.bmp,.gif",
+      "multiple": true,
+      "typeLabel": "Imagens",
+      "button": "Converter imagens",
+      "outputExt": "auto",
+      "outputBase": "imagens_convertidas",
+      "settings": "<div class=\"field\"><label for=\"outputFormat\">Formato</label><select id=\"outputFormat\"><option value=\"image/jpeg\">JPG</option><option value=\"image/png\">PNG</option><option value=\"image/webp\">WEBP</option></select></div><div class=\"field-row\"><div class=\"field\"><label for=\"maxWidth\">Largura máxima</label><input id=\"maxWidth\" type=\"number\" min=\"1\" value=\"1920\" /></div><div class=\"field\"><label for=\"maxHeight\">Altura máxima</label><input id=\"maxHeight\" type=\"number\" min=\"1\" value=\"1080\" /></div></div><div class=\"field\"><label for=\"quality\">Qualidade JPG/WEBP</label><input id=\"quality\" type=\"number\" min=\"10\" max=\"100\" value=\"88\" /></div><p class=\"help-text\">Mantém a proporção e não amplia imagens menores.</p>"
+    }
+  },
+  "compress": {
+    "config": {
+      "key": "compress",
+      "title": "Comprimir PDF avançado",
+      "description": "Analise o conteúdo e comprima somente páginas com imagens relevantes, preservando texto e vetores quando possível.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "compressionMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "recommended",
+        "label": "Perfil",
+        "options": [
+          {
+            "value": "preserve",
+            "label": "Estrutural — preservar texto e links"
+          },
+          {
+            "value": "recommended",
+            "label": "Automático — boa qualidade e boa redução"
+          },
+          {
+            "value": "extreme",
+            "label": "Forte — priorizar arquivo menor"
+          },
+          {
+            "value": "custom",
+            "label": "Personalizada"
+          }
+        ]
+      },
+      {
+        "id": "compressionDpi",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "120",
+        "label": "DPI",
+        "options": null
+      },
+      {
+        "id": "compressionQuality",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "68",
+        "label": "Qualidade JPG (%)",
+        "options": null
+      },
+      {
+        "id": "compressionGrayscale",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "compressionScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Páginas a rasterizar",
+        "options": [
+          {
+            "value": "all",
+            "label": "Todas"
+          },
+          {
+            "value": "selected",
+            "label": "Informar páginas"
+          },
+          {
+            "value": "odd",
+            "label": "Ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Pares"
+          }
+        ]
+      },
+      {
+        "id": "compressionPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "compressionStripMetadata",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "compressionKeepSmaller",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "compressionReport",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_comprimidos",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Comprimir PDF avançado",
+      "description": "Analise o conteúdo e comprima somente páginas com imagens relevantes, preservando texto e vetores quando possível.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Comprimir PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "PDFs_comprimidos",
+      "settings": "\n        <div class=\"field\"><label for=\"compressionMode\">Perfil</label><select id=\"compressionMode\"><option value=\"preserve\">Estrutural — preservar texto e links</option><option value=\"recommended\" selected>Automático — boa qualidade e boa redução</option><option value=\"extreme\">Forte — priorizar arquivo menor</option><option value=\"custom\">Personalizada</option></select></div>\n        <div id=\"compressionCustomPanel\" class=\"hidden\"><div class=\"field-row\"><div class=\"field\"><label for=\"compressionDpi\">DPI</label><input id=\"compressionDpi\" type=\"number\" min=\"60\" max=\"300\" value=\"120\" /></div><div class=\"field\"><label for=\"compressionQuality\">Qualidade JPG (%)</label><input id=\"compressionQuality\" type=\"number\" min=\"30\" max=\"100\" value=\"68\" /></div></div><label class=\"toggle-row\"><input id=\"compressionGrayscale\" type=\"checkbox\" /><span>Converter as páginas rasterizadas para tons de cinza</span></label></div>\n        <div class=\"field\"><label for=\"compressionScope\">Páginas a rasterizar</label><select id=\"compressionScope\"><option value=\"all\">Todas</option><option value=\"selected\">Informar páginas</option><option value=\"odd\">Ímpares</option><option value=\"even\">Pares</option></select></div>\n        <div id=\"compressionPagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"compressionPages\">Páginas</label><input id=\"compressionPages\" placeholder=\"Exemplo: 1-5,9\" /></div></div>\n        <label class=\"toggle-row\"><input id=\"compressionStripMetadata\" type=\"checkbox\" checked /><span>Remover metadados básicos</span></label>\n        <label class=\"toggle-row\"><input id=\"compressionKeepSmaller\" type=\"checkbox\" checked /><span>Manter o original quando a versão comprimida ficar maior</span></label>\n        <label class=\"toggle-row\"><input id=\"compressionReport\" type=\"checkbox\" checked /><span>Incluir relatório TXT com tamanho antes e depois</span></label>\n        <div class=\"notice-card warning\"><strong>Rasterização</strong><p>No modo Automático, o motor prioriza nitidez: preserva páginas com texto e vetores e só reconstrói páginas escaneadas ou dominadas por imagens. O modo Forte busca arquivos menores e pode reduzir mais a qualidade. Nas páginas reconstruídas, texto selecionável, links, formulários e assinaturas deixam de existir.</p></div>"
+    }
+  },
+  "pdfToImage": {
+    "config": {
+      "key": "pdfToImage",
+      "title": "PDF para imagens avançado",
+      "description": "Converta páginas selecionadas para JPG, PNG ou WEBP, com DPI, cor e organização configuráveis.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "pdfImageFormat",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "image/jpeg",
+        "label": "Formato",
+        "options": [
+          {
+            "value": "image/jpeg",
+            "label": "JPG"
+          },
+          {
+            "value": "image/png",
+            "label": "PNG"
+          },
+          {
+            "value": "image/webp",
+            "label": "WEBP"
+          }
+        ]
+      },
+      {
+        "id": "pdfImageDpi",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "150",
+        "label": "Resolução",
+        "options": [
+          {
+            "value": "96",
+            "label": "96 DPI — tela"
+          },
+          {
+            "value": "150",
+            "label": "150 DPI — recomendado"
+          },
+          {
+            "value": "200",
+            "label": "200 DPI — alta"
+          },
+          {
+            "value": "300",
+            "label": "300 DPI — impressão"
+          }
+        ]
+      },
+      {
+        "id": "pdfImageQuality",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "88",
+        "label": "Qualidade (%)",
+        "options": null
+      },
+      {
+        "id": "pdfImageScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Páginas",
+        "options": [
+          {
+            "value": "all",
+            "label": "Todas"
+          },
+          {
+            "value": "selected",
+            "label": "Informar páginas"
+          },
+          {
+            "value": "odd",
+            "label": "Ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Pares"
+          },
+          {
+            "value": "first",
+            "label": "Somente a primeira"
+          },
+          {
+            "value": "last",
+            "label": "Somente a última"
+          }
+        ]
+      },
+      {
+        "id": "pdfImagePages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "pdfImageOutputMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "pages",
+        "label": "Organização",
+        "options": [
+          {
+            "value": "pages",
+            "label": "Uma imagem por página"
+          },
+          {
+            "value": "contact",
+            "label": "Folha de contato por PDF"
+          }
+        ]
+      },
+      {
+        "id": "pdfImageColumns",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "3",
+        "label": "Colunas da folha de contato",
+        "options": null
+      },
+      {
+        "id": "pdfImageGrayscale",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "pdfImageTransparent",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "pdfImagePrefix",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "pagina",
+        "label": "Prefixo dos arquivos",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_para_imagens",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "PDF para imagens avançado",
+      "description": "Converta páginas selecionadas para JPG, PNG ou WEBP, com DPI, cor e organização configuráveis.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Converter páginas",
+      "outputExt": "auto",
+      "outputBase": "PDF_para_imagens",
+      "settings": "\n        <div class=\"field\"><label for=\"pdfImageFormat\">Formato</label><select id=\"pdfImageFormat\"><option value=\"image/jpeg\">JPG</option><option value=\"image/png\">PNG</option><option value=\"image/webp\">WEBP</option></select></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"pdfImageDpi\">Resolução</label><select id=\"pdfImageDpi\"><option value=\"96\">96 DPI — tela</option><option value=\"150\" selected>150 DPI — recomendado</option><option value=\"200\">200 DPI — alta</option><option value=\"300\">300 DPI — impressão</option></select></div><div class=\"field\"><label for=\"pdfImageQuality\">Qualidade (%)</label><input id=\"pdfImageQuality\" type=\"number\" min=\"30\" max=\"100\" value=\"88\" /></div></div>\n        <div class=\"field\"><label for=\"pdfImageScope\">Páginas</label><select id=\"pdfImageScope\"><option value=\"all\">Todas</option><option value=\"selected\">Informar páginas</option><option value=\"odd\">Ímpares</option><option value=\"even\">Pares</option><option value=\"first\">Somente a primeira</option><option value=\"last\">Somente a última</option></select></div>\n        <div id=\"pdfImagePagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"pdfImagePages\">Páginas</label><input id=\"pdfImagePages\" placeholder=\"Exemplo: 1-3,5\" /></div></div>\n        <div class=\"field\"><label for=\"pdfImageOutputMode\">Organização</label><select id=\"pdfImageOutputMode\"><option value=\"pages\">Uma imagem por página</option><option value=\"contact\">Folha de contato por PDF</option></select></div>\n        <div id=\"pdfImageContactPanel\" class=\"hidden\"><div class=\"field\"><label for=\"pdfImageColumns\">Colunas da folha de contato</label><input id=\"pdfImageColumns\" type=\"number\" min=\"1\" max=\"6\" value=\"3\" /></div></div>\n        <label class=\"toggle-row\"><input id=\"pdfImageGrayscale\" type=\"checkbox\" /><span>Converter para tons de cinza</span></label>\n        <label class=\"toggle-row\"><input id=\"pdfImageTransparent\" type=\"checkbox\" /><span>Fundo transparente quando o formato for PNG</span></label>\n        <div class=\"field\"><label for=\"pdfImagePrefix\">Prefixo dos arquivos</label><input id=\"pdfImagePrefix\" value=\"pagina\" /></div>"
+    }
+  },
+  "crop": {
+    "config": {
+      "key": "crop",
+      "title": "Recortar PDF avançado",
+      "description": "Recorte por milímetros, percentual ou tamanho central e escolha entre recorte visual e reconstrução.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "cropMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "margins",
+        "label": "Modo",
+        "options": [
+          {
+            "value": "margins",
+            "label": "Margens em milímetros"
+          },
+          {
+            "value": "percent",
+            "label": "Margens em percentual"
+          },
+          {
+            "value": "center",
+            "label": "Manter área central com tamanho definido"
+          },
+          {
+            "value": "presetHeader",
+            "label": "Remover cabeçalho de 25 mm"
+          },
+          {
+            "value": "presetFooter",
+            "label": "Remover rodapé de 25 mm"
+          },
+          {
+            "value": "presetEdges",
+            "label": "Remover 10 mm de todas as bordas"
+          }
+        ]
+      },
+      {
+        "id": "cropTop",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "0",
+        "label": "Topo",
+        "options": null
+      },
+      {
+        "id": "cropRight",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "0",
+        "label": "Direita",
+        "options": null
+      },
+      {
+        "id": "cropBottom",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "0",
+        "label": "Rodapé",
+        "options": null
+      },
+      {
+        "id": "cropLeft",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "0",
+        "label": "Esquerda",
+        "options": null
+      },
+      {
+        "id": "cropCenterWidth",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "180",
+        "label": "Largura (mm)",
+        "options": null
+      },
+      {
+        "id": "cropCenterHeight",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "250",
+        "label": "Altura (mm)",
+        "options": null
+      },
+      {
+        "id": "cropScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Páginas",
+        "options": [
+          {
+            "value": "all",
+            "label": "Todas"
+          },
+          {
+            "value": "selected",
+            "label": "Informar páginas"
+          },
+          {
+            "value": "odd",
+            "label": "Ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Pares"
+          }
+        ]
+      },
+      {
+        "id": "cropPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "cropBehavior",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "visual",
+        "label": "Tipo de recorte",
+        "options": [
+          {
+            "value": "visual",
+            "label": "Visual e reversível pelo editor"
+          },
+          {
+            "value": "rebuild",
+            "label": "Reconstruir a página na nova dimensão"
+          }
+        ]
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_recortados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Recortar PDF avançado",
+      "description": "Recorte por milímetros, percentual ou tamanho central e escolha entre recorte visual e reconstrução.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Recortar PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "PDFs_recortados",
+      "settings": "\n        <div class=\"field\"><label for=\"cropMode\">Modo</label><select id=\"cropMode\"><option value=\"margins\">Margens em milímetros</option><option value=\"percent\">Margens em percentual</option><option value=\"center\">Manter área central com tamanho definido</option><option value=\"presetHeader\">Remover cabeçalho de 25 mm</option><option value=\"presetFooter\">Remover rodapé de 25 mm</option><option value=\"presetEdges\">Remover 10 mm de todas as bordas</option></select></div>\n        <div id=\"cropMarginsPanel\"><div class=\"field-row\"><div class=\"field\"><label for=\"cropTop\">Topo</label><input id=\"cropTop\" type=\"number\" min=\"0\" step=\"0.5\" value=\"0\" /></div><div class=\"field\"><label for=\"cropRight\">Direita</label><input id=\"cropRight\" type=\"number\" min=\"0\" step=\"0.5\" value=\"0\" /></div></div><div class=\"field-row\"><div class=\"field\"><label for=\"cropBottom\">Rodapé</label><input id=\"cropBottom\" type=\"number\" min=\"0\" step=\"0.5\" value=\"0\" /></div><div class=\"field\"><label for=\"cropLeft\">Esquerda</label><input id=\"cropLeft\" type=\"number\" min=\"0\" step=\"0.5\" value=\"0\" /></div></div><p id=\"cropUnitHint\" class=\"field-hint\">Valores em milímetros.</p></div>\n        <div id=\"cropCenterPanel\" class=\"hidden\"><div class=\"field-row\"><div class=\"field\"><label for=\"cropCenterWidth\">Largura (mm)</label><input id=\"cropCenterWidth\" type=\"number\" min=\"10\" value=\"180\" /></div><div class=\"field\"><label for=\"cropCenterHeight\">Altura (mm)</label><input id=\"cropCenterHeight\" type=\"number\" min=\"10\" value=\"250\" /></div></div></div>\n        <div class=\"field\"><label for=\"cropScope\">Páginas</label><select id=\"cropScope\"><option value=\"all\">Todas</option><option value=\"selected\">Informar páginas</option><option value=\"odd\">Ímpares</option><option value=\"even\">Pares</option></select></div>\n        <div id=\"cropPagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"cropPages\">Páginas</label><input id=\"cropPages\" placeholder=\"Exemplo: 2-8\" /></div></div>\n        <div class=\"field\"><label for=\"cropBehavior\">Tipo de recorte</label><select id=\"cropBehavior\"><option value=\"visual\">Visual e reversível pelo editor</option><option value=\"rebuild\">Reconstruir a página na nova dimensão</option></select></div>\n        <div class=\"notice-card warning\"><strong>Importante</strong><p>O modo visual apenas altera a área exibida. O modo reconstruir remove a área externa da nova página, mas pode perder anotações, links e formulários.</p></div>"
+    }
+  },
+  "metadata": {
+    "config": {
+      "key": "metadata",
+      "title": "Limpar metadados",
+      "description": "Remova título, autor, assunto, palavras-chave, programa criador e produtor.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "metaTitle",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "metaAuthor",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "metaKeywords",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "metaSoftware",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_sem_metadados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Limpar metadados",
+      "description": "Remova título, autor, assunto, palavras-chave, programa criador e produtor.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Limpar metadados",
+      "outputExt": "auto",
+      "outputBase": "PDFs_sem_metadados",
+      "settings": "<div class=\"check-list\"><label><input id=\"metaTitle\" type=\"checkbox\" checked /> Título e assunto</label><label><input id=\"metaAuthor\" type=\"checkbox\" checked /> Autor</label><label><input id=\"metaKeywords\" type=\"checkbox\" checked /> Palavras-chave</label><label><input id=\"metaSoftware\" type=\"checkbox\" checked /> Criador e produtor</label></div><p class=\"help-text\">O conteúdo e a aparência das páginas não são alterados.</p>"
+    }
+  },
+  "normalize": {
+    "config": {
+      "key": "normalize",
+      "title": "Normalizar PDF",
+      "description": "Regrave a estrutura do PDF para corrigir inconsistências simples e melhorar compatibilidade.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "normalizeMetadata",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_normalizados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Normalizar PDF",
+      "description": "Regrave a estrutura do PDF para corrigir inconsistências simples e melhorar compatibilidade.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Normalizar PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "PDFs_normalizados",
+      "settings": "<label class=\"toggle-row\"><input id=\"normalizeMetadata\" type=\"checkbox\" /> Limpar metadados básicos durante a normalização</label><div class=\"notice-card warning\"><strong>Limite do reparo local</strong><p>Este módulo reconstrói PDFs que ainda podem ser abertos. Arquivos gravemente corrompidos exigem um motor nativo como qpdf ou Ghostscript.</p></div>"
+    }
+  },
+  "pdfToText": {
+    "config": {
+      "key": "pdfToText",
+      "title": "Extrair texto do PDF",
+      "description": "Extraia o texto selecionável de todas as páginas para TXT, sem enviar o documento.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "textPageHeaders",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "textos_extraidos",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Extrair texto do PDF",
+      "description": "Extraia o texto selecionável de todas as páginas para TXT, sem enviar o documento.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Extrair texto",
+      "outputExt": "auto",
+      "outputBase": "textos_extraidos",
+      "settings": "<label class=\"toggle-row\"><input id=\"textPageHeaders\" type=\"checkbox\" checked /> Incluir separadores com número da página</label><div class=\"notice-card\"><strong>Documentos escaneados</strong><p>Esta função extrai apenas texto já existente no PDF. Para fotos e digitalizações sem camada de texto, use OCR e PDF pesquisável.</p></div>"
+    }
+  },
+  "ocr": {
+    "config": {
+      "key": "ocr",
+      "title": "OCR e PDF pesquisável",
+      "description": "Reconheça texto em PDFs escaneados e imagens, preserve páginas digitais e gere PDF pesquisável, TXT e relatório de confiança.",
+      "accept": "application/pdf,image/png,image/jpeg,image/webp,image/bmp,.pdf,.png,.jpg,.jpeg,.webp,.bmp",
+      "multiple": true,
+      "typeLabel": "PDF ou imagem"
+    },
+    "controls": [
+      {
+        "id": "ocrOutputMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "searchable",
+        "label": "Resultado",
+        "options": [
+          {
+            "value": "searchable",
+            "label": "PDF pesquisável"
+          },
+          {
+            "value": "searchable-text",
+            "label": "PDF pesquisável + TXT"
+          },
+          {
+            "value": "text",
+            "label": "Somente texto TXT"
+          },
+          {
+            "value": "audit",
+            "label": "PDF + TXT + relatório JSON"
+          }
+        ]
+      },
+      {
+        "id": "ocrLanguage",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "por",
+        "label": "Idioma",
+        "options": [
+          {
+            "value": "por",
+            "label": "Português"
+          },
+          {
+            "value": "por+eng",
+            "label": "Português + inglês"
+          },
+          {
+            "value": "eng",
+            "label": "Inglês"
+          }
+        ]
+      },
+      {
+        "id": "ocrDpi",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "200",
+        "label": "Resolução",
+        "options": [
+          {
+            "value": "150",
+            "label": "150 DPI — rápido"
+          },
+          {
+            "value": "200",
+            "label": "200 DPI — recomendado"
+          },
+          {
+            "value": "300",
+            "label": "300 DPI — alta precisão"
+          }
+        ]
+      },
+      {
+        "id": "ocrRecognitionMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "automatic",
+        "label": "Reconhecimento",
+        "options": [
+          {
+            "value": "automatic",
+            "label": "Automático — preservar páginas que já têm texto"
+          },
+          {
+            "value": "force",
+            "label": "Forçar OCR em todas as páginas escolhidas"
+          }
+        ]
+      },
+      {
+        "id": "ocrPageScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Páginas",
+        "options": [
+          {
+            "value": "all",
+            "label": "Todas"
+          },
+          {
+            "value": "selected",
+            "label": "Informar páginas"
+          },
+          {
+            "value": "odd",
+            "label": "Ímpares"
+          },
+          {
+            "value": "even",
+            "label": "Pares"
+          }
+        ]
+      },
+      {
+        "id": "ocrPageSegMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "auto",
+        "label": "Layout do texto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Automático"
+          },
+          {
+            "value": "column",
+            "label": "Uma coluna"
+          },
+          {
+            "value": "block",
+            "label": "Um bloco uniforme"
+          },
+          {
+            "value": "sparse",
+            "label": "Texto esparso"
+          }
+        ]
+      },
+      {
+        "id": "ocrPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "ocrManualRotation",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "0",
+        "label": "Girar antes do OCR",
+        "options": [
+          {
+            "value": "0",
+            "label": "Não girar"
+          },
+          {
+            "value": "90",
+            "label": "90° à direita"
+          },
+          {
+            "value": "180",
+            "label": "180°"
+          },
+          {
+            "value": "270",
+            "label": "90° à esquerda"
+          }
+        ]
+      },
+      {
+        "id": "ocrNativeThreshold",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "25",
+        "label": "Texto existente mínimo",
+        "options": null
+      },
+      {
+        "id": "ocrAutoRotate",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "ocrGrayscale",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "ocrContrast",
+        "tag": "INPUT",
+        "type": "range",
+        "value": "20",
+        "label": "Aumentar contraste",
+        "options": null
+      },
+      {
+        "id": "ocrThresholdEnabled",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "ocrThreshold",
+        "tag": "INPUT",
+        "type": "range",
+        "value": "170",
+        "label": "Limiar",
+        "options": null
+      },
+      {
+        "id": "ocrPreserveNative",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "ocrPageHeaders",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "ocrIncludeReport",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "ocrDetectPatterns",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "ocrConfidenceThreshold",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "60",
+        "label": "Avisar abaixo da confiança (%)",
+        "options": null
+      },
+      {
+        "id": "ocrReviewButton",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Revisar confiança do último OCR",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "OCR_resultados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [
+      {
+        "id": "",
+        "title": "Melhoria da imagem"
+      },
+      {
+        "id": "ocrPdfOptions",
+        "title": "Preservação e controle de qualidade"
+      }
+    ],
+    "sourceConfig": {
+      "title": "OCR e PDF pesquisável",
+      "description": "Reconheça texto em PDFs escaneados e imagens, preserve páginas digitais e gere PDF pesquisável, TXT e relatório de confiança.",
+      "accept": "application/pdf,image/png,image/jpeg,image/webp,image/bmp,.pdf,.png,.jpg,.jpeg,.webp,.bmp",
+      "multiple": true,
+      "typeLabel": "PDF ou imagem",
+      "button": "Executar OCR",
+      "outputExt": "auto",
+      "outputBase": "OCR_resultados",
+      "settings": "\n        <div class=\"engine-banner ocr-engine-status\"><span>OCR</span><div><strong>Reconhecimento local com Tesseract.js</strong><p>O PDF é renderizado pelo PDF.js e reconhecido no navegador. Use o inicializador local e prepare o modo offline para documentos sigilosos.</p></div></div>\n        <div class=\"field\"><label for=\"ocrOutputMode\">Resultado</label><select id=\"ocrOutputMode\"><option value=\"searchable\">PDF pesquisável</option><option value=\"searchable-text\">PDF pesquisável + TXT</option><option value=\"text\">Somente texto TXT</option><option value=\"audit\">PDF + TXT + relatório JSON</option></select></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"ocrLanguage\">Idioma</label><select id=\"ocrLanguage\"><option value=\"por\">Português</option><option value=\"por+eng\">Português + inglês</option><option value=\"eng\">Inglês</option></select></div><div class=\"field\"><label for=\"ocrDpi\">Resolução</label><select id=\"ocrDpi\"><option value=\"150\">150 DPI — rápido</option><option value=\"200\" selected>200 DPI — recomendado</option><option value=\"300\">300 DPI — alta precisão</option></select></div></div>\n        <div class=\"field\"><label for=\"ocrRecognitionMode\">Reconhecimento</label><select id=\"ocrRecognitionMode\"><option value=\"automatic\">Automático — preservar páginas que já têm texto</option><option value=\"force\">Forçar OCR em todas as páginas escolhidas</option></select></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"ocrPageScope\">Páginas</label><select id=\"ocrPageScope\"><option value=\"all\">Todas</option><option value=\"selected\">Informar páginas</option><option value=\"odd\">Ímpares</option><option value=\"even\">Pares</option></select></div><div class=\"field\"><label for=\"ocrPageSegMode\">Layout do texto</label><select id=\"ocrPageSegMode\"><option value=\"auto\">Automático</option><option value=\"column\">Uma coluna</option><option value=\"block\">Um bloco uniforme</option><option value=\"sparse\">Texto esparso</option></select></div></div>\n        <div id=\"ocrPagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"ocrPages\">Páginas</label><input id=\"ocrPages\" placeholder=\"Exemplo: 1-3,5,8\" /></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"ocrManualRotation\">Girar antes do OCR</label><select id=\"ocrManualRotation\"><option value=\"0\">Não girar</option><option value=\"90\">90° à direita</option><option value=\"180\">180°</option><option value=\"270\">90° à esquerda</option></select></div><div class=\"field\"><label for=\"ocrNativeThreshold\">Texto existente mínimo</label><input id=\"ocrNativeThreshold\" type=\"number\" min=\"1\" max=\"500\" value=\"25\" /></div></div>\n        <label class=\"toggle-row\"><input id=\"ocrAutoRotate\" type=\"checkbox\" checked /><span>Tentar corrigir automaticamente a orientação do texto</span></label>\n        <details class=\"editor-settings-group\" open><summary>Melhoria da imagem</summary>\n          <label class=\"toggle-row\"><input id=\"ocrGrayscale\" type=\"checkbox\" checked /><span>Converter para tons de cinza</span></label>\n          <div class=\"field\"><label for=\"ocrContrast\">Aumentar contraste</label><input id=\"ocrContrast\" type=\"range\" min=\"0\" max=\"100\" value=\"20\" /></div>\n          <label class=\"toggle-row\"><input id=\"ocrThresholdEnabled\" type=\"checkbox\" /><span>Aplicar preto e branco por limiar</span></label>\n          <div id=\"ocrThresholdPanel\" class=\"hidden\"><div class=\"field\"><label for=\"ocrThreshold\">Limiar</label><input id=\"ocrThreshold\" type=\"range\" min=\"60\" max=\"230\" value=\"170\" /></div></div>\n        </details>\n        <details id=\"ocrPdfOptions\" class=\"editor-settings-group\" open><summary>Preservação e controle de qualidade</summary>\n          <label class=\"toggle-row\"><input id=\"ocrPreserveNative\" type=\"checkbox\" checked /><span>Preservar páginas que já possuem texto selecionável</span></label>\n          <label class=\"toggle-row\"><input id=\"ocrPageHeaders\" type=\"checkbox\" checked /><span>Separar o TXT por número da página</span></label>\n          <label class=\"toggle-row\"><input id=\"ocrIncludeReport\" type=\"checkbox\" /><span>Incluir relatório JSON de confiança</span></label>\n          <label class=\"toggle-row\"><input id=\"ocrDetectPatterns\" type=\"checkbox\" checked /><span>Detectar CPF, CNPJ, datas, valores e e-mails</span></label>\n          <div class=\"field\"><label for=\"ocrConfidenceThreshold\">Avisar abaixo da confiança (%)</label><input id=\"ocrConfidenceThreshold\" type=\"number\" min=\"0\" max=\"100\" value=\"60\" /></div>\n        </details>\n        <div id=\"ocrPlan\" class=\"notice-card ocr-plan\"><strong>Plano do OCR</strong><p>Adicione PDFs ou imagens para calcular páginas, tamanho e estimativa de processamento.</p></div>\n        <div id=\"ocrLastSummary\" class=\"notice-card hidden\"></div>\n        <button id=\"ocrReviewButton\" class=\"small-button full-width hidden\" type=\"button\">Revisar confiança do último OCR</button>\n        <div class=\"notice-card warning\"><strong>Ponto de atenção</strong><p>OCR pode cometer erros, especialmente em manuscritos, fotos desfocadas, tabelas complexas e páginas inclinadas. Revise páginas de baixa confiança antes de usar o conteúdo oficialmente.</p></div>"
+    }
+  },
+  "compare": {
+    "config": {
+      "key": "compare",
+      "title": "Comparar PDFs",
+      "description": "Compare duas versões página por página e gere um relatório com diferenças visuais e textuais.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "2 PDFs"
+    },
+    "controls": [
+      {
+        "id": "compareMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "hybrid",
+        "label": "Tipo de comparação",
+        "options": [
+          {
+            "value": "hybrid",
+            "label": "Híbrida: texto e imagem"
+          },
+          {
+            "value": "text",
+            "label": "Somente texto"
+          },
+          {
+            "value": "visual",
+            "label": "Somente aparência"
+          }
+        ]
+      },
+      {
+        "id": "compareIgnoreCase",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "compareIgnoreWhitespace",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "comparePages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "all",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "compareDpi",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "110",
+        "label": "Resolução visual",
+        "options": [
+          {
+            "value": "96",
+            "label": "96 DPI — rápido"
+          },
+          {
+            "value": "110",
+            "label": "110 DPI — recomendado"
+          },
+          {
+            "value": "150",
+            "label": "150 DPI — detalhado"
+          }
+        ]
+      },
+      {
+        "id": "compareThreshold",
+        "tag": "INPUT",
+        "type": "range",
+        "value": "28",
+        "label": "Sensibilidade visual",
+        "options": null
+      },
+      {
+        "id": "compareIncludeImages",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "Comparacao_PDFs",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Comparar PDFs",
+      "description": "Compare duas versões página por página e gere um relatório com diferenças visuais e textuais.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "2 PDFs",
+      "button": "Comparar documentos",
+      "outputExt": "zip",
+      "outputBase": "Comparacao_PDFs",
+      "settings": "<div id=\"comparePlan\" class=\"notice-card compare-plan\"><strong>Selecione exatamente 2 PDFs</strong><p>O documento original e a versão revisada serão comparados.</p></div>\n        <div class=\"field\"><label for=\"compareMode\">Tipo de comparação</label><select id=\"compareMode\"><option value=\"hybrid\">Híbrida: texto e imagem</option><option value=\"text\">Somente texto</option><option value=\"visual\">Somente aparência</option></select></div>\n        <div class=\"field-row\"><label class=\"toggle-row compact\"><input id=\"compareIgnoreCase\" type=\"checkbox\" checked><span>Ignorar maiúsculas/minúsculas</span></label><label class=\"toggle-row compact\"><input id=\"compareIgnoreWhitespace\" type=\"checkbox\" checked><span>Normalizar espaços</span></label></div>\n        <div class=\"field\"><label for=\"comparePages\">Páginas</label><input id=\"comparePages\" value=\"all\" placeholder=\"all ou 1-3,5\"></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"compareDpi\">Resolução visual</label><select id=\"compareDpi\"><option value=\"96\">96 DPI — rápido</option><option value=\"110\" selected>110 DPI — recomendado</option><option value=\"150\">150 DPI — detalhado</option></select></div><div class=\"field\"><label for=\"compareThreshold\">Sensibilidade visual</label><input id=\"compareThreshold\" type=\"range\" min=\"8\" max=\"70\" value=\"28\"></div></div>\n        <label class=\"toggle-row\"><input id=\"compareIncludeImages\" type=\"checkbox\" checked><span>Incluir imagens original, revisada e diferenças no relatório</span></label>\n        <div class=\"notice-card warning\"><strong>Comparação assistida</strong><p>O relatório aponta diferenças, mas não substitui a conferência humana de valores, cláusulas, assinaturas e elementos jurídicos.</p></div>"
+    }
+  },
+  "redact": {
+    "config": {
+      "key": "redact",
+      "title": "Censura definitiva",
+      "description": "Remova permanentemente áreas sensíveis reconstruindo as páginas afetadas, com relatório de auditoria.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "redactionSearch",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Texto ou expressão",
+        "options": null
+      },
+      {
+        "id": "redactionSearchScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "all",
+        "label": "Pesquisar",
+        "options": [
+          {
+            "value": "all",
+            "label": "Em todas as páginas"
+          },
+          {
+            "value": "current",
+            "label": "Somente na página atual"
+          }
+        ]
+      },
+      {
+        "id": "redactionRegex",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "redactionFind",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Marcar ocorrências",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "CPF",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "CNPJ",
+        "options": null
+      },
+      {
+        "id": "",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Valores",
+        "options": null
+      },
+      {
+        "id": "redactionDpi",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "180",
+        "label": "Qualidade",
+        "options": [
+          {
+            "value": "150",
+            "label": "150 DPI"
+          },
+          {
+            "value": "180",
+            "label": "180 DPI"
+          },
+          {
+            "value": "220",
+            "label": "220 DPI"
+          },
+          {
+            "value": "300",
+            "label": "300 DPI"
+          }
+        ]
+      },
+      {
+        "id": "redactionColor",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#000000",
+        "label": "Cor da área",
+        "options": null
+      },
+      {
+        "id": "redactionLabel",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Texto sobre a censura (opcional)",
+        "options": null
+      },
+      {
+        "id": "redactionRasterAll",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "redactionReport",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "redactionClearAll",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Limpar todas as marcações",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_censurado",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [
+      {
+        "id": "",
+        "title": "Localizar texto"
+      },
+      {
+        "id": "",
+        "title": "Saída segura"
+      }
+    ],
+    "sourceConfig": {
+      "title": "Censura definitiva",
+      "description": "Remova permanentemente áreas sensíveis reconstruindo as páginas afetadas, com relatório de auditoria.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF",
+      "button": "Aplicar censura definitiva",
+      "outputExt": "pdf",
+      "outputBase": "PDF_censurado",
+      "settings": "<div class=\"notice-card warning\"><strong>Operação irreversível na nova cópia</strong><p>As páginas censuradas são rasterizadas e reconstruídas. O texto, imagens e camadas originais dessas páginas não são copiados.</p></div>\n        <div id=\"redactionSummary\" class=\"notice-card redaction-summary\"><strong>0 áreas marcadas</strong><p>Arraste sobre a página para selecionar informações sensíveis.</p></div>\n        <details open><summary>Localizar texto</summary><div class=\"field\"><label for=\"redactionSearch\">Texto ou expressão</label><input id=\"redactionSearch\" placeholder=\"Nome, CPF, CNPJ, valor...\"></div><div class=\"field-row\"><div class=\"field\"><label for=\"redactionSearchScope\">Pesquisar</label><select id=\"redactionSearchScope\"><option value=\"all\">Em todas as páginas</option><option value=\"current\">Somente na página atual</option></select></div><label class=\"toggle-row compact\"><input id=\"redactionRegex\" type=\"checkbox\"><span>Expressão regular</span></label></div><button id=\"redactionFind\" class=\"small-button primary-soft\" type=\"button\">Marcar ocorrências</button><div class=\"redaction-pattern-buttons\"><button type=\"button\" onclick=\"document.querySelector('#redactionSearch').value='\\b\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}\\b';document.querySelector('#redactionRegex').checked=true\">CPF</button><button type=\"button\" onclick=\"document.querySelector('#redactionSearch').value='\\b\\d{2}\\.?\\d{3}\\.?\\d{3}/?\\d{4}-?\\d{2}\\b';document.querySelector('#redactionRegex').checked=true\">CNPJ</button><button type=\"button\" onclick=\"document.querySelector('#redactionSearch').value='R\\$\\s?\\d+(?:[.,]\\d+)*';document.querySelector('#redactionRegex').checked=true\">Valores</button></div></details>\n        <details open><summary>Saída segura</summary><div class=\"field-row\"><div class=\"field\"><label for=\"redactionDpi\">Qualidade</label><select id=\"redactionDpi\"><option value=\"150\">150 DPI</option><option value=\"180\" selected>180 DPI</option><option value=\"220\">220 DPI</option><option value=\"300\">300 DPI</option></select></div><div class=\"field\"><label for=\"redactionColor\">Cor da área</label><input id=\"redactionColor\" type=\"color\" value=\"#000000\"></div></div><div class=\"field\"><label for=\"redactionLabel\">Texto sobre a censura (opcional)</label><input id=\"redactionLabel\" placeholder=\"CONFIDENCIAL\"></div><label class=\"toggle-row\"><input id=\"redactionRasterAll\" type=\"checkbox\"><span>Reconstruir todas as páginas para máxima sanitização</span></label><label class=\"toggle-row\"><input id=\"redactionReport\" type=\"checkbox\" checked><span>Gerar relatório JSON com páginas e hashes</span></label><button id=\"redactionClearAll\" class=\"small-button danger\" type=\"button\">Limpar todas as marcações</button></details>\n        <div class=\"notice-card warning\"><strong>Perdas esperadas</strong><p>Páginas reconstruídas perdem texto selecionável, links, formulários, comentários e assinaturas digitais. Sempre preserve o original separado.</p></div>"
+    }
+  },
+  "formBuilder": {
+    "config": {
+      "key": "formBuilder",
+      "title": "Criar formulário preenchível",
+      "description": "Adicione campos de texto, data, número, CPF, CNPJ, moeda, caixas, listas e opções diretamente nas páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "formFieldType",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "text",
+        "label": "Tipo de campo",
+        "options": [
+          {
+            "value": "text",
+            "label": "Texto"
+          },
+          {
+            "value": "multiline",
+            "label": "Texto multilinha"
+          },
+          {
+            "value": "date",
+            "label": "Data"
+          },
+          {
+            "value": "number",
+            "label": "Número"
+          },
+          {
+            "value": "currency",
+            "label": "Moeda (R$)"
+          },
+          {
+            "value": "cpf",
+            "label": "CPF"
+          },
+          {
+            "value": "cnpj",
+            "label": "CNPJ"
+          },
+          {
+            "value": "checkbox",
+            "label": "Caixa de seleção"
+          },
+          {
+            "value": "dropdown",
+            "label": "Lista suspensa"
+          },
+          {
+            "value": "radio",
+            "label": "Opções únicas"
+          },
+          {
+            "value": "list",
+            "label": "Lista de opções"
+          }
+        ]
+      },
+      {
+        "id": "formFieldName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Nome interno",
+        "options": null
+      },
+      {
+        "id": "formFieldLabel",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Rótulo ou orientação",
+        "options": null
+      },
+      {
+        "id": "formFieldDefault",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Valor inicial",
+        "options": null
+      },
+      {
+        "id": "formFieldOptions",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": "",
+        "label": "Opções, uma por linha",
+        "options": null
+      },
+      {
+        "id": "formFieldFontSize",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "11",
+        "label": "Tamanho do texto",
+        "options": null
+      },
+      {
+        "id": "formFieldMaxLength",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "0",
+        "label": "Limite de caracteres",
+        "options": null
+      },
+      {
+        "id": "formFieldTextColor",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#111827",
+        "label": "Cor do texto",
+        "options": null
+      },
+      {
+        "id": "formFieldBorderColor",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#7c6cff",
+        "label": "Cor da borda",
+        "options": null
+      },
+      {
+        "id": "formFieldBackground",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#ffffff",
+        "label": "Fundo",
+        "options": null
+      },
+      {
+        "id": "formFieldRequired",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "formStartPlacement",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Adicionar campo na página",
+        "options": null
+      },
+      {
+        "id": "formUpdateSelected",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Atualizar selecionado",
+        "options": null
+      },
+      {
+        "id": "formDuplicateSelected",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Duplicar",
+        "options": null
+      },
+      {
+        "id": "formDeleteSelected",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Excluir",
+        "options": null
+      },
+      {
+        "id": "formCopyPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Copiar o campo selecionado para",
+        "options": null
+      },
+      {
+        "id": "formCopySelected",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Copiar para as páginas",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_formulario_preenchivel",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [
+      {
+        "id": "",
+        "title": "Repetir campo"
+      }
+    ],
+    "sourceConfig": {
+      "title": "Criar formulário preenchível",
+      "description": "Adicione campos de texto, data, número, CPF, CNPJ, moeda, caixas, listas e opções diretamente nas páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF",
+      "button": "Criar formulário",
+      "outputExt": "pdf",
+      "outputBase": "PDF_formulario_preenchivel",
+      "settings": "<div class=\"notice-card\"><strong>Designer de formulário</strong><p>Escolha um tipo de campo, configure as propriedades e arraste sobre a página para posicioná-lo.</p></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"formFieldType\">Tipo de campo</label><select id=\"formFieldType\"><option value=\"text\">Texto</option><option value=\"multiline\">Texto multilinha</option><option value=\"date\">Data</option><option value=\"number\">Número</option><option value=\"currency\">Moeda (R$)</option><option value=\"cpf\">CPF</option><option value=\"cnpj\">CNPJ</option><option value=\"checkbox\">Caixa de seleção</option><option value=\"dropdown\">Lista suspensa</option><option value=\"radio\">Opções únicas</option><option value=\"list\">Lista de opções</option></select></div><div class=\"field\"><label for=\"formFieldName\">Nome interno</label><input id=\"formFieldName\" placeholder=\"Ex.: nome_completo\"></div></div>\n        <div class=\"field\"><label for=\"formFieldLabel\">Rótulo ou orientação</label><input id=\"formFieldLabel\" placeholder=\"Ex.: Informe o nome completo\"></div>\n        <div class=\"field\"><label for=\"formFieldDefault\">Valor inicial</label><input id=\"formFieldDefault\" placeholder=\"Opcional\"></div>\n        <div id=\"formFieldOptionsPanel\" class=\"hidden\"><div class=\"field\"><label for=\"formFieldOptions\">Opções, uma por linha</label><textarea id=\"formFieldOptions\" rows=\"4\" placeholder=\"Opção 1&#10;Opção 2\"></textarea></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"formFieldFontSize\">Tamanho do texto</label><input id=\"formFieldFontSize\" type=\"number\" min=\"6\" max=\"48\" value=\"11\"></div><div class=\"field\"><label for=\"formFieldMaxLength\">Limite de caracteres</label><input id=\"formFieldMaxLength\" type=\"number\" min=\"0\" max=\"5000\" value=\"0\"></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"formFieldTextColor\">Cor do texto</label><input id=\"formFieldTextColor\" type=\"color\" value=\"#111827\"></div><div class=\"field\"><label for=\"formFieldBorderColor\">Cor da borda</label><input id=\"formFieldBorderColor\" type=\"color\" value=\"#7c6cff\"></div><div class=\"field\"><label for=\"formFieldBackground\">Fundo</label><input id=\"formFieldBackground\" type=\"color\" value=\"#ffffff\"></div></div>\n        <label class=\"toggle-row\"><input id=\"formFieldRequired\" type=\"checkbox\"><span>Campo obrigatório</span></label>\n        <div class=\"form-action-grid\"><button id=\"formStartPlacement\" class=\"small-button primary-soft\" type=\"button\">Adicionar campo na página</button><button id=\"formUpdateSelected\" class=\"small-button\" type=\"button\">Atualizar selecionado</button><button id=\"formDuplicateSelected\" class=\"small-button\" type=\"button\">Duplicar</button><button id=\"formDeleteSelected\" class=\"small-button danger\" type=\"button\">Excluir</button></div>\n        <details><summary>Repetir campo</summary><div class=\"field\"><label for=\"formCopyPages\">Copiar o campo selecionado para</label><input id=\"formCopyPages\" placeholder=\"Ex.: all, 1-3,5\"></div><button id=\"formCopySelected\" class=\"small-button full-width\" type=\"button\">Copiar para as páginas</button></details>\n        <div id=\"formBuilderSummary\" class=\"notice-card\"><strong>0 campos</strong><p>Adicione um PDF para iniciar o desenho.</p></div>\n        <div class=\"notice-card warning\"><strong>Compatibilidade</strong><p>Máscaras e validações ajudam na configuração, mas alguns leitores de PDF podem tratar CPF, CNPJ, data e moeda como campos de texto comuns.</p></div>"
+    }
+  },
+  "signPdf": {
+    "config": {
+      "key": "signPdf",
+      "title": "Assinar e rubricar PDF",
+      "description": "Adicione assinatura visual desenhada, digitada ou por imagem, com data, nome do assinante e rubrica em várias páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "signatureSource",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "draw",
+        "label": "Origem da assinatura",
+        "options": [
+          {
+            "value": "draw",
+            "label": "Desenhar"
+          },
+          {
+            "value": "typed",
+            "label": "Digitar"
+          },
+          {
+            "value": "image",
+            "label": "Usar imagem PNG/JPG"
+          }
+        ]
+      },
+      {
+        "id": "signaturePadClear",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Limpar",
+        "options": null
+      },
+      {
+        "id": "signatureInkColor",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#111827",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "signatureInkWidth",
+        "tag": "INPUT",
+        "type": "range",
+        "value": "3",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "signatureTypedText",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Assinatura digitada",
+        "options": null
+      },
+      {
+        "id": "signatureTypedFont",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "serif",
+        "label": "Estilo",
+        "options": [
+          {
+            "value": "serif",
+            "label": "Clássica"
+          },
+          {
+            "value": "cursive",
+            "label": "Manuscrita"
+          },
+          {
+            "value": "sans",
+            "label": "Moderna"
+          }
+        ]
+      },
+      {
+        "id": "signatureTypedColor",
+        "tag": "INPUT",
+        "type": "color",
+        "value": "#111827",
+        "label": "Cor",
+        "options": null
+      },
+      {
+        "id": "signatureImageInput",
+        "tag": "INPUT",
+        "type": "file",
+        "value": "",
+        "label": "Imagem da assinatura",
+        "options": null
+      },
+      {
+        "id": "signatureRemoveWhite",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "signaturePrepare",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Preparar e posicionar assinatura",
+        "options": null
+      },
+      {
+        "id": "signatureSignerName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Nome abaixo da assinatura",
+        "options": null
+      },
+      {
+        "id": "signatureDateMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "none",
+        "label": "Data",
+        "options": [
+          {
+            "value": "none",
+            "label": "Não incluir"
+          },
+          {
+            "value": "today",
+            "label": "Data atual"
+          },
+          {
+            "value": "custom",
+            "label": "Data informada"
+          }
+        ]
+      },
+      {
+        "id": "signatureCustomDate",
+        "tag": "INPUT",
+        "type": "date",
+        "value": "",
+        "label": "Data",
+        "options": null
+      },
+      {
+        "id": "signaturePageScope",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "manual",
+        "label": "Aplicar em",
+        "options": [
+          {
+            "value": "manual",
+            "label": "Somente onde posicionar"
+          },
+          {
+            "value": "current",
+            "label": "Página atual"
+          },
+          {
+            "value": "all",
+            "label": "Todas as páginas"
+          },
+          {
+            "value": "selected",
+            "label": "Páginas informadas"
+          }
+        ]
+      },
+      {
+        "id": "signatureRotation",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "0",
+        "label": "Rotação",
+        "options": null
+      },
+      {
+        "id": "signatureSelectedPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "signatureDuplicate",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Duplicar selecionada",
+        "options": null
+      },
+      {
+        "id": "signatureRubricAll",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Rubricar todas",
+        "options": null
+      },
+      {
+        "id": "signatureDelete",
+        "tag": "BUTTON",
+        "type": "button",
+        "value": "",
+        "label": "Excluir selecionada",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDF_assinado_visual",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Assinar e rubricar PDF",
+      "description": "Adicione assinatura visual desenhada, digitada ou por imagem, com data, nome do assinante e rubrica em várias páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": false,
+      "typeLabel": "PDF",
+      "button": "Aplicar assinaturas",
+      "outputExt": "pdf",
+      "outputBase": "PDF_assinado_visual",
+      "settings": "<div class=\"notice-card warning\"><strong>Assinatura visual</strong><p>Esta ferramenta insere a aparência da assinatura. Ela não equivale a uma assinatura digital com certificado ICP-Brasil e não valida identidade criptograficamente.</p></div>\n        <div class=\"field\"><label for=\"signatureSource\">Origem da assinatura</label><select id=\"signatureSource\"><option value=\"draw\">Desenhar</option><option value=\"typed\">Digitar</option><option value=\"image\">Usar imagem PNG/JPG</option></select></div>\n        <div id=\"signatureDrawPanel\"><canvas id=\"signaturePad\" width=\"520\" height=\"180\" aria-label=\"Área para desenhar assinatura\"></canvas><div class=\"signature-pad-actions\"><button id=\"signaturePadClear\" class=\"small-button\" type=\"button\">Limpar</button><label>Cor <input id=\"signatureInkColor\" type=\"color\" value=\"#111827\"></label><label>Espessura <input id=\"signatureInkWidth\" type=\"range\" min=\"1\" max=\"8\" value=\"3\"></label></div></div>\n        <div id=\"signatureTypedPanel\" class=\"hidden\"><div class=\"field\"><label for=\"signatureTypedText\">Assinatura digitada</label><input id=\"signatureTypedText\" placeholder=\"Nome do assinante\"></div><div class=\"field-row\"><div class=\"field\"><label for=\"signatureTypedFont\">Estilo</label><select id=\"signatureTypedFont\"><option value=\"serif\">Clássica</option><option value=\"cursive\">Manuscrita</option><option value=\"sans\">Moderna</option></select></div><div class=\"field\"><label for=\"signatureTypedColor\">Cor</label><input id=\"signatureTypedColor\" type=\"color\" value=\"#111827\"></div></div></div>\n        <div id=\"signatureImagePanel\" class=\"hidden\"><div class=\"field\"><label for=\"signatureImageInput\">Imagem da assinatura</label><input id=\"signatureImageInput\" type=\"file\" accept=\"image/png,image/jpeg,.png,.jpg,.jpeg\"></div><label class=\"toggle-row\"><input id=\"signatureRemoveWhite\" type=\"checkbox\" checked><span>Tornar fundo branco transparente</span></label></div>\n        <button id=\"signaturePrepare\" class=\"small-button primary-soft full-width\" type=\"button\">Preparar e posicionar assinatura</button>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"signatureSignerName\">Nome abaixo da assinatura</label><input id=\"signatureSignerName\" placeholder=\"Opcional\"></div><div class=\"field\"><label for=\"signatureDateMode\">Data</label><select id=\"signatureDateMode\"><option value=\"none\">Não incluir</option><option value=\"today\">Data atual</option><option value=\"custom\">Data informada</option></select></div></div>\n        <div id=\"signatureCustomDatePanel\" class=\"hidden\"><div class=\"field\"><label for=\"signatureCustomDate\">Data</label><input id=\"signatureCustomDate\" type=\"date\"></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"signaturePageScope\">Aplicar em</label><select id=\"signaturePageScope\"><option value=\"manual\">Somente onde posicionar</option><option value=\"current\">Página atual</option><option value=\"all\">Todas as páginas</option><option value=\"selected\">Páginas informadas</option></select></div><div class=\"field\"><label for=\"signatureRotation\">Rotação</label><input id=\"signatureRotation\" type=\"number\" min=\"-180\" max=\"180\" value=\"0\"></div></div>\n        <div id=\"signatureSelectedPagesPanel\" class=\"hidden\"><div class=\"field\"><label for=\"signatureSelectedPages\">Páginas</label><input id=\"signatureSelectedPages\" placeholder=\"Ex.: 1-3,5\"></div></div>\n        <div class=\"form-action-grid\"><button id=\"signatureDuplicate\" class=\"small-button\" type=\"button\">Duplicar selecionada</button><button id=\"signatureRubricAll\" class=\"small-button\" type=\"button\">Rubricar todas</button><button id=\"signatureDelete\" class=\"small-button danger\" type=\"button\">Excluir selecionada</button></div>\n        <div id=\"signatureSummary\" class=\"notice-card\"><strong>0 assinaturas</strong><p>Adicione um PDF e prepare a assinatura.</p></div>\n        <div class=\"notice-card warning\"><strong>Validade jurídica</strong><p>Confirme as exigências do processo. Para assinatura digital com certificado, será necessário um módulo específico com certificado e validação criptográfica.</p></div>"
+    }
+  },
+  "pdfToOffice": {
+    "config": {
+      "key": "pdfToOffice",
+      "title": "PDF para Office",
+      "description": "Converta PDFs para Word, Excel ou PowerPoint em modos controlados e totalmente locais.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "officeExportFormat",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "docx",
+        "label": "Formato de saída",
+        "options": [
+          {
+            "value": "docx",
+            "label": "Word DOCX"
+          },
+          {
+            "value": "xlsx",
+            "label": "Excel XLSX"
+          },
+          {
+            "value": "pptx",
+            "label": "PowerPoint PPTX"
+          }
+        ]
+      },
+      {
+        "id": "officeDocxMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "image",
+        "label": "Modo do Word",
+        "options": [
+          {
+            "value": "image",
+            "label": "Aparência preservada como imagem — sem edição do texto"
+          },
+          {
+            "value": "text",
+            "label": "Texto editável simplificado — sem layout"
+          },
+          {
+            "value": "hybrid",
+            "label": "Imagem + texto extraído"
+          }
+        ]
+      },
+      {
+        "id": "officeXlsxSheets",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "page",
+        "label": "Organização do Excel",
+        "options": [
+          {
+            "value": "page",
+            "label": "Uma planilha por página"
+          },
+          {
+            "value": "document",
+            "label": "Uma planilha por documento"
+          }
+        ]
+      },
+      {
+        "id": "officeExportPages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "all",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "officeExportDpi",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "200",
+        "label": "Qualidade visual",
+        "options": [
+          {
+            "value": "110",
+            "label": "110 DPI — leve"
+          },
+          {
+            "value": "144",
+            "label": "144 DPI — leve"
+          },
+          {
+            "value": "200",
+            "label": "200 DPI — detalhado"
+          }
+        ]
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "arquivos_Office",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "PDF para Office",
+      "description": "Converta PDFs para Word, Excel ou PowerPoint em modos controlados e totalmente locais.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Converter para Office",
+      "outputExt": "auto",
+      "outputBase": "arquivos_Office",
+      "settings": "<div class=\"conversion-engine-banner\"><span class=\"conversion-mark\">OFF</span><div><strong>Conversão local para Office</strong><p>Escolha entre texto editável simplificado, páginas como imagens ou apresentação visual. Nenhum documento é enviado.</p></div></div>\n        <div class=\"field\"><label for=\"officeExportFormat\">Formato de saída</label><select id=\"officeExportFormat\"><option value=\"docx\">Word DOCX</option><option value=\"xlsx\">Excel XLSX</option><option value=\"pptx\">PowerPoint PPTX</option></select></div>\n        <div id=\"officeDocxOptions\"><div class=\"field\"><label for=\"officeDocxMode\">Modo do Word</label><select id=\"officeDocxMode\"><option value=\"image\">Aparência preservada como imagem — sem edição do texto</option><option value=\"text\">Texto editável simplificado — sem layout</option><option value=\"hybrid\">Imagem + texto extraído</option></select></div></div>\n        <div id=\"officeXlsxOptions\" class=\"hidden\"><div class=\"field\"><label for=\"officeXlsxSheets\">Organização do Excel</label><select id=\"officeXlsxSheets\"><option value=\"page\">Uma planilha por página</option><option value=\"document\">Uma planilha por documento</option></select></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"officeExportPages\">Páginas</label><input id=\"officeExportPages\" value=\"all\" placeholder=\"all ou 1-3,5\"></div><div class=\"field\"><label for=\"officeExportDpi\">Qualidade visual</label><select id=\"officeExportDpi\"><option value=\"110\">110 DPI — leve</option><option value=\"144\">144 DPI — leve</option><option value=\"200\" selected>200 DPI — detalhado</option></select></div></div>\n        <div id=\"pdfToOfficePlan\" class=\"notice-card conversion-plan\"><strong>Conversão para Office</strong><p>Adicione PDFs para calcular o plano.</p></div>\n        <div class=\"notice-card warning\"><strong>Fidelidade controlada</strong><p>Word visual e PowerPoint preservam páginas como imagens. Para editar texto no Word, escolha o modo simplificado. Excel extrai texto e tabelas; não recupera fórmulas e estilos.</p></div>"
+    }
+  },
+  "documentsToPdf": {
+    "config": {
+      "key": "documentsToPdf",
+      "title": "Office para PDF",
+      "description": "Converta Word, Excel, PowerPoint, ODS, ODT, ODP e outros documentos em PDF no seu computador.",
+      "accept": ".docx,.doc,.odt,.xlsx,.xls,.ods,.pptx,.ppt,.odp,.rtf,.html,.htm,.txt,.csv,.md,.markdown,image/*,.png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff,.heic,.heif",
+      "multiple": true,
+      "typeLabel": "Documento ou imagem"
+    },
+    "controls": [
+      {
+        "id": "docToPdfEngine",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "layout",
+        "label": "Modo de conversão",
+        "options": [
+          {
+            "value": "layout",
+            "label": "Preservar layout"
+          },
+          {
+            "value": "text",
+            "label": "Somente texto (simplificado)"
+          }
+        ]
+      },
+      {
+        "id": "docToPdfCombine",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "docToPdfPageSize",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "a4",
+        "label": "Papel para documentos",
+        "options": [
+          {
+            "value": "a4",
+            "label": "A4"
+          },
+          {
+            "value": "letter",
+            "label": "Carta"
+          }
+        ]
+      },
+      {
+        "id": "docToPdfFontSize",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "11",
+        "label": "Tamanho do texto",
+        "options": null
+      },
+      {
+        "id": "docToPdfImagePage",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "image",
+        "label": "Página para imagens",
+        "options": [
+          {
+            "value": "image",
+            "label": "Ajustar ao tamanho da imagem"
+          },
+          {
+            "value": "a4",
+            "label": "Colocar em página A4"
+          }
+        ]
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "documentos_convertidos",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Office para PDF",
+      "description": "Converta Word, Excel, PowerPoint, ODS, ODT, ODP e outros documentos em PDF no seu computador.",
+      "accept": ".docx,.doc,.odt,.xlsx,.xls,.ods,.pptx,.ppt,.odp,.rtf,.html,.htm,.txt,.csv,.md,.markdown,image/*,.png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff,.heic,.heif",
+      "multiple": true,
+      "typeLabel": "Documento ou imagem",
+      "button": "Criar PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "documentos_convertidos",
+      "settings": "<div class=\"conversion-engine-banner\"><span class=\"conversion-mark\">PDF</span><div><strong>Office para PDF no seu computador</strong><p>Preserve imagens, tabelas, cabeçalhos e configuração de impressão, sem enviar seus documentos.</p></div></div>\n        <div class=\"field\"><label for=\"docToPdfEngine\">Modo de conversão</label><select id=\"docToPdfEngine\"><option value=\"layout\">Preservar layout</option><option value=\"text\">Somente texto (simplificado)</option></select></div>\n        <label class=\"toggle-row\"><input id=\"docToPdfCombine\" type=\"checkbox\"><span>Combinar todos os arquivos em um único PDF</span></label>\n        <div id=\"docToPdfTextOptions\" class=\"field-row\"><div class=\"field\"><label for=\"docToPdfPageSize\">Papel para documentos</label><select id=\"docToPdfPageSize\"><option value=\"a4\">A4</option><option value=\"letter\">Carta</option></select></div><div class=\"field\"><label for=\"docToPdfFontSize\">Tamanho do texto</label><input id=\"docToPdfFontSize\" type=\"number\" min=\"8\" max=\"18\" value=\"11\"></div></div>\n        <div class=\"field\"><label for=\"docToPdfImagePage\">Página para imagens</label><select id=\"docToPdfImagePage\"><option value=\"image\">Ajustar ao tamanho da imagem</option><option value=\"a4\">Colocar em página A4</option></select></div>\n        <div id=\"documentsToPdfPlan\" class=\"notice-card conversion-plan\"><strong>Documentos para PDF</strong><p>Adicione documentos ou imagens para calcular o plano.</p></div>\n        <div class=\"notice-card\"><strong>Confira o resultado</strong><p>O modo de layout usa as fontes disponíveis no motor. Fontes ausentes podem ser substituídas. Papel e texto acima se aplicam somente ao modo simplificado; a conversão respeita o documento e a área de impressão. Para ODS, use Preservar layout.</p></div>"
+    }
+  },
+  "extractImages": {
+    "config": {
+      "key": "extractImages",
+      "title": "Extrair imagens do PDF",
+      "description": "Extraia imagens internas reais, páginas completas ou ambas, com filtros e manifesto.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "extractImageMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "internal",
+        "label": "Conteúdo",
+        "options": [
+          {
+            "value": "internal",
+            "label": "Somente imagens internas"
+          },
+          {
+            "value": "pages",
+            "label": "Somente páginas completas"
+          },
+          {
+            "value": "both",
+            "label": "Imagens internas + páginas completas"
+          }
+        ]
+      },
+      {
+        "id": "extractImageFormat",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "png",
+        "label": "Formato",
+        "options": [
+          {
+            "value": "png",
+            "label": "PNG"
+          },
+          {
+            "value": "jpg",
+            "label": "JPG"
+          },
+          {
+            "value": "webp",
+            "label": "WEBP"
+          }
+        ]
+      },
+      {
+        "id": "extractImageQuality",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "90",
+        "label": "Qualidade (%)",
+        "options": null
+      },
+      {
+        "id": "extractImageMinWidth",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "80",
+        "label": "Largura mínima",
+        "options": null
+      },
+      {
+        "id": "extractImageMinHeight",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "80",
+        "label": "Altura mínima",
+        "options": null
+      },
+      {
+        "id": "extractImagePages",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "all",
+        "label": "Páginas",
+        "options": null
+      },
+      {
+        "id": "extractImageDpi",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "150",
+        "label": "DPI das páginas",
+        "options": [
+          {
+            "value": "110",
+            "label": "110"
+          },
+          {
+            "value": "150",
+            "label": "150"
+          },
+          {
+            "value": "200",
+            "label": "200"
+          },
+          {
+            "value": "300",
+            "label": "300"
+          }
+        ]
+      },
+      {
+        "id": "extractImageDedupe",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "imagens_extraidas",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Extrair imagens do PDF",
+      "description": "Extraia imagens internas reais, páginas completas ou ambas, com filtros e manifesto.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Extrair imagens",
+      "outputExt": "zip",
+      "outputBase": "imagens_extraidas",
+      "settings": "<div class=\"conversion-engine-banner\"><span class=\"conversion-mark\">IMG</span><div><strong>Extração técnica pelo PDF.js</strong><p>Recupere imagens rasterizadas internas quando disponíveis ou gere páginas completas em alta qualidade.</p></div></div>\n        <div class=\"field\"><label for=\"extractImageMode\">Conteúdo</label><select id=\"extractImageMode\"><option value=\"internal\">Somente imagens internas</option><option value=\"pages\">Somente páginas completas</option><option value=\"both\">Imagens internas + páginas completas</option></select></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"extractImageFormat\">Formato</label><select id=\"extractImageFormat\"><option value=\"png\">PNG</option><option value=\"jpg\">JPG</option><option value=\"webp\">WEBP</option></select></div><div class=\"field\"><label for=\"extractImageQuality\">Qualidade (%)</label><input id=\"extractImageQuality\" type=\"number\" min=\"30\" max=\"100\" value=\"90\"></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"extractImageMinWidth\">Largura mínima</label><input id=\"extractImageMinWidth\" type=\"number\" min=\"1\" value=\"80\"></div><div class=\"field\"><label for=\"extractImageMinHeight\">Altura mínima</label><input id=\"extractImageMinHeight\" type=\"number\" min=\"1\" value=\"80\"></div></div>\n        <div class=\"field-row\"><div class=\"field\"><label for=\"extractImagePages\">Páginas</label><input id=\"extractImagePages\" value=\"all\" placeholder=\"all ou 1-3,5\"></div><div class=\"field\"><label for=\"extractImageDpi\">DPI das páginas</label><select id=\"extractImageDpi\"><option value=\"110\">110</option><option value=\"150\" selected>150</option><option value=\"200\">200</option><option value=\"300\">300</option></select></div></div>\n        <label class=\"toggle-row\"><input id=\"extractImageDedupe\" type=\"checkbox\" checked><span>Remover imagens internas duplicadas</span></label>\n        <div id=\"extractImagesPlan\" class=\"notice-card conversion-plan\"><strong>Extração de imagens</strong><p>Adicione PDFs para calcular o plano.</p></div>\n        <div class=\"notice-card warning\"><strong>Estrutura variável</strong><p>Alguns PDFs dividem uma imagem em blocos, usam máscaras ou armazenam somente vetores. Nesses casos, use “páginas completas”.</p></div>"
+    }
+  },
+  "archivePdf": {
+    "config": {
+      "key": "archivePdf",
+      "title": "Preparar para arquivamento",
+      "description": "Crie uma cópia normalizada ou rasterizada, com hashes e manifesto técnico.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "archiveMode",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "normalize",
+        "label": "Modo",
+        "options": [
+          {
+            "value": "normalize",
+            "label": "Normalizar preservando texto e links"
+          },
+          {
+            "value": "raster",
+            "label": "Reconstruir páginas como imagens"
+          }
+        ]
+      },
+      {
+        "id": "archiveDpi",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "180",
+        "label": "Qualidade da reconstrução",
+        "options": [
+          {
+            "value": "150",
+            "label": "150 DPI"
+          },
+          {
+            "value": "180",
+            "label": "180 DPI"
+          },
+          {
+            "value": "220",
+            "label": "220 DPI"
+          },
+          {
+            "value": "300",
+            "label": "300 DPI"
+          }
+        ]
+      },
+      {
+        "id": "archiveFlattenForms",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "archiveRemoveMetadata",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "archiveManifest",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "pacote_de_arquivamento",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Preparar para arquivamento",
+      "description": "Crie uma cópia normalizada ou rasterizada, com hashes e manifesto técnico.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Criar pacote de arquivamento",
+      "outputExt": "auto",
+      "outputBase": "pacote_de_arquivamento",
+      "settings": "<div class=\"conversion-engine-banner\"><span class=\"conversion-mark\">ARC</span><div><strong>Pacote local para preservação</strong><p>Normaliza a estrutura ou reconstrói visualmente as páginas e registra hashes SHA-256 para conferência.</p></div></div>\n        <div class=\"field\"><label for=\"archiveMode\">Modo</label><select id=\"archiveMode\"><option value=\"normalize\">Normalizar preservando texto e links</option><option value=\"raster\">Reconstruir páginas como imagens</option></select></div>\n        <div id=\"archiveRasterOptions\" class=\"hidden\"><div class=\"field\"><label for=\"archiveDpi\">Qualidade da reconstrução</label><select id=\"archiveDpi\"><option value=\"150\">150 DPI</option><option value=\"180\" selected>180 DPI</option><option value=\"220\">220 DPI</option><option value=\"300\">300 DPI</option></select></div></div>\n        <label class=\"toggle-row\"><input id=\"archiveFlattenForms\" type=\"checkbox\"><span>Fixar campos de formulário preenchidos</span></label>\n        <label class=\"toggle-row\"><input id=\"archiveRemoveMetadata\" type=\"checkbox\"><span>Remover metadados descritivos anteriores</span></label>\n        <label class=\"toggle-row\"><input id=\"archiveManifest\" type=\"checkbox\" checked><span>Incluir manifesto JSON com hashes e diagnóstico</span></label>\n        <div id=\"archivePdfPlan\" class=\"notice-card conversion-plan\"><strong>Arquivamento</strong><p>Adicione PDFs para calcular o plano.</p></div>\n        <div class=\"archive-certification-note\"><strong>Não é certificação PDF/A</strong><p>A ferramenta prepara uma cópia para arquivamento e verifica sinais comuns, mas não certifica conformidade ISO PDF/A. Uma validação oficial exige um motor especializado.</p></div>"
+    }
+  },
+  "documentAssistant": {
+    "config": {
+      "key": "documentAssistant",
+      "title": "Assistente documental",
+      "description": "Resuma documentos, localize cláusulas e responda perguntas com evidências por página.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "intelligenceQuestion",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": "",
+        "label": "Pergunta ou informação procurada",
+        "options": null
+      },
+      {
+        "id": "intelligenceFocus",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "general",
+        "label": "Foco da análise",
+        "options": [
+          {
+            "value": "general",
+            "label": "Geral"
+          },
+          {
+            "value": "contract",
+            "label": "Contratos e aditivos"
+          },
+          {
+            "value": "fiscal",
+            "label": "Fiscal e notas"
+          },
+          {
+            "value": "cnd",
+            "label": "Certidões"
+          },
+          {
+            "value": "audit",
+            "label": "Auditoria"
+          }
+        ]
+      },
+      {
+        "id": "intelligenceSummarySize",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "8",
+        "label": "Tamanho do resumo",
+        "options": [
+          {
+            "value": "5",
+            "label": "Curto — 5 evidências"
+          },
+          {
+            "value": "8",
+            "label": "Médio — 8 evidências"
+          },
+          {
+            "value": "14",
+            "label": "Detalhado — 14 evidências"
+          }
+        ]
+      },
+      {
+        "id": "intelligenceEvidenceCount",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "6",
+        "label": "Evidências para a pergunta",
+        "options": null
+      },
+      {
+        "id": "intelligenceIncludeSections",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "intelligenceIncludePatterns",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "analise_documental",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Assistente documental",
+      "description": "Resuma documentos, localize cláusulas e responda perguntas com evidências por página.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Analisar documentos",
+      "outputExt": "zip",
+      "outputBase": "analise_documental",
+      "settings": "<div class=\"intelligence-banner\"><span>IA</span><div><strong>Inteligência documental local e explicável</strong><p>O sistema usa extração de texto e classificação determinística. Cada resposta aponta o arquivo e a página de origem.</p></div></div>\n        <div class=\"field\"><label for=\"intelligenceQuestion\">Pergunta ou informação procurada</label><textarea id=\"intelligenceQuestion\" rows=\"4\" placeholder=\"Ex.: Qual é o prazo de vigência e como funciona o reajuste?\"></textarea></div>\n        <div class=\"intelligence-grid\"><div class=\"field\"><label for=\"intelligenceFocus\">Foco da análise</label><select id=\"intelligenceFocus\"><option value=\"general\">Geral</option><option value=\"contract\">Contratos e aditivos</option><option value=\"fiscal\">Fiscal e notas</option><option value=\"cnd\">Certidões</option><option value=\"audit\">Auditoria</option></select></div><div class=\"field\"><label for=\"intelligenceSummarySize\">Tamanho do resumo</label><select id=\"intelligenceSummarySize\"><option value=\"5\">Curto — 5 evidências</option><option value=\"8\" selected>Médio — 8 evidências</option><option value=\"14\">Detalhado — 14 evidências</option></select></div></div>\n        <div class=\"field\"><label for=\"intelligenceEvidenceCount\">Evidências para a pergunta</label><input id=\"intelligenceEvidenceCount\" type=\"number\" min=\"3\" max=\"20\" value=\"6\"></div>\n        <label class=\"toggle-row\"><input id=\"intelligenceIncludeSections\" type=\"checkbox\" checked><span>Localizar cláusulas, capítulos e seções</span></label>\n        <label class=\"toggle-row\"><input id=\"intelligenceIncludePatterns\" type=\"checkbox\" checked><span>Detectar CNPJ, CPF, datas, valores, códigos e números</span></label>\n        <div id=\"intelligencePlan\" class=\"notice-card intelligence-plan\"><strong>Assistente documental</strong><p>Adicione PDFs para calcular a análise.</p></div>\n        <div id=\"intelligenceLastSummary\" class=\"notice-card hidden\"></div>\n        <div class=\"intelligence-warning\"><strong>Análise assistiva</strong><p>O resumo é extrativo e não cria fatos. Documentos escaneados precisam passar pelo OCR antes.</p></div>"
+    }
+  },
+  "structuredExtraction": {
+    "config": {
+      "key": "structuredExtraction",
+      "title": "Extração estruturada",
+      "description": "Extraia CNPJ, CPF, datas, valores, notas, contratos, códigos e validades para CSV e JSON.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "extractionProfile",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "general",
+        "label": "Perfil",
+        "options": [
+          {
+            "value": "general",
+            "label": "Geral"
+          },
+          {
+            "value": "contracts",
+            "label": "Contratos e aditivos"
+          },
+          {
+            "value": "fiscal",
+            "label": "Notas e documentos fiscais"
+          },
+          {
+            "value": "cnd",
+            "label": "Certidões e regularidade"
+          }
+        ]
+      },
+      {
+        "id": "extractionIncludePages",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "extractionGroupByFile",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "extractionExportXlsx",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "extractionCustomRegex",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "",
+        "label": "Expressão regular personalizada (opcional)",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "dados_extraidos",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Extração estruturada",
+      "description": "Extraia CNPJ, CPF, datas, valores, notas, contratos, códigos e validades para CSV e JSON.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Extrair dados",
+      "outputExt": "zip",
+      "outputBase": "dados_extraidos",
+      "settings": "<div class=\"intelligence-banner\"><span>EXT</span><div><strong>Dados estruturados com rastreabilidade</strong><p>Cada ocorrência registra o arquivo e a página em que foi localizada.</p></div></div>\n        <div class=\"field\"><label for=\"extractionProfile\">Perfil</label><select id=\"extractionProfile\"><option value=\"general\">Geral</option><option value=\"contracts\">Contratos e aditivos</option><option value=\"fiscal\">Notas e documentos fiscais</option><option value=\"cnd\">Certidões e regularidade</option></select></div>\n        <label class=\"toggle-row\"><input id=\"extractionIncludePages\" type=\"checkbox\" checked><span>Registrar página de origem</span></label>\n        <label class=\"toggle-row\"><input id=\"extractionGroupByFile\" type=\"checkbox\" checked><span>Agrupar resultados por arquivo</span></label>\n        <label class=\"toggle-row\"><input id=\"extractionExportXlsx\" type=\"checkbox\"><span>Reservar estrutura para planilha avançada</span></label>\n        <div class=\"field\"><label for=\"extractionCustomRegex\">Expressão regular personalizada (opcional)</label><input id=\"extractionCustomRegex\" placeholder=\"Ex.: PED-[0-9]{6}\"></div>\n        <div class=\"intelligence-output-list\"><span>CSV compatível com Excel</span><span>JSON para automação</span><span>Relatório HTML para conferência</span></div>\n        <div id=\"extractionPlan\" class=\"notice-card intelligence-plan\"><strong>Extração estruturada</strong><p>Adicione PDFs para calcular a extração.</p></div>\n        <div id=\"extractionLastSummary\" class=\"notice-card hidden\"></div>"
+    }
+  },
+  "documentAudit": {
+    "config": {
+      "key": "documentAudit",
+      "title": "Auditoria documental",
+      "description": "Cruze documentos e destaque divergências de CNPJ, códigos, valores, datas e certidões.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "auditProfile",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "general",
+        "label": "Perfil de auditoria",
+        "options": [
+          {
+            "value": "general",
+            "label": "Geral"
+          },
+          {
+            "value": "procurement",
+            "label": "Compras, contratos e pagamentos"
+          },
+          {
+            "value": "contracts",
+            "label": "Contrato × aditivo"
+          },
+          {
+            "value": "fiscal",
+            "label": "Medição × nota fiscal"
+          },
+          {
+            "value": "cnd",
+            "label": "Certidões de regularidade"
+          }
+        ]
+      },
+      {
+        "id": "auditLaunchDate",
+        "tag": "INPUT",
+        "type": "date",
+        "value": "",
+        "label": "Data de lançamento (opcional)",
+        "options": null
+      },
+      {
+        "id": "auditPaymentDate",
+        "tag": "INPUT",
+        "type": "date",
+        "value": "",
+        "label": "Data do pagamento (opcional)",
+        "options": null
+      },
+      {
+        "id": "auditDueFallback",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "auditCompareCnpj",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "auditCompareCodes",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "auditCompareAmounts",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "auditCheckCnd",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "auditoria_documental",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Auditoria documental",
+      "description": "Cruze documentos e destaque divergências de CNPJ, códigos, valores, datas e certidões.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Executar auditoria",
+      "outputExt": "zip",
+      "outputBase": "auditoria_documental",
+      "settings": "<div class=\"intelligence-banner\"><span>AUD</span><div><strong>Regras locais para conferência documental</strong><p>Os achados mostram indícios e evidências. A decisão final permanece com o responsável pela auditoria.</p></div></div>\n        <div class=\"field\"><label for=\"auditProfile\">Perfil de auditoria</label><select id=\"auditProfile\"><option value=\"general\">Geral</option><option value=\"procurement\">Compras, contratos e pagamentos</option><option value=\"contracts\">Contrato × aditivo</option><option value=\"fiscal\">Medição × nota fiscal</option><option value=\"cnd\">Certidões de regularidade</option></select></div>\n        <div class=\"intelligence-grid\"><div class=\"field\"><label for=\"auditLaunchDate\">Data de lançamento (opcional)</label><input id=\"auditLaunchDate\" type=\"date\"></div><div class=\"field\"><label for=\"auditPaymentDate\">Data do pagamento (opcional)</label><input id=\"auditPaymentDate\" type=\"date\"></div></div>\n        <label class=\"toggle-row\"><input id=\"auditDueFallback\" type=\"checkbox\" checked><span>Sem vencimento expresso, considerar 8 dias após o lançamento</span></label>\n        <label class=\"toggle-row\"><input id=\"auditCompareCnpj\" type=\"checkbox\" checked><span>Comparar CNPJ entre documentos</span></label>\n        <label class=\"toggle-row\"><input id=\"auditCompareCodes\" type=\"checkbox\" checked><span>Comparar contratos, processos e códigos</span></label>\n        <label class=\"toggle-row\"><input id=\"auditCompareAmounts\" type=\"checkbox\" checked><span>Mapear valores monetários coincidentes ou isolados</span></label>\n        <label class=\"toggle-row\"><input id=\"auditCheckCnd\" type=\"checkbox\" checked><span>Verificar situação e validade de certidões</span></label>\n        <div id=\"auditPlan\" class=\"notice-card intelligence-plan\"><strong>Auditoria documental</strong><p>Adicione os documentos relacionados para cruzar as informações.</p></div>\n        <div id=\"auditLastSummary\" class=\"notice-card hidden\"></div>\n        <div class=\"intelligence-warning\"><strong>Limite do controle automático</strong><p>Valores e códigos podem aparecer em contextos diferentes. Revise os achados no documento original.</p></div>"
+    }
+  },
+  "classifyRename": {
+    "config": {
+      "key": "classifyRename",
+      "title": "Classificar e renomear",
+      "description": "Classifique documentos, sugira nomes e detecte possíveis páginas vazias ou duplicadas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "renameTemplate",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "{tipo}_{data}_{numero}",
+        "label": "Modelo do nome",
+        "options": null
+      },
+      {
+        "id": "renameMaxLength",
+        "tag": "INPUT",
+        "type": "number",
+        "value": "100",
+        "label": "Tamanho máximo do nome",
+        "options": null
+      },
+      {
+        "id": "renameIncludeCopies",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "renameDetectBlank",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "renameDetectDuplicates",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "renameUseDate",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "documentos_classificados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Classificar e renomear",
+      "description": "Classifique documentos, sugira nomes e detecte possíveis páginas vazias ou duplicadas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Classificar documentos",
+      "outputExt": "zip",
+      "outputBase": "documentos_classificados",
+      "settings": "<div class=\"intelligence-banner\"><span>ORG</span><div><strong>Organização inteligente em lote</strong><p>Classifica pelo conteúdo e cria nomes padronizados sem alterar os arquivos originais.</p></div></div>\n        <div class=\"field\"><label for=\"renameTemplate\">Modelo do nome</label><input id=\"renameTemplate\" value=\"{tipo}_{data}_{numero}\" placeholder=\"{tipo}_{data}_{numero}\"><small class=\"field-hint\">Variáveis: {tipo}, {data}, {numero}, {cnpj}, {original}</small></div>\n        <div class=\"field\"><label for=\"renameMaxLength\">Tamanho máximo do nome</label><input id=\"renameMaxLength\" type=\"number\" min=\"30\" max=\"180\" value=\"100\"></div>\n        <label class=\"toggle-row\"><input id=\"renameIncludeCopies\" type=\"checkbox\" checked><span>Incluir cópias com os nomes sugeridos no ZIP</span></label>\n        <label class=\"toggle-row\"><input id=\"renameDetectBlank\" type=\"checkbox\" checked><span>Detectar possíveis páginas em branco</span></label>\n        <label class=\"toggle-row\"><input id=\"renameDetectDuplicates\" type=\"checkbox\" checked><span>Detectar páginas possivelmente duplicadas</span></label>\n        <label class=\"toggle-row\"><input id=\"renameUseDate\" type=\"checkbox\" checked><span>Priorizar data localizada no documento</span></label>\n        <div id=\"renamePlan\" class=\"notice-card intelligence-plan\"><strong>Classificação e renomeação</strong><p>Adicione PDFs para preparar as sugestões.</p></div>\n        <div id=\"renameLastSummary\" class=\"notice-card hidden\"></div>\n        <div class=\"intelligence-warning\"><strong>Não substitua os originais automaticamente</strong><p>Confira os nomes, a classificação e as páginas apontadas antes de arquivar.</p></div>"
+    }
+  },
+  "protect": {
+    "config": {
+      "key": "protect",
+      "title": "Proteger PDF",
+      "description": "Criptografe um ou vários PDFs com AES-256 e uma senha para abertura.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "protectPassword",
+        "tag": "INPUT",
+        "type": "password",
+        "value": "",
+        "label": "Senha para abrir",
+        "options": null
+      },
+      {
+        "id": "protectPasswordConfirm",
+        "tag": "INPUT",
+        "type": "password",
+        "value": "",
+        "label": "Confirmar senha",
+        "options": null
+      },
+      {
+        "id": "protectOwnerPassword",
+        "tag": "INPUT",
+        "type": "password",
+        "value": "",
+        "label": "Senha administrativa (opcional)",
+        "options": null
+      },
+      {
+        "id": "protectAlgorithm",
+        "tag": "SELECT",
+        "type": "select-one",
+        "value": "AES-256",
+        "label": "Criptografia",
+        "options": [
+          {
+            "value": "AES-256",
+            "label": "AES-256 — recomendada"
+          },
+          {
+            "value": "AES-128",
+            "label": "AES-128 — maior compatibilidade"
+          }
+        ]
+      },
+      {
+        "id": "permPrint",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "permCopy",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "permModify",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "permAnnotate",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "permForms",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_protegidos",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Proteger PDF",
+      "description": "Criptografe um ou vários PDFs com AES-256 e uma senha para abertura.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Proteger PDF(s)",
+      "outputExt": "auto",
+      "outputBase": "PDFs_protegidos",
+      "professional": true,
+      "settings": "<div class=\"engine-banner\"><strong>Motor profissional experimental</strong><p>Na primeira utilização, a biblioteca LibPDF é carregada pela internet. O processamento do arquivo ocorre no navegador.</p></div><div class=\"field\"><label for=\"protectPassword\">Senha para abrir</label><input id=\"protectPassword\" type=\"password\" autocomplete=\"new-password\" placeholder=\"Digite uma senha forte\" /></div><div class=\"field\"><label for=\"protectPasswordConfirm\">Confirmar senha</label><input id=\"protectPasswordConfirm\" type=\"password\" autocomplete=\"new-password\" placeholder=\"Repita a senha\" /></div><div class=\"field\"><label for=\"protectOwnerPassword\">Senha administrativa (opcional)</label><input id=\"protectOwnerPassword\" type=\"password\" autocomplete=\"new-password\" placeholder=\"Permite remover restrições depois\" /></div><div class=\"field\"><label for=\"protectAlgorithm\">Criptografia</label><select id=\"protectAlgorithm\"><option value=\"AES-256\" selected>AES-256 — recomendada</option><option value=\"AES-128\">AES-128 — maior compatibilidade</option></select></div><div class=\"check-list\"><label><input id=\"permPrint\" type=\"checkbox\" checked /> Permitir impressão</label><label><input id=\"permCopy\" type=\"checkbox\" /> Permitir copiar conteúdo</label><label><input id=\"permModify\" type=\"checkbox\" /> Permitir alterações</label><label><input id=\"permAnnotate\" type=\"checkbox\" checked /> Permitir comentários</label><label><input id=\"permForms\" type=\"checkbox\" checked /> Permitir preencher formulários</label></div><div class=\"notice-card warning\"><strong>Guarde a senha</strong><p>Não há recuperação automática. Permissões de PDF são orientativas e alguns leitores podem não respeitá-las.</p></div>"
+    }
+  },
+  "unlock": {
+    "config": {
+      "key": "unlock",
+      "title": "Remover senha",
+      "description": "Abra PDFs protegidos usando a senha conhecida e salve uma cópia sem criptografia.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF protegido"
+    },
+    "controls": [
+      {
+        "id": "unlockPassword",
+        "tag": "INPUT",
+        "type": "password",
+        "value": "",
+        "label": "Senha de abertura (se houver)",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_desbloqueados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Remover senha",
+      "description": "Abra PDFs protegidos usando a senha conhecida e salve uma cópia sem criptografia.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF protegido",
+      "button": "Remover proteção",
+      "outputExt": "auto",
+      "outputBase": "PDFs_desbloqueados",
+      "professional": true,
+      "settings": "<div class=\"engine-banner\"><strong>Motor profissional experimental</strong><p>Use somente a senha que você conhece e tem autorização para utilizar.</p></div><div class=\"field\"><label for=\"unlockPassword\">Senha de abertura (se houver)</label><input id=\"unlockPassword\" type=\"password\" autocomplete=\"current-password\" placeholder=\"Deixe em branco se o PDF já abre sem senha\" /></div><div class=\"notice-card\"><strong>Acesso administrativo</strong><p>Alguns documentos exigem a senha de proprietário para remover completamente a proteção e as restrições.</p></div>"
+    }
+  },
+  "diagnose": {
+    "config": {
+      "key": "diagnose",
+      "title": "Diagnosticar PDF",
+      "description": "Gere um relatório técnico sobre estrutura, criptografia, permissões, formulários e assinaturas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "diagnosePassword",
+        "tag": "INPUT",
+        "type": "password",
+        "value": "",
+        "label": "Senha, caso exista (opcional)",
+        "options": null
+      },
+      {
+        "id": "diagnoseJson",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "diagnostico_PDF",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Diagnosticar PDF",
+      "description": "Gere um relatório técnico sobre estrutura, criptografia, permissões, formulários e assinaturas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Gerar diagnóstico",
+      "outputExt": "auto",
+      "outputBase": "diagnostico_PDF",
+      "professional": true,
+      "settings": "<div class=\"engine-banner\"><strong>Relatório local</strong><p>O relatório não altera o documento. Uma senha opcional permite inspecionar conteúdo protegido.</p></div><div class=\"field\"><label for=\"diagnosePassword\">Senha, caso exista (opcional)</label><input id=\"diagnosePassword\" type=\"password\" autocomplete=\"current-password\" placeholder=\"Deixe vazio para inspeção básica\" /></div><label class=\"toggle-row\"><input id=\"diagnoseJson\" type=\"checkbox\" checked /> Incluir relatório JSON estruturado</label>"
+    }
+  },
+  "repairAdvanced": {
+    "config": {
+      "key": "repairAdvanced",
+      "title": "Recuperar PDF",
+      "description": "Use análise tolerante para reconstruir PDFs com índice ou referências inconsistentes.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF"
+    },
+    "controls": [
+      {
+        "id": "repairPassword",
+        "tag": "INPUT",
+        "type": "password",
+        "value": "",
+        "label": "Senha, caso exista (opcional)",
+        "options": null
+      },
+      {
+        "id": "repairRemoveProtection",
+        "tag": "INPUT",
+        "type": "checkbox",
+        "value": "on",
+        "label": "",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "PDFs_recuperados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Recuperar PDF",
+      "description": "Use análise tolerante para reconstruir PDFs com índice ou referências inconsistentes.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF",
+      "button": "Tentar recuperação",
+      "outputExt": "auto",
+      "outputBase": "PDFs_recuperados",
+      "professional": true,
+      "settings": "<div class=\"engine-banner\"><strong>Recuperação estrutural</strong><p>O motor tenta reconstruir referências e tabelas internas. Ele não recupera bytes que estejam ausentes do arquivo.</p></div><div class=\"field\"><label for=\"repairPassword\">Senha, caso exista (opcional)</label><input id=\"repairPassword\" type=\"password\" autocomplete=\"current-password\" /></div><label class=\"toggle-row\"><input id=\"repairRemoveProtection\" type=\"checkbox\" /> Remover proteção após abrir com senha administrativa</label><div class=\"notice-card warning\"><strong>Use uma cópia</strong><p>O resultado é uma nova versão. Compare visualmente antes de substituir qualquer documento importante.</p></div>"
+    }
+  },
+  "flattenForms": {
+    "config": {
+      "key": "flattenForms",
+      "title": "Fixar formulários",
+      "description": "Converta campos editáveis preenchidos em conteúdo estático nas páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF com formulário"
+    },
+    "controls": [
+      {
+        "id": "flattenPassword",
+        "tag": "INPUT",
+        "type": "password",
+        "value": "",
+        "label": "Senha, caso exista (opcional)",
+        "options": null
+      },
+      {
+        "id": "outputFileName",
+        "tag": "INPUT",
+        "type": "text",
+        "value": "formularios_fixados",
+        "label": "Nome do arquivo final",
+        "options": null
+      }
+    ],
+    "details": [],
+    "sourceConfig": {
+      "title": "Fixar formulários",
+      "description": "Converta campos editáveis preenchidos em conteúdo estático nas páginas.",
+      "accept": "application/pdf,.pdf",
+      "multiple": true,
+      "typeLabel": "PDF com formulário",
+      "button": "Fixar campos",
+      "outputExt": "auto",
+      "outputBase": "formularios_fixados",
+      "professional": true,
+      "settings": "<div class=\"engine-banner\"><strong>Proteção contra edição acidental</strong><p>Depois de fixados, os campos deixam de ser editáveis. O conteúdo visual preenchido permanece na página.</p></div><div class=\"field\"><label for=\"flattenPassword\">Senha, caso exista (opcional)</label><input id=\"flattenPassword\" type=\"password\" autocomplete=\"current-password\" /></div><div class=\"notice-card warning\"><strong>Operação definitiva na cópia</strong><p>Baixe e confira o novo PDF antes de arquivar. Assinaturas existentes podem exigir salvamento incremental para permanecer válidas.</p></div>"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "baselineRootChecks": 103,
+  "initialLocalFinalChecks": 105,
+  "initialLocalFailures": [
+    "image-rotation-icons.test.py: precision settings moved; access updated, strict pixel checks retained",
+    "redesign-3.test.py: local concurrent run timed out; unchanged test passed in isolation",
+    "runtime-reliability.test.py: real hit target awaited, strict pointer assertions retained"
+  ],
+  "correctedFocusedRuns": {
+    "image-rotation-icons": "PASS",
+    "redesign-3": "PASS",
+    "runtime-reliability": "PASS",
+    "ux-simplification": "PASS",
+    "ux-tool-settings": "PASS",
+    "image-paper-preview-alpha-and-fit": "PASS",
+    "editor-context-controls-type-visibility": "PASS",
+    "editor-cross-browser-atomic-layout": "PASS",
+    "npm-only-real-editor-and-alpha": "PASS"
+  },
+  "layoutImportStates": 816,
+  "families": 34,
+  "shortcuts": 39,
+  "performanceRealExports": 36,
+  "adminUnitTests": 28,
+  "appTypecheckTestsBuild": "PASS",
+  "adminTestsBuild": "PASS",
+  "goTestsVet": "PASS",
+  "deployment": "No merge, no production publication; PR deploy skipped",
+  "officeWasmRealBothBrowsersAndOffline": "PASS on isolated local rerun and prepared CI"
+}

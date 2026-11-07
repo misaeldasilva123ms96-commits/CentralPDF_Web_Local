@@ -67,6 +67,7 @@ try:
    page.locator('#fileInput').set_input_files(files)
    page.wait_for_function('CentralPDFApp.getFiles().length===3')
    page.locator('#fileReadProgress').wait_for(state='hidden')
+   if page.locator('#imageAdvanced').count(): page.get_by_role('button',name='Personalizada',exact=True).click()
    page.locator('#imageMargin').fill('0')
    if args.evidence and engine=='chromium': page.screenshot(path=str(args.evidence/f'workspace-{width}-{theme}.png'))
    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
