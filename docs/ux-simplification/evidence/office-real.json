@@ -1,0 +1,66 @@
+[
+  {
+    "browser": "chromium",
+    "width": 1440,
+    "navigation": "passed",
+    "search": "passed"
+  },
+  {
+    "browser": "chromium",
+    "engine": "LibreOffice WASM 2.7.2",
+    "header": "preserved",
+    "table_text": "preserved",
+    "filename": "Unicode preserved"
+  },
+  {
+    "visual_word_roundtrip": "two mixed-size pages, full-page color and dimensions preserved"
+  },
+  {
+    "xlsx_to_pdf": "cell text preserved",
+    "pptx_to_pdf": "two slides, original proportions"
+  },
+  {
+    "full_app_export": "real process button and Unicode download name"
+  },
+  {
+    "offline_reactivation": "process button automatically prepares conversion and downloads PDF without network"
+  },
+  {
+    "browser": "chromium",
+    "width": 390,
+    "navigation": "passed",
+    "search": "passed"
+  },
+  {
+    "browser": "firefox",
+    "width": 1440,
+    "navigation": "passed",
+    "search": "passed"
+  },
+  {
+    "browser": "firefox",
+    "engine": "LibreOffice WASM 2.7.2",
+    "header": "preserved",
+    "table_text": "preserved",
+    "filename": "Unicode preserved"
+  },
+  {
+    "visual_word_roundtrip": "two mixed-size pages, full-page color and dimensions preserved"
+  },
+  {
+    "xlsx_to_pdf": "cell text preserved",
+    "pptx_to_pdf": "two slides, original proportions"
+  },
+  {
+    "full_app_export": "real process button and Unicode download name"
+  },
+  {
+    "offline_reactivation": "process button automatically prepares conversion and downloads PDF without network"
+  },
+  {
+    "browser": "firefox",
+    "width": 390,
+    "navigation": "passed",
+    "search": "passed"
+  }
+]

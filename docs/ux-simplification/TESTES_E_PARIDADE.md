@@ -56,6 +56,7 @@ Os grupos são explícitos por ferramenta. Somente contêineres inteiros cujos c
 | Imagens | JPG/PNG/WEBP; 7 combinações de tamanho/orientação/margem por navegador, incluindo personalizado, PDF combinado/ZIP separado, ordem, giro, remoção e restauração de projeto |
 | PNG transparente | Prévia mantém alpha; fundo escolhido conferido no PDF real em ambos os navegadores |
 | Motores preparados | Hashes/licenças/manifests e referências estáticas validados; 34 operações com saídas reais; segurança, OCR girado, formatos Office, censura e campos achatados verificados |
+| Office WASM real | Local e CI: cabeçalho/tabela/Unicode preservados, Word visual reaberto, Excel/PPTX, exportação real e reativação offline em Chromium/Firefox |
 | Offline | Recarregamento offline, Worker PDF.js real e união/exportação de 5 páginas aprovados |
 | Editor preparado | 6 execuções em Chromium/Firefox, desktop/tablet/celular, temas/modos, ponteiros e geometria da imagem exportada |
 | App React separado | Typecheck, testes e build executados; permanece separado do site original |
@@ -76,7 +77,7 @@ A suíte da raiz foi executada por inteiro (105 verificações na primeira rodad
 8. Testes antigos acessavam margem recolhida diretamente. Passaram a abrir Personalizada, preservando todos os asserts de pixels, giro, projeto e foco.
 9. Medição de sobreposição do editor amostrava caixas em chamadas diferentes durante ajuste de scroll. A mesma comparação geométrica passou a usar uma única leitura de layout; sem espera artificial ou relaxamento da desigualdade. Propriedades de imagem ficam no fluxo, sem encolher como item flex.
 10. Fixture de assinatura: a checagem do hit target podia ocorrer antes de terminar o ajuste nativo de scroll/prévia. Aguarda a condição real de hit test e conserva os asserts estritos de ponteiro/arraste.
-11. Uma rodada local concorrente atingiu o limite do executor no teste visual geral. Reexecução isolada aprovada; limite não foi aumentado e nenhum caso foi removido. A rodada local Office offline também atingiu o tempo limite sob carga; a execução preparada na CI passou, e a evidência preparada aprovada está no artefato `stabilization-evidence` da [execução Pages](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/actions/runs/42338130665), sem substituir o registro da falha local.
+11. Uma rodada local concorrente atingiu o limite do executor no teste visual geral. Reexecução isolada aprovada; limite não foi aumentado e nenhum caso foi removido. A rodada local Office offline também atingiu o tempo limite sob carga; a execução preparada na CI passou e a repetição local isolada também passou. Resultado local em `evidence/office-real.json`: cabeçalho/tabela/Unicode, Word visual, Excel, PowerPoint e reativação offline em Chromium/Firefox; o registro da falha inicial foi mantido.
 
 12. A prévia do papel podia ser cortada nos extremos do controle de miniaturas e no celular. Teste RED confirmou o corte; limite de tamanho passou a usar a altura disponível. Mesmo teste passou nos dois extremos, em desktop/celular, nos dois navegadores. Saída de PDF sem alteração.
 13. Opacidade de texto não deve aparecer desabilitada nas propriedades de imagem. Visibilidade por tipo restaurada e regressão contextual validada.

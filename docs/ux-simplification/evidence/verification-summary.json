@@ -25,5 +25,6 @@
   "appTypecheckTestsBuild": "PASS",
   "adminTestsBuild": "PASS",
   "goTestsVet": "PASS",
-  "deployment": "No merge, no production publication; PR deploy skipped"
+  "deployment": "No merge, no production publication; PR deploy skipped",
+  "officeWasmRealBothBrowsersAndOffline": "PASS on isolated local rerun and prepared CI"
 }
