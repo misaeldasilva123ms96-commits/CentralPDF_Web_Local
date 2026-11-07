@@ -6,13 +6,8 @@ from threading import Thread
 from playwright.sync_api import sync_playwright
 import json
 ROOT=Path(__file__).resolve().parents[1]
-class Handler(SimpleHTTPRequestHandler):
- def log_message(self,*a):pass
- def do_GET(self):
-  # The offline installer writes this marker after preparing these same local bytes.
-  if self.path.split('?')[0]=='/vendor/offline-status.js':
-   self.send_response(200);self.send_header('Content-Type','text/javascript');self.end_headers();self.wfile.write(b'window.CentralPDFOfflineStatus={prepared:true,pdfLib:true,pdfJs:true,pdfWorker:true,ocr:true,conversions:true};');return
-  super().do_GET()
+from ux_browser_support import LocalEngineHandler as Handler
+
 server=ThreadingHTTPServer(('127.0.0.1',0),partial(Handler,directory=str(ROOT)));Thread(target=server.serve_forever,daemon=True).start()
 try:
  with sync_playwright() as pw:
