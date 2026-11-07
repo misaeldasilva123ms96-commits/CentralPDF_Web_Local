@@ -4,7 +4,7 @@ body[data-design='3'] {
  --ux-muted:var(--cd-mu); --ux-border:var(--cd-bd); --ux-primary:var(--cd-ac);
  --ux-radius:14px; --ux-gap:12px; --ux-danger:#db5267;
 }
-body[data-design='3'][data-workspace-open='true'] .workspace {grid-template-columns:minmax(0,1fr) 330px}
+body[data-design='3'][data-workspace-open='true'] .workspace {--cp2-inspector-width:clamp(300px,23vw,350px);grid-template-columns:minmax(0,1fr) var(--cp2-inspector-width)}
 body[data-design='3'][data-workspace-open='true'] .main-panel {padding:22px 28px 80px}
 body[data-design='3'][data-workspace-open='true'] .panel-heading {margin-block:12px}
 body[data-design='3'][data-workspace-open='true'] #operationTitle {font-size:clamp(24px,2.4vw,32px);line-height:1.2}
