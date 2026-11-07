@@ -79,3 +79,8 @@ body[data-design='3'].settings-collapsed[data-workspace-open='true'] .workspace 
 @media(max-width:980px) {
  body[data-design='3'] #editorContextControls :is(input:not([type='checkbox']),select) {height:44px;min-height:44px}
 }
+/* Retain the existing compact density preference instead of overriding it. */
+body[data-design='3'].density-compact[data-workspace-open='true'] .main-panel {padding-top:16px;padding-bottom:24px}
+body[data-design='3'].density-compact[data-workspace-open='true'] .settings-panel .field {margin-bottom:8px}
+body[data-design='3'].density-compact[data-workspace-open='true'] .settings-panel :is(input:not([type='checkbox']),select) {min-height:34px}
+body[data-design='3'].density-compact[data-workspace-open='true'] .tool-guide {margin-bottom:10px}
