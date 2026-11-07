@@ -1624,12 +1624,15 @@
       canvas.width = rotation % 180 ? height : width;
       canvas.height = rotation % 180 ? width : height;
       const context = canvas.getContext('2d');
-      context.fillStyle = '#fff';
-      context.fillRect(0, 0, canvas.width, canvas.height);
+      const preserveAlpha = state.tool === 'imagesToPdf' && file.type === 'image/png';
+      if (!preserveAlpha) {
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+      }
       context.translate(canvas.width / 2, canvas.height / 2);
       context.rotate(rotation * Math.PI / 180);
       context.drawImage(bitmap, -width / 2, -height / 2, width, height);
-      return { dataUrl: canvas.toDataURL('image/jpeg', .9), pageCount: null, type: extension, width: rotation % 180 ? bitmap.height : bitmap.width, height: rotation % 180 ? bitmap.width : bitmap.height };
+      return { dataUrl: canvas.toDataURL(preserveAlpha ? 'image/png' : 'image/jpeg', .9), pageCount: null, type: extension, width: rotation % 180 ? bitmap.height : bitmap.width, height: rotation % 180 ? bitmap.width : bitmap.height };
     } finally {
       bitmap.close();
     }
