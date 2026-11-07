@@ -91,3 +91,6 @@ body[data-design='3'].density-compact[data-workspace-open='true'] .tool-guide {m
 .ux-choices button[data-setting='imageOrientation'][data-value='landscape']::before {width:14px;height:10px;vertical-align:0}
 /* Opacity belongs to text; image/cover precision keeps its original controls. */
 #editorSelectionPanel:has(#editorTextControlsPanel.hidden) .field:has(#editorTextOpacity) {display:none}
+/* Keep both orientation pictograms on the same baseline as their labels. */
+.ux-choices button[data-setting='imageOrientation'] {display:inline-flex;align-items:center;justify-content:center;gap:4px;padding-inline:4px}
+.ux-choices button[data-setting='imageOrientation']::before {flex:0 0 auto;margin-right:0;vertical-align:initial}
