@@ -40,7 +40,7 @@ body[data-active-tool='imagesToPdf'] .file-card-actions {gap:6px;flex-wrap:wrap}
 /* Compact contextual editor: one text field, type controls, styles, More options. */
 body[data-design='3'] .editor-context-controls {padding:10px 12px;border-radius:16px;background:var(--ux-surface)!important;color:var(--ux-text);border-color:var(--ux-border)}
 body[data-design='3'] .editor-context-heading,body[data-design='3'] .editor-context-actions {background:var(--ux-surface)!important}
-body[data-design='3'] .editor-context-controls #editorTextControlsPanel:not(.hidden) {grid-template-columns:minmax(0,1fr) 72px 64px;gap:8px}
+body[data-design='3'] .editor-context-controls #editorTextControlsPanel:not(.hidden) {grid-template-columns:minmax(0,1fr) 72px 76px;gap:8px}
 body[data-design='3'] .editor-context-controls #editorTextControlsPanel .field:has(#editorFontFamily) {grid-column:auto}
 body[data-design='3'] .editor-context-controls #editorTextControlsPanel>.field:first-child {grid-column:1/-1}
 body[data-design='3'] .editor-context-controls .editor-inline-options {grid-column:1/3;display:flex;gap:8px}
@@ -64,7 +64,7 @@ body[data-design='3'] .editor-context-controls :focus-visible,body[data-design='
 }
 @media(max-width:400px) {
  body[data-design='3'] .editor-context-controls {padding:8px}
- body[data-design='3'] .editor-context-controls #editorTextControlsPanel:not(.hidden) {grid-template-columns:minmax(0,1fr) 60px 52px;gap:6px}
+ body[data-design='3'] .editor-context-controls #editorTextControlsPanel:not(.hidden) {grid-template-columns:minmax(0,1fr) 60px 76px;gap:6px}
  body[data-design='3'] .editor-context-controls label {font-size:10px}
  body[data-active-tool='imagesToPdf'] .file-card-cover {height:310px;padding:20px}
 }
@@ -73,3 +73,9 @@ body[data-design='3'] .editor-context-controls :focus-visible,body[data-design='
 }
 
 body[data-design='3'].settings-collapsed[data-workspace-open='true'] .workspace {grid-template-columns:minmax(0,1fr)}
+
+/* In-flow image properties must keep their full height above the document. */
+#editorImageActions {flex:0 0 auto}
+@media(max-width:980px) {
+ body[data-design='3'] #editorContextControls :is(input:not([type='checkbox']),select) {height:44px;min-height:44px}
+}
