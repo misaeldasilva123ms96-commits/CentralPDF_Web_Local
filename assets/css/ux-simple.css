@@ -84,3 +84,7 @@ body[data-design='3'].density-compact[data-workspace-open='true'] .main-panel {p
 body[data-design='3'].density-compact[data-workspace-open='true'] .settings-panel .field {margin-bottom:8px}
 body[data-design='3'].density-compact[data-workspace-open='true'] .settings-panel :is(input:not([type='checkbox']),select) {min-height:34px}
 body[data-design='3'].density-compact[data-workspace-open='true'] .tool-guide {margin-bottom:10px}
+/* Paper pictograms distinguish portrait/landscape without relying on color. */
+.ux-choices button[data-setting='imageOrientation'][data-value='portrait']::before,
+.ux-choices button[data-setting='imageOrientation'][data-value='landscape']::before {content:'';display:inline-block;width:10px;height:14px;border:1.5px solid currentColor;border-radius:2px;margin-right:6px;vertical-align:-2px}
+.ux-choices button[data-setting='imageOrientation'][data-value='landscape']::before {width:14px;height:10px;vertical-align:0}
