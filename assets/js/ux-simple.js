@@ -104,7 +104,8 @@
   }
 
   function syncWorkingState() {
-    document.body.dataset.uxHasFiles=String(app.getFiles().length>0);
+    const value=String(app.getFiles().length>0);
+    if(document.body.dataset.uxHasFiles!==value)document.body.dataset.uxHasFiles=value;
   }
 
   // Keep the original action and its handlers. Reserve its measured height so
@@ -123,6 +124,9 @@
     });
   }
   function syncActionViewport() {
+    // Desktop keeps the action in normal flow; avoid forcing its layout on
+    // every status/preview resize just to maintain unused mobile variables.
+    if(!window.matchMedia('(max-width:980px)').matches)return;
     const viewport=window.visualViewport;
     const bottom=Math.max(0,window.innerHeight-(viewport?.height||window.innerHeight)-(viewport?.offsetTop||0));
     document.body.style.setProperty('--ux-keyboard-offset',`${bottom}px`);

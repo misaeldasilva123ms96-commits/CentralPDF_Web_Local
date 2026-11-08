@@ -12,7 +12,7 @@ try:
  with sync_playwright() as p:
   for engine in ['chromium','firefox']:
    b=getattr(p,engine).launch()
-   c=b.new_context(viewport={'width':390,'height':844},has_touch=True,reduced_motion='reduce')
+   c=b.new_context(viewport={'width':390,'height':844},has_touch=True,reduced_motion='reduce',accept_downloads=True)
    c.add_init_script("localStorage.setItem('centralpdf-usage-consent-v1','false')")
    c.route('https://**/*',lambda r:r.abort());page=c.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
    page.goto(f'http://127.0.0.1:{s.server_port}/');page.wait_for_function('window.PDFLib && window.pdfjsLib && window.CentralPDFApp')
@@ -31,6 +31,14 @@ try:
    page.evaluate("document.body.classList.add('settings-collapsed')")
    assert button.is_visible(),'Collapsing settings must keep the same final action reachable'
    assert page.locator('#imagePageMode').is_hidden()
+   with page.expect_download() as downloaded:button.click()
+   download=downloaded.value
+   assert download.suggested_filename.endswith('.pdf')
+   pages=page.evaluate('async bytes=>(await PDFLib.PDFDocument.load(new Uint8Array(bytes))).getPageCount()',list(Path(download.path()).read_bytes()))
+   assert pages==1
+   page.locator('#continueEditingButton').click()
+   assert page.locator('#imageOrientation').input_value()=='landscape'
+   assert page.evaluate('CentralPDFApp.getFiles().length')==1
    page.evaluate("document.body.classList.remove('settings-collapsed')")
    if engine=='chromium':
     session=c.new_cdp_session(page);session.send('Emulation.setPageScaleFactor',{'pageScaleFactor':2})
