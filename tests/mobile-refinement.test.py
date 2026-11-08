@@ -103,6 +103,7 @@ try:
     assert page.locator('#processButton').count()==1
     assert page.locator('#processButton').is_disabled()
     assert page.locator('#processButton').is_visible(),(engine,tool)
+    assert page.locator('#settingsTitle').is_hidden(),(engine,tool,'Settings must remain collapsed')
    assert not errors,errors
    print(engine,'editor collapse, resize, zoom and real PDF export passed',flush=True)
    c.close();b.close()

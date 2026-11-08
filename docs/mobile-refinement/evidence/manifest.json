@@ -1,0 +1,559 @@
+{
+  "sourceCommit": "c561801a08b63d3304d875aa1e214170d77f488c",
+  "sourceFiles": [
+    {
+      "path": "index.html",
+      "sha256": "e851a57e8a59b19449ea331bec1512e1f3166b0fbb5b22f93640ff3c99ffeaaf"
+    },
+    {
+      "path": "sw.js",
+      "sha256": "f470b591011499e1045d335a61f8e01d0c5fd2f1d84ee82ae846c9e5fa73b1c6"
+    },
+    {
+      "path": "assets/css/ux-simple.css",
+      "sha256": "b1ee6533bb94cc3bf4bf734caacfd9364b952f7fe0811963c0eaee49b23a496f"
+    },
+    {
+      "path": "assets/js/ux-simple.js",
+      "sha256": "05bafea41fb8d9f7ff112dd8d1107d0e7dc65e8c54c9f19f0b3bf2519ffb168c"
+    },
+    {
+      "path": "assets/js/pdf-editor.js",
+      "sha256": "ef2e58cbfdf4ca7b25e42ec7f3e0058e125ca5262e2da89e10a332cfb96252a6"
+    },
+    {
+      "path": "admin/shared/catalog.json",
+      "sha256": "069c4ff22722ece78b74ea06a82a76f162a5fb1cb24c025ac2e79f404ced3fa0"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "after/compress-chromium-1440-dark.png",
+      "sha256": "4d182b9b5c9bb60e9521e1fe4bdf87187f518044069b60761399e184b7f9a72d"
+    },
+    {
+      "path": "after/compress-chromium-1440-light.png",
+      "sha256": "74f83c1a61acd4262f499b7621685b2fc4c54bcc4eddeffd8fe234bc59e9d08e"
+    },
+    {
+      "path": "after/compress-chromium-390-dark.png",
+      "sha256": "cc1f605185f94ceee7835a494579f011fe60011b53fb5a789158bf2054d699bc"
+    },
+    {
+      "path": "after/compress-chromium-390-light.png",
+      "sha256": "2ba1a6590b963a9d6989025910fb059f9f51431bb51851bdf0375e7e513875a0"
+    },
+    {
+      "path": "after/compress-firefox-1440-dark.png",
+      "sha256": "e12622ea78f4ad586bd42a37c0dddefae020d7b6e2c3e3a10170bb7aa604b4f6"
+    },
+    {
+      "path": "after/compress-firefox-1440-light.png",
+      "sha256": "34b4910cfce9e08be60f2962e8065e2324245d358da857308999ef6247db81a3"
+    },
+    {
+      "path": "after/compress-firefox-390-dark.png",
+      "sha256": "0f4e0b7b80fd3485a7a3279aa6280f434cb879b5d3d281062a25d314c8c9a4bd"
+    },
+    {
+      "path": "after/compress-firefox-390-light.png",
+      "sha256": "dd08033ec8095968da365abd3db4f5928ce8651364994fd68fca0856a78bc7ca"
+    },
+    {
+      "path": "after/editor-collapsed-chromium-390-dark.png",
+      "sha256": "db0b9bddc5ab19ac95782a2dd4dcbe9b92b693175796fbfd2e1c55e12a321a7c"
+    },
+    {
+      "path": "after/editor-collapsed-chromium-390-light.png",
+      "sha256": "2d8b01764309c6cbde86c20d9e6ef750aa3cc99300ffc6bcf589d7f00a636f1b"
+    },
+    {
+      "path": "after/editor-collapsed-firefox-390-dark.png",
+      "sha256": "fe70ab81b824d228c756e86a76d93708d315472239c567e7ae6579d14597af35"
+    },
+    {
+      "path": "after/editor-collapsed-firefox-390-light.png",
+      "sha256": "0b802344f725adfea605b49c95408823ed96b70410b2db2a59125728a48b37b5"
+    },
+    {
+      "path": "after/editor-expanded-chromium-1440-dark.png",
+      "sha256": "748bb33a273d44d2b9c39ed481002cd283101a0a5f3efba944f4f1fe6e594ad1"
+    },
+    {
+      "path": "after/editor-expanded-chromium-1440-light.png",
+      "sha256": "9b502c1565db73ea5ebd7f785cf61bd287478454b157be7bbaf9a54617b01884"
+    },
+    {
+      "path": "after/editor-expanded-chromium-390-dark.png",
+      "sha256": "bc2b37599a0f02f5a63ac09aaf566edac1c91197ff8ee4e0eb1696c52e011cc6"
+    },
+    {
+      "path": "after/editor-expanded-chromium-390-light.png",
+      "sha256": "f75fc3c30b75ffa3c3440d0cb70aa20c12609dc2b453b9cc888dea140832dd85"
+    },
+    {
+      "path": "after/editor-expanded-firefox-1440-dark.png",
+      "sha256": "45bb77960ed0fcc143d7e5b4191da027eb64eb1fc920da4d5fb92e2b7edf6dc1"
+    },
+    {
+      "path": "after/editor-expanded-firefox-1440-light.png",
+      "sha256": "d614fce60ba2a012280e72d2a930d4dd61192d530e7c64162c799f7d62dd48e8"
+    },
+    {
+      "path": "after/editor-expanded-firefox-390-dark.png",
+      "sha256": "22774775e88c8cde9874225e7c3c1350cf92fc921bccf41677785a1c2689bc4d"
+    },
+    {
+      "path": "after/editor-expanded-firefox-390-light.png",
+      "sha256": "45522464434eb3e399257e4b2833edc28a997e1a234472df904b484a93939daa"
+    },
+    {
+      "path": "after/home-chromium-1440-dark.png",
+      "sha256": "220d8f1dad183345753167ccd9c18e8fd475d0b4ddafd22fa49d3fc136081829"
+    },
+    {
+      "path": "after/home-chromium-1440-light.png",
+      "sha256": "50a661d77f044bd4638c75d58ba7524c61631544e148c5b871a40e2ba1e5f28d"
+    },
+    {
+      "path": "after/home-chromium-390-dark.png",
+      "sha256": "dcb1fcc18503cba531803f81a038a3c11dd888f0f6ae61de1d91432d65e74284"
+    },
+    {
+      "path": "after/home-chromium-390-light.png",
+      "sha256": "b5c1eaa039b7b14293fae9dc2981181f9773a66cb4a42da163a1e562816ef02b"
+    },
+    {
+      "path": "after/home-firefox-1440-dark.png",
+      "sha256": "35be97e8305a70c449c1b46a4b5131c95636f4019a397514d841e93df861cfaa"
+    },
+    {
+      "path": "after/home-firefox-1440-light.png",
+      "sha256": "9491e513b5d1f00394e8b88185ac9cbaf842f3969b05965f4b4228734df0ab81"
+    },
+    {
+      "path": "after/home-firefox-390-dark.png",
+      "sha256": "4ebc0161bc30bd5ef9a7436e5b1519730d6e6cecc58e33064aecb8ff2427e3f8"
+    },
+    {
+      "path": "after/home-firefox-390-light.png",
+      "sha256": "227c5b629a372873c40e64d58136350b67937e2f24838f221a039751eba96257"
+    },
+    {
+      "path": "after/images-empty-chromium-1440-dark.png",
+      "sha256": "0a7a488e336925ab62769e15b4384aa7461adbb37d71c04cc021b0bec9c0cab2"
+    },
+    {
+      "path": "after/images-empty-chromium-1440-light.png",
+      "sha256": "1fc3f080a0e00603f2664ec1fb179ae19a218f74b8923fbc1a3bbb7b755cb027"
+    },
+    {
+      "path": "after/images-empty-chromium-390-dark.png",
+      "sha256": "e16e5d2e0879553ea5d1d1c0d68729cdcb0b93118258aa672b61ef2e72b5ef01"
+    },
+    {
+      "path": "after/images-empty-chromium-390-light.png",
+      "sha256": "81bbf2b159955c1faf4d7f193c66e40844a0877de6b58034481191b6f806c3f0"
+    },
+    {
+      "path": "after/images-empty-firefox-1440-dark.png",
+      "sha256": "630f916c9036b1721b9fb0a1609da475c2bf627f7b57060daae1172aef2142f9"
+    },
+    {
+      "path": "after/images-empty-firefox-1440-light.png",
+      "sha256": "876bf45df9289232b4b467d902a4f96350351653a510e8796428c82897c692df"
+    },
+    {
+      "path": "after/images-empty-firefox-390-dark.png",
+      "sha256": "8282d40b0386817a8771b261585fbf447d82a392b77768414367980baaa97bde"
+    },
+    {
+      "path": "after/images-empty-firefox-390-light.png",
+      "sha256": "99d806dcae7f77b340e55218c477babe40d75e4bbada58d9e36748f5171fa708"
+    },
+    {
+      "path": "after/imagesToPdf-chromium-1440-dark.png",
+      "sha256": "41ce6877ad2853d1253e80fd3bae812cf84d3f81302933fe5a7d3eb30831dd79"
+    },
+    {
+      "path": "after/imagesToPdf-chromium-1440-light.png",
+      "sha256": "024f47de594aba3f48b21d2b99da47c467b088c6e5de55a4b0cfaaa9a3622164"
+    },
+    {
+      "path": "after/imagesToPdf-chromium-390-dark.png",
+      "sha256": "46f41b98809ee26281fb1ec646c9d500027d5e9e5f8f01269ac6abf85117a873"
+    },
+    {
+      "path": "after/imagesToPdf-chromium-390-light.png",
+      "sha256": "48b21ca8ccfc0999c3ce722308e03fbc9822289f3788810f1b3abcc6a253900d"
+    },
+    {
+      "path": "after/imagesToPdf-firefox-1440-dark.png",
+      "sha256": "1eea4051abd35af4fefc23b118eb2a68057bddd1b187e02de2d46f7e180db9b1"
+    },
+    {
+      "path": "after/imagesToPdf-firefox-1440-light.png",
+      "sha256": "7b8e60f27b54c9aaf5a650c30347495d85b5963c439e965e67b2b5cae8b3fcb1"
+    },
+    {
+      "path": "after/imagesToPdf-firefox-390-dark.png",
+      "sha256": "8843f9dfea32a37106cd8c2d4d666c7653d15d3fd51bb91cbdfdffe02a0785e7"
+    },
+    {
+      "path": "after/imagesToPdf-firefox-390-light.png",
+      "sha256": "251f298ca47f6553dc5786db2e374aa82ad5391953e7739da95b2b65e730bd99"
+    },
+    {
+      "path": "after/merge-chromium-1440-dark.png",
+      "sha256": "cd06f4e510fd8d01654e05df80c33001228e2e402c72a9df2fce736dfcf01f6e"
+    },
+    {
+      "path": "after/merge-chromium-1440-light.png",
+      "sha256": "8337c4c4fa43f6dd36df8e4faef0b2b0b2d9a72dfa364134c42e681184aec9c2"
+    },
+    {
+      "path": "after/merge-chromium-390-dark.png",
+      "sha256": "6811a066ef6c39661b528297c07274d584277aaaf839a16b1d6ed59d54c20626"
+    },
+    {
+      "path": "after/merge-chromium-390-light.png",
+      "sha256": "dfca60532b76698f4d2d399d905d8fc27e54ee2f7c4a48695039ec10e9d09ca3"
+    },
+    {
+      "path": "after/merge-firefox-1440-dark.png",
+      "sha256": "e2bd4b6d95ce9363198eb31add18f7918ac3a66ee06beb27a89714ed1e545e05"
+    },
+    {
+      "path": "after/merge-firefox-1440-light.png",
+      "sha256": "fbdd1ba48b49008f46852f2730c579cfcc1c14c44ec46f44197db5b9ee17f08a"
+    },
+    {
+      "path": "after/merge-firefox-390-dark.png",
+      "sha256": "f7b40b7d638a0182ce0a6efb8eae69673a74f013824e1ea1bb75869278a223b1"
+    },
+    {
+      "path": "after/merge-firefox-390-light.png",
+      "sha256": "985b5b39b3d8438efe696ddb42fdc1848d0d282937e8e00943d9bca573d85807"
+    },
+    {
+      "path": "after/organize-chromium-1440-dark.png",
+      "sha256": "d848ae5db656a6320b3e32b08fe60b3e7f1b33775cbcb8f3eac206d8ba953a2b"
+    },
+    {
+      "path": "after/organize-chromium-1440-light.png",
+      "sha256": "eee4b9525344925df9f4ae473fb168ef4af9d395ee0120181e9a927034b7d945"
+    },
+    {
+      "path": "after/organize-chromium-390-dark.png",
+      "sha256": "b0d86c9b7acd27afcae6c2e1044ab18549010f82f5d25e64d453a71f002c5ac1"
+    },
+    {
+      "path": "after/organize-chromium-390-light.png",
+      "sha256": "17f7e6aa8e07ec11cd3c87308384deaaa5c153e467b8731a24cc4be1e8a1b336"
+    },
+    {
+      "path": "after/organize-firefox-1440-dark.png",
+      "sha256": "f3358a04827267c1790221783e23bbba06c034b96f90c1f5bdb7563cd77849ed"
+    },
+    {
+      "path": "after/organize-firefox-1440-light.png",
+      "sha256": "5dac518e5c422bd149e18d7d004b36a47edf3466810a2134a50930203e65714c"
+    },
+    {
+      "path": "after/organize-firefox-390-dark.png",
+      "sha256": "68b5037b96b9d4fc57f6680d8df5f43b68d234ba5621385bff3fd6ff67500388"
+    },
+    {
+      "path": "after/organize-firefox-390-light.png",
+      "sha256": "f450040e411daa6ae521cba0b908312118500df97e9c794260ddb558a68084ac"
+    },
+    {
+      "path": "after/split-chromium-1440-dark.png",
+      "sha256": "da052825be6adeb9509d2a1f62b9a121c788a04257f71a8545fc6998dab251c4"
+    },
+    {
+      "path": "after/split-chromium-1440-light.png",
+      "sha256": "a240eb7ae4f0f2221637e2311d654acda397a336c5d4dd0e8d8888dc04f51293"
+    },
+    {
+      "path": "after/split-chromium-390-dark.png",
+      "sha256": "7ee9a2a5d5e2cca7ef68dca88816e506466f8e7b5fa9dd821acc2b1ec617c6dc"
+    },
+    {
+      "path": "after/split-chromium-390-light.png",
+      "sha256": "d0bf3eb5554fb69e937d57af2b29cb5fea093d7e47dc015126ea858a2bedcb52"
+    },
+    {
+      "path": "after/split-firefox-1440-dark.png",
+      "sha256": "cb424dd70feedec643b38100571de6886abcdabb545d5d71aa195e76bd555e6a"
+    },
+    {
+      "path": "after/split-firefox-1440-light.png",
+      "sha256": "883a484ce23aadd8e18d1c96df8a9f0fd50ae8dd879dea22d82972a7beee7d91"
+    },
+    {
+      "path": "after/split-firefox-390-dark.png",
+      "sha256": "729e0e915656ab88648fcb947f3079fad9731f151a6c1a18293a4249e7955e09"
+    },
+    {
+      "path": "after/split-firefox-390-light.png",
+      "sha256": "169eb06058057443e288f2f1d3234cbe6e180842ea676069bb094b6c06a56996"
+    },
+    {
+      "path": "before/compress-chromium-1440-dark.png",
+      "sha256": "b16713d3a703b3897c683c7d564e8a70f73b024cfbaaae4fb136a12ad5813fb5"
+    },
+    {
+      "path": "before/compress-chromium-1440-light.png",
+      "sha256": "a87703a27612e6fdce84a3e2dbed3380557876e7ad8589ca66c401ee95d85903"
+    },
+    {
+      "path": "before/compress-chromium-390-dark.png",
+      "sha256": "83554180d1bbd48161deb9e2ccd975c4031550180676bfd239c6487ca00e86c8"
+    },
+    {
+      "path": "before/compress-chromium-390-light.png",
+      "sha256": "2f77c5a7fd09629f70ecafc323327493282fcfdf26787568df611e14769cb5e2"
+    },
+    {
+      "path": "before/compress-firefox-1440-dark.png",
+      "sha256": "e487bc0a7add5adef6b729aa0bed791946012a9be7255dd97bea123159c72191"
+    },
+    {
+      "path": "before/compress-firefox-1440-light.png",
+      "sha256": "bad00da39f6cfad503a790b10f7ddb0b631e987008bc539cbeb8912820d90fb7"
+    },
+    {
+      "path": "before/compress-firefox-390-dark.png",
+      "sha256": "71fa10f164b51930ffb3cad479374e98d9321b79e082f12af55bc0f0ff742488"
+    },
+    {
+      "path": "before/compress-firefox-390-light.png",
+      "sha256": "4307db42a3965d05c28372b0379b97265971d5db8d9176c090f732bebf195637"
+    },
+    {
+      "path": "before/editor-expanded-chromium-1440-dark.png",
+      "sha256": "39d3a7607d56f18925399c1855532e207d97676ac21a8a7dbf09183c5bad229b"
+    },
+    {
+      "path": "before/editor-expanded-chromium-1440-light.png",
+      "sha256": "6ecc7ac4b2d9debab1c079d7f76e2cfad4c241f7f4fd0e6f134ca8fe4e9f6012"
+    },
+    {
+      "path": "before/editor-expanded-chromium-390-dark.png",
+      "sha256": "b7473c6f9caf1b5651ca75294408f229390e2f2f4767c0c7e2be9579185a7bc7"
+    },
+    {
+      "path": "before/editor-expanded-chromium-390-light.png",
+      "sha256": "b350d10f2187fa62be34281f2416d80e1ae8f6115b8a628c7b606a521a38badc"
+    },
+    {
+      "path": "before/editor-expanded-firefox-1440-dark.png",
+      "sha256": "60d4604b4103f43908cb161d4150aeb5cd099a88e6d08e2d88e671fb3594563a"
+    },
+    {
+      "path": "before/editor-expanded-firefox-1440-light.png",
+      "sha256": "8dfd320a9e92abecaedb4977959b35a864e70c8b753387e4765affb5d93a71ca"
+    },
+    {
+      "path": "before/editor-expanded-firefox-390-dark.png",
+      "sha256": "2c58ada712151671f5c225c0314dcfb9d1aecb47edab68f119599e69a0114db9"
+    },
+    {
+      "path": "before/editor-expanded-firefox-390-light.png",
+      "sha256": "57f7dacdc8366172210fbfacaacd631f90b77da73c2e4ed39b70191f5ec7a0b0"
+    },
+    {
+      "path": "before/home-chromium-1440-dark.png",
+      "sha256": "220d8f1dad183345753167ccd9c18e8fd475d0b4ddafd22fa49d3fc136081829"
+    },
+    {
+      "path": "before/home-chromium-1440-light.png",
+      "sha256": "3b4a87ddfccb2e5c3d2a424492ff04b7571ac6bfc21f458bb9cfa48b3ffc2fe3"
+    },
+    {
+      "path": "before/home-chromium-390-dark.png",
+      "sha256": "ae0b031c1d9715158b52e951808e1c5e813c74998834a070512cfda70ab7c511"
+    },
+    {
+      "path": "before/home-chromium-390-light.png",
+      "sha256": "b5c1eaa039b7b14293fae9dc2981181f9773a66cb4a42da163a1e562816ef02b"
+    },
+    {
+      "path": "before/home-firefox-1440-dark.png",
+      "sha256": "35be97e8305a70c449c1b46a4b5131c95636f4019a397514d841e93df861cfaa"
+    },
+    {
+      "path": "before/home-firefox-1440-light.png",
+      "sha256": "9491e513b5d1f00394e8b88185ac9cbaf842f3969b05965f4b4228734df0ab81"
+    },
+    {
+      "path": "before/home-firefox-390-dark.png",
+      "sha256": "4ebc0161bc30bd5ef9a7436e5b1519730d6e6cecc58e33064aecb8ff2427e3f8"
+    },
+    {
+      "path": "before/home-firefox-390-light.png",
+      "sha256": "227c5b629a372873c40e64d58136350b67937e2f24838f221a039751eba96257"
+    },
+    {
+      "path": "before/images-empty-chromium-1440-dark.png",
+      "sha256": "e38d82ad991a7e755594e68df0733dcc48cbfc959a370756809a53624d0ff1a5"
+    },
+    {
+      "path": "before/images-empty-chromium-1440-light.png",
+      "sha256": "a5e98001cc891e95f621cdd892123037b17c2d62a893ba89868ba595be30cf29"
+    },
+    {
+      "path": "before/images-empty-chromium-390-dark.png",
+      "sha256": "7d8f65448ecbdb115077bbe16d4c6c0030c429effeef5a133eb7772619420ea6"
+    },
+    {
+      "path": "before/images-empty-chromium-390-light.png",
+      "sha256": "2ce00a7d842b19beab2d35743c7ddbfcc18545b9ae591d9ee53e22817ffca5aa"
+    },
+    {
+      "path": "before/images-empty-firefox-1440-dark.png",
+      "sha256": "9e207e8edf7293fc6f6662820830d29b72652f8a28820552ba621824bb511d11"
+    },
+    {
+      "path": "before/images-empty-firefox-1440-light.png",
+      "sha256": "d93af17daaa4cefe94178859d712a8c755c2564a90347cb95bf033e1de08d972"
+    },
+    {
+      "path": "before/images-empty-firefox-390-dark.png",
+      "sha256": "7510287d767a64ec2be7cede1159784b02911628601c5b194d9de3eac3549b42"
+    },
+    {
+      "path": "before/images-empty-firefox-390-light.png",
+      "sha256": "c82aaa142f175d70d9a309bba658079d069f6ef6d31ae5c8f4e82023a4f9842e"
+    },
+    {
+      "path": "before/imagesToPdf-chromium-1440-dark.png",
+      "sha256": "33dde525e424732535073a9fb4a003a98d4014439a40b22def2a6fbab67f1764"
+    },
+    {
+      "path": "before/imagesToPdf-chromium-1440-light.png",
+      "sha256": "801efa013127fd8e3c9e43223f5568b82c31ec9e7d17754e6d4a3b192b95cc5e"
+    },
+    {
+      "path": "before/imagesToPdf-chromium-390-dark.png",
+      "sha256": "2c1cfa10732b4523ef585179443530903d32d166ec4007d3f10b9c0449c0765a"
+    },
+    {
+      "path": "before/imagesToPdf-chromium-390-light.png",
+      "sha256": "b30fa0e0439b5b9b791d3f9cf817a09cb44cfd9391a3342460213984a164c0b5"
+    },
+    {
+      "path": "before/imagesToPdf-firefox-1440-dark.png",
+      "sha256": "6cfc309b4c60e9a68d62ff7a5ce886b8c678746a08326f8d081f2880660bcdf7"
+    },
+    {
+      "path": "before/imagesToPdf-firefox-1440-light.png",
+      "sha256": "7d46696fe3cb2f17009bfc7c21854e509489be9a5522aed71827f36d60a4e6e9"
+    },
+    {
+      "path": "before/imagesToPdf-firefox-390-dark.png",
+      "sha256": "eb87a2fd13c2a99e008f694c0a4fcad4752b42cf7a6629536f8b203a3b2063b2"
+    },
+    {
+      "path": "before/imagesToPdf-firefox-390-light.png",
+      "sha256": "f4d60c84aa6924ca17382e7f6c67a14e7040012772804d80e803015b36b5fe68"
+    },
+    {
+      "path": "before/merge-chromium-1440-dark.png",
+      "sha256": "d1c3eff1cc9270d68835354b2f719a4f712f1e506c090fb2a49bc124bc69ac8e"
+    },
+    {
+      "path": "before/merge-chromium-1440-light.png",
+      "sha256": "44688e7eb747454a8da83c90feb61ab35ce672148c47a4bb84d22d7fd2e0cbde"
+    },
+    {
+      "path": "before/merge-chromium-390-dark.png",
+      "sha256": "4e7db96b1f46e8021194396effe375134a3a77134d8567afe3ea5d5fac5eba92"
+    },
+    {
+      "path": "before/merge-chromium-390-light.png",
+      "sha256": "1861114df7de6ce2886ee41e783ba87752dabdd832d85d3d0bf904dd40512dc5"
+    },
+    {
+      "path": "before/merge-firefox-1440-dark.png",
+      "sha256": "dd505b44e08ebe1d74ce32ebfbc975756db87a07d5be6b99fe245c2bbbf38e46"
+    },
+    {
+      "path": "before/merge-firefox-1440-light.png",
+      "sha256": "197598f370df3d4d88d43bdf62e796fa7e0c394406d866a83743cc8da5905f27"
+    },
+    {
+      "path": "before/merge-firefox-390-dark.png",
+      "sha256": "bec77db98ba38e861a792c2c653960cffd7aaf832330d7ec7e33bd65007e1258"
+    },
+    {
+      "path": "before/merge-firefox-390-light.png",
+      "sha256": "e790db07d947a9f010dc8fb2e4eea15876da230b7fa1396d139044bf4e818ccc"
+    },
+    {
+      "path": "before/organize-chromium-1440-dark.png",
+      "sha256": "d4eb83e614f52fffc009036e59edc8734308ceb85f25c1da262bd4bcde5d5ec2"
+    },
+    {
+      "path": "before/organize-chromium-1440-light.png",
+      "sha256": "76176cde1a596e53986d8997c3eab758d2ac9a3e74b3a0584001382f7f156b5d"
+    },
+    {
+      "path": "before/organize-chromium-390-dark.png",
+      "sha256": "abe289094b61df3bd525b439f8530eaf9012c0a61bef6c3f0942b695fec59c50"
+    },
+    {
+      "path": "before/organize-chromium-390-light.png",
+      "sha256": "83df8ef65757972566e93c9b0cff79f3780acf0c56704bdecf4244d935f4293d"
+    },
+    {
+      "path": "before/organize-firefox-1440-dark.png",
+      "sha256": "7880cfa8354aa923e6d3bba0287e5d1e3c339f38d5ed34fe318859c53224d2b7"
+    },
+    {
+      "path": "before/organize-firefox-1440-light.png",
+      "sha256": "6c285ef43948003e9131a1d326d36d7d214b6fee6a2c21a208c41a183855fd47"
+    },
+    {
+      "path": "before/organize-firefox-390-dark.png",
+      "sha256": "568205caa5dc60458062b86ede9768235974da6f7337560faae55d1e82c26615"
+    },
+    {
+      "path": "before/organize-firefox-390-light.png",
+      "sha256": "f150d10ec2d08140bfacfa221bd1f6990d7d74389de2e9d0cfb1f5ba770bd211"
+    },
+    {
+      "path": "before/split-chromium-1440-dark.png",
+      "sha256": "7da6ab215e6ee2cbe2066567d47f103f9471c3eba0f9d1713e987e3d78df9681"
+    },
+    {
+      "path": "before/split-chromium-1440-light.png",
+      "sha256": "bb5cbf6e1ef3dafddec8c7acd7456731660bb9c2c42067d4144807a207c92fc8"
+    },
+    {
+      "path": "before/split-chromium-390-dark.png",
+      "sha256": "42140df81522e16199ca067e04d9cc3d20254be2680731ed8e795a19ac3baed4"
+    },
+    {
+      "path": "before/split-chromium-390-light.png",
+      "sha256": "f7598eae6263b40e893c95ff9350341ddb9a41fa665876d9bbc630b8bcab3cef"
+    },
+    {
+      "path": "before/split-firefox-1440-dark.png",
+      "sha256": "daab410b98819cbb21ebe6c1a5e9c9cc371e219e460ac821ff81a01a33337096"
+    },
+    {
+      "path": "before/split-firefox-1440-light.png",
+      "sha256": "e3c303f3b8b72638cc61733ef528a77cf1b7f2fbfb0da594a72215abc83d25ee"
+    },
+    {
+      "path": "before/split-firefox-390-dark.png",
+      "sha256": "c161429e83bb777d8843f6dfbab845d6766e153375e83abf5c5b5ba068b084cc"
+    },
+    {
+      "path": "before/split-firefox-390-light.png",
+      "sha256": "e2d3576fe85a7e85043269d9519fb8b6ab9e4e641252bda16bd52466e42e4fc0"
+    }
+  ]
+}

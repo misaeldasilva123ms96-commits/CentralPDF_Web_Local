@@ -1,0 +1,317 @@
+{
+  "method": "Chromium 1440x900; service worker installed/activated before import and previews fully ready before export; 3 alternating independent contexts per source/size/tool; main JS heap after CDP GC excludes native canvas/WASM workers; local loopback; synthetic files; output PDFs reopened",
+  "rows": [
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 1,
+      "inputBytes": 607202,
+      "startupMs": 4565.199999988079,
+      "importMs": 157.4000000357628,
+      "exportMs": 65,
+      "mainJsHeapMiB": 4.2037811279296875,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 103.66699297446758,
+      "cdpMetrics": {
+        "LayoutCount": 3,
+        "RecalcStyleCount": 4,
+        "LayoutDuration": 0.008916,
+        "ScriptDuration": 0.021823,
+        "TaskDuration": 0.10376999999999999
+      }
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 1,
+      "inputBytes": 607202,
+      "startupMs": 3087.100000023842,
+      "importMs": 145.19999998807907,
+      "exportMs": 58.59999996423721,
+      "mainJsHeapMiB": 4.206920623779297,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 160.48143501393497,
+      "cdpMetrics": {
+        "LayoutCount": 2,
+        "RecalcStyleCount": 3,
+        "LayoutDuration": 0.007185,
+        "ScriptDuration": 0.018437,
+        "TaskDuration": 0.106791
+      }
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 2,
+      "inputBytes": 607202,
+      "startupMs": 3629.699999988079,
+      "importMs": 133.89999997615814,
+      "exportMs": 42.59999996423721,
+      "mainJsHeapMiB": 4.204738616943359,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 118.96780697861686,
+      "cdpMetrics": {
+        "LayoutCount": 3,
+        "RecalcStyleCount": 4,
+        "LayoutDuration": 0.021564,
+        "ScriptDuration": 0.022816,
+        "TaskDuration": 0.114269
+      }
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 2,
+      "inputBytes": 607202,
+      "startupMs": 2858.699999988079,
+      "importMs": 137.80000001192093,
+      "exportMs": 52.799999952316284,
+      "mainJsHeapMiB": 4.206859588623047,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 141.91806898452342,
+      "cdpMetrics": {
+        "LayoutCount": 3,
+        "RecalcStyleCount": 4,
+        "LayoutDuration": 0.008548,
+        "ScriptDuration": 0.019663,
+        "TaskDuration": 0.10364899999999999
+      }
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 3,
+      "inputBytes": 607202,
+      "startupMs": 2599.5,
+      "importMs": 128.10000002384186,
+      "exportMs": 42.69999998807907,
+      "mainJsHeapMiB": 4.203479766845703,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 79.04413802316412,
+      "cdpMetrics": {
+        "LayoutCount": 2,
+        "RecalcStyleCount": 3,
+        "LayoutDuration": 0.006304,
+        "ScriptDuration": 0.017954,
+        "TaskDuration": 0.071049
+      }
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 1,
+      "repeat": 3,
+      "inputBytes": 607202,
+      "startupMs": 2855,
+      "importMs": 186.39999997615814,
+      "exportMs": 72.19999998807907,
+      "mainJsHeapMiB": 4.207832336425781,
+      "outputPages": 1,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 110.08355300873518,
+      "cdpMetrics": {
+        "LayoutCount": 2,
+        "RecalcStyleCount": 3,
+        "LayoutDuration": 0.008095,
+        "ScriptDuration": 0.033517,
+        "TaskDuration": 0.11111
+      }
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 1,
+      "inputBytes": 12144040,
+      "startupMs": 2696.899999976158,
+      "importMs": 762.3000000119209,
+      "exportMs": 212,
+      "mainJsHeapMiB": 4.535881042480469,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 504.2924460140057,
+      "cdpMetrics": {
+        "LayoutCount": 8,
+        "RecalcStyleCount": 9,
+        "LayoutDuration": 0.012509,
+        "ScriptDuration": 0.028731,
+        "TaskDuration": 0.298131
+      }
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 1,
+      "inputBytes": 12144040,
+      "startupMs": 2692.199999988079,
+      "importMs": 784.8000000119209,
+      "exportMs": 189.69999998807907,
+      "mainJsHeapMiB": 4.518741607666016,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 487.1269039576873,
+      "cdpMetrics": {
+        "LayoutCount": 10,
+        "RecalcStyleCount": 11,
+        "LayoutDuration": 0.010005,
+        "ScriptDuration": 0.035364,
+        "TaskDuration": 0.28675300000000004
+      }
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 2,
+      "inputBytes": 12144040,
+      "startupMs": 2897.300000011921,
+      "importMs": 838.5,
+      "exportMs": 181.0999999642372,
+      "mainJsHeapMiB": 4.542690277099609,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 369.568195019383,
+      "cdpMetrics": {
+        "LayoutCount": 9,
+        "RecalcStyleCount": 10,
+        "LayoutDuration": 0.010106,
+        "ScriptDuration": 0.032202,
+        "TaskDuration": 0.259007
+      }
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 2,
+      "inputBytes": 12144040,
+      "startupMs": 3373.199999988079,
+      "importMs": 815.3999999761581,
+      "exportMs": 131.5,
+      "mainJsHeapMiB": 4.520374298095703,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 399.9971160083078,
+      "cdpMetrics": {
+        "LayoutCount": 8,
+        "RecalcStyleCount": 9,
+        "LayoutDuration": 0.011659,
+        "ScriptDuration": 0.0208,
+        "TaskDuration": 0.22548200000000002
+      }
+    },
+    {
+      "phase": "before",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 3,
+      "inputBytes": 12144040,
+      "startupMs": 3318.099999964237,
+      "importMs": 765.0999999642372,
+      "exportMs": 155.5,
+      "mainJsHeapMiB": 4.536701202392578,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 455.913926998619,
+      "cdpMetrics": {
+        "LayoutCount": 8,
+        "RecalcStyleCount": 9,
+        "LayoutDuration": 0.009969,
+        "ScriptDuration": 0.030184,
+        "TaskDuration": 0.23306300000000002
+      }
+    },
+    {
+      "phase": "after",
+      "tool": "imagesToPdf",
+      "size": 20,
+      "repeat": 3,
+      "inputBytes": 12144040,
+      "startupMs": 2694.7999999523163,
+      "importMs": 773.5,
+      "exportMs": 172.70000004768372,
+      "mainJsHeapMiB": 4.5230255126953125,
+      "outputPages": 20,
+      "outputDimensions": [
+        [
+          1256.6929133858268,
+          856.6929133858267
+        ]
+      ],
+      "previewReadyAfterImportMs": 422.0181019627489,
+      "cdpMetrics": {
+        "LayoutCount": 8,
+        "RecalcStyleCount": 9,
+        "LayoutDuration": 0.020488,
+        "ScriptDuration": 0.022363,
+        "TaskDuration": 0.272688
+      }
+    }
+  ]
+}

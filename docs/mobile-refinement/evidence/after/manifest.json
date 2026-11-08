@@ -1,0 +1,515 @@
+{
+  "records": [
+    {
+      "file": "home-chromium-1440-dark.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "images-empty-chromium-1440-dark.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "imagesToPdf-chromium-1440-dark.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "editor-expanded-chromium-1440-dark.png",
+      "tool": "editPdf",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "merge-chromium-1440-dark.png",
+      "tool": "merge",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "split-chromium-1440-dark.png",
+      "tool": "split",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "organize-chromium-1440-dark.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "compress-chromium-1440-dark.png",
+      "tool": "compress",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "home-chromium-1440-light.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "images-empty-chromium-1440-light.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "imagesToPdf-chromium-1440-light.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "editor-expanded-chromium-1440-light.png",
+      "tool": "editPdf",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "merge-chromium-1440-light.png",
+      "tool": "merge",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "split-chromium-1440-light.png",
+      "tool": "split",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "organize-chromium-1440-light.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "compress-chromium-1440-light.png",
+      "tool": "compress",
+      "width": 1440,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "home-chromium-390-dark.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "images-empty-chromium-390-dark.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "imagesToPdf-chromium-390-dark.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "editor-expanded-chromium-390-dark.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "editor-collapsed-chromium-390-dark.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "merge-chromium-390-dark.png",
+      "tool": "merge",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "split-chromium-390-dark.png",
+      "tool": "split",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "organize-chromium-390-dark.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "compress-chromium-390-dark.png",
+      "tool": "compress",
+      "width": 390,
+      "theme": "dark",
+      "browser": "chromium"
+    },
+    {
+      "file": "home-chromium-390-light.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "images-empty-chromium-390-light.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "imagesToPdf-chromium-390-light.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "editor-expanded-chromium-390-light.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "editor-collapsed-chromium-390-light.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "merge-chromium-390-light.png",
+      "tool": "merge",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "split-chromium-390-light.png",
+      "tool": "split",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "organize-chromium-390-light.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "compress-chromium-390-light.png",
+      "tool": "compress",
+      "width": 390,
+      "theme": "light",
+      "browser": "chromium"
+    },
+    {
+      "file": "home-firefox-1440-dark.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "images-empty-firefox-1440-dark.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "imagesToPdf-firefox-1440-dark.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "editor-expanded-firefox-1440-dark.png",
+      "tool": "editPdf",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "merge-firefox-1440-dark.png",
+      "tool": "merge",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "split-firefox-1440-dark.png",
+      "tool": "split",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "organize-firefox-1440-dark.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "compress-firefox-1440-dark.png",
+      "tool": "compress",
+      "width": 1440,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "home-firefox-1440-light.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "images-empty-firefox-1440-light.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "imagesToPdf-firefox-1440-light.png",
+      "tool": "imagesToPdf",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "editor-expanded-firefox-1440-light.png",
+      "tool": "editPdf",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "merge-firefox-1440-light.png",
+      "tool": "merge",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "split-firefox-1440-light.png",
+      "tool": "split",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "organize-firefox-1440-light.png",
+      "tool": "organize",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "compress-firefox-1440-light.png",
+      "tool": "compress",
+      "width": 1440,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "home-firefox-390-dark.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "images-empty-firefox-390-dark.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "imagesToPdf-firefox-390-dark.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "editor-expanded-firefox-390-dark.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "editor-collapsed-firefox-390-dark.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "merge-firefox-390-dark.png",
+      "tool": "merge",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "split-firefox-390-dark.png",
+      "tool": "split",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "organize-firefox-390-dark.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "compress-firefox-390-dark.png",
+      "tool": "compress",
+      "width": 390,
+      "theme": "dark",
+      "browser": "firefox"
+    },
+    {
+      "file": "home-firefox-390-light.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "images-empty-firefox-390-light.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "imagesToPdf-firefox-390-light.png",
+      "tool": "imagesToPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "editor-expanded-firefox-390-light.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "editor-collapsed-firefox-390-light.png",
+      "tool": "editPdf",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "merge-firefox-390-light.png",
+      "tool": "merge",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "split-firefox-390-light.png",
+      "tool": "split",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "organize-firefox-390-light.png",
+      "tool": "organize",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    },
+    {
+      "file": "compress-firefox-390-light.png",
+      "tool": "compress",
+      "width": 390,
+      "theme": "light",
+      "browser": "firefox"
+    }
+  ],
+  "pageErrors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/api/public/notices. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/api/public/notices. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/api/public/notices. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/api/public/notices. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    }
+  ]
+}

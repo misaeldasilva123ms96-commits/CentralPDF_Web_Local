@@ -1,0 +1,65 @@
+[
+  {
+    "phase": "final",
+    "test": "diagnostics-telemetry.test.py",
+    "exit": 0,
+    "seconds": 14.6,
+    "log": "final-isolated-diagnostics-telemetry.test.py.log"
+  },
+  {
+    "phase": "final",
+    "test": "redesign-3.test.py",
+    "exit": 0,
+    "seconds": 88.21,
+    "log": "final-isolated-redesign-3.test.py.log"
+  },
+  {
+    "phase": "final",
+    "test": "mobile-refinement.test.py",
+    "exit": 0,
+    "seconds": 24.57,
+    "log": "final-isolated-mobile-refinement.test.py.log"
+  },
+  {
+    "phase": "final",
+    "test": "editor-context-controls.test.py",
+    "exit": 0,
+    "seconds": 30.98,
+    "log": "final-isolated-editor-context-controls.test.py.log"
+  },
+  {
+    "phase": "reference",
+    "test": "editor-context-controls.test.py",
+    "exit": 0,
+    "seconds": 25.86,
+    "log": "reference-isolated-editor-context-controls.test.py.log"
+  },
+  {
+    "phase": "reference",
+    "test": "offline-marker-1.1.3.test.py",
+    "exit": 0,
+    "seconds": 0.27,
+    "log": "reference-isolated-offline-marker-1.1.3.test.py.log"
+  },
+  {
+    "phase": "reference",
+    "test": "redesign-3.test.py",
+    "exit": 0,
+    "seconds": 100.48,
+    "log": "reference-isolated-redesign-3.test.py.log"
+  },
+  {
+    "phase": "reference",
+    "test": "release-3-polish.test.py",
+    "exit": 0,
+    "seconds": 71.41,
+    "log": "reference-isolated-release-3-polish.test.py.log"
+  },
+  {
+    "phase": "reference",
+    "test": "remote-engine-consent.test.py",
+    "exit": 0,
+    "seconds": 4.38,
+    "log": "reference-isolated-remote-engine-consent.test.py.log"
+  }
+]
