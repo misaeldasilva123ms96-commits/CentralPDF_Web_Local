@@ -84,6 +84,12 @@
   function bindStaticUi() {
     ensurePageRotationControls();
     $('#editorContextDone')?.addEventListener('click', closeContextControls);
+    $('#editorContextToggle')?.addEventListener('click', () => {
+      const collapsed = !$('#editorContextControls')?.classList.contains('context-collapsed');
+      setContextCollapsed(collapsed);
+      $('#editorContextToggle')?.focus({preventScroll:true});
+      positionContextControls();
+    });
     $('#editorContextControls')?.addEventListener('keydown', event => {
       if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeContextControls();}
     });
@@ -95,6 +101,7 @@
       if(document.activeElement?.id==='editorTextValue')ensureContextTextSpace();
       else positionContextControls();
     });
+    window.visualViewport?.addEventListener('scroll', positionContextControls);
     document.querySelectorAll('[data-editor-mode]').forEach(button => {
       button.addEventListener('click', () => setMode(button.dataset.editorMode));
     });
@@ -1320,6 +1327,14 @@
     $('#editorAddText')?.focus({preventScroll:true});
   }
 
+  // Presentation state only: do not commit, change tool, selection or history.
+  function setContextCollapsed(collapsed) {
+    $('#editorContextControls')?.classList.toggle('context-collapsed', collapsed);
+    const toggle=$('#editorContextToggle');
+    if(toggle){toggle.setAttribute('aria-expanded',String(!collapsed));toggle.textContent=collapsed?'Propriedades':'Recolher';}
+    const fields=$('#editorContextFields');if(fields)fields.hidden=collapsed;
+  }
+
   function positionContextControls() {
     const dock=$('#editorContextControls');if(!dock||dock.hidden)return;
     const area=$('.editor-work-area')?.getBoundingClientRect(),section=$('#pdfEditorSection')?.getBoundingClientRect();
@@ -1327,6 +1342,16 @@
     const visibleBottom=Math.min(window.innerHeight,(window.visualViewport?.height||window.innerHeight)+(window.visualViewport?.offsetTop||0));
     const selection=$('#editorObjectLayer .editor-object.selected')?.getBoundingClientRect();
     dock.classList.toggle('outside-editor',section.bottom<80||(selection?area.top>visibleBottom-100:section.top>visibleBottom-80));
+    if(window.matchMedia('(max-width:980px)').matches){
+      const viewport=window.visualViewport;
+      const availableWidth=viewport?.width||window.innerWidth;
+      const width=Math.max(0,Math.min(400,availableWidth-16));
+      dock.style.width=`${width}px`;
+      dock.style.left=`${(viewport?.offsetLeft||0)+(availableWidth-width)/2}px`;
+      dock.style.bottom=`calc(${Math.max(0,window.innerHeight-visibleBottom)+8}px + env(safe-area-inset-bottom,0px))`;
+      dock.style.maxHeight=`${Math.max(64,Math.min(380,(viewport?.height||window.innerHeight)*.48))}px`;
+      return;
+    }
     const width=Math.max(0,Math.min(400,area.width-24,window.innerWidth-24));
     dock.style.width=`${width}px`;
     dock.style.left=`${Math.max(12,Math.min(area.left+(area.width-width)/2,window.innerWidth-width-12))}px`;
@@ -1377,6 +1402,7 @@
       const key=object?.id||state.activeTool;
       if(dock.dataset.contextKey!==key){
         dock.dataset.contextKey=key;dock.scrollTop=0;
+        setContextCollapsed(false);
         const precision=$('#editorObjectSizePanel');if(precision)precision.open=false;
       }
       dock.hidden=object?.type==='image'||!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));

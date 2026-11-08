@@ -103,6 +103,32 @@
     }
   }
 
+  function syncWorkingState() {
+    document.body.dataset.uxHasFiles=String(app.getFiles().length>0);
+  }
+
+  // Keep the original action and its handlers. Reserve its measured height so
+  // the last fields can scroll fully above it, including the virtual keyboard.
+  const actionDock=$('.action-dock');
+  function syncActionViewport() {
+    const viewport=window.visualViewport;
+    const bottom=Math.max(0,window.innerHeight-(viewport?.height||window.innerHeight)-(viewport?.offsetTop||0));
+    document.body.style.setProperty('--ux-keyboard-offset',`${bottom}px`);
+    document.body.style.setProperty('--ux-action-height',`${actionDock?.getBoundingClientRect().height||0}px`);
+  }
+  if(actionDock&&window.ResizeObserver)new ResizeObserver(syncActionViewport).observe(actionDock);
+  window.addEventListener('resize',syncActionViewport);
+  window.visualViewport?.addEventListener('resize',syncActionViewport);
+  window.visualViewport?.addEventListener('scroll',syncActionViewport);
+  document.addEventListener('focusin',event=>{
+    if(!window.matchMedia('(max-width:980px)').matches||!event.target.matches('input,select,textarea'))return;
+    if(event.target.closest('#editorContextControls'))return;
+    requestAnimationFrame(()=>{
+      const rect=event.target.getBoundingClientRect(),dock=actionDock?.getBoundingClientRect();
+      if(dock&&rect.bottom>dock.top-12&&rect.top<dock.bottom)event.target.scrollIntoView({block:'center',behavior:'instant'});
+    });
+  });
+
   // Secondary task metadata stays accessible with the existing contextual guide.
   const strip = $('.tool-experience-strip'), guide = $('.tool-guide-body');
   if (strip && guide) guide.prepend(strip);
@@ -110,10 +136,13 @@
   window.addEventListener('centralpdf-tool-selected', event => {
     document.querySelectorAll('[data-image-preview-note]').forEach(node => node.remove());
     if (event.detail.tool === 'imagesToPdf') mountImages();
+    syncWorkingState();syncActionViewport();
   });
+  window.addEventListener('centralpdf-files-changed',syncWorkingState);
   window.addEventListener('centralpdf-files-changed', updateImages);
   $('#fileList')?.addEventListener('centralpdf-preview-ready', updateImages);
   $('#fileList')?.addEventListener('load', updateImages, true);
   $('#settingsContent')?.addEventListener('input', updateImages);
   $('#settingsContent')?.addEventListener('change', updateImages);
+  syncWorkingState();syncActionViewport();
 })();

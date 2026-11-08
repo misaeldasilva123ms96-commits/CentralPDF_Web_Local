@@ -94,3 +94,70 @@ body[data-design='3'].density-compact[data-workspace-open='true'] .tool-guide {m
 /* Keep both orientation pictograms on the same baseline as their labels. */
 .ux-choices button[data-setting='imageOrientation'] {display:inline-flex;align-items:center;justify-content:center;gap:4px;padding-inline:4px}
 .ux-choices button[data-setting='imageOrientation']::before {flex:0 0 auto;margin-right:0;vertical-align:initial}
+
+/* Refinement checkpoint: importing keeps the document at the center of work. */
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] .stepper {margin-block:0 10px}
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] .panel-heading {margin-block:8px}
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] #operationTitle {font-size:clamp(22px,2vw,28px)}
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] #operationDescription {margin-top:4px}
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] .dropzone {min-height:56px;padding:8px 12px;gap:8px;margin-block:12px}
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] .dropzone .drop-icon {width:32px;height:32px}
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] #dropSubtitle,
+body[data-design='3'][data-workspace-open='true'][data-ux-has-files='true'] .dropzone em {display:none}
+body[data-design='3'][data-workspace-open='true'] #addMoreFiles {min-height:44px}
+/* display:contents changes visual order only; all original fields remain in
+   settingsContent for configuration, project persistence and event handlers. */
+body[data-design='3'][data-active-tool='imagesToPdf'] .settings-panel {display:flex;flex-direction:column}
+body[data-design='3'][data-active-tool='imagesToPdf'] #settingsContent {display:contents}
+body[data-design='3'][data-active-tool='imagesToPdf'] #settingsContent>:not(#imageAdvanced) {margin-inline:18px}
+body[data-design='3'][data-active-tool='imagesToPdf'] .action-dock {order:1;margin-top:8px}
+body[data-design='3'][data-active-tool='imagesToPdf'] #imageAdvanced {order:2;margin:14px 18px}
+body[data-design='3'] #editorContextControls.context-collapsed {overflow:visible}
+body[data-design='3'] #editorContextFields[hidden] {display:none!important}
+body[data-design='3'] #editorContextControls.context-collapsed .editor-context-heading {margin:0}
+body[data-design='3'] .editor-context-heading {gap:6px}
+body[data-design='3'] #editorContextTitle {flex:1;min-width:0}
+body[data-design='3'] #editorContextToggle {flex:none;min-height:40px}
+@media(max-width:980px) {
+ body[data-design='3'][data-workspace-open='true'] {padding-bottom:calc(var(--ux-action-height,120px) + 20px)}
+ html:has(body[data-design='3'][data-workspace-open='true']) {scroll-padding-bottom:calc(var(--ux-action-height,120px) + 24px)}
+ body[data-design='3'][data-workspace-open='true'] .settings-panel :is(input,select,textarea,button,summary) {scroll-margin-bottom:calc(var(--ux-action-height,120px) + 24px)}
+ body[data-design='3'][data-workspace-open='true'] .action-dock {position:fixed;z-index:750;left:0;right:0;bottom:var(--ux-keyboard-offset,0px);margin:0;padding:8px max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border-top:1px solid var(--ux-border);box-shadow:0 -8px 24px #0001;max-height:40dvh;overflow:auto;box-sizing:border-box}
+ body[data-design='3'][data-workspace-open='true'] .action-dock .status-box {padding:4px 0;margin:0 0 6px;border:0;min-height:0;font-size:12px;line-height:1.4;background:transparent!important}
+ body[data-design='3'][data-workspace-open='true'] .action-dock #processButton {min-height:44px;margin:0;width:100%}
+ body[data-design='3'][data-workspace-open='true'] .action-dock .version-note {display:none}
+ body[data-design='3']:has(#editorContextControls:not([hidden]):not(.outside-editor)) .action-dock,
+ body[data-design='3']:has(dialog[open]) .action-dock,
+ body[data-design='3'].completion-open .action-dock {visibility:hidden;pointer-events:none}
+ body[data-design='3'] #editorContextControls .editor-context-heading {top:-8px;min-height:44px}
+ body[data-design='3'] #editorContextControls .editor-context-heading .small-button {min-height:44px;padding-inline:10px}
+ body[data-design='3'] #editorContextControls #editorContextTitle {font-size:12px}
+ body[data-design='3'] #editorContextControls :is(input:not([type='checkbox']),select,textarea) {font-size:16px}
+ body[data-design='3'] #editorContextControls .editor-inline-options label {min-height:44px}
+ body[data-design='3'][data-ux-has-files='true'] #dropTitle {font-size:13px}
+ body[data-design='3'][data-ux-has-files='true'] .dropzone-action {font-size:12px;min-height:44px;display:inline-flex;align-items:center}
+ body[data-design='3'][data-workspace-open='true'] .settings-panel :is(input:not([type='checkbox']),select),
+ body[data-design='3'].density-compact[data-workspace-open='true'] .settings-panel :is(input:not([type='checkbox']),select) {min-height:44px}
+}
+@media(prefers-reduced-motion:reduce) {
+ body[data-design='3'][data-workspace-open='true'] .dropzone {transition:none}
+}
+/* Images already explain their operation in contextual help; prioritize paper. */
+body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] #operationDescription {display:none}
+body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] .dropzone {flex-direction:row;justify-content:flex-start;min-height:56px;box-sizing:border-box}
+body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] .dropzone .drop-icon {margin:0;flex:none}
+body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] .dropzone-action {margin:0 0 0 auto}
+body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] .file-section-title {align-items:center;gap:8px}
+body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] .file-section-title p {display:none}
+@media(max-width:640px) {
+ body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] #dropTitle {display:none}
+ body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] .file-header-actions {flex-direction:row;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px}
+ body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] #fileCount {font-size:12px}
+}
+@media(max-width:640px) {
+ /* Keep the alignment value readable at 320px instead of clipping its label. */
+ body[data-design='3'] #editorContextControls .editor-inline-options {grid-column:1/-1}
+ body[data-design='3'] #editorContextControls .field:has(#editorTextAlign) {grid-column:1/-1;display:flex;align-items:center;gap:10px}
+ body[data-design='3'] #editorContextControls .field:has(#editorTextAlign)>label {margin:0;flex:none;font-size:12px}
+ body[data-design='3'] #editorContextControls #editorTextAlign {flex:1;min-width:0}
+}

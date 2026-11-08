@@ -30,7 +30,7 @@ assert "const APP_VERSION = '3.0.0';" in foundation
 assert "const APP_VERSION = '3.0.0';" in engine_loader
 assert "const VERSION = '3.0.0';" in quality
 assert 'Central PDF 3.0.0' in manifest
-assert "centralpdf-v3.0.0-pages-57" in service_worker
+assert "centralpdf-v3.0.0-pages-58" in service_worker
 assert '"version":"3.0.0"' in server
 assert readme.startswith('# Central PDF 3.0.0\n')
 print('version-sync-3.0.0: passed')

@@ -1,11 +1,11 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v3.0.0-pages-57';
+const CACHE_VERSION = 'centralpdf-v3.0.0-pages-58';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
   './assets/js/ux-tool-settings.js?v=1',
-  './assets/css/ux-simple.css?v=2', './assets/js/ux-simple.js?v=1',
+  './assets/css/ux-simple.css?v=3', './assets/js/ux-simple.js?v=2',
   './assets/js/pdf-open-access.js?v=1', './assets/js/pdf-open-access-worker.js?v=1',
   './vendor/qpdf/qpdf.js', './vendor/qpdf/qpdf.wasm', './vendor/qpdf/LICENSE', './vendor/qpdf/NOTICE.txt', './vendor/qpdf/QPDF-LICENSE-APACHE-2.0.txt',
   './assets/css/design-3.css?v=3', './assets/js/design-3.js?v=2', './assets/icons/centralpdf-logo.svg',
@@ -29,7 +29,7 @@ const CORE_ASSETS = [
   './assets/js/tool-search.js?v=2', './assets/js/office-engine.js?v=1',
   './assets/js/import-feedback.js?v=1', './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=3.0.0-open-access1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
-  './assets/js/pdf-native-text.js?v=3.0.0-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=3.0.0-ux-simple1', './assets/js/ux-enhancements.js?v=3.0.0-ui6',
+  './assets/js/pdf-native-text.js?v=3.0.0-cid1', './assets/js/organizer-planner.js', './assets/js/pdf-editor.js?v=3.0.0-mobile1', './assets/js/ux-enhancements.js?v=3.0.0-ui6',
   './assets/js/ocr-0.16.js?v=3.0.0-names2', './assets/js/compare-0.17.js?v=3.0.0-names1', './assets/js/redaction-0.17.js?v=3.0.0-names2',
   './assets/js/forms-signatures-0.18.js?v=3.0.0-names1', './assets/js/conversions-0.19.js?v=3.0.0-names1',
   './assets/js/intelligence-0.20.js?v=3.0.0-names2', './assets/js/admin-bridge.js?v=3.0.0-release1', './assets/js/app.js?v=3.0.0-ux-simple1', './assets/js/tool-quality-1.2.0.js?v=3.0.0-office1',

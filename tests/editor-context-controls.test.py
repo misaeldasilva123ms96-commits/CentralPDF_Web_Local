@@ -13,6 +13,7 @@ html = (root / 'index.html').read_text()
 html = re.sub(r'<script src="[^"]+"></script>', '', html)
 html = re.sub(r'<link[^>]+rel="manifest"[^>]*>', '', html)
 scripts = ['app/node_modules/pdf-lib/dist/pdf-lib.min.js',
+           'vendor/jszip.min.js',
            'assets/js/pdf-ingest.js',
            'assets/js/split-planner.js', 'assets/js/advanced-planner.js',
            'assets/js/pdf-native-text.js', 'assets/js/organizer-planner.js', 'assets/js/pdf-editor.js',
