@@ -1362,6 +1362,18 @@
       dock.style.left=`${(viewport?.offsetLeft||0)+(availableWidth-width)/2}px`;
       dock.style.bottom=`calc(${Math.max(0,window.innerHeight-visibleBottom)+8}px + env(safe-area-inset-bottom,0px))`;
       dock.style.maxHeight=`${Math.max(64,Math.min(380,(viewport?.height||window.innerHeight)*.48))}px`;
+      // Ordinary selection must leave the object and its handles reachable.
+      // Move the dock, not the document: pointer-down also starts dragging and
+      // the same text node must stay under the pointer for a double click.
+      if(selection && document.activeElement?.id!=='editorTextValue'){
+        const bounds=dock.getBoundingClientRect();
+        const topLimit=Math.max(viewport?.offsetTop||0,$('.topbar')?.getBoundingClientRect().bottom||0)+12;
+        const aboveSpace=selection.top-44-topLimit;
+        if(selection.bottom+12>bounds.top && selection.top-12<bounds.bottom && aboveSpace>=100){
+          dock.style.maxHeight=`${Math.min(parseFloat(dock.style.maxHeight),aboveSpace)}px`;
+          dock.style.bottom=`${window.innerHeight-selection.top+44}px`;
+        }
+      }
       return;
     }
     const width=Math.max(0,Math.min(400,area.width-24,window.innerWidth-24));
@@ -1419,7 +1431,6 @@
       }
       dock.hidden=object?.type==='image'||!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));
       const title=$('#editorContextTitle');if(title)title.textContent=object?`Editar ${objectLabel(object).toLocaleLowerCase('pt-BR')}`:'Opções da ferramenta';
-      positionContextControls();
     }
     panel.hidden=!object&&state.activeTool!=='text';
     renderObjectList();
@@ -1461,6 +1472,7 @@
     ['editorDeleteObject','editorDuplicateObject','editorBringForward','editorSendBackward','editorRotateLeft','editorRotateRight','editorResetRotation','editorAlignLeft','editorAlignCenterX','editorAlignRight','editorAlignTop','editorAlignCenterY','editorAlignBottom'].forEach(id => {
       const control = $(`#${id}`); if (control) control.disabled = !supportsTransform;
     });
+    positionContextControls();
   }
 
   function updateInspectorTransformFields(object) {

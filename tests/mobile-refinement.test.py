@@ -1,5 +1,6 @@
 """Real mobile refinement: import transition, one action, selection and PDF parity."""
 from pathlib import Path
+from tempfile import gettempdir
 from functools import partial
 from http.server import ThreadingHTTPServer
 from threading import Thread
@@ -96,6 +97,37 @@ try:
    page.locator('.editor-object').first.click();assert toggle.get_attribute('aria-expanded')=='true'
    exported=page.evaluate("""async()=>{const r=await PDFVisualEditor.exportPdf({silent:true}),t=pdfjsLib.getDocument({data:r.bytes});try{const d=await t.promise;return (await (await d.getPage(1)).getTextContent()).items.map(x=>x.str).join(' ')}finally{await t.destroy()}}""")
    assert 'ORIGINAL PRESERVADO' in exported and 'coração' in exported,exported
+   # Selecting existing objects must not require focusing text to reveal them.
+   # Use the real project restore path to keep source PDF and object geometry.
+   for kind in ['text','cover']:
+    for height in [844,740]:
+     page.set_viewport_size({'width':390,'height':height})
+     page.evaluate("""async ({kind,snapshot})=>{
+      snapshot.sources.forEach(source=>source.fileId=source.id);
+      snapshot.selectedObjectId=null;
+      const object=snapshot.pages[0].objects[0];
+      object.type=kind;object.width=100;object.height=30;object.y=400;
+      await PDFVisualEditor.restoreProjectState(snapshot,new Map(snapshot.sources.map(source=>[source.id,refPdf])));
+     }""",{'kind':kind,'snapshot':original})
+     obj=page.locator('.editor-object').first
+     obj.evaluate("e=>{e.scrollIntoView({block:'end'});const dock=document.querySelector('.action-dock').getBoundingClientRect();window.scrollBy(0,e.getBoundingClientRect().bottom-(Math.min(innerHeight,dock.top)-24));}")
+     assert obj.evaluate("e=>{const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}"),'Fixture object must be visible and reachable before selecting'
+     before=page.evaluate('PDFVisualEditor.exportProjectState()')
+     bounds=obj.bounding_box();page.mouse.click(bounds['x']+bounds['width']/2,bounds['y']+bounds['height']/2)
+     assert page.locator('#editorTextValue').evaluate('e=>e!==document.activeElement')
+     page.wait_for_function("""()=>{const r=document.querySelector('.editor-object.selected').getBoundingClientRect(),d=document.querySelector('#editorContextControls').getBoundingClientRect();return r.bottom+8<=d.top || d.bottom+8<=r.top || r.right+8<=d.left || d.right+8<=r.left}""")
+     assert obj.evaluate("e=>{const r=e.getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight && e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}")
+     assert page.locator('.editor-transform-handle,.editor-rotate-handle').evaluate_all("handles=>handles.every(e=>{const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))})"),'Resize and rotate handles must remain reachable'
+     after=page.evaluate('PDFVisualEditor.exportProjectState()')
+     assert after['pages']==before['pages'],'Opening properties must preserve object geometry/content'
+     toggle.click();toggle.click()
+     page.wait_for_function("""()=>{const r=document.querySelector('.editor-object.selected').getBoundingClientRect(),d=document.querySelector('#editorContextControls').getBoundingClientRect();return r.bottom+8<=d.top || d.bottom+8<=r.top}""")
+     if kind=='text':
+      bounds=obj.bounding_box();page.mouse.dblclick(bounds['x']+bounds['width']/2,bounds['y']+bounds['height']/2)
+      assert page.locator('#editorTextValue').evaluate('e=>e===document.activeElement')
+     if kind=='cover' and height==844:
+      page.screenshot(path=str(Path(gettempdir())/f'centralpdf-review-selection-{engine}.png'))
+   print(engine,'ordinary text/cover selection and double-click remain unobstructed',flush=True)
    # Common footer keeps invalid actions disabled and never duplicates the handler.
    for tool in page.evaluate('Object.keys(CentralPDFApp.getToolCatalog())'):
     page.evaluate('(t)=>CentralPDFApp.selectTool(t)',tool)
