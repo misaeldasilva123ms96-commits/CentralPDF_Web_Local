@@ -2,13 +2,27 @@
 
 A interface de trabalho foi compactada depois da importação, o editor recebeu propriedades recolhíveis sem perda da seleção e as ações finais passaram a ficar acessíveis no celular, inclusive com configurações recolhidas. Os campos e processadores originais permanecem sendo usados. A Home aprovada e as 34 famílias/39 atalhos foram preservados.
 
-Estado: implementação para avaliação visual na [PR #91, em rascunho](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/91). Esta etapa não recebeu aprovação humana. Sem merge, deploy, publicação no Pages, release ou tag.
+Estado: implementação para avaliação visual na [PR #91](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/91). Esta etapa não recebeu aprovação humana. Sem merge, deploy, publicação no Pages, release ou tag.
 
 - Branch: `refactor/centralpdf-3-ux-mobile-refinement`.
 - Base sincronizada: `d5b38e82c1fa90f0d3b28574c779f0500d4a3df1`, com #89/#90 integradas.
 - Checkpoint final de código/testes: `c561801a08b63d3304d875aa1e214170d77f488c`; o commit posterior acrescenta a entrega documental/evidências.
 - Commits incrementais: `0720469`, `95c3b6d`, `c803c52`, `484497a`, `c3e895b`, `c561801`.
 - [Prévia, download e execução local](README.md) · [Checkpoints](CHECKPOINTS.md) · [Resumo verificável](evidence/summary.json) · [Hashes de código/capturas](evidence/manifest.json).
+
+## Correção da revisão — seleção sob o painel mobile
+
+A revisão do commit `e9181bb` identificou uma regressão real: selecionar texto/cobertura próximo à borda inferior abria as propriedades sobre o objeto. O ajuste de foco existente só reposicionava texto ao editar, deixando a seleção simples desprotegida.
+
+Checkpoint da correção: `5d51596`. Em mobile, o painel agora usa o espaço acima da seleção quando há colisão e espaço disponível, com 44 px para preservar também a alça de rotação. O documento e o objeto não são deslocados durante o pointer-down. O cálculo acontece depois de atualizar todos os campos do inspector, usando a altura efetiva. A edição com teclado mantém o tratamento anterior. Cache/referência do editor atualizados para pages-59/mobile2; nenhuma mudança de motor, dado ou autenticação.
+
+O teste usa restauração real de projeto com o PDF sintético, posiciona um objeto visível próximo ao rodapé e clica pelas coordenadas reais, evitando o scroll automático de locators mascarar a falha. Na versão original, a espera de não sobreposição falha por timeout, conforme [reprodução](evidence/review-selection/reproduction-original.log). Na corrigida, Chromium/Firefox passam com texto e cobertura em 390×844 e 390×740: seleção sem foco, hit-test de objeto/alças, geometria preservada, recolher/reabrir e duplo clique real no texto. A suíte também preserva suas verificações anteriores de outras larguras, zoom, campos, 34 famílias e exportação real.
+
+- [Teste mobile completo](evidence/review-selection/mobile-refinement.log).
+- [11 regressões relacionadas aprovadas](evidence/review-selection/regression-results.json): contexto do editor, cache/download/offline, referências de versão e validação do pacote.
+- Prévia atualizada com os bytes da correção; integridade preparada: 291 referências e hashes de motores aprovados. Os 132 screenshots anteriores e benchmarks correspondem aos checkpoints originais; as capturas novas abaixo documentam exclusivamente esta correção.
+- [Antes — sobreposição](evidence/review-selection/before-chromium-390.png) · [Depois — Chromium](evidence/review-selection/after-chromium-390.png) · [Depois — Firefox](evidence/review-selection/after-firefox-390.png) · [Hash/checkpoint](evidence/review-selection/source.json).
+- A CI deve ser consultada no head atual da PR; resultados anteriores não substituem a nova execução após o push. Sem merge ou publicação nesta correção.
 
 ## Alterações e preservação
 
@@ -18,7 +32,7 @@ Estado: implementação para avaliação visual na [PR #91, em rascunho](https:/
 
 **Ações compartilhadas.** A ação original fica na área inferior móvel: nenhum botão de exportação foi clonado. Altura medida e espaço de rolagem permitem alcançar os últimos campos. O posicionamento acompanha teclado/zoom visual/áreas seguras. Campos focados podem rolar acima da ação; diálogos e propriedades contextuais não competem com esse rodapé. Recolher as configurações no celular mantém a mesma ação acessível e desabilitada quando não há arquivo.
 
-**Limites de escopo.** Sem alterações de motores, formato de projetos, API, autenticação/MFA, Supabase, Worker do Admin, banco ou infraestrutura. O catálogo gerado do Admin muda somente `applicationRevision`, necessária para acompanhar o cache `centralpdf-v3.0.0-pages-58`. O service worker do aplicativo recebe referências/cache consistentes; não houve mudança de estratégia de dados offline. Servidor Go/binário Windows não foram alterados. A aplicação React separada não substitui o aplicativo da raiz.
+**Limites de escopo.** Sem alterações de motores, formato de projetos, API, autenticação/MFA, Supabase, Worker do Admin, banco ou infraestrutura. O catálogo gerado do Admin muda somente `applicationRevision`, necessária para acompanhar o cache `centralpdf-v3.0.0-pages-59`. O service worker do aplicativo recebe referências/cache consistentes; não houve mudança de estratégia de dados offline. Servidor Go/binário Windows não foram alterados. A aplicação React separada não substitui o aplicativo da raiz.
 
 ## QA da interface real
 

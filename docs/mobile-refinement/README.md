@@ -1,6 +1,6 @@
 # Prévia — refinamento mobile do Central PDF 3.0
 
-Esta é uma etapa nova para avaliação. A PR [#91](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/91) permanece em rascunho. O site de produção e o Admin não são ambientes desta prévia.
+Esta é uma etapa nova para avaliação. A PR [#91](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/pull/91) permanece aberta para avaliação. O site de produção e o Admin não são ambientes desta prévia.
 
 Branch: `refactor/centralpdf-3-ux-mobile-refinement`. Base: `d5b38e8`, após as PRs #89/#90. O [relatório](RELATORIO.md) registra os commits de implementação, resultados, falhas iniciais, repetições, desempenho e limitações. Os [checkpoints](CHECKPOINTS.md) mostram as decisões incrementais.
 
@@ -41,6 +41,8 @@ As [amostras sintéticas](AMOSTRAS_PREVIA.zip) incluem PDFs de 2/3 páginas e im
 5. **Outras funções:** OCR, Office, assinatura, censura, projetos, fila, resultados e offline mantêm seus fluxos e avisos existentes.
 
 ## Comparações visuais
+
+A correção da revisão também preserva objetos e alças ao selecionar sem abrir o texto: [antes](evidence/review-selection/before-chromium-390.png), [depois Chromium](evidence/review-selection/after-chromium-390.png) e [depois Firefox](evidence/review-selection/after-firefox-390.png). A prévia completa inclui essa correção (pages-59/mobile2).
 
 Capturas da aplicação real com documentos sintéticos. Todas as capturas estão nas pastas [antes](evidence/before) e [depois](evidence/after), com manifestos e hashes no relatório.
 

@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "5d51596667c77de25dc598cf8fbb4f9de1271f11",
+  "applicationVersion": "3.0.0",
+  "applicationRevision": "centralpdf-v3.0.0-pages-59",
+  "previewOnly": true,
+  "enginesPrepared": true,
+  "sourceHashes": [
+    {
+      "path": "index.html",
+      "sha256": "3a3a8ad56049a400eee63abc537ab03d973d661bf63538b101040f9b64f463ee"
+    },
+    {
+      "path": "sw.js",
+      "sha256": "eb8812fd5d67d24e5b626620f0fcfd98e6384345932af8b17e30ab27fef5e4bf"
+    },
+    {
+      "path": "assets/css/ux-simple.css",
+      "sha256": "b1ee6533bb94cc3bf4bf734caacfd9364b952f7fe0811963c0eaee49b23a496f"
+    },
+    {
+      "path": "assets/js/ux-simple.js",
+      "sha256": "05bafea41fb8d9f7ff112dd8d1107d0e7dc65e8c54c9f19f0b3bf2519ffb168c"
+    },
+    {
+      "path": "assets/js/pdf-editor.js",
+      "sha256": "e71bda90689e5bb998d17dcc2f1607b827b317e00774fe97981fce5fab8651cb"
+    },
+    {
+      "path": "admin/shared/catalog.json",
+      "sha256": "5407c92e835a78e1aba16b32c931c544b26d88f008995bbe77da04d9fe8a63a9"
+    }
+  ]
+}
