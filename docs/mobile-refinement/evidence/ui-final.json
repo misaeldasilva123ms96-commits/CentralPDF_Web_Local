@@ -1,0 +1,22 @@
+[
+  {
+    "test": "mobile-refinement.test.py",
+    "exit": 0,
+    "seconds": 30.03
+  },
+  {
+    "test": "image-paper-preview.test.py",
+    "exit": 0,
+    "seconds": 11.82
+  },
+  {
+    "test": "ux-simplification.test.py",
+    "exit": 0,
+    "seconds": 25.98
+  },
+  {
+    "test": "ux-tool-settings.test.py",
+    "exit": 0,
+    "seconds": 98.55
+  }
+]

@@ -84,6 +84,12 @@
   function bindStaticUi() {
     ensurePageRotationControls();
     $('#editorContextDone')?.addEventListener('click', closeContextControls);
+    $('#editorContextToggle')?.addEventListener('click', () => {
+      const collapsed = !$('#editorContextControls')?.classList.contains('context-collapsed');
+      setContextCollapsed(collapsed);
+      $('#editorContextToggle')?.focus({preventScroll:true});
+      positionContextControls();
+    });
     $('#editorContextControls')?.addEventListener('keydown', event => {
       if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeContextControls();}
     });
@@ -95,6 +101,7 @@
       if(document.activeElement?.id==='editorTextValue')ensureContextTextSpace();
       else positionContextControls();
     });
+    window.visualViewport?.addEventListener('scroll', positionContextControls);
     document.querySelectorAll('[data-editor-mode]').forEach(button => {
       button.addEventListener('click', () => setMode(button.dataset.editorMode));
     });
@@ -1306,7 +1313,19 @@
     const element=Array.from($('#editorObjectLayer')?.querySelectorAll('.editor-object')||[]).find(node=>node.dataset.objectId===object.id);
     const rect=element?.getBoundingClientRect()||{top:bounds.top+object.y*state.scale,bottom:bounds.top+(object.y+object.height)*state.scale};
     const height=window.visualViewport?.height||window.innerHeight;
-    const desiredTop=Math.max(100,height*.18);
+    const headerBottom=$('.topbar')?.getBoundingClientRect().bottom||0;
+    const desiredTop=Math.max(100,height*.18,headerBottom+12);
+    if(window.matchMedia('(max-width:980px)').matches){
+      positionContextControls();
+      const dock=$('#editorContextControls');
+      const top=Math.max(headerBottom,window.visualViewport?.offsetTop||0)+12;
+      const bottom=(dock?.getBoundingClientRect().top||height)-12;
+      const delta=rect.top<top?rect.top-top:rect.bottom>bottom?rect.bottom-bottom:0;
+      if(delta)window.scrollBy({top:delta,behavior:'instant'});
+      if(dock)dock.scrollTop=0;
+      positionContextControls();
+      return;
+    }
     if(height-rect.bottom<Math.min(420,height*.52)+24&&rect.top>desiredTop+16){
       window.scrollBy({top:rect.top-desiredTop,behavior:'instant'});
     }
@@ -1320,6 +1339,14 @@
     $('#editorAddText')?.focus({preventScroll:true});
   }
 
+  // Presentation state only: do not commit, change tool, selection or history.
+  function setContextCollapsed(collapsed) {
+    $('#editorContextControls')?.classList.toggle('context-collapsed', collapsed);
+    const toggle=$('#editorContextToggle');
+    if(toggle){toggle.setAttribute('aria-expanded',String(!collapsed));toggle.textContent=collapsed?'Propriedades':'Recolher';}
+    const fields=$('#editorContextFields');if(fields)fields.hidden=collapsed;
+  }
+
   function positionContextControls() {
     const dock=$('#editorContextControls');if(!dock||dock.hidden)return;
     const area=$('.editor-work-area')?.getBoundingClientRect(),section=$('#pdfEditorSection')?.getBoundingClientRect();
@@ -1327,6 +1354,28 @@
     const visibleBottom=Math.min(window.innerHeight,(window.visualViewport?.height||window.innerHeight)+(window.visualViewport?.offsetTop||0));
     const selection=$('#editorObjectLayer .editor-object.selected')?.getBoundingClientRect();
     dock.classList.toggle('outside-editor',section.bottom<80||(selection?area.top>visibleBottom-100:section.top>visibleBottom-80));
+    if(window.matchMedia('(max-width:980px)').matches){
+      const viewport=window.visualViewport;
+      const availableWidth=viewport?.width||window.innerWidth;
+      const width=Math.max(0,Math.min(400,availableWidth-16));
+      dock.style.width=`${width}px`;
+      dock.style.left=`${(viewport?.offsetLeft||0)+(availableWidth-width)/2}px`;
+      dock.style.bottom=`calc(${Math.max(0,window.innerHeight-visibleBottom)+8}px + env(safe-area-inset-bottom,0px))`;
+      dock.style.maxHeight=`${Math.max(64,Math.min(380,(viewport?.height||window.innerHeight)*.48))}px`;
+      // Ordinary selection must leave the object and its handles reachable.
+      // Move the dock, not the document: pointer-down also starts dragging and
+      // the same text node must stay under the pointer for a double click.
+      if(selection && document.activeElement?.id!=='editorTextValue'){
+        const bounds=dock.getBoundingClientRect();
+        const topLimit=Math.max(viewport?.offsetTop||0,$('.topbar')?.getBoundingClientRect().bottom||0)+12;
+        const aboveSpace=selection.top-44-topLimit;
+        if(selection.bottom+12>bounds.top && selection.top-12<bounds.bottom && aboveSpace>=100){
+          dock.style.maxHeight=`${Math.min(parseFloat(dock.style.maxHeight),aboveSpace)}px`;
+          dock.style.bottom=`${window.innerHeight-selection.top+44}px`;
+        }
+      }
+      return;
+    }
     const width=Math.max(0,Math.min(400,area.width-24,window.innerWidth-24));
     dock.style.width=`${width}px`;
     dock.style.left=`${Math.max(12,Math.min(area.left+(area.width-width)/2,window.innerWidth-width-12))}px`;
@@ -1377,11 +1426,11 @@
       const key=object?.id||state.activeTool;
       if(dock.dataset.contextKey!==key){
         dock.dataset.contextKey=key;dock.scrollTop=0;
+        setContextCollapsed(false);
         const precision=$('#editorObjectSizePanel');if(precision)precision.open=false;
       }
       dock.hidden=object?.type==='image'||!currentPage()||(!object&&!['brush','highlight','cover'].includes(state.activeTool)&&!(state.activeTool==='crop'&&state.tempCrop));
       const title=$('#editorContextTitle');if(title)title.textContent=object?`Editar ${objectLabel(object).toLocaleLowerCase('pt-BR')}`:'Opções da ferramenta';
-      positionContextControls();
     }
     panel.hidden=!object&&state.activeTool!=='text';
     renderObjectList();
@@ -1423,6 +1472,7 @@
     ['editorDeleteObject','editorDuplicateObject','editorBringForward','editorSendBackward','editorRotateLeft','editorRotateRight','editorResetRotation','editorAlignLeft','editorAlignCenterX','editorAlignRight','editorAlignTop','editorAlignCenterY','editorAlignBottom'].forEach(id => {
       const control = $(`#${id}`); if (control) control.disabled = !supportsTransform;
     });
+    positionContextControls();
   }
 
   function updateInspectorTransformFields(object) {

@@ -1,0 +1,57 @@
+[
+  {
+    "test": "tests/editor-context-controls.test.py",
+    "exit": 0,
+    "seconds": 32.37
+  },
+  {
+    "test": "tests/editor-orientation-delivery.test.py",
+    "exit": 0,
+    "seconds": 0.22
+  },
+  {
+    "test": "tests/cached-editor-downloads.test.py",
+    "exit": 0,
+    "seconds": 6.33
+  },
+  {
+    "test": "tests/extract-panels-runtime-1.2.1.test.py",
+    "exit": 0,
+    "seconds": 0.23
+  },
+  {
+    "test": "tests/pdf-compatibility-sw.test.py",
+    "exit": 0,
+    "seconds": 2.61
+  },
+  {
+    "test": "tests/release-2.0.1.test.py",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "tests/smart-compression-integration.test.py",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "tests/split-interactive-ui.test.py",
+    "exit": 0,
+    "seconds": 0.48
+  },
+  {
+    "test": "tests/version-sync-1.1.1.test.py",
+    "exit": 0,
+    "seconds": 0.17
+  },
+  {
+    "test": "tests/workspace-visual-fixes-1.2.2.test.py",
+    "exit": 0,
+    "seconds": 2.02
+  },
+  {
+    "test": "tests/static-site-validation.test.py",
+    "exit": 0,
+    "seconds": 3.55
+  }
+]

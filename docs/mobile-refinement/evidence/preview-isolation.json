@@ -1,0 +1,26 @@
+[
+  {
+    "browser": "chromium",
+    "title": "Central PDF",
+    "notBlank": true,
+    "frameworkOverlay": 0,
+    "realMergedPages": 2,
+    "pageErrors": [],
+    "externalPOSTs": [],
+    "usageConsent": false,
+    "diagnosticsConsent": false,
+    "CSP": "connect-src 'self' blob: data:"
+  },
+  {
+    "browser": "firefox",
+    "title": "Central PDF",
+    "notBlank": true,
+    "frameworkOverlay": 0,
+    "realMergedPages": 2,
+    "pageErrors": [],
+    "externalPOSTs": [],
+    "usageConsent": false,
+    "diagnosticsConsent": false,
+    "CSP": "connect-src 'self' blob: data:"
+  }
+]

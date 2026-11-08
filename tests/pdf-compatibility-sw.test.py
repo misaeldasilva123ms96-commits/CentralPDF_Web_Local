@@ -40,14 +40,14 @@ try:
         page.wait_for_function(
             """async () => {
               const keys = await caches.keys();
-              return keys.includes('centralpdf-v3.0.0-pages-57-core')
+              return keys.includes('centralpdf-v3.0.0-pages-59-core')
                 && !keys.includes('centralpdf-v2.0.1-pages-19-core');
             }""",
             timeout=60_000,
         )
         cached = page.evaluate(
             """async () => {
-              const cache = await caches.open('centralpdf-v3.0.0-pages-57-core');
+              const cache = await caches.open('centralpdf-v3.0.0-pages-59-core');
               const app = await cache.match('/assets/js/app.js?v=3.0.0-ux-simple1');
               const ingest = await cache.match('/assets/js/pdf-ingest.js?v=3.0.0-open-access1');
               return {app: Boolean(app), ingest: Boolean(ingest)};

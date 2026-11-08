@@ -13,7 +13,7 @@ endpoint = 'https://o123.ingest.us.sentry.io/api/456/envelope/'
 html = (root / 'index.html').read_text()
 html = re.sub(r'<script src="[^"]+"></script>', '', html)
 html = re.sub(r'<link[^>]+rel="manifest"[^>]*>', '', html)
-scripts = ['app/node_modules/pdf-lib/dist/pdf-lib.min.js', 'assets/js/pdf-ingest.js',
+scripts = ['app/node_modules/pdf-lib/dist/pdf-lib.min.js', 'vendor/jszip.min.js', 'assets/js/pdf-ingest.js',
            'assets/js/split-planner.js', 'assets/js/advanced-planner.js', 'assets/js/pdf-native-text.js',
            'assets/js/organizer-planner.js', 'assets/js/pdf-editor.js', 'assets/js/ux-enhancements.js',
            'assets/js/app.js', 'assets/js/layout-controls.js', 'assets/js/foundation.js',
@@ -199,8 +199,23 @@ try:
         second.wait_for_function('!CentralPDFTelemetry.getStatus().tracingConsent')
         assert second.evaluate('CentralPDFTelemetry.getStatus().consent'), 'Trace revocation preserves error consent'
         count = len(received)
-        second.evaluate("CentralPDFApp.processCurrentTool().then(()=>CentralPDFTelemetry.flush())")
+        # Use a successful real operation: an empty tool emits an authorized
+        # interface-error event even when performance tracing is revoked.
+        assert second.evaluate("""async()=>{
+          HTMLAnchorElement.prototype.click=function(){};
+          const pdf=await PDFLib.PDFDocument.create();pdf.addPage([200,200]);
+          await CentralPDFApp.openFilesInTool([new File([await pdf.save()],'Synthetic.pdf',{type:'application/pdf'})],'metadata');
+          const run=await CentralPDFApp.processCurrentTool();await CentralPDFTelemetry.flush();return run.ok;
+        }""")
+        assert second.evaluate('CentralPDFTelemetry.getStatus().tracesSent') == 0
+        assert second.evaluate("CentralPDFTelemetry.startToolTrace('metadata')===null")
         assert len(received) == count
+        # Revoking traces must not silently revoke the separately approved errors.
+        second.evaluate('CentralPDFTelemetry.sendTest();CentralPDFTelemetry.flush()')
+        second.wait_for_function('CentralPDFTelemetry.getStatus().sent===1')
+        assert len(received) == count+1
+        assert json.loads(received[-1].splitlines()[1])['type'] == 'event'
+        assert json.loads(received[-1].splitlines()[2])['tags']['code'] == 'diagnostic_test'
         page.locator('#cpTracingConsent').check()
         from os import environ
         if environ.get('CENTRALPDF_QA_SCREENSHOTS'):

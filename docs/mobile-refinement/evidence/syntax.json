@@ -1,0 +1,150 @@
+[
+  {
+    "file": "assets/js/admin-bridge.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/advanced-planner.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/app.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/compare-0.17.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/compression-engine.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/conversions-0.19.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/design-3.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/diagnostics-config.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/diagnostics-telemetry.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/engine-loader.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/experience-0.15.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/forms-signatures-0.18.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/foundation.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/header-settings-1.0.1.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/header-settings-1.0.3.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/import-feedback.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/intelligence-0.20.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/layout-controls.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/ocr-0.16.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/office-engine.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/organizer-planner.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/pdf-editor.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/pdf-ingest.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/pdf-native-text.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/pdf-open-access-worker.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/pdf-open-access.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/product-redesign-2.0.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/redaction-0.17.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/split-planner.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/stable-1.0.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/tool-quality-1.2.0.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/tool-search.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/ux-enhancements.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/ux-simple.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/ux-tool-settings.js",
+    "exit": 0
+  },
+  {
+    "file": "assets/js/workspace-modernization.js",
+    "exit": 0
+  },
+  {
+    "file": "sw.js",
+    "exit": 0
+  }
+]

@@ -1,0 +1,7 @@
+chromium image transition, footer zoom/keyboard space and settings order passed
+chromium ordinary text/cover selection and double-click remain unobstructed
+chromium editor collapse, resize, zoom and real PDF export passed
+firefox image transition, footer zoom/keyboard space and settings order passed
+firefox ordinary text/cover selection and double-click remain unobstructed
+firefox editor collapse, resize, zoom and real PDF export passed
+mobile-refinement: import compaction, action order/reachability, selection-preserving collapse, resize and real export passed in Chromium/Firefox

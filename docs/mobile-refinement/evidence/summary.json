@@ -1,0 +1,35 @@
+{
+  "baseCommit": "d5b38e82c1fa90f0d3b28574c779f0500d4a3df1",
+  "productCommit": "c561801a08b63d3304d875aa1e214170d77f488c",
+  "referenceEffective": 106,
+  "finalEffective": 107,
+  "appReactTests": 241,
+  "adminTests": 28,
+  "realFamilies": 34,
+  "clickableShortcuts": 39,
+  "responsiveStates": 816,
+  "browsers": [
+    "Chromium",
+    "Firefox"
+  ],
+  "widths": [
+    320,
+    360,
+    390,
+    768,
+    1024,
+    1440
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "screenshots": {
+    "before": 64,
+    "after": 68
+  },
+  "merges": false,
+  "deploys": false,
+  "releases": false,
+  "tags": false
+}
