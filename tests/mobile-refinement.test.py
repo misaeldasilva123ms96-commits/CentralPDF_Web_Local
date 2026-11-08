@@ -28,6 +28,10 @@ try:
    # Same real action is reachable without scrolling through all settings.
    button=page.locator('#processButton');assert button.count()==1 and not button.is_disabled()
    rect=button.bounding_box();assert 0<=rect['y'] and rect['y']+rect['height']<=844,(engine,rect)
+   page.evaluate("document.body.classList.add('settings-collapsed')")
+   assert button.is_visible(),'Collapsing settings must keep the same final action reachable'
+   assert page.locator('#imagePageMode').is_hidden()
+   page.evaluate("document.body.classList.remove('settings-collapsed')")
    if engine=='chromium':
     session=c.new_cdp_session(page);session.send('Emulation.setPageScaleFactor',{'pageScaleFactor':2})
     page.wait_for_function('visualViewport.scale===2')
@@ -85,10 +89,12 @@ try:
    exported=page.evaluate("""async()=>{const r=await PDFVisualEditor.exportPdf({silent:true}),t=pdfjsLib.getDocument({data:r.bytes});try{const d=await t.promise;return (await (await d.getPage(1)).getTextContent()).items.map(x=>x.str).join(' ')}finally{await t.destroy()}}""")
    assert 'ORIGINAL PRESERVADO' in exported and 'coração' in exported,exported
    # Common footer keeps invalid actions disabled and never duplicates the handler.
-   for tool in ['merge','split','organize','protect','imagesToPdf']:
+   for tool in page.evaluate('Object.keys(CentralPDFApp.getToolCatalog())'):
     page.evaluate('(t)=>CentralPDFApp.selectTool(t)',tool)
+    page.evaluate("document.body.classList.add('settings-collapsed')")
     assert page.locator('#processButton').count()==1
     assert page.locator('#processButton').is_disabled()
+    assert page.locator('#processButton').is_visible(),(engine,tool)
    assert not errors,errors
    print(engine,'editor collapse, resize, zoom and real PDF export passed',flush=True)
    c.close();b.close()

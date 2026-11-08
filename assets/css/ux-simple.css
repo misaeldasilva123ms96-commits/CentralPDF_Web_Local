@@ -183,3 +183,7 @@ body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] 
  /* In keyboard/landscape height, let the header scroll away while typing. */
  body[data-design='3'][data-workspace-open='true'][data-active-tool='editPdf'][data-ux-short-viewport='true']:has(#editorContextControls :is(input,select,textarea):focus) .topbar {position:static!important}
 }
+@media(max-width:980px) {
+ body[data-design='3'].settings-collapsed[data-workspace-open='true'] .settings-panel {display:contents!important}
+ body[data-design='3'].settings-collapsed[data-workspace-open='true'] .settings-panel>:not(.action-dock) {display:none!important}
+}
