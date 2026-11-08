@@ -103,6 +103,14 @@
     }
   }
 
+  // Several thumbnails may finish in the same frame. Recalculate their paper
+  // once per frame; settings changes below still update synchronously.
+  let imagePreviewFrame=0;
+  function scheduleImagePreviews() {
+    if(imagePreviewFrame)return;
+    imagePreviewFrame=requestAnimationFrame(()=>{imagePreviewFrame=0;updateImages();});
+  }
+
   function syncWorkingState() {
     const value=String(app.getFiles().length>0);
     if(document.body.dataset.uxHasFiles!==value)document.body.dataset.uxHasFiles=value;
@@ -154,8 +162,8 @@
   });
   window.addEventListener('centralpdf-files-changed',syncWorkingState);
   window.addEventListener('centralpdf-files-changed', updateImages);
-  $('#fileList')?.addEventListener('centralpdf-preview-ready', updateImages);
-  $('#fileList')?.addEventListener('load', updateImages, true);
+  $('#fileList')?.addEventListener('centralpdf-preview-ready', scheduleImagePreviews);
+  $('#fileList')?.addEventListener('load', scheduleImagePreviews, true);
   $('#settingsContent')?.addEventListener('input', updateImages);
   $('#settingsContent')?.addEventListener('change', updateImages);
   syncWorkingState();syncActionViewport();
