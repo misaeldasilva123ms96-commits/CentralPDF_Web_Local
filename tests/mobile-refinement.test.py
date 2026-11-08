@@ -28,9 +28,24 @@ try:
    # Same real action is reachable without scrolling through all settings.
    button=page.locator('#processButton');assert button.count()==1 and not button.is_disabled()
    rect=button.bounding_box();assert 0<=rect['y'] and rect['y']+rect['height']<=844,(engine,rect)
+   if engine=='chromium':
+    session=c.new_cdp_session(page);session.send('Emulation.setPageScaleFactor',{'pageScaleFactor':2})
+    page.wait_for_function('visualViewport.scale===2')
+    page.wait_for_function('document.querySelector("#processButton").getBoundingClientRect().right<=visualViewport.offsetLeft+visualViewport.width+1')
+    session.send('Emulation.setPageScaleFactor',{'pageScaleFactor':1})
+    page.wait_for_function('visualViewport.scale===1')
+   # Reduced visible height approximates keyboard space; a physical IME is separate QA.
+   page.locator('#imagePageMode').select_option('custom')
+   page.set_viewport_size({'width':390,'height':420})
+   page.locator('#imageCustomWidth').focus()
+   page.wait_for_function('document.querySelector("#imageCustomWidth").getBoundingClientRect().bottom<document.querySelector(".action-dock").getBoundingClientRect().top')
+   page.locator('#imageCustomWidth').fill('180')
+   assert page.locator('#imageCustomWidth').evaluate('e=>e===document.activeElement')
+   page.set_viewport_size({'width':390,'height':844})
    page.set_viewport_size({'width':1440,'height':900})
    order=page.evaluate("""()=>['[data-setting="imageOrientation"]','#imagePageMode','[data-setting="imageMargin"]','#imageMergeAll','#imageOutputSummary','#processButton','#imageAdvanced'].map(s=>document.querySelector(s).getBoundingClientRect().top)""")
    assert order==sorted(order),(engine,order)
+   print(engine,'image transition, footer zoom/keyboard space and settings order passed',flush=True)
    page.set_viewport_size({'width':390,'height':844})
    page.evaluate("""async()=>{const d=await PDFLib.PDFDocument.create();const p=d.addPage([420,595]);p.drawText('ORIGINAL PRESERVADO',{x:30,y:535});window.refPdf=new File([await d.save()],'Sintético.pdf',{type:'application/pdf'});await CentralPDFApp.openFilesInTool([refPdf],'editPdf');}""")
    page.locator('#editorAddText').click();page.locator('#editorInteractionCanvas').click(position={'x':90,'y':150})
@@ -50,10 +65,20 @@ try:
     page.wait_for_function('document.querySelector("#editorContextControls").getBoundingClientRect().bottom<=innerHeight+1')
     bounds=dock.bounding_box();assert bounds['x']>=0 and bounds['x']+bounds['width']<=w+1,(engine,w,h,bounds)
     assert bounds['height']<=h*.55,(engine,w,h,bounds)
+    page.wait_for_function('''()=>{const r=document.querySelector('.editor-object.selected').getBoundingClientRect(),header=document.querySelector('.topbar').getBoundingClientRect(),dock=document.querySelector('#editorContextControls').getBoundingClientRect();return r.top>=Math.max(0,header.bottom)-1 && r.bottom<=dock.top+1}''')
     assert not page.evaluate('document.documentElement.scrollWidth>innerWidth+1')
     assert page.locator('#editorContextDone').is_visible()
     toggle.click();toggle.click()
     assert page.locator('.editor-object.selected').get_attribute('data-object-id')==selected
+   if engine=='chromium':
+    # Real browser visual viewport / pinch zoom, not a mocked viewport getter.
+    session=c.new_cdp_session(page);session.send('Emulation.setPageScaleFactor',{'pageScaleFactor':2})
+    page.wait_for_function('visualViewport.scale===2')
+    page.wait_for_function('document.querySelector("#editorContextControls").getBoundingClientRect().right<=visualViewport.offsetLeft+visualViewport.width+1')
+    assert dock.evaluate('e=>e.scrollWidth<=e.clientWidth+1'),'Properties overflow at 200% visual zoom'
+    assert page.locator('#editorContextDone').evaluate('e=>{const r=e.getBoundingClientRect();return r.right<=visualViewport.offsetLeft+visualViewport.width+1}')
+    session.send('Emulation.setPageScaleFactor',{'pageScaleFactor':1})
+    page.wait_for_function('visualViewport.scale===1')
    # Selection changes reopen the panel; Done retains its original finish behavior.
    toggle.click();page.locator('#editorContextDone').click();assert page.locator('.editor-object.selected').count()==0
    page.locator('.editor-object').first.click();assert toggle.get_attribute('aria-expanded')=='true'
@@ -65,6 +90,7 @@ try:
     assert page.locator('#processButton').count()==1
     assert page.locator('#processButton').is_disabled()
    assert not errors,errors
+   print(engine,'editor collapse, resize, zoom and real PDF export passed',flush=True)
    c.close();b.close()
 finally:s.shutdown()
 print('mobile-refinement: import compaction, action order/reachability, selection-preserving collapse, resize and real export passed in Chromium/Firefox')

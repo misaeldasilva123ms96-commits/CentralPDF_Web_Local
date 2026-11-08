@@ -161,3 +161,25 @@ body[data-design='3'][data-active-tool='imagesToPdf'][data-ux-has-files='true'] 
  body[data-design='3'] #editorContextControls .field:has(#editorTextAlign)>label {margin:0;flex:none;font-size:12px}
  body[data-design='3'] #editorContextControls #editorTextAlign {flex:1;min-width:0}
 }
+@media(max-width:980px) {
+ body[data-design='3'] #editorContextControls {container-type:inline-size}
+}
+@container (max-width:280px) {
+ #editorContextControls .editor-context-heading {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ #editorContextControls #editorContextTitle {grid-column:1/-1}
+ #editorContextControls #editorTextControlsPanel:not(.hidden) {grid-template-columns:repeat(2,minmax(0,1fr))}
+ #editorContextControls #editorTextControlsPanel .field:has(#editorFontFamily) {grid-column:1/-1}
+ #editorContextControls #editorContextToggle,#editorContextControls #editorContextDone {min-width:0;padding-inline:4px}
+}
+@container (max-width:280px) {
+ #editorContextControls .editor-context-actions {flex-direction:column;align-items:stretch}
+ #editorContextControls .editor-context-actions .small-button {min-width:0;max-width:100%;white-space:normal}
+}
+@media(max-width:980px) {
+ body[data-design='3'][data-workspace-open='true'] .action-dock {left:var(--ux-viewport-left,0px);right:auto;width:var(--ux-viewport-width,100%);max-height:max(96px,calc(var(--ux-viewport-height,100dvh) * .4))}
+ body[data-design='3'][data-workspace-open='true']:has(.settings-panel :is(input,select,textarea):focus) .topbar {position:static!important}
+}
+@media(max-width:980px) {
+ /* In keyboard/landscape height, let the header scroll away while typing. */
+ body[data-design='3'][data-workspace-open='true'][data-active-tool='editPdf'][data-ux-short-viewport='true']:has(#editorContextControls :is(input,select,textarea):focus) .topbar {position:static!important}
+}

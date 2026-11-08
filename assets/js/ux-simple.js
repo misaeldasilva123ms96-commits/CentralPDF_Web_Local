@@ -110,24 +110,34 @@
   // Keep the original action and its handlers. Reserve its measured height so
   // the last fields can scroll fully above it, including the virtual keyboard.
   const actionDock=$('.action-dock');
+  let focusFrame=0;
+  function keepFocusedControlVisible() {
+    const field=document.activeElement;
+    if(!window.matchMedia('(max-width:980px)').matches||!field?.matches('select,textarea,input:not([type="checkbox"]):not([type="range"]):not([type="file"])')||!field.closest('.settings-panel'))return;
+    cancelAnimationFrame(focusFrame);
+    focusFrame=requestAnimationFrame(()=>{
+      const rect=field.getBoundingClientRect(),dock=actionDock?.getBoundingClientRect();
+      const top=(window.visualViewport?.offsetTop||0)+12;
+      if(dock&&rect.bottom>dock.top-12)window.scrollBy({top:rect.bottom-dock.top+12,behavior:'instant'});
+      else if(rect.top<top)window.scrollBy({top:rect.top-top,behavior:'instant'});
+    });
+  }
   function syncActionViewport() {
     const viewport=window.visualViewport;
     const bottom=Math.max(0,window.innerHeight-(viewport?.height||window.innerHeight)-(viewport?.offsetTop||0));
     document.body.style.setProperty('--ux-keyboard-offset',`${bottom}px`);
+    document.body.style.setProperty('--ux-viewport-left',`${viewport?.offsetLeft||0}px`);
+    document.body.style.setProperty('--ux-viewport-width',`${viewport?.width||window.innerWidth}px`);
+    document.body.style.setProperty('--ux-viewport-height',`${viewport?.height||window.innerHeight}px`);
+    document.body.dataset.uxShortViewport=String((viewport?.height||window.innerHeight)<480);
     document.body.style.setProperty('--ux-action-height',`${actionDock?.getBoundingClientRect().height||0}px`);
+    keepFocusedControlVisible();
   }
   if(actionDock&&window.ResizeObserver)new ResizeObserver(syncActionViewport).observe(actionDock);
   window.addEventListener('resize',syncActionViewport);
   window.visualViewport?.addEventListener('resize',syncActionViewport);
   window.visualViewport?.addEventListener('scroll',syncActionViewport);
-  document.addEventListener('focusin',event=>{
-    if(!window.matchMedia('(max-width:980px)').matches||!event.target.matches('input,select,textarea'))return;
-    if(event.target.closest('#editorContextControls'))return;
-    requestAnimationFrame(()=>{
-      const rect=event.target.getBoundingClientRect(),dock=actionDock?.getBoundingClientRect();
-      if(dock&&rect.bottom>dock.top-12&&rect.top<dock.bottom)event.target.scrollIntoView({block:'center',behavior:'instant'});
-    });
-  });
+  document.addEventListener('focusin',keepFocusedControlVisible);
 
   // Secondary task metadata stays accessible with the existing contextual guide.
   const strip = $('.tool-experience-strip'), guide = $('.tool-guide-body');

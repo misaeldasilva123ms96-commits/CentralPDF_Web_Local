@@ -1313,7 +1313,19 @@
     const element=Array.from($('#editorObjectLayer')?.querySelectorAll('.editor-object')||[]).find(node=>node.dataset.objectId===object.id);
     const rect=element?.getBoundingClientRect()||{top:bounds.top+object.y*state.scale,bottom:bounds.top+(object.y+object.height)*state.scale};
     const height=window.visualViewport?.height||window.innerHeight;
-    const desiredTop=Math.max(100,height*.18);
+    const headerBottom=$('.topbar')?.getBoundingClientRect().bottom||0;
+    const desiredTop=Math.max(100,height*.18,headerBottom+12);
+    if(window.matchMedia('(max-width:980px)').matches){
+      positionContextControls();
+      const dock=$('#editorContextControls');
+      const top=Math.max(headerBottom,window.visualViewport?.offsetTop||0)+12;
+      const bottom=(dock?.getBoundingClientRect().top||height)-12;
+      const delta=rect.top<top?rect.top-top:rect.bottom>bottom?rect.bottom-bottom:0;
+      if(delta)window.scrollBy({top:delta,behavior:'instant'});
+      if(dock)dock.scrollTop=0;
+      positionContextControls();
+      return;
+    }
     if(height-rect.bottom<Math.min(420,height*.52)+24&&rect.top>desiredTop+16){
       window.scrollBy({top:rect.top-desiredTop,behavior:'instant'});
     }

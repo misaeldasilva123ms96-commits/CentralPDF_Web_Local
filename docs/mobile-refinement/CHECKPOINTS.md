@@ -21,3 +21,12 @@ Branch: `refactor/centralpdf-3-ux-mobile-refinement`. Base sincronizada: `d5b38e
 ## Método e limites
 
 A extensão Browser não dispõe de ferramenta `js` nesta sessão. O prompt autoriza testes automatizados da aplicação isolada; usamos Chromium/Firefox do Playwright e motores preparados reais. Teclado físico/virtual de dispositivo real e leitores de tela não são reproduzidos por emulação de viewport. Capturas, testes, zoom/reflow e medições detalhados no relatório final. Não se presume aprovação visual humana desta etapa.
+
+7. Zoom visual de 200%: o novo teste detectou overflow na barra Duplicar/Excluir. Container query reorganiza cabeçalho/campos/ações apenas em painéis muito estreitos. Teste real via CDP passou, sem simular `visualViewport` ou exportações.
+8. Ação final acompanha largura e deslocamentos do visual viewport; campos focados usam a posição real do rodapé e podem rolar acima dele. Viewport baixo emula espaço do teclado, sem declarar validação de IME físico.
+9. Teste ampliado aprovado em Chromium/Firefox: transição de importação, foco, ordem dos campos, ação única, seleção/estado, redimensionamento, recolher/reabrir e exportação com acentos. App React: 241 testes; Admin: 28 testes, ambos com build.
+
+10. Seleção visível em altura reduzida: teste RED encontrou texto parcialmente atrás do cabeçalho após redimensionamento. Ajuste por limites reais da seleção/painel e cabeçalho que acompanha a rolagem durante digitação em pouca altura. Teste ampliado passou em ambos os navegadores, com conteúdo original/acentos reabertos no PDF.
+11. Validação estática: a fixture não incluía `office/` e a corrupção de versão estava presa a uma URL antiga. Passou a partir de um pacote completo validado e alterar a revisão encontrada, mantendo os seis casos negativos/positivos.
+12. Telemetria: o teste de revogação chamava uma operação inválida, que legitimamente gera evento de erro ainda consentido. Substituído por operação real válida sem traces e teste adicional de envio autorizado de diagnóstico. Transporte, consentimento e código de produção não mudaram.
+13. A execução de referência foi iniciada com vendor preparado: o contrato do checkout vazio de `offline-marker` falhou nesse contexto. Snapshot preparado preservado para capturas/desempenho; o marcador da referência foi restaurado ao conteúdo versionado para os contratos do checkout. Falhas/tempos limite da primeira execução serão mantidos no relatório, com repetições identificadas.
