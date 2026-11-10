@@ -71,4 +71,30 @@ describe('app-store (arquivos por id)', () => {
     expect(state.parameters).toEqual({});
     expect(state.task).toBeNull();
   });
+
+  it('restaura favoritos salvos sem persistir documentos ou o espaço de trabalho', async () => {
+    const file = makeFile('local', 'privado.pdf');
+    useAppStore.getState().setFiles([file]);
+    useAppStore.getState().setParameter('qualidade', 'alta');
+    useAppStore.getState().toggleFavorite('merge-pdfs');
+    expect(JSON.parse(localStorage.getItem('centralpdf2-state')!)).toEqual({
+      state: { favorites: ['merge-pdfs'] },
+      version: 0
+    });
+
+    // Existing storage format must survive the persist middleware update.
+    localStorage.setItem('centralpdf2-state', JSON.stringify({
+      state: { favorites: ['compress-pdf', 'merge-pdfs'] },
+      version: 0
+    }));
+    await useAppStore.persist.rehydrate();
+
+    expect(useAppStore.getState().favorites).toEqual(['compress-pdf', 'merge-pdfs']);
+    expect(useAppStore.getState().files).toEqual([file]);
+    expect(useAppStore.getState().parameters).toEqual({ qualidade: 'alta' });
+    useAppStore.getState().toggleFavorite('compress-pdf');
+    expect(JSON.parse(localStorage.getItem('centralpdf2-state')!).state).toEqual({
+      favorites: ['merge-pdfs']
+    });
+  });
 });
