@@ -39,5 +39,17 @@
     if (mode === 'after' && selected.length) return selected[selected.length - 1] + 1;
     return length;
   }
-  return { normalizeIndexes, insertItems, deleteIndexes, duplicateIndexes, moveIndexesToEdge, calculateInsertIndex };
+  // Keep descriptors intact: sorting must not change identity, rotation or source.
+  function sortPages(items, sourceKeys = [], direction = 'ascending') {
+    const sources = new Map(sourceKeys.map((key, index) => [key, index]));
+    const sign = direction === 'descending' ? -1 : 1;
+    const collator = new Intl.Collator('pt-BR', { numeric: true });
+    const rank = page => page.kind === 'blank' ? sources.size + 1 : (sources.get(page.sourceKey) ?? sources.size);
+    const pageNumber = page => page.kind === 'pdf' ? page.sourceIndex : page.kind === 'blank' ? Number(String(page.id).match(/\d+$/)?.[0] || 0) : 0;
+    return items.slice().sort((a, b) => {
+      const source = rank(a) - rank(b) || (a.sourceKey === b.sourceKey ? 0 : collator.compare(String(a.sourceKey || ''), String(b.sourceKey || '')));
+      return sign * (source || pageNumber(a) - pageNumber(b));
+    });
+  }
+  return { normalizeIndexes, insertItems, deleteIndexes, duplicateIndexes, moveIndexesToEdge, calculateInsertIndex, sortPages };
 });

@@ -122,7 +122,7 @@
   let focusFrame=0;
   function keepFocusedControlVisible() {
     const field=document.activeElement;
-    if(!window.matchMedia('(max-width:980px)').matches||!field?.matches('select,textarea,input:not([type="checkbox"]):not([type="range"]):not([type="file"])')||!field.closest('.settings-panel'))return;
+    if(!window.matchMedia('(max-width:980px)').matches||!field?.matches('select,textarea,input:not([type="checkbox"]):not([type="range"]):not([type="file"])')||!field.closest('.settings-panel,.organizer-selection-form'))return;
     cancelAnimationFrame(focusFrame);
     focusFrame=requestAnimationFrame(()=>{
       const rect=field.getBoundingClientRect(),dock=actionDock?.getBoundingClientRect();

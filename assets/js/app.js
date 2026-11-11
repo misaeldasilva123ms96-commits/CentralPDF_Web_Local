@@ -674,6 +674,12 @@
   $('#organizerUndo').addEventListener('click', undoOrganizer);
   $('#organizerRedo').addEventListener('click', redoOrganizer);
   $('#restorePages').addEventListener('click', restoreOrganizer);
+  $('#organizerOrderAsc').addEventListener('click', () => reorderOrganizerPages('ascending'));
+  $('#organizerOrderDesc').addEventListener('click', () => reorderOrganizerPages('descending'));
+  $('#organizerReverseOrder').addEventListener('click', () => reorderOrganizerPages('reverse'));
+  $('#organizerInvertSelection').addEventListener('click', invertOrganizerSelection);
+  $('#organizerSelectionForm').addEventListener('submit', selectOrganizerRange);
+  $('#organizerPageRange').addEventListener('input', clearOrganizerSelectionError);
   $('#closeOrganizerPagePreview').addEventListener('click', () => organizerPagePreviewDialog.close());
   $('#toolSearch').addEventListener('input', filterToolCards);
   document.querySelectorAll('.category-tab').forEach(button => button.addEventListener('click', () => {
@@ -692,8 +698,9 @@
       $('#toolSearch').focus();
     }
     if (state.tool === 'organize' && !toolWorkspace.classList.contains('hidden')) {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); event.shiftKey ? redoOrganizer() : undoOrganizer(); }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') { event.preventDefault(); redoOrganizer(); }
+      const editingField = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+      if (!editingField && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); event.shiftKey ? redoOrganizer() : undoOrganizer(); }
+      if (!editingField && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') { event.preventDefault(); redoOrganizer(); }
       if (event.key === 'Delete' && state.selectedPageIds.size && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) { event.preventDefault(); deleteSelectedPages(); }
     }
   });
@@ -1018,6 +1025,8 @@
     state.selectedPageIds.clear();
     state.organizerPageIdSeq = 0;
     state.organizerSourceSeq = 0;
+    $('#organizerPageRange').value = '';
+    clearOrganizerSelectionError();
     state.organizerInsertIndex = null;
     state.mergeOriginalFileKeys = [];
     state.dragMergeSourceKey = null;
@@ -2394,6 +2403,7 @@
 
   function updateOrganizerModeUI() {
     const covers = mergeCoversOnly();
+    $('#organizerQuickTools').hidden = state.tool !== 'organize';
     $('#mergeViewControl').classList.toggle('hidden', state.tool !== 'merge');
     $('#mergeCoverHelp').classList.toggle('hidden', !covers);
     $('#organizerBulkToolbar').classList.remove('hidden');
@@ -2765,7 +2775,7 @@
     const card = document.createElement('article');
     const previewPending = Boolean(allowLazy && !preview);
     card.className = `page-card${selected ? ' selected' : ''}${previewPending ? ' preview-pending' : ''}`; card.draggable = true; card.dataset.index = String(index); card.dataset.pageId = pageInfo.id; card.dataset.previewPending = previewPending ? 'true' : 'false';
-    const originalLabel = pageInfo.kind === 'pdf' ? `${pageInfo.origin || 'PDF'} · pág. ${pageInfo.sourceIndex + 1}` : pageInfo.kind === 'image' ? `${pageInfo.origin || 'Imagem'}` : 'Página em branco';
+    const originalLabel = pageInfo.kind === 'pdf' ? (state.tool === 'organize' ? `Original ${pageInfo.sourceIndex + 1} · ${pageInfo.origin || 'PDF'}` : `${pageInfo.origin || 'PDF'} · pág. ${pageInfo.sourceIndex + 1}`) : pageInfo.kind === 'image' ? `${pageInfo.origin || 'Imagem'}` : 'Página em branco';
     card.innerHTML = `
       <label class="page-select" title="Selecionar página"><input type="checkbox" ${selected ? 'checked' : ''}/><span></span></label>
       <button class="page-position" type="button" title="Visualizar página">${index + 1}</button>
@@ -2885,9 +2895,61 @@
   function selectedOrganizerIndexes() { return state.organizerPages.map((page,index)=>state.selectedPageIds.has(page.id)?index:-1).filter(index=>index>=0); }
   function updateOrganizerBulkToolbar() {
     const covers=mergeCoversOnly(); const count=covers?new Set(state.organizerPages.filter(page=>state.selectedPageIds.has(page.id)).map(coverKey)).size:state.selectedPageIds.size; const total=covers?new Set(state.organizerPages.map(coverKey)).size:state.organizerPages.length;
+    $('#organizerBulkToolbar').dataset.selectionCount = String(count);
     const label=$('#selectedPagesCount'); if(label) label.textContent=`${count} ${covers?(count===1?'capa selecionada':'capas selecionadas'):(count===1?'selecionada':'selecionadas')}`;
     const select=$('#selectAllPages'); if(select) select.textContent=count===total && total?'Limpar seleção':'Selecionar todas';
     ['rotateSelectedLeft','rotateSelectedRight','duplicateSelectedPages','moveSelectedStart','moveSelectedEnd','deleteSelectedPages'].forEach(id=>{ const button=$(`#${id}`); if(button) button.disabled=count===0; });
+    ['organizerOrderAsc','organizerOrderDesc','organizerReverseOrder'].forEach(id => { $(`#${id}`).disabled = state.organizerPages.length < 2; });
+    ['organizerPageRange','organizerSelectRange','organizerInvertSelection'].forEach(id => { $(`#${id}`).disabled = !state.organizerPages.length; });
+  }
+  function reorderOrganizerPages(direction) {
+    if (state.tool !== 'organize' || state.processing || state.organizerPages.length < 2) return;
+    const next = direction === 'reverse' ? state.organizerPages.slice().reverse() : OrganizerPlanner.sortPages(state.organizerPages, [...state.organizerSources.keys()], direction);
+    if (next.every((page, index) => page.id === state.organizerPages[index].id)) { setStatus('As páginas já estão nessa ordem.'); return; }
+    pushOrganizerHistory();
+    state.organizerPages = next;
+    renderPageGridFromCache();
+    setStatus(direction === 'reverse' ? 'Ordem atual invertida. Você pode desfazer.' : `Ordem ${direction === 'ascending' ? 'crescente' : 'decrescente'} aplicada. Você pode desfazer.`, 'success');
+  }
+  function clearOrganizerSelectionError() {
+    $('#organizerPageRange').removeAttribute('aria-invalid');
+    $('#organizerSelectionError').hidden = true;
+    $('#organizerSelectionError').textContent = '';
+  }
+  function selectOrganizerRange(event) {
+    event.preventDefault();
+    if (state.tool !== 'organize' || state.processing || !state.organizerPages.length) return;
+    const input = $('#organizerPageRange');
+    try {
+      // Bound endpoints before the shared parser expands ranges into arrays.
+      const count = state.organizerPages.length;
+      if ((input.value.match(/\d+/g) || []).some(value => !Number.isSafeInteger(Number(value)) || Number(value) < 1 || Number(value) > count)) throw new Error(`Informe páginas entre 1 e ${count}.`);
+      const indexes = parsePages(input.value, count);
+      clearOrganizerSelectionError();
+      state.selectedPageIds = new Set(indexes.map(index => state.organizerPages[index].id));
+      refreshOrganizerSelection();
+      setStatus(`${indexes.length} página(s) selecionada(s).`, 'success');
+    } catch (error) {
+      input.setAttribute('aria-invalid', 'true');
+      const message = $('#organizerSelectionError');
+      message.textContent = error.message;
+      message.hidden = false;
+    }
+  }
+  function invertOrganizerSelection() {
+    if (state.tool !== 'organize' || state.processing) return;
+    state.selectedPageIds = new Set(state.organizerPages.filter(page => !state.selectedPageIds.has(page.id)).map(page => page.id));
+    refreshOrganizerSelection();
+    setStatus(`${state.selectedPageIds.size} página(s) selecionada(s).`, 'success');
+  }
+  function refreshOrganizerSelection() {
+    // Selection changes keep loaded thumbnails and keyboard focus intact.
+    pageGrid.querySelectorAll('.page-card').forEach(card => {
+      const selected = state.selectedPageIds.has(card.dataset.pageId);
+      card.classList.toggle('selected', selected);
+      card.querySelector('.page-select input').checked = selected;
+    });
+    updateOrganizerBulkToolbar();
   }
   function toggleSelectAllPages() { const all=state.organizerPages.length && state.selectedPageIds.size===state.organizerPages.length; state.selectedPageIds.clear(); if(!all) state.organizerPages.forEach(page=>state.selectedPageIds.add(page.id)); renderPageGridFromCache(); }
 
