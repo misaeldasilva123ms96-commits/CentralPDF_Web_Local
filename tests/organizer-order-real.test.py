@@ -64,6 +64,8 @@ try:
               await CentralPDFApp.openFilesInTool([orderFile],'organize');
             }''')
             page.wait_for_selector('.page-card')
+            page.wait_for_function("document.querySelector('#organizerOrderControls').parentElement.id==='organizerOrderSidebar'")
+            page.evaluate("window.orderButtonIdentity=document.querySelector('#organizerOrderDesc')")
             original = ids(page)
             page.locator('.page-card').nth(1).locator('.page-select input').check()
             page.locator('.page-card').nth(4).locator('.page-select input').check()
@@ -71,6 +73,10 @@ try:
             before = descriptors(page)
             page.locator('#organizerOrderDesc').click()
             assert ids(page) == original[::-1]
+            for width,target in [(390,'organizerQuickTools'),(1440,'organizerOrderSidebar')]:
+                page.set_viewport_size({'width':width,'height':1000})
+                page.wait_for_function("target=>document.querySelector('#organizerOrderControls').parentElement.id===target",arg=target)
+                assert page.locator('#organizerOrderDesc').evaluate('e=>document.activeElement===e')
             assert page.locator('.page-caption small').first.inner_text().startswith('Original 7 ·')
             assert set(selected(page)) == {original[1],original[4]}
             assert sorted(descriptors(page),key=lambda item:item['id']) == sorted(before,key=lambda item:item['id'])
@@ -170,8 +176,11 @@ try:
                 for theme in ['dark','light']:
                     page.set_viewport_size({'width':width,'height':900 if width>800 else 844})
                     page.evaluate('(theme)=>{document.body.dataset.theme=theme}',theme)
+                    page.wait_for_function("desktop=>document.querySelector('#organizerOrderControls').parentElement.id===(desktop?'organizerOrderSidebar':'organizerQuickTools')",arg=width>980)
+                    assert page.locator('#organizerOrderDesc').count()==1
+                    assert page.evaluate("document.querySelector('#organizerOrderDesc')===orderButtonIdentity")
                     page.wait_for_function('document.documentElement.scrollWidth<=innerWidth+1')
-                    assert page.locator('#organizerQuickTools .small-button').evaluate_all('buttons=>buttons.every(e=>e.scrollWidth<=e.clientWidth+1)')
+                    assert page.locator('#organizerQuickTools .small-button,#organizerOrderControls .small-button').evaluate_all('buttons=>buttons.every(e=>e.scrollWidth<=e.clientWidth+1)')
                     assert page.locator('#organizerOrderDesc').evaluate('e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth}')
                     if width in [390,1440]:
                         page.evaluate("()=>{const r=document.querySelector('#organizerQuickTools').getBoundingClientRect(),h=document.querySelector('.topbar').getBoundingClientRect();window.scrollBy(0,r.top-Math.max(0,h.bottom)-16)}")
@@ -179,6 +188,10 @@ try:
                         page.locator('.organizer-selection-options summary').click()
                         page.screenshot(path=str(EVIDENCE/f'organizer-order-{engine}-{width}-{theme}.png'))
                         page.locator('.organizer-selection-options summary').click()
+            page.locator('#settingsPanelCloseButton').click()
+            assert page.locator('#organizerOrderDesc').is_hidden()
+            page.locator('#settingsPanelToggleTop').click()
+            assert page.locator('#organizerOrderDesc').is_visible()
             # Sorting also exercises the lazy-thumbnail path for large documents.
             page.evaluate('''async()=>{
               const d=await PDFLib.PDFDocument.create();for(let n=1;n<=200;n++)d.addPage([300,400]).drawText(`LOTE_${n}`,{x:30,y:330});
@@ -190,6 +203,11 @@ try:
             assert output['text'] == [f'LOTE_{n}' for n in range(200,0,-1)]
             page.evaluate("CentralPDFApp.selectTool('merge')")
             assert page.locator('#organizerQuickTools').is_hidden()
+            assert page.locator('#organizerOrderSidebar').is_hidden()
+            page.evaluate("CentralPDFApp.selectTool('organize')")
+            assert page.locator('#organizerOrderDesc').count()==1
+            assert page.locator('#organizerOrderSidebar').is_visible()
+            assert page.locator('#organizerOrderDesc').is_disabled()
             assert not errors, errors
             print(engine, 'ordering, selection, undo/redo, original rotations, project, mixed PDFs/images/blank/duplicate, responsive UI, lazy 200-page document and four real PDF downloads passed', flush=True)
             context.close();browser.close()

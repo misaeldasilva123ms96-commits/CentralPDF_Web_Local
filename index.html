@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="assets/css/workspace-modernization.css?v=3.0.0-ux4" />
   <link rel="stylesheet" href="assets/css/settings-modern.css?v=3.0.0-settings1" />
   <link rel="stylesheet" href="assets/css/design-3.css?v=3" />
-  <link rel="stylesheet" href="assets/css/ux-simple.css?v=4" />
+  <link rel="stylesheet" href="assets/css/ux-simple.css?v=5" />
   <link rel="icon" href="assets/icons/centralpdf-logo.svg" type="image/svg+xml" />
 </head>
 <body data-design="3">
@@ -533,13 +533,15 @@
             </div>
           </div>
           <div id="organizerQuickTools" class="organizer-quick-tools">
-            <div class="organizer-order-tools" role="group" aria-label="Ordem das páginas" aria-describedby="organizerOrderHelp">
-              <strong>Ordem das páginas</strong>
-              <button id="organizerOrderAsc" class="small-button" type="button" title="Ordem de adição dos PDFs e numeração original; páginas em branco ao final" disabled><span aria-hidden="true">1 → 9</span> Crescente</button>
-              <button id="organizerOrderDesc" class="small-button" type="button" title="Ordem inversa dos PDFs e numeração original; páginas em branco no início" disabled><span aria-hidden="true">9 → 1</span> Decrescente</button>
-              <button id="organizerReverseOrder" class="small-button" type="button" title="Inverter a sequência atual, inclusive alterações manuais" disabled>Inverter ordem</button>
+            <div id="organizerOrderControls">
+              <div class="organizer-order-tools" role="group" aria-label="Ordem das páginas" aria-describedby="organizerOrderHelp">
+                <strong>Ordem das páginas</strong>
+                <button id="organizerOrderAsc" class="small-button" type="button" title="Ordem de adição dos PDFs e numeração original; páginas em branco ao final" disabled><span aria-hidden="true">1 → 9</span> Crescente</button>
+                <button id="organizerOrderDesc" class="small-button" type="button" title="Ordem inversa dos PDFs e numeração original; páginas em branco no início" disabled><span aria-hidden="true">9 → 1</span> Decrescente</button>
+                <button id="organizerReverseOrder" class="small-button" type="button" title="Inverter a sequência atual, inclusive alterações manuais" disabled>Inverter ordem</button>
+              </div>
+              <p id="organizerOrderHelp" class="help-text">Use a numeração original ou inverta a sequência atual.</p>
             </div>
-            <p id="organizerOrderHelp" class="help-text">Use a numeração original ou inverta a sequência atual.</p>
             <details class="organizer-selection-options">
               <summary>Selecionar páginas por número</summary>
               <form id="organizerSelectionForm" class="organizer-selection-form">
@@ -577,6 +579,7 @@
         </div>
         <div id="toolAttention" class="tool-attention hidden"><span><svg><use href="#i-info"/></svg></span><div><strong>Ponto de atenção</strong><p id="toolAttentionText"></p></div></div>
         <div id="settingsEmptyState" class="settings-empty-state"><span><svg><use href="#i-upload"/></svg></span><strong>Adicione os arquivos primeiro</strong><p>As configurações serão liberadas na próxima etapa.</p></div>
+        <div id="organizerOrderSidebar" class="organizer-sidebar-order" hidden></div>
         <div id="settingsContent"></div>
         <div class="action-dock">
           <div class="status-box" id="statusBox" role="status">Adicione um arquivo para continuar.</div>
@@ -705,7 +708,7 @@
   <script src="assets/js/product-redesign-2.0.js?v=3.0.0-names1"></script>
   <script src="assets/js/workspace-modernization.js?v=3.0.0-ux1"></script>
   <script src="assets/js/design-3.js?v=2"></script>
-  <script src="assets/js/ux-simple.js?v=3"></script>
+  <script src="assets/js/ux-simple.js?v=4"></script>
   <script src="assets/js/ux-tool-settings.js?v=1"></script>
 </body>
 </html>

@@ -5,6 +5,22 @@
   const app = window.CentralPDFApp;
   if (!app) return;
 
+  const orderControls = $('#organizerOrderControls');
+  const orderSidebar = $('#organizerOrderSidebar');
+  const orderInline = $('#organizerQuickTools');
+  const desktopOrder = window.matchMedia('(min-width:981px)');
+  function syncOrganizerOrderPlacement() {
+    if (!orderControls || !orderSidebar || !orderInline) return;
+    const target = desktopOrder.matches ? orderSidebar : orderInline;
+    const focus = orderControls.contains(document.activeElement) ? document.activeElement : null;
+    orderSidebar.hidden = !desktopOrder.matches || app.getActiveTool() !== 'organize';
+    if (orderControls.parentElement !== target) {
+      target.prepend(orderControls);
+      focus?.focus({ preventScroll: true });
+    }
+  }
+  desktopOrder.addEventListener('change', syncOrganizerOrderPlacement);
+
   function disclosure(id, title) {
     const node = document.createElement('details');
     node.id = id; node.className = 'ux-advanced';
@@ -158,6 +174,7 @@
   window.addEventListener('centralpdf-tool-selected', event => {
     document.querySelectorAll('[data-image-preview-note]').forEach(node => node.remove());
     if (event.detail.tool === 'imagesToPdf') mountImages();
+    syncOrganizerOrderPlacement();
     syncWorkingState();syncActionViewport();
   });
   window.addEventListener('centralpdf-files-changed',syncWorkingState);
@@ -166,5 +183,5 @@
   $('#fileList')?.addEventListener('load', scheduleImagePreviews, true);
   $('#settingsContent')?.addEventListener('input', updateImages);
   $('#settingsContent')?.addEventListener('change', updateImages);
-  syncWorkingState();syncActionViewport();
+  syncOrganizerOrderPlacement();syncWorkingState();syncActionViewport();
 })();

@@ -4,10 +4,15 @@
 .organizer-order-tools { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
 .organizer-order-tools > strong { flex:1 1 145px; font-size:13px; color:var(--ux-text); }
 .organizer-order-tools > button { min-height:44px; border-radius:999px; padding-inline:14px; }
-#organizerQuickTools .small-button { font-size:12px; line-height:1.35; white-space:normal; }
-#organizerQuickTools .organizer-order-tools > button { border-radius:999px; }
+:is(#organizerQuickTools,#organizerOrderControls) .small-button { font-size:12px; line-height:1.35; white-space:normal; }
+#organizerOrderControls .organizer-order-tools > button { border-radius:999px; }
 .organizer-order-tools > button > span { font-size:11px; color:var(--ux-muted); margin-right:5px; }
-.organizer-quick-tools .help-text { margin:8px 0 0; color:var(--ux-muted); line-height:1.6; font-size:12px; }
+:is(.organizer-quick-tools,#organizerOrderControls) .help-text { margin:8px 0 0; color:var(--ux-muted); line-height:1.6; font-size:12px; }
+.organizer-sidebar-order { margin:14px 18px 0; padding:14px 12px; border:1px solid var(--ux-border); border-radius:18px; background:var(--ux-surface); }
+.organizer-sidebar-order[hidden] { display:none; }
+.organizer-sidebar-order .organizer-order-tools > strong { flex-basis:100%; }
+.organizer-sidebar-order .organizer-order-tools > button { flex:1 1 100px; min-width:0; padding-inline:8px; }
+.organizer-sidebar-order .organizer-order-tools > button > span { display:block; margin:0 0 2px; }
 .organizer-selection-options { margin-top:8px; }
 .organizer-selection-options > summary { cursor:pointer; min-height:44px; align-content:center; font-size:12px; color:var(--ux-text); }
 .organizer-selection-form { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding-top:8px; }
