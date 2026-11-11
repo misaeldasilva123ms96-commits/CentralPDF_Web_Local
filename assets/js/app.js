@@ -698,7 +698,7 @@
       $('#toolSearch').focus();
     }
     if (state.tool === 'organize' && !toolWorkspace.classList.contains('hidden')) {
-      const editingField = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+      const editingField = document.activeElement?.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,select') || document.activeElement?.isContentEditable;
       if (!editingField && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); event.shiftKey ? redoOrganizer() : undoOrganizer(); }
       if (!editingField && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') { event.preventDefault(); redoOrganizer(); }
       if (event.key === 'Delete' && state.selectedPageIds.size && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) { event.preventDefault(); deleteSelectedPages(); }

@@ -77,7 +77,8 @@ try:
             output = export_order(page)
             assert output['text'] == [f'PAGINA_{n} Documento sintético - página {n}' for n in range(7,0,-1)], output
             assert output['rotations'] == [0,0,90,0,0,90,0], output
-            page.locator('#organizerUndo').click()
+            page.locator('.page-card .page-select input').first.focus()
+            page.locator('.page-card .page-select input').first.press('Control+z')
             assert descriptors(page) == before
             page.locator('#organizerRedo').click()
             assert ids(page) == original[::-1]
