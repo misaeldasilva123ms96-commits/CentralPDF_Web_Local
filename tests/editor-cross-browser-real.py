@@ -37,6 +37,8 @@ try:
                         assert page.locator('.editor-transform-handle').count()==8
                         actions=page.locator('#editorImageActions')
                         if not actions.evaluate('e=>e.open'):actions.locator(':scope > summary').click()
+                        expect(actions).to_have_js_property('open',True)
+                        expect(page.locator('#editorDuplicateObject')).to_be_visible()
                         click=lambda loc:loc.tap() if name=='chromium' else loc.click()
                         click(page.locator('#editorDuplicateObject'))
                         assert page.evaluate('PDFVisualEditor.getProjectSummary().objectCount')==2
@@ -49,6 +51,10 @@ try:
                         geometry=page.evaluate('''()=>{const a=document.querySelector('#editorImageActions').getBoundingClientRect(),s=document.querySelector('.editor-scroll-area').getBoundingClientRect();return {actionsBottom:a.bottom,canvasTop:s.top};}''')
                         assert geometry['actionsBottom']<=geometry['canvasTop']+1,(name,width,mode,theme,geometry)
                         click(actions.locator(':scope > summary'))
+                        # Firefox can finish the native disclosure click after
+                        # the input protocol call. Confirm closure before the
+                        # next iteration decides whether it needs to open it.
+                        expect(actions).to_have_js_property('open',False)
                 # Move and resize through the actual pointer handles, not inspector state.
                 image=page.locator('.editor-image-object');image.hover()
                 rect=image.bounding_box();x=rect['x']+rect['width']/2;y=rect['y']+rect['height']/2
@@ -78,6 +84,7 @@ try:
                 image=page.locator('.editor-image-object');image.hover();image.click()
                 actions=page.locator('#editorImageActions')
                 if not actions.evaluate('e=>e.open'):actions.locator(':scope > summary').click()
+                expect(actions).to_have_js_property('open',True)
                 actions.scroll_into_view_if_needed()
                 page.screenshot(path=str(args.report.parent/f'editor-{name}-{width}.png'))
                 rows.append({'browser':name,'viewport':[width,height],'modes':['simple','advanced'],'themes':['light','dark'],'ok':True,'pageErrors':errors,'touch':name=='chromium'})
