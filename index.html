@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="assets/css/workspace-modernization.css?v=3.0.0-ux4" />
   <link rel="stylesheet" href="assets/css/settings-modern.css?v=3.0.0-settings1" />
   <link rel="stylesheet" href="assets/css/design-3.css?v=3" />
-  <link rel="stylesheet" href="assets/css/ux-simple.css?v=3" />
+  <link rel="stylesheet" href="assets/css/ux-simple.css?v=5" />
   <link rel="icon" href="assets/icons/centralpdf-logo.svg" type="image/svg+xml" />
 </head>
 <body data-design="3">
@@ -532,6 +532,28 @@
               <button id="restorePages" class="small-button" type="button">Restaurar original</button>
             </div>
           </div>
+          <div id="organizerQuickTools" class="organizer-quick-tools">
+            <div id="organizerOrderControls">
+              <div class="organizer-order-tools" role="group" aria-label="Ordem das páginas" aria-describedby="organizerOrderHelp">
+                <strong>Ordem das páginas</strong>
+                <button id="organizerOrderAsc" class="small-button" type="button" title="Ordem de adição dos PDFs e numeração original; páginas em branco ao final" disabled><span aria-hidden="true">1 → 9</span> Crescente</button>
+                <button id="organizerOrderDesc" class="small-button" type="button" title="Ordem inversa dos PDFs e numeração original; páginas em branco no início" disabled><span aria-hidden="true">9 → 1</span> Decrescente</button>
+                <button id="organizerReverseOrder" class="small-button" type="button" title="Inverter a sequência atual, inclusive alterações manuais" disabled>Inverter ordem</button>
+              </div>
+              <p id="organizerOrderHelp" class="help-text">Use a numeração original ou inverta a sequência atual.</p>
+            </div>
+            <details class="organizer-selection-options">
+              <summary>Selecionar páginas por número</summary>
+              <form id="organizerSelectionForm" class="organizer-selection-form">
+                <label for="organizerPageRange">Páginas</label>
+                <input id="organizerPageRange" type="text" maxlength="2000" placeholder="Ex.: 1-3, 5" aria-describedby="organizerSelectionHelp organizerSelectionError" disabled />
+                <button id="organizerSelectRange" class="small-button" type="submit" disabled>Selecionar</button>
+                <button id="organizerInvertSelection" class="small-button" type="button" disabled>Inverter seleção</button>
+                <p id="organizerSelectionHelp" class="help-text">Use as posições atuais das miniaturas. A seleção anterior será substituída.</p>
+                <p id="organizerSelectionError" class="organizer-selection-error" role="alert" hidden></p>
+              </form>
+            </details>
+          </div>
           <div id="organizerBulkToolbar" class="organizer-bulk-toolbar">
             <button id="selectAllPages" class="small-button" type="button">Selecionar todas</button>
             <button id="rotateSelectedLeft" class="small-button" type="button" disabled>↶ Girar selecionadas</button>
@@ -557,6 +579,7 @@
         </div>
         <div id="toolAttention" class="tool-attention hidden"><span><svg><use href="#i-info"/></svg></span><div><strong>Ponto de atenção</strong><p id="toolAttentionText"></p></div></div>
         <div id="settingsEmptyState" class="settings-empty-state"><span><svg><use href="#i-upload"/></svg></span><strong>Adicione os arquivos primeiro</strong><p>As configurações serão liberadas na próxima etapa.</p></div>
+        <div id="organizerOrderSidebar" class="organizer-sidebar-order" hidden></div>
         <div id="settingsContent"></div>
         <div class="action-dock">
           <div class="status-box" id="statusBox" role="status">Adicione um arquivo para continuar.</div>
@@ -659,7 +682,7 @@
   <script src="assets/js/split-planner.js"></script>
   <script src="assets/js/advanced-planner.js"></script>
   <script src="assets/js/compression-engine.js"></script>
-  <script src="assets/js/organizer-planner.js"></script>
+  <script src="assets/js/organizer-planner.js?v=3.0.0-order1"></script>
   <script src="assets/js/pdf-native-text.js?v=3.0.0-cid1"></script>
   <script src="assets/js/pdf-editor.js?v=3.0.0-mobile2"></script>
   <script src="assets/js/tool-search.js?v=2"></script>
@@ -673,7 +696,7 @@
   <script src="assets/js/intelligence-0.20.js?v=3.0.0-names2"></script>
   <script src="assets/js/admin-bridge.js?v=3.0.0-release1"></script>
   <script src="assets/js/import-feedback.js?v=1"></script>
-  <script src="assets/js/app.js?v=3.0.0-ux-simple1"></script>
+  <script src="assets/js/app.js?v=3.0.0-organizer1"></script>
   <script src="assets/js/tool-quality-1.2.0.js?v=3.0.0-office1"></script>
   <script src="assets/js/layout-controls.js?v=3.0.0-mobile2"></script>
   <script src="assets/js/foundation.js?v=3.0.0-admin-pilot1"></script>
@@ -685,7 +708,7 @@
   <script src="assets/js/product-redesign-2.0.js?v=3.0.0-names1"></script>
   <script src="assets/js/workspace-modernization.js?v=3.0.0-ux1"></script>
   <script src="assets/js/design-3.js?v=2"></script>
-  <script src="assets/js/ux-simple.js?v=2"></script>
+  <script src="assets/js/ux-simple.js?v=4"></script>
   <script src="assets/js/ux-tool-settings.js?v=1"></script>
 </body>
 </html>

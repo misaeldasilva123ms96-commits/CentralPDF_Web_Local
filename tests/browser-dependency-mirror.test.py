@@ -8,6 +8,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 for filename, job, step_name in [
     ('ci.yml', 'test', 'Install Python test dependencies'),
+    ('ci.yml', 'admin-staging', 'Install browser test dependencies'),
     ('pages.yml', 'build', 'Install real browser regression dependencies'),
 ]:
     workflow = yaml.safe_load((ROOT / '.github/workflows' / filename).read_text())
@@ -36,4 +37,4 @@ for filename, job, step_name in [
             else:
                 expected = content
             assert (apt / name).read_text() == expected, (filename, name)
-print('browser-dependency-mirror: CI and Pages cover lists, deb822, mirror lists and preserve unrelated sources')
+print('browser-dependency-mirror: root, Admin and Pages cover lists, deb822, mirror lists and preserve unrelated sources')

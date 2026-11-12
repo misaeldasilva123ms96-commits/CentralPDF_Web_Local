@@ -43,6 +43,6 @@ for selector in (
     assert selector in css
 
 assert "./assets/css/split-interactive.css?v=3.0.0-split1" in sw
-assert "centralpdf-v3.0.0-pages-59" in sw
+assert "centralpdf-v3.0.0-pages-61" in sw
 
 print("split-interactive-ui: passed")
