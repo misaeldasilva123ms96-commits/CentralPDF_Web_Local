@@ -12,6 +12,7 @@ for filename, job, step_name in [
     ('pages.yml', 'build', 'Install real browser regression dependencies'),
 ]:
     workflow = yaml.safe_load((ROOT / '.github/workflows' / filename).read_text())
+    assert workflow['jobs'][job]['runs-on'] == 'ubuntu-24.04', (filename, job)
     step = next(s for s in workflow['jobs'][job]['steps'] if s.get('name') == step_name)
     # Run only APT source selection, never pip/apt downloads or sudo on this host.
     prelude = step['run'].split('python -m pip', 1)[0]
@@ -29,8 +30,15 @@ for filename, job, step_name in [
             path = apt / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
+        (apt / 'apt.conf.d').mkdir()
         command = prelude.replace('sudo find /etc/apt', f'find {shlex.quote(tmp)}')
+        command = command.replace('sudo tee /etc/apt/apt.conf.d/', f'tee {shlex.quote(str(apt / "apt.conf.d"))}/')
         subprocess.run(['bash', '-euo', 'pipefail', '-c', command], check=True)
+        assert (apt / 'apt.conf.d/80centralpdf-network').read_text() == (
+            'Acquire::Retries "2";\n'
+            'Acquire::http::Timeout "20";\n'
+            'Acquire::https::Timeout "20";\n'
+        )
         for name, content in fixtures.items():
             if name.endswith(('.list', '.sources', 'mirrors.txt')):
                 expected = content.replace('http://azure.archive.ubuntu.com/ubuntu/', 'https://archive.ubuntu.com/ubuntu/').replace('http://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu/').replace('https://azure.archive.ubuntu.com/ubuntu/', 'https://archive.ubuntu.com/ubuntu/').replace('https://azure.archive.ubuntu.com/ubuntu', 'https://archive.ubuntu.com/ubuntu/')
