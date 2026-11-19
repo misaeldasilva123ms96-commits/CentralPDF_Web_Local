@@ -1,7 +1,7 @@
 {
   "name": "centralpdf-app",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.0.1",
   "type": "module",
   "description": "CentralPDF 3.0 — plataforma documental local-first (Vite + React + TypeScript)",
   "scripts": {
@@ -17,21 +17,21 @@
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "6.5.438",
     "qpdf-wasm": "^0.1.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/user-event": "14.6.10",
     "@types/node": "^26.6.6",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.6.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
     "jsdom": "^26.1.0",
     "typescript": "^7.0.2",
-    "vite": "^7.3.7",
+    "vite": "8.3.8",
     "vitest": "^5.0.5"
   }
 }

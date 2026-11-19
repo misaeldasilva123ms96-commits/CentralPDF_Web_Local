@@ -1,6 +1,6 @@
 importScripts('./vendor/pdfjs-manifest.js');
 
-const CACHE_VERSION = 'centralpdf-v3.0.0-pages-61';
+const CACHE_VERSION = 'centralpdf-v3.0.1-pages-62';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CORE_ASSETS = [
@@ -10,10 +10,10 @@ const CORE_ASSETS = [
   './vendor/qpdf/qpdf.js', './vendor/qpdf/qpdf.wasm', './vendor/qpdf/LICENSE', './vendor/qpdf/NOTICE.txt', './vendor/qpdf/QPDF-LICENSE-APACHE-2.0.txt',
   './assets/css/design-3.css?v=3', './assets/js/design-3.js?v=2', './assets/icons/centralpdf-logo.svg',
   './office/index.html', './office/engine.js', './office/engine.css', './office/sw.js',
-  './assets/css/settings-modern.css?v=3.0.0-settings1',
-  './assets/css/workspace-modernization.css?v=3.0.0-ux4', './assets/js/workspace-modernization.js?v=3.0.0-ux1',
+  './assets/css/settings-modern.css?v=3.0.1-settings1',
+  './assets/css/workspace-modernization.css?v=3.0.1-ux4', './assets/js/workspace-modernization.js?v=3.0.1-ux1',
   './', './index.html', './assets/css/styles.css', './assets/css/ux-redesign.css',
-  './assets/css/layout-controls.css?v=3.0.0-ui1', './assets/css/foundation.css', './assets/css/experience-0.15.css',
+  './assets/css/layout-controls.css?v=3.0.1-ui1', './assets/css/foundation.css', './assets/css/experience-0.15.css',
   './assets/css/ocr-0.16.css', './assets/css/professional-0.17.css',
   './assets/css/forms-signatures-0.18.css', './assets/css/conversions-0.19.css',
   './assets/css/intelligence-0.20.css', './assets/css/stable-1.0.css',
@@ -24,19 +24,19 @@ const CORE_ASSETS = [
   './assets/css/modal-fit-1.0.9.css', './assets/css/micro-polish-1.1.0.css',
   './assets/css/quality-logs-1.1.2.css', './assets/css/tool-quality-1.2.0.css',
   './assets/css/workspace-visual-fixes-1.2.2.css?v=1.2.3',
-  './assets/css/product-redesign-2.0.css?v=3.0.0-shell1', './assets/css/tool-icons.css?v=1', './assets/css/interface-polish.css?v=1',
-  './assets/css/split-interactive.css?v=3.0.0-split1',
+  './assets/css/product-redesign-2.0.css?v=3.0.1-shell1', './assets/css/tool-icons.css?v=1', './assets/css/interface-polish.css?v=1',
+  './assets/css/split-interactive.css?v=3.0.1-split1',
   './assets/js/tool-search.js?v=2', './assets/js/office-engine.js?v=1',
-  './assets/js/import-feedback.js?v=1', './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=3.0.0-open-access1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
+  './assets/js/import-feedback.js?v=1', './assets/js/engine-loader.js', './assets/js/pdf-ingest.js?v=3.0.1-open-access1', './assets/js/split-planner.js', './assets/js/advanced-planner.js',
   './assets/js/compression-engine.js',
-  './assets/js/pdf-native-text.js?v=3.0.0-cid1', './assets/js/organizer-planner.js?v=3.0.0-order1', './assets/js/pdf-editor.js?v=3.0.0-mobile2', './assets/js/ux-enhancements.js?v=3.0.0-ui6',
-  './assets/js/ocr-0.16.js?v=3.0.0-names2', './assets/js/compare-0.17.js?v=3.0.0-names1', './assets/js/redaction-0.17.js?v=3.0.0-names2',
-  './assets/js/forms-signatures-0.18.js?v=3.0.0-names1', './assets/js/conversions-0.19.js?v=3.0.0-names1',
-  './assets/js/intelligence-0.20.js?v=3.0.0-names2', './assets/js/admin-bridge.js?v=3.0.0-release1', './assets/js/app.js?v=3.0.0-organizer1', './assets/js/tool-quality-1.2.0.js?v=3.0.0-office1',
-  './assets/js/layout-controls.js?v=3.0.0-mobile2', './assets/js/foundation.js?v=3.0.0-admin-pilot1', './assets/js/experience-0.15.js?v=3.0.0-icons1',
-  './assets/js/diagnostics-config.js?v=3.0.0-tracing1', './assets/js/diagnostics-telemetry.js?v=3.0.0-tracing2',
-  './assets/js/stable-1.0.js?v=3.0.0-names1', './assets/js/header-settings-1.0.3.js?v=3.0.0-design3',
-  './assets/js/product-redesign-2.0.js?v=3.0.0-names1',
+  './assets/js/pdf-native-text.js?v=3.0.1-cid1', './assets/js/organizer-planner.js?v=3.0.1-order1', './assets/js/pdf-editor.js?v=3.0.1-mobile2', './assets/js/ux-enhancements.js?v=3.0.1-ui6',
+  './assets/js/ocr-0.16.js?v=3.0.1-names2', './assets/js/compare-0.17.js?v=3.0.1-names1', './assets/js/redaction-0.17.js?v=3.0.1-names2',
+  './assets/js/forms-signatures-0.18.js?v=3.0.1-names1', './assets/js/conversions-0.19.js?v=3.0.1-names1',
+  './assets/js/intelligence-0.20.js?v=3.0.1-names2', './assets/js/admin-bridge.js?v=3.0.1-release1', './assets/js/app.js?v=3.0.1-organizer1', './assets/js/tool-quality-1.2.0.js?v=3.0.1-office1',
+  './assets/js/layout-controls.js?v=3.0.1-mobile2', './assets/js/foundation.js?v=3.0.1-admin-pilot1', './assets/js/experience-0.15.js?v=3.0.1-icons1',
+  './assets/js/diagnostics-config.js?v=3.0.1-tracing1', './assets/js/diagnostics-telemetry.js?v=3.0.1-tracing2',
+  './assets/js/stable-1.0.js?v=3.0.1-names1', './assets/js/header-settings-1.0.3.js?v=3.0.1-design3',
+  './assets/js/product-redesign-2.0.js?v=3.0.1-names1',
   './vendor/libpdf-core.mjs', './vendor/jszip.min.js', './vendor/pptxgen.min.js',
   './vendor/pdfjs-manifest.js', './vendor/offline-status.js', './manifest.webmanifest', './assets/icons/icon-192.png',
   './assets/icons/icon-512.png', ...(self.CentralPDFPdfJsAssets || [])

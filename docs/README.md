@@ -1,6 +1,6 @@
 # Documentação do Central PDF
 
-Referência atualizada em **05/11/2026** para o sistema visual e a versão 3.0.0. Versão declarada: **3.0.0**.
+Referência atualizada em **19/11/2026** para o sistema visual e a versão 3.0.1. Versão declarada: **3.0.1**.
 
 [Abrir o aplicativo](https://misaeldasilva123ms96-commits.github.io/CentralPDF_Web_Local/) · [README do projeto](../README.md) · [Contribuir](../CONTRIBUTING.md)
 

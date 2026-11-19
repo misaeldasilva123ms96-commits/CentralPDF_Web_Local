@@ -37,8 +37,8 @@ with sync_playwright() as p:
     page.locator('#cp10LogSearch').fill('recurso')
     assert 'Falha de recurso de teste' in page.locator('#cp10ErrorList').inner_text()
     report=page.evaluate('window.CentralPDFStable.runCheck()')
-    assert report['version']=='3.0.0'
-    assert report['diagnosticModuleVersion']=='3.0.0'
+    assert report['version']=='3.0.1'
+    assert report['diagnosticModuleVersion']=='3.0.1'
     assert report['reportSchema']=='3.0'
     assert report['logStats']['capacity']==250
     print('quality-logs-1.1.2: passed')

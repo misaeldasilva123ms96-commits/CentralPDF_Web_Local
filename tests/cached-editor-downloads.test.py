@@ -61,7 +61,7 @@ try:
           const old = await caches.open('centralpdf-v2.0.1-pages-30-core');
           await old.put('/assets/js/app.js?v=2.0.1-ui10', new Response('old-app'));
           await old.put('/assets/js/pdf-native-text.js', new Response('old-native'));
-          const previous3 = await caches.open('centralpdf-v3.0.0-pages-51-core');
+          const previous3 = await caches.open('centralpdf-v3.0.1-pages-51-core');
           await previous3.put('/assets/js/design-3.js?v=1',new Response('old-3-menu'));
           await previous3.put('/assets/css/design-3.css?v=1',new Response('old-3-style'));
         }""")
@@ -83,7 +83,7 @@ try:
           await old.put('/assets/js/app.js?v=2.0.1-ui10',new Response('stale-runtime-app'));
           await old.put('/assets/js/stale-only.js',new Response('do-not-migrate'));
           // A newer engine copy already stored by another tab must win.
-          await (await caches.open('centralpdf-v3.0.0-pages-61-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
+          await (await caches.open('centralpdf-v3.0.1-pages-62-runtime')).put(urls.pdf,new Response('newer-pdf-engine'));
         }""",engines)
 
         # New HTML must bypass old script URLs on the very first reload, even
@@ -119,7 +119,7 @@ try:
         assert 'centralpdf-v2.0.1-pages-30-core' not in fetched['keys'], fetched['keys']
         assert 'centralpdf-v2.0.1-pages-30-runtime' not in fetched['keys'], fetched['keys']
         migrated=page.evaluate("""async urls => {
-          const runtime=await caches.open('centralpdf-v3.0.0-pages-61-runtime');
+          const runtime=await caches.open('centralpdf-v3.0.1-pages-62-runtime');
           const pdf=await runtime.match(urls.pdf),ocr=await runtime.match(urls.ocr),opaque=await runtime.match(urls.opaque);
           return {
             pdf:pdf && await pdf.text(),ocr:ocr && await ocr.text(),opaque:opaque?.type,
@@ -128,8 +128,8 @@ try:
         }""",engines)
         assert migrated=={'pdf':'newer-pdf-engine','ocr':'prepared-ocr-engine','opaque':'opaque','marker':'prepared-before-upgrade'},migrated
 
-        assert page.evaluate("async () => (await caches.keys()).some(k=>k.startsWith('centralpdf-v3.0.0-pages-51-'))") is False
-        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v3.0.0-pages-61-runtime')).match('/assets/js/stale-only.js'))") is False
+        assert page.evaluate("async () => (await caches.keys()).some(k=>k.startsWith('centralpdf-v3.0.1-pages-51-'))") is False
+        assert page.evaluate("async () => Boolean(await (await caches.open('centralpdf-v3.0.1-pages-62-runtime')).match('/assets/js/stale-only.js'))") is False
         # A stale entry for an unversioned URL must also refresh online, and the
         # most recently fetched code must remain available offline.
         page.evaluate("""async () => {

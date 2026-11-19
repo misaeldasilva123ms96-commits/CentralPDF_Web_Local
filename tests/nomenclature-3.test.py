@@ -44,7 +44,7 @@ try:
    page.goto(f'http://127.0.0.1:{server.server_port}/')
    page.wait_for_function('window.CentralPDFApp && window.qaPdfJs && window.CentralPDFToolSearch && window.CentralPDFStable')
    assert page.title() == brand
-   assert page.locator('footer').first.locator('span').first.inner_text() == f'{brand} — Web Local 3.0.0'
+   assert page.locator('footer').first.locator('span').first.inner_text() == f'{brand} — Web Local 3.0.1'
    catalog = page.evaluate('CentralPDFApp.getToolCatalog()'); assert len(catalog)==34
    assert page.locator('.tool-card[data-tool]').count()==39
    assert all(x['handler'] for x in page.evaluate('CentralPDFApp.getToolCapabilities()').values())
