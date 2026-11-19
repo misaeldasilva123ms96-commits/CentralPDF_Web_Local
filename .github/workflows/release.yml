@@ -55,6 +55,13 @@ jobs:
           sha256sum -c checksums.sha256
           cmp --silent CentralPDF_Local_Server.exe CentralPDF_Local_Server.release.exe
 
+      - name: Check release executable against vulnerability database
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install golang.org/x/vuln/cmd/govulncheck@v1.9.0
+          "$(go env GOPATH)/bin/govulncheck" -mode=binary CentralPDF_Local_Server.exe
+
       - name: Download and verify offline engines
         shell: pwsh
         run: ./scripts/prepare-offline.ps1

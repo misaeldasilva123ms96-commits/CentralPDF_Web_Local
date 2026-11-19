@@ -1,3 +1,10 @@
+## 3.0.1 — Correções da auditoria (em preparação)
+
+- Alinha React e React DOM 19.3.1 e suas tipagens; atualiza Vite 8.3.8 com o plugin React 6.3.0 e user-event 14.6.10 em conjunto.
+- Prepara um pacote posterior à 3.0.0 publicada, incluindo as melhorias e correções já integradas à main, sem substituir artefatos históricos.
+- Mantém o servidor Windows compilado com Go 1.26.11, corrigindo GO-2026-6859, e adiciona a verificação de vulnerabilidades à geração da Release.
+- Sincroniza a versão do site, interface React, servidor, diagnóstico e catálogo do Admin; renova o cache offline sem mudar as chaves dos dados locais.
+
 ## 3.0.0 — identidade unificada e revisão de acessibilidade
 
 ### Acabamento final do lançamento

@@ -1,6 +1,6 @@
 # Catálogo de ferramentas (gerado)
 
-Gerado por `scripts/extract-tool-catalog.mjs` a partir de `assets/js/app.js` (toolConfig, v3.0.0).
+Gerado por `scripts/extract-tool-catalog.mjs` a partir de `assets/js/app.js` (toolConfig, v3.0.1).
 
 | id | título | múltiplo | tipo | aceita | saída | professional | settings chars | n. settings ids |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

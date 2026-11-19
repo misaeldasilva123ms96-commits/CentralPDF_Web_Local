@@ -18,7 +18,8 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Keep browser system dependencies stable when ubuntu-latest changes image.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
@@ -47,6 +48,8 @@ jobs:
           # entire job timed out. Use Ubuntu's official HTTPS archive instead.
           sudo find /etc/apt -maxdepth 2 -type f \( -name '*.list' -o -name '*.sources' -o -name '*mirrors*.txt' \) \
             -exec sed -i -E 's@https?://azure.archive.ubuntu.com/ubuntu/?@https://archive.ubuntu.com/ubuntu/@g' {} +
+          # Bound transient archive failures instead of consuming the job timeout.
+          printf '%s\n' 'Acquire::Retries "2";' 'Acquire::http::Timeout "20";' 'Acquire::https::Timeout "20";' | sudo tee /etc/apt/apt.conf.d/80centralpdf-network >/dev/null
           python -m pip install --upgrade pip
           python -m pip install -r requirements-test.txt
           python -m playwright install --with-deps chromium firefox
@@ -147,7 +150,8 @@ jobs:
           test "$(grep -cE '^\| (organize|editPdf|merge|split|extract|rotate|watermark|pageNumbers|imagesToPdf|imageConvert|compress|pdfToImage|crop|metadata|normalize|pdfToText|ocr|compare|redact|formBuilder|signPdf|pdfToOffice|documentsToPdf|extractImages|archivePdf|documentAssistant|structuredExtraction|documentAudit|classifyRename|protect|unlock|diagnose|repairAdvanced|flattenForms) ' docs/architecture/_CATALOGO_RAW.md)" -eq 34
 
   admin-staging:
-    runs-on: ubuntu-latest
+    # Keep browser system dependencies stable when ubuntu-latest changes image.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
       run:
@@ -177,6 +181,8 @@ jobs:
           # Use the same reachable Ubuntu source as the root and Pages jobs.
           sudo find /etc/apt -maxdepth 2 -type f \( -name '*.list' -o -name '*.sources' -o -name '*mirrors*.txt' \) \
             -exec sed -i -E 's@https?://azure.archive.ubuntu.com/ubuntu/?@https://archive.ubuntu.com/ubuntu/@g' {} +
+          # Bound transient archive failures instead of consuming the job timeout.
+          printf '%s\n' 'Acquire::Retries "2";' 'Acquire::http::Timeout "20";' 'Acquire::https::Timeout "20";' | sudo tee /etc/apt/apt.conf.d/80centralpdf-network >/dev/null
           python -m pip install -r ../requirements-test.txt
           python -m playwright install --with-deps chromium firefox
       - name: Test admin browser flows with isolated provider fixtures

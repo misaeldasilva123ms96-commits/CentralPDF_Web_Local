@@ -1,4 +1,4 @@
-# Central PDF 3.0.0
+# Central PDF 3.0.1
 
 <p align="center">
   <img src="assets/icons/icon-192.png" width="80" height="80" alt="Ícone do Central PDF" />
@@ -16,7 +16,7 @@ O processamento de PDFs e imagens acontece no navegador, sem upload dos document
 
 O link **Administração** no rodapé abre o [painel privado](https://centralpdf-admin-homologacao.misaeldasilva123-ms96.workers.dev/), com senha e TOTP. Em **Compatibilidade e modo offline → Área do administrador**, a opção **Permitir estatísticas de uso (opcional)** começa ativada. Desativar fica salvo neste navegador e continua valendo nas próximas visitas. Somente operações com a coleta ativada entram nos indicadores, com cobertura parcial e sem documentos ou nomes de arquivos. Avisos publicados aparecem nos clientes online. Detalhes de limites, retenção, pausa global e leitura do Sentry estão no [guia administrativo](admin/README.md).
 
-> **Estado da documentação — 05/11/2026.** O site usa a aplicação da raiz (`index.html` + `assets/`). A migração React/TypeScript em [`app/`](app/README.md) é separada e ainda não substitui o produto publicado. A versão atual do código é **3.0.0**. A distribuição Windows **3.0.0** está na [release v3.0.0](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/releases/tag/v3.0.0), com pacote completo, checksums e proveniência do build. Baixe o ZIP e extraia todo o conteúdo; o executável separado precisa dos arquivos do pacote. Consulte o [histórico](CHANGELOG.md) e confira a versão de instalações antigas antes de comparar as distribuições.
+> **Estado da documentação — 19/11/2026.** O site usa a aplicação da raiz (`index.html` + `assets/`). A migração React/TypeScript em [`app/`](app/README.md) é separada e ainda não substitui o produto publicado. A versão atual do código é **3.0.1**, em preparação; a tag e os novos artefatos ainda não foram publicados. A distribuição Windows **3.0.0**, anterior às correções atuais, está na [release v3.0.0](https://github.com/misaeldasilva123ms96-commits/CentralPDF_Web_Local/releases/tag/v3.0.0), com pacote completo, checksums e proveniência do build. Baixe o ZIP e extraia todo o conteúdo; o executável separado precisa dos arquivos do pacote. O executável da 3.0.0 usa Go 1.26.10 e é sinalizado por GO-2026-6859; a 3.0.1 inclui o servidor recompilado com Go 1.26.11. Consulte o [histórico](CHANGELOG.md) e confira a versão de instalações antigas antes de comparar as distribuições.
 
 **Nesta página:** [Começar](#começar) · [Editor](#editor-pdf) · [Ferramentas](#as-34-ferramentas) · [Projetos](#projetos-e-continuidade) · [Privacidade](#privacidade-e-diagnósticos) · [Suporte](#solução-de-problemas) · [Desenvolvimento](#desenvolvimento)
 
@@ -224,7 +224,7 @@ Estas são **versões adotadas no repositório**, não uma afirmação sobre a �
 
 | Componente | Referência atual |
 | --- | --- |
-| Produto e pacote React | `3.0.0`; distribuições podem apontar para commits diferentes |
+| Produto e pacote React | `3.0.1`; distribuições podem apontar para commits diferentes |
 | PDF.js | Site/pacotes locais: `6.2.108`, legacy ESM com Worker, fontes, CMaps e WASM; interface React em `/app`: `6.4.299` |
 | pdf-lib | `1.17.1` |
 | Tesseract.js / core | `7.0.0`, com idiomas português e inglês na preparação offline |

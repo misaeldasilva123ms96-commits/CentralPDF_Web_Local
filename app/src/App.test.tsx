@@ -21,7 +21,7 @@ describe('App (shell 3.0)', () => {
     expect(screen.getByTestId('app-shell')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Central PDF 3\.0/ })).toBeInTheDocument();
     expect(screen.getByText(/Modo local · offline/)).toBeInTheDocument();
-    expect(screen.getByText(/v3\.0\.0/)).toBeInTheDocument();
+    expect(screen.getByText(/v3\.0\.1/)).toBeInTheDocument();
   });
 
   it('exibe o catálogo oficial na home com as ferramentas disponíveis', () => {

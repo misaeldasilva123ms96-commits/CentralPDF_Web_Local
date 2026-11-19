@@ -66,7 +66,7 @@ with tempfile.TemporaryDirectory() as temp_dir:
         legacy_path = project_path.with_name('legacy.cpdf')
         with zipfile.ZipFile(project_path) as source, zipfile.ZipFile(legacy_path, 'w', zipfile.ZIP_DEFLATED) as legacy:
             manifest = json.loads(source.read('project.json'))
-            assert manifest['appVersion'] == '3.0.0' and manifest['formatVersion'] == 1
+            assert manifest['appVersion'] == '3.0.1' and manifest['formatVersion'] == 1
             manifest['appVersion'] = '2.0.1'
             for item in source.infolist():
                 legacy.writestr(item.filename, json.dumps(manifest) if item.filename == 'project.json' else source.read(item.filename))
