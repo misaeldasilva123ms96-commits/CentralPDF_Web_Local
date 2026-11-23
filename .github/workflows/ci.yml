@@ -37,7 +37,7 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-test.txt
 
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # actions/setup-go@v7
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # actions/setup-go@v7
         with:
           go-version: "1.26.11"
           cache-dependency-path: server/go.mod
